@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-020 Fix2 Stable Controls</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-020 Fix4 Always Visible Controls</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-020 Fix2 Stable Controls: display-only refinements */
+/* Build002-020 Fix4 Always Visible Controls: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -49,7 +49,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 #goBoard{margin-left:auto;margin-right:auto;display:block}
 #customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -88,7 +88,7 @@ body{
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 .compactbar{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto auto;
@@ -189,7 +189,7 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 html{
   scroll-behavior:auto!important;
   overflow-anchor:none;
@@ -227,7 +227,7 @@ body.view-switching *{
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 html,body{
   height:100%;
   overflow:hidden;
@@ -408,7 +408,7 @@ footer{display:none!important}
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 .compactbar{
   min-height:42px!important;
   padding:4px 7px!important;
@@ -538,7 +538,7 @@ body.board-focus .timeline{
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 .stableToolbar{
   position:fixed;
   top:calc(env(safe-area-inset-top,0px) + 8px);
@@ -581,7 +581,7 @@ body.board-focus .timeline{
   box-shadow:0 8px 28px #0009;
   font-size:22px;
 }
-body.stable-hide-toolbar .stableToolbar{display:none!important}
+body.stable-hide-toolbar .stableToolbar{display:flex!important}
 body.stable-layout-error .rescueBtn{
   animation:rescuePulse 1s infinite alternate;
 }
@@ -637,7 +637,7 @@ body.board-focus .boardbox{
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 .compactbar{
   grid-template-columns:minmax(0,1fr)!important;
   min-height:36px!important;
@@ -677,7 +677,7 @@ body:not(.stable-layout-error) .rescueBtn:active{
 }
 
 
-/* Build002-020 Fix2 Stable Controls */
+/* Build002-020 Fix4 Always Visible Controls */
 html,body,.app,.work,.boardbox,.stage,.controls,.timeline{
   scroll-behavior:auto!important;
   overflow-anchor:none!important;
@@ -694,16 +694,139 @@ html,body,.app,.work,.boardbox,.stage,.controls,.timeline{
   box-shadow:none!important;
 }
 
+
+/* Build002-020 Fix4 Always Visible Controls */
+.rescueBtn{
+  display:none!important;
+}
+body.stable-layout-error .rescueBtn{
+  display:block!important;
+  right:calc(env(safe-area-inset-right,0px) + 12px)!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 58px)!important;
+  opacity:1!important;
+}
+.compactTitle{
+  display:flex!important;
+}
+@media (orientation:landscape){
+  .compactbar{
+    display:grid!important;
+    position:fixed!important;
+    left:12px;
+    top:calc(env(safe-area-inset-top,0px) + 8px);
+    z-index:998;
+    width:min(300px,34vw);
+    background:#120d09df;
+    border:1px solid #ffffff18;
+    border-radius:12px;
+  }
+}
+
+
+/* Build002-020 Fix4 Always Visible Controls */
+.stableToolbar{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:fixed!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  top:calc(env(safe-area-inset-top,0px) + 6px)!important;
+  z-index:5000!important;
+  max-width:calc(100vw - 20px)!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  padding:5px!important;
+}
+.stableToolbar button{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:58px!important;
+  min-width:58px!important;
+  height:48px!important;
+  min-height:48px!important;
+  visibility:visible!important;
+  opacity:1!important;
+  gap:1px!important;
+}
+.stableToolbar button span{
+  font-size:18px!important;
+  line-height:20px!important;
+}
+.stableToolbar button small{
+  display:block!important;
+  font-size:10px!important;
+  line-height:12px!important;
+  color:#f6e6c8!important;
+}
+.stableToolbar #stableMenuBtn{
+  display:flex!important;
+}
+.compactbar{
+  display:none!important;
+}
+body.board-focus .stableToolbar,
+body.mode-minimal .stableToolbar,
+body.mode-teaching .stableToolbar,
+body.mode-full .stableToolbar{
+  display:flex!important;
+}
+.controls,
+.timeline{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.controls button,
+#moveRange,
+#counter{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.app{
+  padding-top:calc(env(safe-area-inset-top,0px) + 62px)!important;
+}
+body.board-focus .app{
+  padding-top:calc(env(safe-area-inset-top,0px) + 62px)!important;
+}
+@media (orientation:landscape){
+  .stableToolbar{
+    top:calc(env(safe-area-inset-top,0px) + 4px)!important;
+  }
+  .stableToolbar button{
+    width:54px!important;
+    min-width:54px!important;
+    height:44px!important;
+    min-height:44px!important;
+  }
+  .app{
+    padding-top:calc(env(safe-area-inset-top,0px) + 56px)!important;
+  }
+}
+@media (max-width:700px){
+  .stableToolbar button{
+    width:50px!important;
+    min-width:50px!important;
+  }
+  .stableToolbar button small{
+    font-size:9px!important;
+  }
+}
+
 </style>
 </head>
 <body>
 <div class="stableToolbar" id="stableToolbar">
-  <button id="stableMenuBtn" title="資訊">☰</button>
-  <button id="stableMinimalBtn" title="極簡模式">◫</button>
-  <button id="stableTeachingBtn" title="教學模式">📖</button>
-  <button id="stableFullBtn" title="專業模式">⚙</button>
-  <button id="stableFocusBtn" title="棋盤全螢幕">⛶</button>
-  <button id="stableRestoreBtn" title="還原版面">↺</button>
+  <button id="stableMenuBtn" title="資訊"><span>☰</span><small>資訊</small></button>
+  <button id="stableMinimalBtn" title="極簡模式"><span>◫</span><small>極簡</small></button>
+  <button id="stableTeachingBtn" title="教學模式"><span>📖</span><small>教學</small></button>
+  <button id="stableFullBtn" title="專業模式"><span>⚙</span><small>專業</small></button>
+  <button id="stableFocusBtn" title="棋盤全螢幕"><span>⛶</span><small>全螢幕</small></button>
+  <button id="stableRestoreBtn" title="還原版面"><span>↺</span><small>還原</small></button>
 </div>
 <button class="rescueBtn" id="rescueBtn" title="緊急恢復">🛟</button>
 
@@ -721,7 +844,7 @@ html,body,.app,.work,.boardbox,.stage,.controls,.timeline{
 </section>
 <section class="panel hero legacyHero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Fix2 Stable Controls：按下一手時只更新棋子，棋盤與頁面位置完全固定。</h2>
+<h2>Fix4 Always Visible Controls：所有主要操作鍵永久顯示，不再因模式或旋轉消失。</h2>
 <p>加入永久工具列與緊急恢復機制；橫直旋轉、模式切換與全螢幕後都能立即回復正常版面。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
@@ -772,7 +895,7 @@ html,body,.app,.work,.boardbox,.stage,.controls,.timeline{
 <section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-020 Fix2 Stable Controls</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-020 Fix4 Always Visible Controls</span></footer>
 </div>
 
 <script>
@@ -909,6 +1032,7 @@ Board.prototype.draw=function(){
 };
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userGameLocked=false,currentGameName="內建範例棋譜";
+var currentGameSnapshot={game:SAMPLE,name:"內建範例棋譜",file:null,index:0,userLocked:false};
 var stableView={scrollX:0,scrollY:0,boardTop:0,locked:false,restoreTimer:null};
 function meta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){
@@ -920,6 +1044,11 @@ function render(){
  id("counter").textContent=index+" / "+game.moves.length;
  id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
  id("compactMove").textContent=index+" / "+game.moves.length;
+ currentGameSnapshot.game=game;
+ currentGameSnapshot.name=currentGameName;
+ currentGameSnapshot.file=currentFile;
+ currentGameSnapshot.index=index;
+ currentGameSnapshot.userLocked=userGameLocked;
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
 function load(g,name,source){
@@ -927,6 +1056,7 @@ function load(g,name,source){
  game=g;
  index=0;
  currentGameName=name;id("compactGameName").textContent=name;
+ currentGameSnapshot={game:game,name:name,file:currentFile,index:index,userLocked:userGameLocked};
  if(source==="user")userGameLocked=true;
  if(source==="sample")userGameLocked=false;
  meta();
@@ -939,6 +1069,7 @@ function read(file){if(!file){status("未取得檔案，請重新選擇。",true
 id("sgfFile").addEventListener("change",function(e){read(e.target.files&&e.target.files[0])});
 id("readAgainBtn").addEventListener("click",function(){read((id("sgfFile").files&&id("sgfFile").files[0])||currentFile)});
 id("sampleBtn").addEventListener("click",function(){
+ if(userGameLocked&&!confirm("目前已載入使用者棋譜。確定要切換到 10 手範例棋譜嗎？"))return;
  if(userGameLocked){
    var ok=window.confirm("目前已載入「"+currentGameName+"」。\n確定要切換成 10 手內建範例棋譜嗎？");
    if(!ok){
@@ -1029,6 +1160,12 @@ function runWithoutViewShift(action){
 }
 
 function forceControlsVisible(){
+ var toolbar=id("stableToolbar");
+ if(toolbar){
+   toolbar.style.display="flex";
+   toolbar.style.visibility="visible";
+   toolbar.style.opacity="1";
+ }
  var controls=document.querySelector(".controls");
  var timeline=document.querySelector(".timeline");
  if(controls){
@@ -1041,25 +1178,40 @@ function forceControlsVisible(){
    timeline.style.visibility="visible";
    timeline.style.opacity="1";
  }
- ["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","moveRange","counter"].forEach(function(k){
+ ["stableMenuBtn","stableMinimalBtn","stableTeachingBtn","stableFullBtn","stableFocusBtn","stableRestoreBtn",
+  "firstBtn","prevBtn","playBtn","nextBtn","lastBtn","moveRange","counter"].forEach(function(k){
    var el=id(k);
    if(el){
-     el.style.display="";
      el.style.visibility="visible";
      el.style.opacity="1";
+     if(k.indexOf("stable")===0)el.style.display="flex";
    }
  });
 }
 
 function restoreStableLayout(){
+ var keepGame=currentGameSnapshot.game||game;
+ var keepName=currentGameSnapshot.name||currentGameName;
+ var keepFile=currentGameSnapshot.file||currentFile;
+ var keepIndex=Math.max(0,Math.min(currentGameSnapshot.index||index,keepGame.moves.length));
+ var keepLocked=!!currentGameSnapshot.userLocked;
+
  document.body.classList.remove(
    "drawer-open","info-open","board-focus",
-   "stable-layout-error","stable-hide-toolbar",
+   "stable-layout-error",
    "mode-minimal","mode-teaching","mode-full"
  );
  document.body.classList.add("mode-teaching");
  id("viewMode").value="teaching";
  id("focusBtn").textContent="⛶ 全螢幕";
+
+ game=keepGame;
+ currentGameName=keepName;
+ currentFile=keepFile;
+ index=keepIndex;
+ userGameLocked=keepLocked;
+ id("compactGameName").textContent=currentGameName;
+
  forceControlsVisible();
  try{localStorage.setItem("goViewMode","teaching")}catch(e){}
  requestAnimationFrame(function(){
@@ -1069,11 +1221,12 @@ function restoreStableLayout(){
  setTimeout(function(){
    forceControlsVisible();
    board.resize();
+   render();
  },180);
 }
 
 function stableMode(mode){
- document.body.classList.remove("mode-minimal","mode-teaching","mode-full","drawer-open","info-open");
+ document.body.classList.remove("mode-minimal","mode-teaching","mode-full","drawer-open","info-open","stable-hide-toolbar");
  document.body.classList.add("mode-"+mode);
  id("viewMode").value=mode;
  forceControlsVisible();
@@ -1096,12 +1249,13 @@ id("stableRestoreBtn").addEventListener("click",restoreStableLayout);
 id("rescueBtn").addEventListener("click",restoreStableLayout);
 
 function layoutHealthCheck(){
- var boardEl=id("goBoard"),controls=document.querySelector(".controls"),timeline=document.querySelector(".timeline");
- var bad=!boardEl||!controls||!timeline||controls.offsetWidth===0||timeline.offsetWidth===0;
- document.body.classList.toggle("stable-layout-error",!!bad);id("rescueBtn").title=bad?"版面異常：按此恢復":"緊急恢復";
+ var boardEl=id("goBoard"),controls=document.querySelector(".controls"),timeline=document.querySelector(".timeline"),toolbar=id("stableToolbar");
+ var bad=!boardEl||!controls||!timeline||!toolbar||controls.offsetWidth===0||timeline.offsetWidth===0||toolbar.offsetWidth===0;
+ document.body.classList.toggle("stable-layout-error",!!bad);
+ id("rescueBtn").title=bad?"版面異常：按此恢復":"緊急恢復";
+ forceControlsVisible();
  if(bad){
-   forceControlsVisible();
-   setTimeout(function(){board.resize();forceControlsVisible()},120);
+   setTimeout(function(){board.resize();forceControlsVisible();render()},120);
  }
 }
 setInterval(layoutHealthCheck,1500);
@@ -1144,7 +1298,7 @@ var savedMode="minimal";
 try{savedMode=localStorage.getItem("goViewMode")||"teaching"}catch(e){};if(["minimal","teaching","full"].indexOf(savedMode)<0)savedMode="teaching"
 applyMode(savedMode);
 
-log("Fix2 Stable Controls：第一手、上一手、下一手、最後一手與滑桿均鎖定棋盤位置");
+log("Fix4 Always Visible Controls：上方模式工具列與下方播放控制列永久顯示");
 if(!userGameLocked){
   load(SAMPLE,"內建範例棋譜","startup");
 }
