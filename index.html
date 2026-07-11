@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-009 Ultimate iPad</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-010 Professional</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -26,15 +26,26 @@ textarea{width:100%;min-height:110px;padding:10px;border-radius:11px;border:1px 
 footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;padding:14px 4px 2px}
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
+
+/* Professional edition refinements */
+.stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
+.controls button{min-width:118px}
+#playBtn{box-shadow:0 8px 22px #d8a74b38}
+@media(max-width:700px){
+  .controls{display:grid;grid-template-columns:repeat(2,1fr)}
+  .controls button{min-width:0}
+  #playBtn{grid-column:span 2}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-009</div></header>
+<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-010</div></header>
 <section class="panel hero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>已修正造成程式初始化中斷的核心錯誤。</h2>
-<p>棋盤建立時先初始化資料，再開始繪圖；選擇 SGF 後會立即讀取、解析並顯示棋子。</p>
+<h2>專業棋譜播放器：更清楚的棋子比例、手順與播放體驗。</h2>
+<p>針對 iPad 重新調整棋子尺寸、手順字體、最新一手標記與播放控制，密集戰鬥也更清楚。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
 
@@ -64,6 +75,8 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <section class="block"><h3>顯示／播放</h3>
 <label class="opt"><span>顯示手順</span><input id="showNumbers" type="checkbox" checked></label>
 <label class="opt"><span>最新一手紅圈</span><input id="showLast" type="checkbox" checked></label>
+<label class="opt"><span>只顯示最後 30 手</span><input id="recentOnly" type="checkbox"></label>
+<label class="opt"><span>棋子大小</span><select id="stoneScale"><option value="0.82">小</option><option value="0.88" selected>標準</option><option value="0.93">大</option></select></label>
 <label class="opt"><span>速度</span><select id="speed"><option value="1500">慢</option><option value="850" selected>正常</option><option value="400">快</option></select></label>
 </section>
 
@@ -72,7 +85,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <section class="block"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-009 Ultimate iPad</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-010 Professional</span></footer>
 </div>
 
 <script>
@@ -82,7 +95,7 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-009 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-010 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -156,8 +169,22 @@ Board.prototype.draw=function(){
  wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");c.fillStyle=wood;c.fillRect(0,0,this.width,this.width);c.strokeStyle="#3e2a17";c.lineWidth=Math.max(1,this.width/720);
  for(var i=0;i<this.size;i++){var p=min+i*cell;c.beginPath();c.moveTo(min,p);c.lineTo(max,p);c.stroke();c.beginPath();c.moveTo(p,min);c.lineTo(p,max);c.stroke()}
  var st=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];c.fillStyle="#332110";for(i=0;i<st.length;i++)for(var j=0;j<st.length;j++){if(this.size===9&&(st[i]===4||st[j]===4)&&!(st[i]===4&&st[j]===4))continue;c.beginPath();c.arc(min+st[i]*cell,min+st[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);c.fill()}
- var r=cell*.465;for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=min+x*cell,cy=min+y*cell,gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();if(id("showNumbers").checked&&s.n!==null){c.fillStyle=s.c===1?"#fff":"#25180c";c.font="700 "+Math.max(10,r*.7)+"px sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(String(s.n),cx,cy)}}
- if(id("showLast").checked&&this.last){c.strokeStyle="#ef3e36";c.lineWidth=Math.max(2,r*.09);c.beginPath();c.arc(min+this.last.x*cell,min+this.last.y*cell,r*.76,0,Math.PI*2);c.stroke()}
+ var scale=parseFloat(id("stoneScale").value||"0.88");var r=cell*scale;for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=min+x*cell,cy=min+y*cell,gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();if(id("showNumbers").checked&&s.n!==null){
+ var showNum=true;
+ if(id("recentOnly").checked){
+   var cutoff=Math.max(1,index-29);
+   showNum=s.n>=cutoff;
+ }
+ if(showNum){
+   c.fillStyle=s.c===1?"#fff":"#25180c";
+   var digits=String(s.n).length;
+   var factor=digits>=3?.48:digits===2?.60:.72;
+   c.font="800 "+Math.max(9,r*factor)+"px sans-serif";
+   c.textAlign="center";c.textBaseline="middle";
+   c.fillText(String(s.n),cx,cy);
+ }
+}}
+ if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(min+this.last.x*cell,min+this.last.y*cell,r*.76,0,Math.PI*2);c.stroke()}
 };
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null;
@@ -173,9 +200,9 @@ id("sampleBtn").addEventListener("click",function(){load(SAMPLE,"內建範例棋
 id("loadTextBtn").addEventListener("click",function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF")}catch(e){status("載入失敗："+e.message,true)}});
 id("firstBtn").onclick=function(){stop();index=0;render()};id("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
 id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
-id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("showNumbers").onchange=render;id("showLast").onchange=render;
+id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("showNumbers").onchange=render;id("showLast").onchange=render;id("recentOnly").onchange=render;id("stoneScale").onchange=render;
 
-log("核心修正：棋盤資料已先初始化");
+log("Professional：棋子比例、手順字體與最新一手標記已最佳化");
 load(SAMPLE,"內建範例棋譜");
 })();
 </script>
