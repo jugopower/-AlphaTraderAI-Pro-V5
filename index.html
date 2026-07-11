@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-005</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-006</title>
 <style>
 :root{
   --bg:#0e0b08;--panel:#211912;--line:#f2c56b33;--text:#fff8eb;
@@ -29,7 +29,7 @@ button{-webkit-tap-highlight-color:transparent}
 .hero h2{margin:6px 0 8px;font-size:clamp(28px,4vw,48px)}
 .hero p{margin:0;color:var(--muted)}
 .gold{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.12em}
-.work{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:12px}
+.work{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:12px}
 .boardbox{padding:10px}
 .head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 4px 9px}
 .head h2{margin:2px 0 0}
@@ -56,6 +56,7 @@ button{-webkit-tap-highlight-color:transparent}
   margin:8px 0 0;padding:9px;border-radius:10px;background:#ffffff08;color:var(--muted);
   overflow-wrap:anywhere
 }
+.selected.ok{color:var(--ok)}
 .btn{display:block;width:100%;margin-top:8px}
 textarea{
   width:100%;min-height:115px;padding:10px;border-radius:11px;border:1px solid #ffffff1f;
@@ -80,13 +81,13 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <div class="app">
 <header class="panel top">
   <div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div>
-  <div class="ver">Build002-005</div>
+  <div class="ver">Build002-006</div>
 </header>
 
 <section class="panel hero">
-  <div class="gold">IPAD SAFARI 主動讀取版</div>
-  <h2>選完 SGF，再按一次「讀取已選檔案」。</h2>
-  <p>本版不依賴 iPad Safari 自動觸發讀檔；先選檔，再由按鈕主動讀取，並保留貼上 SGF 備援。</p>
+  <div class="gold">IPAD SAFARI 檔案鎖定版</div>
+  <h2>選完 SGF 後，自動輪詢並鎖定檔案。</h2>
+  <p>本版同時監聽 change、input、focus、visibilitychange，並持續檢查 input.files；選到檔案後即可主動讀取。</p>
 </section>
 
 <section class="work">
@@ -113,8 +114,9 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
   <section class="block">
     <h3>1. 選擇 SGF 檔案</h3>
     <input class="native-file" id="sgfFile" type="file">
-    <p class="selected" id="selectedFile">尚未選擇檔案</p>
+    <p class="selected" id="selectedFile">尚未鎖定檔案</p>
     <button class="btn primary" id="readSelectedBtn">📖 讀取已選檔案</button>
+    <button class="btn" id="checkSelectedBtn">🔎 重新檢查檔案</button>
     <button class="btn" id="sampleBtn">重新載入範例棋譜</button>
   </section>
 
@@ -153,7 +155,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 </aside>
 </section>
 
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-005</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-006</span></footer>
 </div>
 
 <script>
@@ -169,10 +171,11 @@ function log(line){
 }
 
 var selectedFile=null;
+var inputEl=id("sgfFile");
 
 var SAMPLE={
  size:19,
- meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-005 範例棋譜",km:"6.5",ha:"0"},
+ meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-006 範例棋譜",km:"6.5",ha:"0"},
  setup:[],
  moves:[
   {c:1,x:15,y:3,comment:"黑棋右上角小目"},
@@ -188,61 +191,52 @@ var SAMPLE={
  ]
 };
 
+function captureSelectedFile(source){
+  try{
+    var f=inputEl.files&&inputEl.files.length?inputEl.files[0]:null;
+    if(f){
+      selectedFile=f;
+      id("selectedFile").classList.add("ok");
+      id("selectedFile").textContent="已鎖定："+f.name+"（"+f.size+" bytes）";
+      setStatus("已鎖定檔案，請按「讀取已選檔案」。",false);
+      log("鎖定成功："+f.name+"｜來源："+source);
+      return true;
+    }
+  }catch(e){
+    log("檢查 input.files 失敗："+e.message);
+  }
+  return false;
+}
+
 function decodeArrayBuffer(buffer){
   var bytes=new Uint8Array(buffer);
   log("檔案位元組數："+bytes.length);
-
   if(bytes.length>=2){
-    if(bytes[0]===0xFF&&bytes[1]===0xFE){
-      log("編碼：UTF-16 LE");
-      return new TextDecoder("utf-16le").decode(buffer);
-    }
-    if(bytes[0]===0xFE&&bytes[1]===0xFF){
-      log("編碼：UTF-16 BE");
-      return new TextDecoder("utf-16be").decode(buffer);
-    }
+    if(bytes[0]===0xFF&&bytes[1]===0xFE){log("編碼：UTF-16 LE");return new TextDecoder("utf-16le").decode(buffer)}
+    if(bytes[0]===0xFE&&bytes[1]===0xFF){log("編碼：UTF-16 BE");return new TextDecoder("utf-16be").decode(buffer)}
   }
-
   var utf8=new TextDecoder("utf-8",{fatal:false}).decode(buffer);
-  if(utf8.indexOf("(;")>=0){
-    log("編碼：UTF-8");
-    return utf8;
-  }
-
+  if(utf8.indexOf("(;")>=0){log("編碼：UTF-8");return utf8}
   try{
-    var utf16le=new TextDecoder("utf-16le",{fatal:false}).decode(buffer);
-    if(utf16le.indexOf("(;")>=0){
-      log("編碼：UTF-16 LE（推測）");
-      return utf16le;
-    }
+    var u16le=new TextDecoder("utf-16le",{fatal:false}).decode(buffer);
+    if(u16le.indexOf("(;")>=0){log("編碼：UTF-16 LE（推測）");return u16le}
   }catch(e){}
-
   try{
-    var utf16be=new TextDecoder("utf-16be",{fatal:false}).decode(buffer);
-    if(utf16be.indexOf("(;")>=0){
-      log("編碼：UTF-16 BE（推測）");
-      return utf16be;
-    }
+    var u16be=new TextDecoder("utf-16be",{fatal:false}).decode(buffer);
+    if(u16be.indexOf("(;")>=0){log("編碼：UTF-16 BE（推測）");return u16be}
   }catch(e){}
-
   log("編碼：UTF-8 備援");
   return utf8;
 }
-
-function unescapeValue(v){
-  return v.replace(/\\\r?\n/g,"").replace(/\\\]/g,"]").replace(/\\\\/g,"\\");
-}
-
+function unescapeValue(v){return v.replace(/\\\r?\n/g,"").replace(/\\\]/g,"]").replace(/\\\\/g,"\\")}
 function parseNode(text,startIndex){
   var i=startIndex,props={};
   while(i<text.length){
     while(i<text.length&&/\s/.test(text[i]))i++;
     if(text[i]===";"||text[i]==="("||text[i]===")")break;
-
     var key="";
     while(i<text.length&&/[A-Z]/.test(text[i])){key+=text[i];i++}
     if(!key){i++;continue}
-
     var values=[];
     while(true){
       while(i<text.length&&/\s/.test(text[i]))i++;
@@ -262,105 +256,52 @@ function parseNode(text,startIndex){
   }
   return{props:props,index:i};
 }
-
 function parseTree(text,startIndex){
-  var i=startIndex;
-  if(text[i]!=="(")throw new Error("SGF 樹狀結構錯誤");
-  i++;
-  var sequence=[],children=[];
-
+  var i=startIndex;if(text[i]!=="(")throw new Error("SGF 樹狀結構錯誤");
+  i++;var sequence=[],children=[];
   while(i<text.length){
     while(i<text.length&&/\s/.test(text[i]))i++;
-
-    if(text[i]===";"){
-      var result=parseNode(text,i+1);
-      sequence.push(result.props);
-      i=result.index;
-      continue;
-    }
-
-    if(text[i]==="("){
-      var child=parseTree(text,i);
-      children.push(child.tree);
-      i=child.index;
-      continue;
-    }
-
+    if(text[i]===";"){var result=parseNode(text,i+1);sequence.push(result.props);i=result.index;continue}
+    if(text[i]==="("){var child=parseTree(text,i);children.push(child.tree);i=child.index;continue}
     if(text[i]===")"){i++;break}
     i++;
   }
-
   return{tree:{sequence:sequence,children:children},index:i};
 }
-
-function first(props,key,fallback){
-  return props[key]&&props[key].length?props[key][0]:fallback;
-}
-
-function coord(value){
-  if(!value||value.length<2)return{pass:true,x:-1,y:-1};
-  return{pass:false,x:value.charCodeAt(0)-97,y:value.charCodeAt(1)-97};
-}
-
+function first(props,key,fallback){return props[key]&&props[key].length?props[key][0]:fallback}
+function coord(value){if(!value||value.length<2)return{pass:true,x:-1,y:-1};return{pass:false,x:value.charCodeAt(0)-97,y:value.charCodeAt(1)-97}}
 function flattenMainLine(tree){
   var nodes=tree.sequence.slice(),cursor=tree;
-  while(cursor.children&&cursor.children.length){
-    cursor=cursor.children[0];
-    nodes=nodes.concat(cursor.sequence);
-  }
+  while(cursor.children&&cursor.children.length){cursor=cursor.children[0];nodes=nodes.concat(cursor.sequence)}
   return nodes;
 }
-
 function parseSGF(text){
   if(typeof text!=="string")throw new Error("檔案內容無法讀取");
   text=text.replace(/^\uFEFF/,"").trim();
-
   log("文字長度："+text.length);
   log("找到 (; ："+(text.indexOf("(;")>=0?"是":"否"));
-  log("找到 SZ[ ："+(text.indexOf("SZ[")>=0?"是":"否"));
-  log("找到 B[ ："+(text.indexOf("B[")>=0?"是":"否"));
-  log("找到 W[ ："+(text.indexOf("W[")>=0?"是":"否"));
-
   var start=text.indexOf("(");
   if(start<0||text.indexOf("(;",start)<0)throw new Error("這不是有效的 SGF 檔案");
-
-  var parsed=parseTree(text,start);
-  var nodes=flattenMainLine(parsed.tree);
+  var parsed=parseTree(text,start),nodes=flattenMainLine(parsed.tree);
   if(!nodes.length)throw new Error("找不到 SGF 節點");
-
-  var root=nodes[0];
-  var size=parseInt(first(root,"SZ","19"),10);
+  var root=nodes[0],size=parseInt(first(root,"SZ","19"),10);
   if([9,13,19].indexOf(size)===-1)throw new Error("目前只支援 9、13、19 路");
-
   var game={
     size:size,
     meta:{
-      pb:first(root,"PB","—"),
-      pw:first(root,"PW","—"),
-      re:first(root,"RE","—"),
-      dt:first(root,"DT","—"),
-      ev:first(root,"EV",first(root,"GN","—")),
-      km:first(root,"KM","—"),
-      ha:first(root,"HA","0")
+      pb:first(root,"PB","—"),pw:first(root,"PW","—"),re:first(root,"RE","—"),
+      dt:first(root,"DT","—"),ev:first(root,"EV",first(root,"GN","—")),
+      km:first(root,"KM","—"),ha:first(root,"HA","0")
     },
-    setup:[],
-    moves:[]
+    setup:[],moves:[]
   };
-
   (root.AB||[]).forEach(function(v){var p=coord(v);game.setup.push({c:1,pass:p.pass,x:p.x,y:p.y})});
   (root.AW||[]).forEach(function(v){var p=coord(v);game.setup.push({c:-1,pass:p.pass,x:p.x,y:p.y})});
-
   for(var i=1;i<nodes.length;i++){
     var node=nodes[i],m;
-    if(node.B&&node.B.length){
-      m=coord(node.B[0]);
-      game.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(node,"C","")});
-    }else if(node.W&&node.W.length){
-      m=coord(node.W[0]);
-      game.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(node,"C","")});
-    }
+    if(node.B&&node.B.length){m=coord(node.B[0]);game.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(node,"C","")})}
+    else if(node.W&&node.W.length){m=coord(node.W[0]);game.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(node,"C","")})}
   }
-
   log("主線節點數："+nodes.length);
   log("解析總手數："+game.moves.length);
   return game;
@@ -420,178 +361,70 @@ Board.prototype.draw=function(){
  var wood=ctx.createLinearGradient(0,0,this.width,this.width);
  wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");
  ctx.fillStyle=wood;ctx.fillRect(0,0,this.width,this.width);
-
  ctx.strokeStyle="#3e2a17";ctx.lineWidth=Math.max(1,this.width/720);
- for(var i=0;i<this.size;i++){
-   var p=min+i*cell;
-   ctx.beginPath();ctx.moveTo(min,p);ctx.lineTo(max,p);ctx.stroke();
-   ctx.beginPath();ctx.moveTo(p,min);ctx.lineTo(p,max);ctx.stroke();
- }
-
- var stars=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];
- ctx.fillStyle="#332110";
- for(i=0;i<stars.length;i++)for(var j=0;j<stars.length;j++){
-   if(this.size===9&&(stars[i]===4||stars[j]===4)&&!(stars[i]===4&&stars[j]===4))continue;
-   ctx.beginPath();ctx.arc(min+stars[i]*cell,min+stars[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);ctx.fill();
- }
-
+ for(var i=0;i<this.size;i++){var p=min+i*cell;ctx.beginPath();ctx.moveTo(min,p);ctx.lineTo(max,p);ctx.stroke();ctx.beginPath();ctx.moveTo(p,min);ctx.lineTo(p,max);ctx.stroke()}
+ var stars=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];ctx.fillStyle="#332110";
+ for(i=0;i<stars.length;i++)for(var j=0;j<stars.length;j++){if(this.size===9&&(stars[i]===4||stars[j]===4)&&!(stars[i]===4&&stars[j]===4))continue;ctx.beginPath();ctx.arc(min+stars[i]*cell,min+stars[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);ctx.fill()}
  var radius=cell*.465;
  for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){
-   var stone=this.grid[y][x];if(!stone)continue;
-   var cx=min+x*cell,cy=min+y*cell;
-   drawStone(ctx,cx,cy,radius,stone.c);
-
-   if(id("showNumbers").checked&&stone.n!==null){
-     ctx.fillStyle=stone.c===1?"#fff":"#25180c";
-     ctx.font="700 "+Math.max(10,radius*.7)+"px sans-serif";
-     ctx.textAlign="center";ctx.textBaseline="middle";
-     ctx.fillText(String(stone.n),cx,cy);
-   }
+  var stone=this.grid[y][x];if(!stone)continue;
+  var cx=min+x*cell,cy=min+y*cell;drawStone(ctx,cx,cy,radius,stone.c);
+  if(id("showNumbers").checked&&stone.n!==null){ctx.fillStyle=stone.c===1?"#fff":"#25180c";ctx.font="700 "+Math.max(10,radius*.7)+"px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(stone.n),cx,cy)}
  }
-
- if(id("showLast").checked&&this.last){
-   ctx.strokeStyle="#ef3e36";
-   ctx.lineWidth=Math.max(2,radius*.09);
-   ctx.beginPath();ctx.arc(min+this.last.x*cell,min+this.last.y*cell,radius*.76,0,Math.PI*2);ctx.stroke();
- }
+ if(id("showLast").checked&&this.last){ctx.strokeStyle="#ef3e36";ctx.lineWidth=Math.max(2,radius*.09);ctx.beginPath();ctx.arc(min+this.last.x*cell,min+this.last.y*cell,radius*.76,0,Math.PI*2);ctx.stroke()}
 };
-
 function drawStone(ctx,cx,cy,radius,color){
- ctx.save();
- ctx.shadowColor="#0007";ctx.shadowBlur=radius*.3;
- ctx.shadowOffsetX=radius*.12;ctx.shadowOffsetY=radius*.15;
-
+ ctx.save();ctx.shadowColor="#0007";ctx.shadowBlur=radius*.3;ctx.shadowOffsetX=radius*.12;ctx.shadowOffsetY=radius*.15;
  var g=ctx.createRadialGradient(cx-radius*.32,cy-radius*.36,radius*.05,cx,cy,radius);
- if(color===1){
-   g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");
-   g.addColorStop(.72,"#080808");g.addColorStop(1,"#000");
- }else{
-   g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");
-   g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297");
- }
+ if(color===1){g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");g.addColorStop(.72,"#080808");g.addColorStop(1,"#000")}
+ else{g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297")}
  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.fill();ctx.restore();
 }
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null;
-
-function setStatus(text,error){
-  id("status").style.color=error?"var(--danger)":"var(--gold)";
-  id("status").textContent=text;
-}
-function updateMeta(){
-  id("pb").textContent=game.meta.pb;
-  id("pw").textContent=game.meta.pw;
-  id("re").textContent=game.meta.re;
-  id("dt").textContent=game.meta.dt;
-  id("ev").textContent=game.meta.ev;
-  id("km").textContent=game.meta.km;
-  id("ha").textContent=game.meta.ha;
-  id("totalMoves").textContent=String(game.moves.length);
-}
-function render(){
-  board.setPosition(game,index);
-  id("boardTitle").textContent=game.size+" 路棋盤";
-  id("moveBadge").textContent="第 "+index+" 手";
-  id("moveRange").max=game.moves.length;
-  id("moveRange").value=index;
-  id("counter").textContent=index+" / "+game.moves.length;
-  id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
-}
-function stop(){
-  if(timer)clearInterval(timer);
-  timer=null;
-  id("playBtn").textContent="▶ 播放";
-}
-function loadGame(next,label){
-  stop();game=next;index=0;updateMeta();render();
-  setStatus("已載入："+label+"\n棋盤："+game.size+" 路｜總手數："+game.moves.length,false);
-}
-function play(){
-  if(timer){stop();return}
-  if(index>=game.moves.length)index=0;
-  id("playBtn").textContent="⏸ 暫停";
-  timer=setInterval(function(){
-    if(index>=game.moves.length){stop();return}
-    index++;render();
-  },parseInt(id("speed").value,10));
-}
+function setStatus(text,error){id("status").style.color=error?"var(--danger)":"var(--gold)";id("status").textContent=text}
+function updateMeta(){id("pb").textContent=game.meta.pb;id("pw").textContent=game.meta.pw;id("re").textContent=game.meta.re;id("dt").textContent=game.meta.dt;id("ev").textContent=game.meta.ev;id("km").textContent=game.meta.km;id("ha").textContent=game.meta.ha;id("totalMoves").textContent=String(game.moves.length)}
+function render(){board.setPosition(game,index);id("boardTitle").textContent=game.size+" 路棋盤";id("moveBadge").textContent="第 "+index+" 手";id("moveRange").max=game.moves.length;id("moveRange").value=index;id("counter").textContent=index+" / "+game.moves.length;id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。"}
+function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶ 播放"}
+function loadGame(next,label){stop();game=next;index=0;updateMeta();render();setStatus("已載入："+label+"\n棋盤："+game.size+" 路｜總手數："+game.moves.length,false)}
+function play(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))}
 function readFileNow(file){
-  if(!file){
-    setStatus("請先選擇 SGF 檔案。",true);
-    log("沒有可讀取的檔案");
-    return;
-  }
-
-  clearLog();
-  log("開始主動讀檔");
-  log("檔名："+file.name);
-  log("大小："+file.size+" bytes");
-  log("MIME："+(file.type||"未提供"));
-  setStatus("正在讀取："+file.name,false);
-
-  var reader=new FileReader();
-  reader.onloadstart=function(){log("FileReader：開始")};
-  reader.onload=function(){
-    log("FileReader：完成");
-    try{
-      var text=decodeArrayBuffer(reader.result);
-      log("前 80 字："+text.slice(0,80).replace(/\s+/g," "));
-      var parsed=parseSGF(text);
-      loadGame(parsed,file.name);
-      log("結果：載入成功");
-    }catch(error){
-      log("結果：載入失敗");
-      log("錯誤："+error.message);
-      setStatus("載入失敗："+error.message+"\n請把讀檔紀錄截圖給我。",true);
-    }
-  };
-  reader.onerror=function(){
-    log("FileReader 錯誤："+(reader.error&&reader.error.message?reader.error.message:"未知錯誤"));
-    setStatus("讀取檔案失敗。",true);
-  };
-  reader.readAsArrayBuffer(file);
+ if(!file){setStatus("仍未取得 File 物件，請按「重新檢查檔案」。",true);log("沒有 File 物件");return}
+ clearLog();log("開始讀檔："+file.name);log("大小："+file.size+" bytes");
+ var reader=new FileReader();
+ reader.onload=function(){
+  try{var text=decodeArrayBuffer(reader.result);loadGame(parseSGF(text),file.name);log("結果：載入成功")}
+  catch(error){log("錯誤："+error.message);setStatus("載入失敗："+error.message,true)}
+ };
+ reader.onerror=function(){log("FileReader 錯誤");setStatus("讀取檔案失敗。",true)};
+ reader.readAsArrayBuffer(file);
 }
 
-id("sgfFile").addEventListener("change",function(event){
-  selectedFile=event.target.files&&event.target.files[0]?event.target.files[0]:null;
-  if(selectedFile){
-    id("selectedFile").textContent="已選擇："+selectedFile.name+"（"+selectedFile.size+" bytes）";
-    setStatus("已選擇檔案，請按「讀取已選檔案」。",false);
-  }else{
-    id("selectedFile").textContent="尚未選擇檔案";
-    setStatus("沒有取得檔案。",true);
+["change","input"].forEach(function(evt){
+  inputEl.addEventListener(evt,function(){captureSelectedFile(evt)});
+});
+window.addEventListener("focus",function(){setTimeout(function(){captureSelectedFile("window focus")},150)});
+document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(function(){captureSelectedFile("visibilitychange")},150)});
+setInterval(function(){if(!selectedFile)captureSelectedFile("polling")},500);
+
+id("checkSelectedBtn").addEventListener("click",function(){
+  clearLog();log("手動重新檢查");
+  if(!captureSelectedFile("manual")){
+    setStatus("檔名雖顯示，但瀏覽器尚未提供 File 物件。請再選一次檔案。",true);
+    log("手動檢查仍無 File 物件");
   }
 });
-
 id("readSelectedBtn").addEventListener("click",function(){
-  var current=id("sgfFile").files&&id("sgfFile").files[0]?id("sgfFile").files[0]:selectedFile;
-  readFileNow(current);
+  captureSelectedFile("read button");
+  readFileNow(selectedFile);
 });
-
-id("sampleBtn").addEventListener("click",function(){
-  clearLog();log("重新載入內建範例");
-  loadGame(SAMPLE,"內建範例棋譜");
-});
-
+id("sampleBtn").addEventListener("click",function(){clearLog();log("重新載入內建範例");loadGame(SAMPLE,"內建範例棋譜")});
 id("loadTextBtn").addEventListener("click",function(){
-  clearLog();
-  var text=id("sgfText").value.trim();
-  if(!text){
-    setStatus("請先貼上 SGF 文字。",true);
-    log("貼上內容為空白");
-    return;
-  }
-  try{
-    log("貼上文字長度："+text.length);
-    loadGame(parseSGF(text),"貼上的 SGF");
-    log("結果：載入成功");
-  }catch(error){
-    log("結果：載入失敗");
-    log("錯誤："+error.message);
-    setStatus("載入失敗："+error.message,true);
-  }
+  clearLog();var text=id("sgfText").value.trim();
+  if(!text){setStatus("請先貼上 SGF 文字。",true);return}
+  try{loadGame(parseSGF(text),"貼上的 SGF");log("結果：載入成功")}
+  catch(error){log("錯誤："+error.message);setStatus("載入失敗："+error.message,true)}
 });
-
 id("firstBtn").addEventListener("click",function(){stop();index=0;render()});
 id("prevBtn").addEventListener("click",function(){stop();index=Math.max(0,index-1);render()});
 id("nextBtn").addEventListener("click",function(){stop();index=Math.min(game.moves.length,index+1);render()});
