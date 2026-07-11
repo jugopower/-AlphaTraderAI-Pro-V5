@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-020 Fix4 Always Visible Controls</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-020 Fix5 Info Drawer Repair</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-020 Fix4 Always Visible Controls: display-only refinements */
+/* Build002-020 Fix5 Info Drawer Repair: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -49,7 +49,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 #goBoard{margin-left:auto;margin-right:auto;display:block}
 #customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -88,7 +88,7 @@ body{
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 .compactbar{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto auto;
@@ -189,7 +189,7 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 html{
   scroll-behavior:auto!important;
   overflow-anchor:none;
@@ -227,7 +227,7 @@ body.view-switching *{
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 html,body{
   height:100%;
   overflow:hidden;
@@ -408,7 +408,7 @@ footer{display:none!important}
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 .compactbar{
   min-height:42px!important;
   padding:4px 7px!important;
@@ -538,7 +538,7 @@ body.board-focus .timeline{
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 .stableToolbar{
   position:fixed;
   top:calc(env(safe-area-inset-top,0px) + 8px);
@@ -637,7 +637,7 @@ body.board-focus .boardbox{
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 .compactbar{
   grid-template-columns:minmax(0,1fr)!important;
   min-height:36px!important;
@@ -677,7 +677,7 @@ body:not(.stable-layout-error) .rescueBtn:active{
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 html,body,.app,.work,.boardbox,.stage,.controls,.timeline{
   scroll-behavior:auto!important;
   overflow-anchor:none!important;
@@ -695,7 +695,7 @@ html,body,.app,.work,.boardbox,.stage,.controls,.timeline{
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 .rescueBtn{
   display:none!important;
 }
@@ -723,7 +723,7 @@ body.stable-layout-error .rescueBtn{
 }
 
 
-/* Build002-020 Fix4 Always Visible Controls */
+/* Build002-020 Fix5 Info Drawer Repair */
 .stableToolbar{
   display:flex!important;
   visibility:visible!important;
@@ -817,6 +817,46 @@ body.board-focus .app{
   }
 }
 
+
+/* Build002-020 Fix5 Info Drawer Repair */
+#infoDrawer{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  position:fixed!important;
+  top:calc(env(safe-area-inset-top,0px) + 62px)!important;
+  right:calc(env(safe-area-inset-right,0px) + 8px)!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;
+  width:min(380px,92vw)!important;
+  max-width:92vw!important;
+  transform:translateX(calc(100% + 30px))!important;
+  transition:transform .2s ease!important;
+  z-index:6000!important;
+  overflow:auto!important;
+}
+body.drawer-open #infoDrawer{
+  transform:translateX(0)!important;
+}
+body.drawer-open::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:5500;
+}
+#drawerCloseBtn{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:6100!important;
+}
+#stableMenuBtn{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+
 </style>
 </head>
 <body>
@@ -844,7 +884,7 @@ body.board-focus .app{
 </section>
 <section class="panel hero legacyHero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Fix4 Always Visible Controls：所有主要操作鍵永久顯示，不再因模式或旋轉消失。</h2>
+<h2>Fix5 Info Drawer Repair：資訊按鈕可正常開啟與關閉抽屜。</h2>
 <p>加入永久工具列與緊急恢復機制；橫直旋轉、模式切換與全螢幕後都能立即回復正常版面。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
@@ -895,7 +935,7 @@ body.board-focus .app{
 <section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-020 Fix4 Always Visible Controls</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-020 Fix5 Info Drawer Repair</span></footer>
 </div>
 
 <script>
@@ -1102,14 +1142,8 @@ id("viewMode").addEventListener("change",function(){applyMode(this.value)});
 id("toggleInfoBtn").addEventListener("click",function(){
  document.body.classList.add("drawer-open");
 });
-id("drawerCloseBtn").addEventListener("click",function(){
- document.body.classList.remove("drawer-open");
-});
-document.addEventListener("click",function(e){
- if(document.body.classList.contains("drawer-open")&&!id("infoDrawer").contains(e.target)&&!id("toggleInfoBtn").contains(e.target)){
-   document.body.classList.remove("drawer-open");
- }
-});
+
+
 id("focusBtn").addEventListener("click",function(){
  document.body.classList.toggle("board-focus");
  this.textContent=document.body.classList.contains("board-focus")?"✕":"⛶ 全螢幕";
@@ -1196,8 +1230,9 @@ function restoreStableLayout(){
  var keepIndex=Math.max(0,Math.min(currentGameSnapshot.index||index,keepGame.moves.length));
  var keepLocked=!!currentGameSnapshot.userLocked;
 
+ closeInfoDrawer();
  document.body.classList.remove(
-   "drawer-open","info-open","board-focus",
+   "info-open","board-focus",
    "stable-layout-error",
    "mode-minimal","mode-teaching","mode-full"
  );
@@ -1225,6 +1260,45 @@ function restoreStableLayout(){
  },180);
 }
 
+
+function openInfoDrawer(){
+ document.body.classList.add("drawer-open");
+ var drawer=id("infoDrawer");
+ if(drawer){
+   drawer.setAttribute("aria-hidden","false");
+   drawer.scrollTop=0;
+ }
+}
+function closeInfoDrawer(){
+ document.body.classList.remove("drawer-open");
+ var drawer=id("infoDrawer");
+ if(drawer)drawer.setAttribute("aria-hidden","true");
+}
+id("stableMenuBtn").addEventListener("click",function(e){
+ e.preventDefault();
+ e.stopPropagation();
+ if(document.body.classList.contains("drawer-open"))closeInfoDrawer();
+ else openInfoDrawer();
+});
+id("drawerCloseBtn").addEventListener("click",function(e){
+ e.preventDefault();
+ e.stopPropagation();
+ closeInfoDrawer();
+});
+id("infoDrawer").addEventListener("click",function(e){
+ e.stopPropagation();
+});
+document.addEventListener("click",function(e){
+ if(document.body.classList.contains("drawer-open") &&
+    !id("infoDrawer").contains(e.target) &&
+    !id("stableMenuBtn").contains(e.target)){
+   closeInfoDrawer();
+ }
+});
+document.addEventListener("keydown",function(e){
+ if(e.key==="Escape")closeInfoDrawer();
+});
+
 function stableMode(mode){
  document.body.classList.remove("mode-minimal","mode-teaching","mode-full","drawer-open","info-open","stable-hide-toolbar");
  document.body.classList.add("mode-"+mode);
@@ -1234,9 +1308,7 @@ function stableMode(mode){
  setTimeout(function(){board.resize();forceControlsVisible()},100);
 }
 
-id("stableMenuBtn").addEventListener("click",function(){
- document.body.classList.add("drawer-open");
-});
+
 id("stableMinimalBtn").addEventListener("click",function(){stableMode("minimal")});
 id("stableTeachingBtn").addEventListener("click",function(){stableMode("teaching")});
 id("stableFullBtn").addEventListener("click",function(){stableMode("full")});
@@ -1298,7 +1370,7 @@ var savedMode="minimal";
 try{savedMode=localStorage.getItem("goViewMode")||"teaching"}catch(e){};if(["minimal","teaching","full"].indexOf(savedMode)<0)savedMode="teaching"
 applyMode(savedMode);
 
-log("Fix4 Always Visible Controls：上方模式工具列與下方播放控制列永久顯示");
+log("Fix5 Info Drawer Repair：資訊按鈕、關閉按鈕與點擊遮罩均已修復");
 if(!userGameLocked){
   load(SAMPLE,"內建範例棋譜","startup");
 }
