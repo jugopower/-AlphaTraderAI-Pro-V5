@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-006</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-007 Ultimate</title>
 <style>
 :root{
   --bg:#0e0b08;--panel:#211912;--line:#f2c56b33;--text:#fff8eb;
@@ -81,13 +81,13 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <div class="app">
 <header class="panel top">
   <div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div>
-  <div class="ver">Build002-006</div>
+  <div class="ver">Build002-007 Ultimate</div>
 </header>
 
 <section class="panel hero">
-  <div class="gold">IPAD SAFARI 檔案鎖定版</div>
-  <h2>選完 SGF 後，自動輪詢並鎖定檔案。</h2>
-  <p>本版同時監聽 change、input、focus、visibilitychange，並持續檢查 input.files；選到檔案後即可主動讀取。</p>
+  <div class="gold">IPAD SAFARI ULTIMATE</div>
+  <h2>選取 SGF 後立即自動讀取。</h2>
+  <p>同時保留「重新讀取」與「貼上 SGF」備援；若 Safari 未回傳檔案，畫面會直接提示。</p>
 </section>
 
 <section class="work">
@@ -112,16 +112,15 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 
 <aside class="panel side">
   <section class="block">
-    <h3>1. 選擇 SGF 檔案</h3>
+    <h3>選擇 SGF 檔案</h3>
     <input class="native-file" id="sgfFile" type="file">
-    <p class="selected" id="selectedFile">尚未鎖定檔案</p>
-    <button class="btn primary" id="readSelectedBtn">📖 讀取已選檔案</button>
-    <button class="btn" id="checkSelectedBtn">🔎 重新檢查檔案</button>
+    <p class="selected" id="selectedFile">尚未選擇檔案</p>
+    <button class="btn primary" id="readAgainBtn">📖 重新讀取目前檔案</button>
     <button class="btn" id="sampleBtn">重新載入範例棋譜</button>
   </section>
 
   <section class="block">
-    <h3>2. 貼上 SGF 文字（備用）</h3>
+    <h3>貼上 SGF 文字（備用）</h3>
     <textarea id="sgfText" placeholder="貼上完整 SGF，例如 (;GM[1]FF[4]SZ[19]...)"></textarea>
     <button class="btn primary" id="loadTextBtn">載入貼上的 SGF</button>
   </section>
@@ -155,7 +154,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 </aside>
 </section>
 
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-006</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-007 Ultimate</span></footer>
 </div>
 
 <script>
@@ -169,13 +168,11 @@ function log(line){
   el.textContent+=(el.textContent?"\n":"")+line;
   el.scrollTop=el.scrollHeight;
 }
-
 var selectedFile=null;
-var inputEl=id("sgfFile");
 
 var SAMPLE={
  size:19,
- meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-006 範例棋譜",km:"6.5",ha:"0"},
+ meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-007 Ultimate 範例棋譜",km:"6.5",ha:"0"},
  setup:[],
  moves:[
   {c:1,x:15,y:3,comment:"黑棋右上角小目"},
@@ -190,23 +187,6 @@ var SAMPLE={
   {c:-1,x:13,y:3,comment:"白棋應對"}
  ]
 };
-
-function captureSelectedFile(source){
-  try{
-    var f=inputEl.files&&inputEl.files.length?inputEl.files[0]:null;
-    if(f){
-      selectedFile=f;
-      id("selectedFile").classList.add("ok");
-      id("selectedFile").textContent="已鎖定："+f.name+"（"+f.size+" bytes）";
-      setStatus("已鎖定檔案，請按「讀取已選檔案」。",false);
-      log("鎖定成功："+f.name+"｜來源："+source);
-      return true;
-    }
-  }catch(e){
-    log("檢查 input.files 失敗："+e.message);
-  }
-  return false;
-}
 
 function decodeArrayBuffer(buffer){
   var bytes=new Uint8Array(buffer);
@@ -278,8 +258,6 @@ function flattenMainLine(tree){
 function parseSGF(text){
   if(typeof text!=="string")throw new Error("檔案內容無法讀取");
   text=text.replace(/^\uFEFF/,"").trim();
-  log("文字長度："+text.length);
-  log("找到 (; ："+(text.indexOf("(;")>=0?"是":"否"));
   var start=text.indexOf("(");
   if(start<0||text.indexOf("(;",start)<0)throw new Error("這不是有效的 SGF 檔案");
   var parsed=parseTree(text,start),nodes=flattenMainLine(parsed.tree);
@@ -302,7 +280,6 @@ function parseSGF(text){
     if(node.B&&node.B.length){m=coord(node.B[0]);game.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(node,"C","")})}
     else if(node.W&&node.W.length){m=coord(node.W[0]);game.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(node,"C","")})}
   }
-  log("主線節點數："+nodes.length);
   log("解析總手數："+game.moves.length);
   return game;
 }
@@ -388,35 +365,35 @@ function render(){board.setPosition(game,index);id("boardTitle").textContent=gam
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶ 播放"}
 function loadGame(next,label){stop();game=next;index=0;updateMeta();render();setStatus("已載入："+label+"\n棋盤："+game.size+" 路｜總手數："+game.moves.length,false)}
 function play(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))}
-function readFileNow(file){
- if(!file){setStatus("仍未取得 File 物件，請按「重新檢查檔案」。",true);log("沒有 File 物件");return}
- clearLog();log("開始讀檔："+file.name);log("大小："+file.size+" bytes");
+function readFile(file){
+ if(!file){setStatus("Safari 沒有回傳檔案，請重新選擇或改用貼上 SGF。",true);log("沒有 File 物件");return}
+ selectedFile=file;
+ id("selectedFile").classList.add("ok");
+ id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";
+ clearLog();log("開始讀取："+file.name);log("大小："+file.size+" bytes");
  var reader=new FileReader();
  reader.onload=function(){
-  try{var text=decodeArrayBuffer(reader.result);loadGame(parseSGF(text),file.name);log("結果：載入成功")}
-  catch(error){log("錯誤："+error.message);setStatus("載入失敗："+error.message,true)}
+  try{
+   var text=decodeArrayBuffer(reader.result);
+   log("前 80 字："+text.slice(0,80).replace(/\s+/g," "));
+   loadGame(parseSGF(text),file.name);
+   log("結果：載入成功");
+  }catch(error){
+   log("錯誤："+error.message);
+   setStatus("載入失敗："+error.message,true);
+  }
  };
  reader.onerror=function(){log("FileReader 錯誤");setStatus("讀取檔案失敗。",true)};
  reader.readAsArrayBuffer(file);
 }
 
-["change","input"].forEach(function(evt){
-  inputEl.addEventListener(evt,function(){captureSelectedFile(evt)});
+id("sgfFile").addEventListener("change",function(e){
+  var file=e.target.files&&e.target.files[0]?e.target.files[0]:null;
+  readFile(file);
 });
-window.addEventListener("focus",function(){setTimeout(function(){captureSelectedFile("window focus")},150)});
-document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(function(){captureSelectedFile("visibilitychange")},150)});
-setInterval(function(){if(!selectedFile)captureSelectedFile("polling")},500);
-
-id("checkSelectedBtn").addEventListener("click",function(){
-  clearLog();log("手動重新檢查");
-  if(!captureSelectedFile("manual")){
-    setStatus("檔名雖顯示，但瀏覽器尚未提供 File 物件。請再選一次檔案。",true);
-    log("手動檢查仍無 File 物件");
-  }
-});
-id("readSelectedBtn").addEventListener("click",function(){
-  captureSelectedFile("read button");
-  readFileNow(selectedFile);
+id("readAgainBtn").addEventListener("click",function(){
+  var file=id("sgfFile").files&&id("sgfFile").files[0]?id("sgfFile").files[0]:selectedFile;
+  readFile(file);
 });
 id("sampleBtn").addEventListener("click",function(){clearLog();log("重新載入內建範例");loadGame(SAMPLE,"內建範例棋譜")});
 id("loadTextBtn").addEventListener("click",function(){
