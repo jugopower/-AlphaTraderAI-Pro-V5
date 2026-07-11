@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-004 Fix3</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-005</title>
 <style>
 :root{
   --bg:#0e0b08;--panel:#211912;--line:#f2c56b33;--text:#fff8eb;
-  --muted:#d8c7ad;--gold:#f2c56b;--danger:#ef6b63;--ok:#6fd58e
+  --muted:#d8c7ad;--gold:#f2c56b;--danger:#ef6b63;--ok:#70d89a
 }
 *{box-sizing:border-box}
 html{background:var(--bg);-webkit-text-size-adjust:100%}
@@ -18,6 +18,7 @@ body{
   background:radial-gradient(circle at 15% 0,#f2c56b1f,transparent 35%),linear-gradient(160deg,#1b140f,#080605)
 }
 button,input,select,textarea{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
 .app{width:min(1280px,calc(100% - 12px));margin:auto;padding:10px 0 22px}
 .panel{background:#211912ee;border:1px solid var(--line);border-radius:22px;box-shadow:0 16px 45px #0007}
 .top{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;margin-bottom:12px}
@@ -36,7 +37,10 @@ button,input,select,textarea{font:inherit}
 .stage{overflow:hidden;border-radius:18px;background:#d79c50;display:grid;place-items:center}
 #goBoard{width:100%;max-width:920px;display:block}
 .controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.controls button,.btn{min-height:46px;padding:10px 14px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0c;color:var(--text);font-weight:800}
+.controls button,.btn{
+  min-height:46px;padding:10px 14px;border:1px solid #ffffff20;border-radius:12px;
+  background:#ffffff0c;color:var(--text);font-weight:800
+}
 .controls .primary,.btn.primary{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;border:0}
 .timeline{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}
 .timeline input{width:100%;accent-color:var(--gold)}
@@ -44,9 +48,19 @@ button,input,select,textarea{font:inherit}
 .block{background:#ffffff08;border-radius:15px;padding:13px}
 .block+.block{margin-top:10px}
 .block h3{margin:0 0 10px}
-.native-file{display:block;width:100%;padding:12px;border-radius:12px;border:1px solid #ffffff1f;background:#f7d78f;color:#251609;font-weight:700}
+.native-file{
+  display:block;width:100%;padding:12px;border-radius:12px;border:1px solid #ffffff1f;
+  background:#f7d78f;color:#251609;font-weight:700
+}
+.selected{
+  margin:8px 0 0;padding:9px;border-radius:10px;background:#ffffff08;color:var(--muted);
+  overflow-wrap:anywhere
+}
 .btn{display:block;width:100%;margin-top:8px}
-textarea{width:100%;min-height:115px;padding:10px;border-radius:11px;border:1px solid #ffffff1f;background:#130f0c;color:var(--text);resize:vertical}
+textarea{
+  width:100%;min-height:115px;padding:10px;border-radius:11px;border:1px solid #ffffff1f;
+  background:#130f0c;color:var(--text);resize:vertical
+}
 .meta{margin:0}
 .meta div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff12}
 .meta dt{color:var(--muted)}
@@ -66,13 +80,13 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <div class="app">
 <header class="panel top">
   <div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div>
-  <div class="ver">Build002-004 Fix3</div>
+  <div class="ver">Build002-005</div>
 </header>
 
 <section class="panel hero">
-  <div class="gold">IPAD SAFARI 偵錯版</div>
-  <h2>完整顯示讀檔、編碼與 SGF 解析狀態。</h2>
-  <p>選檔後會逐步顯示檔名、大小、解碼方式、是否找到棋盤尺寸、黑白棋步與總手數。</p>
+  <div class="gold">IPAD SAFARI 主動讀取版</div>
+  <h2>選完 SGF，再按一次「讀取已選檔案」。</h2>
+  <p>本版不依賴 iPad Safari 自動觸發讀檔；先選檔，再由按鈕主動讀取，並保留貼上 SGF 備援。</p>
 </section>
 
 <section class="work">
@@ -97,13 +111,15 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 
 <aside class="panel side">
   <section class="block">
-    <h3>選擇 SGF 檔案</h3>
+    <h3>1. 選擇 SGF 檔案</h3>
     <input class="native-file" id="sgfFile" type="file">
+    <p class="selected" id="selectedFile">尚未選擇檔案</p>
+    <button class="btn primary" id="readSelectedBtn">📖 讀取已選檔案</button>
     <button class="btn" id="sampleBtn">重新載入範例棋譜</button>
   </section>
 
   <section class="block">
-    <h3>貼上 SGF 文字</h3>
+    <h3>2. 貼上 SGF 文字（備用）</h3>
     <textarea id="sgfText" placeholder="貼上完整 SGF，例如 (;GM[1]FF[4]SZ[19]...)"></textarea>
     <button class="btn primary" id="loadTextBtn">載入貼上的 SGF</button>
   </section>
@@ -133,28 +149,30 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 
   <section class="block"><h3>本手註解</h3><p class="comment" id="comment">棋譜起始位置。</p></section>
   <section class="block"><h3>系統訊息</h3><p class="status" id="status">正在初始化。</p></section>
-  <section class="block"><h3>讀檔偵錯紀錄</h3><pre class="debug" id="debugLog">尚未選擇檔案。</pre></section>
+  <section class="block"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">尚未讀取檔案。</pre></section>
 </aside>
 </section>
 
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-004 Fix3</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-005</span></footer>
 </div>
 
 <script>
 (function(){
 "use strict";
 function id(name){return document.getElementById(name)}
+function clearLog(){id("debugLog").textContent=""}
 function log(line){
   var el=id("debugLog");
-  if(el.textContent==="尚未選擇檔案。")el.textContent="";
-  el.textContent += (el.textContent ? "\n" : "") + line;
+  if(el.textContent==="尚未讀取檔案。")el.textContent="";
+  el.textContent+=(el.textContent?"\n":"")+line;
   el.scrollTop=el.scrollHeight;
 }
-function clearLog(){id("debugLog").textContent=""}
+
+var selectedFile=null;
 
 var SAMPLE={
  size:19,
- meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-004 Fix3 範例棋譜",km:"6.5",ha:"0"},
+ meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-005 範例棋譜",km:"6.5",ha:"0"},
  setup:[],
  moves:[
   {c:1,x:15,y:3,comment:"黑棋右上角小目"},
@@ -173,27 +191,28 @@ var SAMPLE={
 function decodeArrayBuffer(buffer){
   var bytes=new Uint8Array(buffer);
   log("檔案位元組數："+bytes.length);
+
   if(bytes.length>=2){
     if(bytes[0]===0xFF&&bytes[1]===0xFE){
-      log("偵測編碼：UTF-16 LE（BOM）");
+      log("編碼：UTF-16 LE");
       return new TextDecoder("utf-16le").decode(buffer);
     }
     if(bytes[0]===0xFE&&bytes[1]===0xFF){
-      log("偵測編碼：UTF-16 BE（BOM）");
+      log("編碼：UTF-16 BE");
       return new TextDecoder("utf-16be").decode(buffer);
     }
   }
 
   var utf8=new TextDecoder("utf-8",{fatal:false}).decode(buffer);
   if(utf8.indexOf("(;")>=0){
-    log("偵測編碼：UTF-8");
+    log("編碼：UTF-8");
     return utf8;
   }
 
   try{
     var utf16le=new TextDecoder("utf-16le",{fatal:false}).decode(buffer);
     if(utf16le.indexOf("(;")>=0){
-      log("偵測編碼：UTF-16 LE（推測）");
+      log("編碼：UTF-16 LE（推測）");
       return utf16le;
     }
   }catch(e){}
@@ -201,12 +220,12 @@ function decodeArrayBuffer(buffer){
   try{
     var utf16be=new TextDecoder("utf-16be",{fatal:false}).decode(buffer);
     if(utf16be.indexOf("(;")>=0){
-      log("偵測編碼：UTF-16 BE（推測）");
+      log("編碼：UTF-16 BE（推測）");
       return utf16be;
     }
   }catch(e){}
 
-  log("編碼判斷：使用 UTF-8 備援");
+  log("編碼：UTF-8 備援");
   return utf8;
 }
 
@@ -252,29 +271,37 @@ function parseTree(text,startIndex){
 
   while(i<text.length){
     while(i<text.length&&/\s/.test(text[i]))i++;
+
     if(text[i]===";"){
       var result=parseNode(text,i+1);
       sequence.push(result.props);
       i=result.index;
       continue;
     }
+
     if(text[i]==="("){
       var child=parseTree(text,i);
       children.push(child.tree);
       i=child.index;
       continue;
     }
+
     if(text[i]===")"){i++;break}
     i++;
   }
+
   return{tree:{sequence:sequence,children:children},index:i};
 }
 
-function first(props,key,fallback){return props[key]&&props[key].length?props[key][0]:fallback}
+function first(props,key,fallback){
+  return props[key]&&props[key].length?props[key][0]:fallback;
+}
+
 function coord(value){
   if(!value||value.length<2)return{pass:true,x:-1,y:-1};
   return{pass:false,x:value.charCodeAt(0)-97,y:value.charCodeAt(1)-97};
 }
+
 function flattenMainLine(tree){
   var nodes=tree.sequence.slice(),cursor=tree;
   while(cursor.children&&cursor.children.length){
@@ -299,12 +326,10 @@ function parseSGF(text){
 
   var parsed=parseTree(text,start);
   var nodes=flattenMainLine(parsed.tree);
-  log("主線節點數："+nodes.length);
   if(!nodes.length)throw new Error("找不到 SGF 節點");
 
   var root=nodes[0];
   var size=parseInt(first(root,"SZ","19"),10);
-  log("棋盤尺寸："+size);
   if([9,13,19].indexOf(size)===-1)throw new Error("目前只支援 9、13、19 路");
 
   var game={
@@ -336,6 +361,7 @@ function parseSGF(text){
     }
   }
 
+  log("主線節點數："+nodes.length);
   log("解析總手數："+game.moves.length);
   return game;
 }
@@ -384,92 +410,188 @@ Board.prototype.setPosition=function(game,index){
 };
 Board.prototype.resize=function(){
  var width=Math.max(280,Math.min(this.canvas.parentElement.clientWidth||700,920)),dpr=Math.max(1,window.devicePixelRatio||1);
- this.canvas.style.width=width+"px";this.canvas.style.height=width+"px";this.canvas.width=Math.round(width*dpr);this.canvas.height=Math.round(width*dpr);
+ this.canvas.style.width=width+"px";this.canvas.style.height=width+"px";
+ this.canvas.width=Math.round(width*dpr);this.canvas.height=Math.round(width*dpr);
  this.ctx.setTransform(dpr,0,0,dpr,0,0);this.width=width;this.draw();
 };
 Board.prototype.draw=function(){
  if(!this.width)return;
  var ctx=this.ctx,pad=this.width*.065,min=pad,max=this.width-pad,cell=(max-min)/(this.size-1);
- var wood=ctx.createLinearGradient(0,0,this.width,this.width);wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");
+ var wood=ctx.createLinearGradient(0,0,this.width,this.width);
+ wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");
  ctx.fillStyle=wood;ctx.fillRect(0,0,this.width,this.width);
+
  ctx.strokeStyle="#3e2a17";ctx.lineWidth=Math.max(1,this.width/720);
- for(var i=0;i<this.size;i++){var p=min+i*cell;ctx.beginPath();ctx.moveTo(min,p);ctx.lineTo(max,p);ctx.stroke();ctx.beginPath();ctx.moveTo(p,min);ctx.lineTo(p,max);ctx.stroke()}
- var stars=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];ctx.fillStyle="#332110";
- for(i=0;i<stars.length;i++)for(var j=0;j<stars.length;j++){if(this.size===9&&(stars[i]===4||stars[j]===4)&&!(stars[i]===4&&stars[j]===4))continue;ctx.beginPath();ctx.arc(min+stars[i]*cell,min+stars[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);ctx.fill()}
+ for(var i=0;i<this.size;i++){
+   var p=min+i*cell;
+   ctx.beginPath();ctx.moveTo(min,p);ctx.lineTo(max,p);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(p,min);ctx.lineTo(p,max);ctx.stroke();
+ }
+
+ var stars=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];
+ ctx.fillStyle="#332110";
+ for(i=0;i<stars.length;i++)for(var j=0;j<stars.length;j++){
+   if(this.size===9&&(stars[i]===4||stars[j]===4)&&!(stars[i]===4&&stars[j]===4))continue;
+   ctx.beginPath();ctx.arc(min+stars[i]*cell,min+stars[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);ctx.fill();
+ }
+
  var radius=cell*.465;
  for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){
-  var stone=this.grid[y][x];if(!stone)continue;
-  var cx=min+x*cell,cy=min+y*cell;drawStone(ctx,cx,cy,radius,stone.c);
-  if(id("showNumbers").checked&&stone.n!==null){ctx.fillStyle=stone.c===1?"#fff":"#25180c";ctx.font="700 "+Math.max(10,radius*.7)+"px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(stone.n),cx,cy)}
+   var stone=this.grid[y][x];if(!stone)continue;
+   var cx=min+x*cell,cy=min+y*cell;
+   drawStone(ctx,cx,cy,radius,stone.c);
+
+   if(id("showNumbers").checked&&stone.n!==null){
+     ctx.fillStyle=stone.c===1?"#fff":"#25180c";
+     ctx.font="700 "+Math.max(10,radius*.7)+"px sans-serif";
+     ctx.textAlign="center";ctx.textBaseline="middle";
+     ctx.fillText(String(stone.n),cx,cy);
+   }
  }
- if(id("showLast").checked&&this.last){ctx.strokeStyle="#ef3e36";ctx.lineWidth=Math.max(2,radius*.09);ctx.beginPath();ctx.arc(min+this.last.x*cell,min+this.last.y*cell,radius*.76,0,Math.PI*2);ctx.stroke()}
+
+ if(id("showLast").checked&&this.last){
+   ctx.strokeStyle="#ef3e36";
+   ctx.lineWidth=Math.max(2,radius*.09);
+   ctx.beginPath();ctx.arc(min+this.last.x*cell,min+this.last.y*cell,radius*.76,0,Math.PI*2);ctx.stroke();
+ }
 };
+
 function drawStone(ctx,cx,cy,radius,color){
- ctx.save();ctx.shadowColor="#0007";ctx.shadowBlur=radius*.3;ctx.shadowOffsetX=radius*.12;ctx.shadowOffsetY=radius*.15;
+ ctx.save();
+ ctx.shadowColor="#0007";ctx.shadowBlur=radius*.3;
+ ctx.shadowOffsetX=radius*.12;ctx.shadowOffsetY=radius*.15;
+
  var g=ctx.createRadialGradient(cx-radius*.32,cy-radius*.36,radius*.05,cx,cy,radius);
- if(color===1){g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");g.addColorStop(.72,"#080808");g.addColorStop(1,"#000")}
- else{g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297")}
+ if(color===1){
+   g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");
+   g.addColorStop(.72,"#080808");g.addColorStop(1,"#000");
+ }else{
+   g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");
+   g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297");
+ }
  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.fill();ctx.restore();
 }
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null;
-function setStatus(text,error){id("status").style.color=error?"var(--danger)":"var(--gold)";id("status").textContent=text}
-function updateMeta(){id("pb").textContent=game.meta.pb;id("pw").textContent=game.meta.pw;id("re").textContent=game.meta.re;id("dt").textContent=game.meta.dt;id("ev").textContent=game.meta.ev;id("km").textContent=game.meta.km;id("ha").textContent=game.meta.ha;id("totalMoves").textContent=String(game.moves.length)}
-function render(){board.setPosition(game,index);id("boardTitle").textContent=game.size+" 路棋盤";id("moveBadge").textContent="第 "+index+" 手";id("moveRange").max=game.moves.length;id("moveRange").value=index;id("counter").textContent=index+" / "+game.moves.length;id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。"}
-function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶ 播放"}
-function loadGame(next,label){stop();game=next;index=0;updateMeta();render();setStatus("已載入："+label+"\n棋盤："+game.size+" 路｜總手數："+game.moves.length,false)}
-function play(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))}
-function readFile(file){
- if(!file)return;
- clearLog();
- log("檔名："+file.name);
- log("檔案大小："+file.size+" bytes");
- log("MIME："+(file.type||"未提供"));
- setStatus("正在讀取："+file.name,false);
 
- var reader=new FileReader();
- reader.onloadstart=function(){log("FileReader：開始讀取")};
- reader.onprogress=function(e){if(e.lengthComputable)log("FileReader：進度 "+Math.round(e.loaded/e.total*100)+"%")};
- reader.onload=function(){
-  log("FileReader：讀取完成");
-  try{
-   var text=decodeArrayBuffer(reader.result);
-   log("前 80 字："+text.slice(0,80).replace(/\s+/g," "));
-   loadGame(parseSGF(text),file.name);
-   log("結果：載入成功");
-  }catch(error){
-   log("結果：載入失敗");
-   log("錯誤："+error.message);
-   setStatus("載入失敗："+error.message+"\n請把偵錯紀錄截圖給我。",true);
+function setStatus(text,error){
+  id("status").style.color=error?"var(--danger)":"var(--gold)";
+  id("status").textContent=text;
+}
+function updateMeta(){
+  id("pb").textContent=game.meta.pb;
+  id("pw").textContent=game.meta.pw;
+  id("re").textContent=game.meta.re;
+  id("dt").textContent=game.meta.dt;
+  id("ev").textContent=game.meta.ev;
+  id("km").textContent=game.meta.km;
+  id("ha").textContent=game.meta.ha;
+  id("totalMoves").textContent=String(game.moves.length);
+}
+function render(){
+  board.setPosition(game,index);
+  id("boardTitle").textContent=game.size+" 路棋盤";
+  id("moveBadge").textContent="第 "+index+" 手";
+  id("moveRange").max=game.moves.length;
+  id("moveRange").value=index;
+  id("counter").textContent=index+" / "+game.moves.length;
+  id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
+}
+function stop(){
+  if(timer)clearInterval(timer);
+  timer=null;
+  id("playBtn").textContent="▶ 播放";
+}
+function loadGame(next,label){
+  stop();game=next;index=0;updateMeta();render();
+  setStatus("已載入："+label+"\n棋盤："+game.size+" 路｜總手數："+game.moves.length,false);
+}
+function play(){
+  if(timer){stop();return}
+  if(index>=game.moves.length)index=0;
+  id("playBtn").textContent="⏸ 暫停";
+  timer=setInterval(function(){
+    if(index>=game.moves.length){stop();return}
+    index++;render();
+  },parseInt(id("speed").value,10));
+}
+function readFileNow(file){
+  if(!file){
+    setStatus("請先選擇 SGF 檔案。",true);
+    log("沒有可讀取的檔案");
+    return;
   }
- };
- reader.onerror=function(){
-  log("FileReader 錯誤："+(reader.error&&reader.error.message?reader.error.message:"未知錯誤"));
-  setStatus("讀取檔案失敗",true);
- };
- reader.onabort=function(){log("FileReader：讀取已中止")};
- reader.readAsArrayBuffer(file);
+
+  clearLog();
+  log("開始主動讀檔");
+  log("檔名："+file.name);
+  log("大小："+file.size+" bytes");
+  log("MIME："+(file.type||"未提供"));
+  setStatus("正在讀取："+file.name,false);
+
+  var reader=new FileReader();
+  reader.onloadstart=function(){log("FileReader：開始")};
+  reader.onload=function(){
+    log("FileReader：完成");
+    try{
+      var text=decodeArrayBuffer(reader.result);
+      log("前 80 字："+text.slice(0,80).replace(/\s+/g," "));
+      var parsed=parseSGF(text);
+      loadGame(parsed,file.name);
+      log("結果：載入成功");
+    }catch(error){
+      log("結果：載入失敗");
+      log("錯誤："+error.message);
+      setStatus("載入失敗："+error.message+"\n請把讀檔紀錄截圖給我。",true);
+    }
+  };
+  reader.onerror=function(){
+    log("FileReader 錯誤："+(reader.error&&reader.error.message?reader.error.message:"未知錯誤"));
+    setStatus("讀取檔案失敗。",true);
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 id("sgfFile").addEventListener("change",function(event){
- log("change 事件：已觸發");
- var file=event.target.files&&event.target.files[0];
- if(!file){
-  log("change 事件：沒有取得檔案");
-  setStatus("沒有取得檔案。",true);
-  return;
- }
- readFile(file);
- event.target.value="";
+  selectedFile=event.target.files&&event.target.files[0]?event.target.files[0]:null;
+  if(selectedFile){
+    id("selectedFile").textContent="已選擇："+selectedFile.name+"（"+selectedFile.size+" bytes）";
+    setStatus("已選擇檔案，請按「讀取已選檔案」。",false);
+  }else{
+    id("selectedFile").textContent="尚未選擇檔案";
+    setStatus("沒有取得檔案。",true);
+  }
 });
-id("sampleBtn").addEventListener("click",function(){clearLog();log("重新載入內建範例");loadGame(SAMPLE,"內建範例棋譜")});
+
+id("readSelectedBtn").addEventListener("click",function(){
+  var current=id("sgfFile").files&&id("sgfFile").files[0]?id("sgfFile").files[0]:selectedFile;
+  readFileNow(current);
+});
+
+id("sampleBtn").addEventListener("click",function(){
+  clearLog();log("重新載入內建範例");
+  loadGame(SAMPLE,"內建範例棋譜");
+});
+
 id("loadTextBtn").addEventListener("click",function(){
- clearLog();
- var text=id("sgfText").value.trim();
- if(!text){setStatus("請先貼上 SGF 文字。",true);log("貼上 SGF：空白");return}
- try{log("貼上文字長度："+text.length);loadGame(parseSGF(text),"貼上的 SGF");log("結果：載入成功")}
- catch(error){log("結果：載入失敗");log("錯誤："+error.message);setStatus("載入失敗："+error.message,true)}
+  clearLog();
+  var text=id("sgfText").value.trim();
+  if(!text){
+    setStatus("請先貼上 SGF 文字。",true);
+    log("貼上內容為空白");
+    return;
+  }
+  try{
+    log("貼上文字長度："+text.length);
+    loadGame(parseSGF(text),"貼上的 SGF");
+    log("結果：載入成功");
+  }catch(error){
+    log("結果：載入失敗");
+    log("錯誤："+error.message);
+    setStatus("載入失敗："+error.message,true);
+  }
 });
+
 id("firstBtn").addEventListener("click",function(){stop();index=0;render()});
 id("prevBtn").addEventListener("click",function(){stop();index=Math.max(0,index-1);render()});
 id("nextBtn").addEventListener("click",function(){stop();index=Math.min(game.moves.length,index+1);render()});
