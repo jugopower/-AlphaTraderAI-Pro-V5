@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-011 Stable</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-012 Alignment Fix</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-011 Stable: display-only refinements */
+/* Build002-012 Alignment Fix: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -37,15 +37,20 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
   #playBtn{grid-column:span 2}
 }
 
+
+/* Build002-012 Alignment Fix */
+.stage{padding:0}
+#goBoard{touch-action:manipulation}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-011</div></header>
+<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-012</div></header>
 <section class="panel hero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>穩定版：保留已驗證的 SGF 讀檔核心，只調整顯示比例。</h2>
-<p>以 Build002-009 的穩定讀檔流程為基礎，修正棋子重疊、三位數手順與最新一手標記。</p>
+<h2>Alignment Fix：修正棋子大小與交叉點對齊。</h2>
+<p>棋子中心與格線共用同一套座標；iPad 視窗縮放後會重新計算並對齊交叉點。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
 
@@ -76,7 +81,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <label class="opt"><span>顯示手順</span><input id="showNumbers" type="checkbox" checked></label>
 <label class="opt"><span>最新一手紅圈</span><input id="showLast" type="checkbox" checked></label>
 <label class="opt"><span>只顯示最後 30 手</span><input id="recentOnly" type="checkbox"></label>
-<label class="opt"><span>棋子大小</span><select id="stoneScale"><option value="0.82">小</option><option value="0.88" selected>標準</option><option value="0.93">大</option></select></label>
+<label class="opt"><span>棋子大小</span><select id="stoneScale"><option value="0.38">小</option><option value="0.42" selected>標準</option><option value="0.46">大</option></select></label>
 <label class="opt"><span>速度</span><select id="speed"><option value="1500">慢</option><option value="850" selected>正常</option><option value="400">快</option></select></label>
 </section>
 
@@ -85,7 +90,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <section class="block"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-011 Stable</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-012 Alignment Fix</span></footer>
 </div>
 
 <script>
@@ -95,7 +100,7 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-011 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-012 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -155,7 +160,7 @@ function parseSGF(text){
 
 function Board(canvas){
  this.canvas=canvas;this.ctx=canvas.getContext("2d");this.size=19;this.grid=this.empty(19);this.last=null;this.width=0;
- this.resize=this.resize.bind(this);window.addEventListener("resize",this.resize);this.resize();
+ this.resize=this.resize.bind(this);window.addEventListener("resize",this.resize);window.addEventListener("orientationchange",this.resize);if(window.visualViewport)window.visualViewport.addEventListener("resize",this.resize);this.resize();
 }
 Board.prototype.empty=function(n){var a=[];for(var y=0;y<n;y++)a.push(new Array(n).fill(null));return a};
 Board.prototype.inside=function(x,y){return x>=0&&y>=0&&x<this.size&&y<this.size};
@@ -163,13 +168,13 @@ Board.prototype.nei=function(x,y){var a=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],r=[];f
 Board.prototype.group=function(x,y){var s=this.grid[y][x],st=[[x,y]],seen={},grp=[],lib={};while(st.length){var p=st.pop(),k=p[0]+","+p[1];if(seen[k])continue;seen[k]=1;grp.push(p);var n=this.nei(p[0],p[1]);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(!q)lib[n[i][0]+","+n[i][1]]=1;else if(q.c===s.c&&!seen[n[i][0]+","+n[i][1]])st.push(n[i])}}return{group:grp,lib:lib}};
 Board.prototype.apply=function(m,num){if(!m||m.pass||!this.inside(m.x,m.y)){this.last=null;return}this.grid[m.y][m.x]={c:m.c,n:num};var n=this.nei(m.x,m.y);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(q&&q.c===-m.c){var r=this.group(n[i][0],n[i][1]);if(!Object.keys(r.lib).length)for(var j=0;j<r.group.length;j++)this.grid[r.group[j][1]][r.group[j][0]]=null}}this.last={x:m.x,y:m.y}};
 Board.prototype.position=function(g,k){this.size=g.size;this.grid=this.empty(g.size);this.last=null;g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);for(var i=0;i<k;i++)this.apply(g.moves[i],i+1);this.draw()};
-Board.prototype.resize=function(){var w=Math.max(280,Math.min(this.canvas.parentElement.clientWidth||700,920)),d=Math.max(1,window.devicePixelRatio||1);this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);this.ctx.setTransform(d,0,0,d,0,0);this.width=w;this.draw()};
+Board.prototype.resize=function(){var w=Math.max(280,Math.min(this.canvas.parentElement.clientWidth||700,920)),d=Math.max(1,window.devicePixelRatio||1);this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);this.ctx.setTransform(d,0,0,d,0,0);this.dpr=d;this.width=w;this.draw()};
 Board.prototype.draw=function(){
- if(!this.width)return;var c=this.ctx,pad=this.width*.065,min=pad,max=this.width-pad,cell=(max-min)/(this.size-1),wood=c.createLinearGradient(0,0,this.width,this.width);
+ if(!this.width)return;var c=this.ctx,pad=this.width*.065,min=pad,max=this.width-pad,cell=(max-min)/(this.size-1),d=this.dpr||1,snap=function(v){return Math.round(v*d)/d},wood=c.createLinearGradient(0,0,this.width,this.width);
  wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");c.fillStyle=wood;c.fillRect(0,0,this.width,this.width);c.strokeStyle="#3e2a17";c.lineWidth=Math.max(1,this.width/720);
- for(var i=0;i<this.size;i++){var p=min+i*cell;c.beginPath();c.moveTo(min,p);c.lineTo(max,p);c.stroke();c.beginPath();c.moveTo(p,min);c.lineTo(p,max);c.stroke()}
- var st=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];c.fillStyle="#332110";for(i=0;i<st.length;i++)for(var j=0;j<st.length;j++){if(this.size===9&&(st[i]===4||st[j]===4)&&!(st[i]===4&&st[j]===4))continue;c.beginPath();c.arc(min+st[i]*cell,min+st[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);c.fill()}
- var scale=parseFloat(id("stoneScale").value||"0.88");var r=cell*scale;for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=min+x*cell,cy=min+y*cell,gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();if(id("showNumbers").checked&&s.n!==null){
+ for(var i=0;i<this.size;i++){var p=snap(min+i*cell);c.beginPath();c.moveTo(snap(min),p);c.lineTo(snap(max),p);c.stroke();c.beginPath();c.moveTo(p,snap(min));c.lineTo(p,snap(max));c.stroke()}
+ var st=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];c.fillStyle="#332110";for(i=0;i<st.length;i++)for(var j=0;j<st.length;j++){if(this.size===9&&(st[i]===4||st[j]===4)&&!(st[i]===4&&st[j]===4))continue;c.beginPath();c.arc(snap(min+st[i]*cell),snap(min+st[j]*cell),Math.max(2.5,cell*.075),0,Math.PI*2);c.fill()}
+ var scale=parseFloat(id("stoneScale").value||"0.42");var r=cell*scale;for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=snap(min+x*cell),cy=snap(min+y*cell),gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();if(id("showNumbers").checked&&s.n!==null){
  var showNum=true;
  if(id("recentOnly").checked){
    var cutoff=Math.max(1,index-29);
@@ -184,7 +189,7 @@ Board.prototype.draw=function(){
    c.fillText(String(s.n),cx,cy);
  }
 }}
- if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(min+this.last.x*cell,min+this.last.y*cell,r*.76,0,Math.PI*2);c.stroke()}
+ if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(snap(min+this.last.x*cell),snap(min+this.last.y*cell),r*.76,0,Math.PI*2);c.stroke()}
 };
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null;
@@ -202,7 +207,7 @@ id("firstBtn").onclick=function(){stop();index=0;render()};id("prevBtn").onclick
 id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
 id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("showNumbers").onchange=render;id("showLast").onchange=render;id("recentOnly").onchange=render;id("stoneScale").onchange=render;
 
-log("Stable：保留 Build002-009 讀檔核心，僅套用安全顯示優化");
+log("Alignment Fix：棋子半徑已修正，棋子中心與交叉點採同一座標");
 load(SAMPLE,"內建範例棋譜");
 })();
 </script>
