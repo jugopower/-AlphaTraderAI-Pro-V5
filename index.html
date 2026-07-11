@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-020 Ultimate Stable UI</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-020 Fix1 Clean Toolbar</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-020 Ultimate Stable UI: display-only refinements */
+/* Build002-020 Fix1 Clean Toolbar: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-020 Ultimate Stable UI */
+/* Build002-020 Fix1 Clean Toolbar */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -49,7 +49,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 #goBoard{margin-left:auto;margin-right:auto;display:block}
 #customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
 
-/* Build002-020 Ultimate Stable UI */
+/* Build002-020 Fix1 Clean Toolbar */
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -88,7 +88,7 @@ body{
 }
 
 
-/* Build002-020 Ultimate Stable UI */
+/* Build002-020 Fix1 Clean Toolbar */
 .compactbar{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto auto;
@@ -189,7 +189,7 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
 }
 
 
-/* Build002-020 Ultimate Stable UI */
+/* Build002-020 Fix1 Clean Toolbar */
 html{
   scroll-behavior:auto!important;
   overflow-anchor:none;
@@ -227,7 +227,7 @@ body.view-switching *{
 }
 
 
-/* Build002-020 Ultimate Stable UI */
+/* Build002-020 Fix1 Clean Toolbar */
 html,body{
   height:100%;
   overflow:hidden;
@@ -408,7 +408,7 @@ footer{display:none!important}
 }
 
 
-/* Build002-020 Ultimate Stable UI */
+/* Build002-020 Fix1 Clean Toolbar */
 .compactbar{
   min-height:42px!important;
   padding:4px 7px!important;
@@ -538,7 +538,7 @@ body.board-focus .timeline{
 }
 
 
-/* Build002-020 Ultimate Stable UI */
+/* Build002-020 Fix1 Clean Toolbar */
 .stableToolbar{
   position:fixed;
   top:calc(env(safe-area-inset-top,0px) + 8px);
@@ -636,6 +636,46 @@ body.board-focus .boardbox{
   }
 }
 
+
+/* Build002-020 Fix1 Clean Toolbar */
+.compactbar{
+  grid-template-columns:minmax(0,1fr)!important;
+  min-height:36px!important;
+  padding:3px 8px!important;
+}
+#toggleInfoBtn,
+#viewMode,
+#focusBtn{
+  display:none!important;
+}
+.compactTitle{
+  text-align:center;
+  align-items:center;
+}
+.stableToolbar{
+  top:calc(env(safe-area-inset-top,0px) + 6px);
+}
+.stableToolbar #stableMenuBtn{
+  display:none!important;
+}
+.rescueBtn{
+  width:38px!important;
+  height:38px!important;
+  font-size:18px!important;
+  opacity:.72;
+}
+body:not(.stable-layout-error) .rescueBtn{
+  opacity:.28;
+}
+body:not(.stable-layout-error) .rescueBtn:active{
+  opacity:1;
+}
+@media (orientation:landscape){
+  .compactbar{
+    display:none!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -663,7 +703,7 @@ body.board-focus .boardbox{
 </section>
 <section class="panel hero legacyHero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Ultimate Stable UI：永久工具列、一鍵還原、控制鍵永不消失。</h2>
+<h2>Fix1 Clean Toolbar：移除重複功能鍵，保留單一清楚工具列。</h2>
 <p>加入永久工具列與緊急恢復機制；橫直旋轉、模式切換與全螢幕後都能立即回復正常版面。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
@@ -714,7 +754,7 @@ body.board-focus .boardbox{
 <section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-020 Ultimate Stable UI</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-020 Fix1 Clean Toolbar</span></footer>
 </div>
 
 <script>
@@ -1007,7 +1047,7 @@ id("rescueBtn").addEventListener("click",restoreStableLayout);
 function layoutHealthCheck(){
  var boardEl=id("goBoard"),controls=document.querySelector(".controls"),timeline=document.querySelector(".timeline");
  var bad=!boardEl||!controls||!timeline||controls.offsetWidth===0||timeline.offsetWidth===0;
- document.body.classList.toggle("stable-layout-error",!!bad);
+ document.body.classList.toggle("stable-layout-error",!!bad);id("rescueBtn").title=bad?"版面異常：按此恢復":"緊急恢復";
  if(bad){
    forceControlsVisible();
    setTimeout(function(){board.resize();forceControlsVisible()},120);
@@ -1035,7 +1075,7 @@ var savedMode="minimal";
 try{savedMode=localStorage.getItem("goViewMode")||"teaching"}catch(e){};if(["minimal","teaching","full"].indexOf(savedMode)<0)savedMode="teaching"
 applyMode(savedMode);
 
-log("Ultimate Stable UI：永久工具列、緊急恢復與控制鍵健康檢查已啟用");
+log("Fix1 Clean Toolbar：已移除重複資訊、模式下拉與全螢幕按鈕；保留單一工具列");
 if(!userGameLocked){
   load(SAMPLE,"內建範例棋譜","startup");
 }
