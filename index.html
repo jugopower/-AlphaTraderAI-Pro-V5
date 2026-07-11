@@ -2,950 +2,285 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-020 Fix5 Info Drawer Repair</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0806">
+<title>AlphaTraderAI Pro V5.0｜Build003 Ultimate Architecture</title>
 <style>
-:root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
-*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;background:radial-gradient(circle at 15% 0,#f2c56b1f,transparent 35%),linear-gradient(160deg,#1b140f,#080605)}
-button,input,select,textarea{font:inherit}.app{width:min(1280px,calc(100% - 12px));margin:auto;padding:10px 0 24px}
-.panel{background:#211912ee;border:1px solid var(--line);border-radius:22px;box-shadow:0 16px 45px #0007}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;margin-bottom:12px}.top h1{margin:0;font-size:clamp(22px,3vw,34px)}.sub{margin:3px 0 0;color:var(--muted)}
-.ver{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;padding:9px 12px;border-radius:12px;font-weight:900}
-.hero{padding:20px;margin-bottom:12px}.hero h2{margin:6px 0 8px;font-size:clamp(27px,4vw,47px)}.hero p{margin:0;color:var(--muted);line-height:1.5}.gold{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.12em}
-.quick{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.quick a{padding:11px 15px;border-radius:12px;background:var(--gold);color:#26180b;text-decoration:none;font-weight:900}
-.work{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:12px}.boardbox{padding:10px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 4px 9px}.head h2{margin:2px 0 0}.badge{background:var(--gold);color:#251609;border-radius:999px;padding:8px 11px;font-weight:900}
-.stage{overflow:hidden;border-radius:18px;background:#d79c50;display:grid;place-items:center}#goBoard{width:100%;max-width:920px;display:block}
-.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}.controls button,.btn{min-height:46px;padding:10px 14px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0c;color:var(--text);font-weight:900}.controls .primary,.btn.primary{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;border:0}
-.timeline{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}.timeline input{width:100%;accent-color:var(--gold)}
-.side{padding:12px}.block{background:#ffffff08;border-radius:15px;padding:13px}.block+.block{margin-top:10px}.block h3{margin:0 0 10px}.native-file{display:block;width:100%;padding:12px;border-radius:12px;border:1px solid #ffffff1f;background:#f7d78f;color:#251609;font-weight:800}.selected{margin:8px 0 0;padding:9px;border-radius:10px;background:#ffffff08;color:var(--muted);overflow-wrap:anywhere}.selected.ok{color:var(--ok)}.btn{display:block;width:100%;margin-top:8px}
-textarea{width:100%;min-height:110px;padding:10px;border-radius:11px;border:1px solid #ffffff1f;background:#130f0c;color:var(--text);resize:vertical}.meta{margin:0}.meta div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff12}.meta dt{color:var(--muted)}.meta dd{margin:0;text-align:right;max-width:62%;overflow-wrap:anywhere}
-.opt{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:8px 0;color:var(--muted)}.opt input{accent-color:var(--gold)}select{padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20}
-.status,.comment{margin:0;padding:10px;border-radius:11px;background:#ffffff08;line-height:1.5;white-space:pre-wrap}.status{background:#f2c56b14;color:var(--gold)}.debug{margin:0;padding:10px;border-radius:11px;background:#0f0c09;color:#d9e7d9;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;max-height:260px;overflow:auto}
-footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;padding:14px 4px 2px}
-@media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
-@media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
-
-/* Build002-020 Fix5 Info Drawer Repair: display-only refinements */
-.stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
-.controls button{min-width:118px}
-#playBtn{box-shadow:0 8px 22px #d8a74b38}
-@media(max-width:700px){
-  .controls{display:grid;grid-template-columns:repeat(2,1fr)}
-  .controls button{min-width:0}
-  #playBtn{grid-column:span 2}
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-.stage{padding:0}
-#goBoard{touch-action:manipulation}
-
-
-.boardbox{display:flex;flex-direction:column;align-items:center}
-.boardbox .head,.boardbox .controls,.boardbox .timeline{width:100%}
-.stage{width:min(100%,920px);margin-left:auto;margin-right:auto;display:flex;justify-content:center;align-items:center}
-#goBoard{margin-left:auto;margin-right:auto;display:block}
-#customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
-
-/* Build002-020 Fix5 Info Drawer Repair */
 :root{
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
+  --bg:#0b0806;--panel:#1a130e;--panel2:#241a12;--line:#f0c46a38;
+  --text:#fff7e7;--muted:#d7c4a8;--gold:#f0c46a;--danger:#ff6b63;--ok:#6edb95;
+  --safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);
 }
-body{
-  padding-left:var(--safe-left);
-  padding-right:var(--safe-right);
-}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif}
+button,input,select,textarea{font:inherit}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .app{
-  padding-bottom:calc(24px + var(--safe-bottom));
-}
-.stage{
-  width:100%;
-  max-width:none;
-  overflow:visible;
-}
-#goBoard{
-  max-width:none;
-  flex:0 0 auto;
-}
-.boardbox{
-  overflow:visible;
-}
-@media (orientation:landscape){
-  .app{width:min(1500px,calc(100% - 14px))}
-  .work{grid-template-columns:minmax(0,1fr) 360px}
-}
-@media (orientation:portrait){
-  .work{grid-template-columns:1fr}
-  .side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-}
-@media (max-width:700px){
-  .side{grid-template-columns:1fr}
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-.compactbar{
+  height:100dvh;
   display:grid;
-  grid-template-columns:auto minmax(0,1fr) auto auto;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  padding:calc(var(--safe-top) + 6px) calc(var(--safe-right) + 6px) calc(var(--safe-bottom) + 6px) calc(var(--safe-left) + 6px);
+  gap:6px;
+}
+.toolbar{
+  min-height:52px;
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) auto;
   align-items:center;
   gap:8px;
-  padding:9px 10px;
-  margin-bottom:10px;
-  position:sticky;
-  top:calc(var(--safe-top) + 4px);
-  z-index:20;
-  backdrop-filter:blur(14px);
-}
-.compactTitle{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  line-height:1.15;
-}
-.compactTitle strong{
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-.compactTitle span{color:var(--gold);font-size:13px;margin-top:3px}
-.iconBtn,#viewMode{
-  border:1px solid #ffffff20;
-  border-radius:11px;
-  background:#ffffff0c;
-  color:var(--text);
-  min-height:42px;
-  padding:8px 11px;
-  font-weight:800;
-}
-.hero{display:none}
-body.mode-full .hero{display:block}
-body.mode-minimal .side{display:none!important}
-body.mode-minimal .work{grid-template-columns:1fr}
-body.mode-minimal .boardbox{padding:6px}
-body.mode-minimal .boardbox .head{padding:2px 4px 7px}
-body.mode-minimal footer{display:none}
-body.mode-teaching .advancedBlock,
-body.mode-teaching .metaBlock{display:none}
-body.mode-teaching .work{grid-template-columns:minmax(0,1fr) 330px}
-body.mode-full .side{display:block}
-body.info-open.mode-minimal .side{
-  display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  margin-top:10px;
-}
-body.info-open.mode-minimal .advancedBlock{display:none}
-body.board-focus .compactbar,
-body.board-focus .top,
-body.board-focus footer,
-body.board-focus .side,
-body.board-focus .head{display:none!important}
-body.board-focus .app{width:100%;padding:0}
-body.board-focus .work{display:block}
-body.board-focus .boardbox{
-  border:0;
-  border-radius:0;
-  min-height:100dvh;
-  justify-content:center;
-  background:#0b0806;
-  padding:calc(var(--safe-top) + 4px) calc(var(--safe-right) + 4px) calc(var(--safe-bottom) + 4px) calc(var(--safe-left) + 4px);
-}
-body.board-focus .controls,
-body.board-focus .timeline{
-  width:min(920px,96vw);
-}
-body.board-focus .stage{width:min(96vw,calc(100dvh - 190px),1000px)}
-body.board-focus #goBoard{width:100%!important;height:auto!important}
-.work{align-items:start}
-.stage{transition:none}
-@media (orientation:portrait){
-  body.mode-minimal .stage{
-    width:min(96vw,calc(100dvh - 250px),920px);
-  }
-  body.mode-minimal .controls{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-  }
-  body.mode-minimal #playBtn{grid-column:span 2}
-  body.mode-teaching .work{grid-template-columns:1fr}
-  body.mode-teaching .side{display:grid;grid-template-columns:1fr}
-}
-@media (orientation:landscape){
-  body.mode-minimal .stage{
-    width:min(70vw,calc(100dvh - 205px),980px);
-  }
-  body.mode-minimal .boardbox{min-height:calc(100dvh - 90px)}
-  body.mode-teaching .stage{width:min(65vw,calc(100dvh - 210px),920px)}
-  body.mode-full .work{grid-template-columns:minmax(0,1fr) 360px}
-}
-@media(max-width:760px){
-  .compactbar{grid-template-columns:auto minmax(0,1fr) auto}
-  #focusBtn{grid-column:1/-1}
-  body.info-open.mode-minimal .side{grid-template-columns:1fr}
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-html{
-  scroll-behavior:auto!important;
-  overflow-anchor:none;
-}
-body{
-  overflow-anchor:none;
-  overscroll-behavior-y:none;
-}
-.compactbar,.boardbox,.stage,#goBoard,.controls,.timeline{
-  overflow-anchor:none;
-}
-.boardbox{
-  contain:layout paint;
-}
-.stage{
-  position:relative;
-  flex:none;
-}
-#goBoard{
-  position:relative;
-  flex:none;
-}
-button,select,input{
-  scroll-margin:0!important;
-}
-body.view-switching *{
-  transition:none!important;
-  animation:none!important;
-}
-@media (orientation:portrait){
-  .boardbox{min-height:auto}
-}
-@media (orientation:landscape){
-  .boardbox{min-height:auto!important}
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-html,body{
-  height:100%;
-  overflow:hidden;
-}
-body{
-  margin:0;
-}
-.app{
-  width:100%;
-  height:100dvh;
-  max-width:none;
-  padding:calc(var(--safe-top) + 6px) calc(var(--safe-right) + 6px) calc(var(--safe-bottom) + 6px) calc(var(--safe-left) + 6px);
-  display:grid;
-  grid-template-rows:auto minmax(0,1fr);
-  gap:6px;
-}
-.top{
-  margin:0;
-  padding:8px 12px;
-}
-.top .sub,.top .gold{display:none}
-.top h1{font-size:clamp(18px,2.4vw,28px)}
-.compactbar{
-  position:static;
-  margin:0;
   padding:6px 8px;
-  min-height:48px;
+  background:#17100be8;
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 8px 24px #0008;
 }
-.legacyHero{display:none!important}
-.work{
-  min-height:0;
-  height:100%;
-  display:block!important;
+.gameTitle{min-width:0}
+.gameTitle strong,.gameTitle span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gameTitle strong{font-size:16px}
+.gameTitle span{font-size:12px;color:var(--gold);margin-top:2px}
+.toolButtons{display:flex;gap:5px;overflow-x:auto}
+.toolButtons button{
+  min-width:58px;height:40px;padding:3px 7px;border-radius:10px;border:1px solid #ffffff18;
+  background:#ffffff0b;color:var(--text);font-weight:800;font-size:12px
 }
-.boardbox{
-  height:100%;
+.toolButtons button span{display:block;font-size:16px;line-height:17px}
+.main{
   min-height:0;
-  padding:6px;
   display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto auto;
-  align-items:center;
-  overflow:hidden;
+  grid-template-columns:minmax(0,1fr);
 }
-.boardbox .head{
-  width:100%;
-  padding:2px 4px 5px;
-}
-.stage{
-  width:100%;
-  height:100%;
+.boardPanel{
   min-height:0;
-  margin:0 auto;
+  display:grid;
+  grid-template-rows:minmax(0,1fr);
+  background:#120d09;
+  border:1px solid var(--line);
+  border-radius:20px;
   overflow:hidden;
-  display:flex;
-  justify-content:center;
-  align-items:center;
 }
-#goBoard{
-  display:block;
-  max-width:100%;
-  max-height:100%;
+.boardStage{
+  min-width:0;min-height:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:4px;
+}
+#goBoard{display:block;max-width:100%;max-height:100%}
+.controlsPanel{
+  display:grid;
+  grid-template-rows:auto auto;
+  gap:4px;
+  padding:4px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#17100be8;
 }
 .controls{
-  width:100%;
-  display:grid!important;
-  grid-template-columns:repeat(5,minmax(44px,1fr));
-  gap:6px;
-  margin-top:6px;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(48px,1fr));
+  gap:4px;
 }
 .controls button{
-  min-width:0;
-  min-height:44px;
-  height:44px;
-  padding:4px 6px;
-  font-size:20px;
+  height:42px;border-radius:10px;border:1px solid #ffffff18;background:#211810;color:#fff;
+  font-size:20px;font-weight:900
 }
-.controls #playBtn{grid-column:auto!important}
+.controls #playBtn{background:linear-gradient(145deg,#f6d47d,#e1ad42);color:#201307}
 .timeline{
-  width:100%;
-  margin-top:4px;
+  display:grid;
   grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
 }
-.timeline input{height:28px}
+#moveRange{width:100%;accent-color:#e6b34b}
+#counter{min-width:78px;text-align:right;font-size:15px;color:var(--text)}
+.drawerBackdrop{
+  position:fixed;inset:0;background:#0008;z-index:50;display:none
+}
 .drawer{
-  position:fixed;
-  z-index:80;
-  top:calc(var(--safe-top) + 6px);
-  bottom:calc(var(--safe-bottom) + 6px);
-  right:calc(var(--safe-right) + 6px);
-  width:min(360px,92vw);
-  overflow:auto;
-  display:block!important;
-  transform:translateX(calc(100% + 24px));
-  transition:transform .18s ease;
-  box-shadow:0 18px 50px #000b;
-  padding:48px 12px 16px;
+  position:fixed;z-index:60;
+  top:calc(var(--safe-top) + 8px);bottom:calc(var(--safe-bottom) + 8px);
+  right:calc(var(--safe-right) + 8px);width:min(420px,94vw);
+  background:#17100bf5;border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 18px 50px #000c;
+  transform:translateX(calc(100% + 24px));transition:transform .18s ease;
+  overflow:auto;padding:52px 12px 18px
 }
 body.drawer-open .drawer{transform:translateX(0)}
+body.drawer-open .drawerBackdrop{display:block}
 .drawerClose{
-  position:absolute;
-  top:8px;
-  right:8px;
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  border:1px solid #ffffff20;
-  background:#ffffff10;
-  color:var(--text);
-  font-weight:900;
+  position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:10px;
+  border:1px solid #ffffff18;background:#ffffff0c;color:#fff;font-weight:900
 }
-body.drawer-open::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:70;
-  background:#0008;
+.section{
+  background:#231910;border:1px solid #ffffff10;border-radius:14px;padding:12px;margin-bottom:10px
 }
-body.drawer-open .drawer{z-index:90}
-body.mode-minimal .side,
-body.mode-teaching .side,
-body.mode-full .side{
-  display:block!important;
+.section h3{margin:0 0 10px;font-size:18px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.row label{color:var(--muted);min-width:80px}
+.row input[type=file]{max-width:100%}
+.row input,.row select,.row textarea{
+  flex:1;min-width:0;background:#0e0a07;border:1px solid #ffffff18;border-radius:9px;color:#fff;padding:9px
 }
-body.mode-minimal .advancedBlock,
-body.mode-teaching .advancedBlock{display:none}
-body.mode-minimal .metaBlock,
-body.mode-minimal .teachingBlock{display:none}
-body.mode-teaching .metaBlock{display:none}
-body.info-open.mode-minimal .side{display:block!important}
-body.board-focus .top,
-body.board-focus .compactbar,
-body.board-focus footer,
-body.board-focus .head{display:none!important}
-body.board-focus .app{
-  padding:calc(var(--safe-top) + 4px) calc(var(--safe-right) + 4px) calc(var(--safe-bottom) + 4px) calc(var(--safe-left) + 4px);
-  grid-template-rows:minmax(0,1fr);
+.row textarea{min-height:110px;resize:vertical}
+.action{
+  border:0;border-radius:10px;background:linear-gradient(145deg,#f6d47d,#dfaa40);color:#211407;
+  font-weight:900;padding:10px 12px
 }
-body.board-focus .boardbox{
-  min-height:0;
-  height:100%;
-  grid-template-rows:minmax(0,1fr) auto auto;
+.secondary{background:#ffffff0d;color:#fff;border:1px solid #ffffff18}
+.status{
+  white-space:pre-wrap;background:#332311;color:var(--gold);padding:10px;border-radius:10px;line-height:1.45
 }
-body.board-focus .stage{
-  width:100%;
-  height:100%;
-}
-footer{display:none!important}
-
+.metaGrid{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;font-size:14px}
+.metaGrid span:nth-child(odd){color:var(--muted)}
+#debugLog{white-space:pre-wrap;background:#080604;padding:10px;border-radius:10px;max-height:180px;overflow:auto;font:12px/1.45 ui-monospace,monospace}
+.mode-minimal .toolbar .gameTitle{display:none}
+.mode-minimal .toolbar{grid-template-columns:auto;justify-content:center}
+.mode-minimal .toolButtons button[data-hide-minimal="1"]{display:none}
+.mode-teaching .advanced{display:none}
+.board-focus .toolbar{display:none}
+.board-focus .app{grid-template-rows:minmax(0,1fr) auto;padding-top:calc(var(--safe-top) + 3px)}
+.board-focus .boardPanel{border-radius:0}
 @media (orientation:landscape){
-  .app{grid-template-rows:auto minmax(0,1fr)}
-  .top{display:none}
-  .compactbar{min-height:44px}
-  .boardbox{
-    grid-template-rows:minmax(0,1fr) auto auto;
-  }
-  .boardbox .head{display:none}
-  .controls button{
-    min-height:40px;
-    height:40px;
-    font-size:18px;
-  }
-  .timeline{margin-top:2px}
-  .drawer{width:min(330px,42vw)}
+  .app{grid-template-rows:auto minmax(0,1fr) auto}
+  .toolbar{min-height:46px}
+  .toolButtons button{height:36px;min-width:54px}
+  .controls button{height:38px}
+}
+@media (max-width:760px){
+  .toolbar{grid-template-columns:1fr}
+  .toolButtons{justify-content:center}
+  .gameTitle{text-align:center}
+  .toolButtons button{min-width:52px}
 }
-@media (orientation:portrait){
-  .top{display:none}
-  .compactbar{min-height:46px}
-  .boardbox{
-    grid-template-rows:auto minmax(0,1fr) auto auto;
-  }
-}
-@media(max-width:700px){
-  .compactbar{
-    grid-template-columns:auto minmax(0,1fr) auto;
-  }
-  #focusBtn{grid-column:auto}
-  #viewMode{max-width:118px}
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-.compactbar{
-  min-height:42px!important;
-  padding:4px 7px!important;
-  gap:6px!important;
-}
-.iconBtn,#viewMode{
-  min-height:36px!important;
-  height:36px!important;
-  padding:4px 8px!important;
-  font-size:14px!important;
-}
-.boardbox{
-  padding:3px!important;
-  gap:2px!important;
-}
-.boardbox .head{
-  padding:0 3px 3px!important;
-}
-.stage{
-  width:100%!important;
-  height:100%!important;
-  padding:0!important;
-  margin:0!important;
-}
-#goBoard{
-  max-width:98%!important;
-  max-height:98%!important;
-}
-.controls{
-  grid-template-columns:repeat(5,minmax(42px,1fr))!important;
-  gap:4px!important;
-  margin-top:3px!important;
-}
-.controls button{
-  min-height:40px!important;
-  height:40px!important;
-  padding:2px 4px!important;
-  font-size:18px!important;
-  border-radius:10px!important;
-}
-.timeline{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) auto!important;
-  align-items:center!important;
-  column-gap:9px!important;
-  margin-top:2px!important;
-  padding:0 4px 2px!important;
-}
-.timeline input[type="range"]{
-  width:100%!important;
-  height:22px!important;
-  margin:0!important;
-  accent-color:#e6b84e;
-}
-.timeline input[type="range"]::-webkit-slider-runnable-track{
-  height:4px;
-}
-.timeline input[type="range"]::-webkit-slider-thumb{
-  width:20px;
-  height:20px;
-  margin-top:-8px;
-}
-#counter{
-  min-width:74px;
-  text-align:right;
-  white-space:nowrap;
-  font-size:15px;
-}
-body.board-focus .compactbar,
-body.board-focus .top,
-body.board-focus footer,
-body.board-focus .side,
-body.board-focus .head{
-  display:none!important;
-}
-body.board-focus .boardbox{
-  padding:2px!important;
-  grid-template-rows:minmax(0,1fr) auto auto!important;
-}
-body.board-focus #goBoard{
-  max-width:99%!important;
-  max-height:99%!important;
-}
-body.board-focus .controls{
-  width:min(980px,99vw)!important;
-}
-body.board-focus .timeline{
-  width:min(980px,99vw)!important;
-}
-@media (orientation:landscape){
-  .compactbar{min-height:38px!important}
-  .boardbox{
-    grid-template-rows:minmax(0,1fr) auto auto!important;
-  }
-  .controls button{
-    min-height:38px!important;
-    height:38px!important;
-    font-size:17px!important;
-  }
-  #goBoard{
-    max-width:98.5%!important;
-    max-height:98.5%!important;
-  }
-}
-@media (orientation:portrait){
-  .compactbar{min-height:42px!important}
-  .boardbox{
-    grid-template-rows:minmax(0,1fr) auto auto!important;
-  }
-  .boardbox .head{display:none!important}
-  .controls{
-    grid-template-columns:repeat(5,minmax(36px,1fr))!important;
-  }
-  .controls button{
-    min-height:40px!important;
-    height:40px!important;
-    font-size:16px!important;
-  }
-  #goBoard{
-    max-width:98%!important;
-    max-height:98%!important;
-  }
-}
-@media(max-width:650px){
-  .controls button{font-size:15px!important}
-  #counter{font-size:14px;min-width:66px}
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-.stableToolbar{
-  position:fixed;
-  top:calc(env(safe-area-inset-top,0px) + 8px);
-  left:50%;
-  transform:translateX(-50%);
-  z-index:999;
-  display:flex;
-  gap:5px;
-  padding:5px;
-  border-radius:14px;
-  background:#120d09e8;
-  border:1px solid #ffffff20;
-  box-shadow:0 8px 30px #0008;
-  backdrop-filter:blur(14px);
-}
-.stableToolbar button{
-  width:38px;
-  height:38px;
-  min-width:38px;
-  border-radius:10px;
-  border:1px solid #ffffff18;
-  background:#ffffff0d;
-  color:#fff6e5;
-  font-size:18px;
-  font-weight:900;
-  padding:0;
-}
-.stableToolbar button:active{transform:scale(.96)}
-.rescueBtn{
-  position:fixed;
-  right:calc(env(safe-area-inset-right,0px) + 10px);
-  bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
-  z-index:1000;
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  border:1px solid #ffffff20;
-  background:#120d09e8;
-  color:white;
-  box-shadow:0 8px 28px #0009;
-  font-size:22px;
-}
-body.stable-hide-toolbar .stableToolbar{display:flex!important}
-body.stable-layout-error .rescueBtn{
-  animation:rescuePulse 1s infinite alternate;
-}
-@keyframes rescuePulse{from{transform:scale(1)}to{transform:scale(1.1)}}
-
-html,body{overscroll-behavior:none}
-.app,.work,.boardbox,.stage,.controls,.timeline{
-  overflow-anchor:none!important;
-}
-.controls{
-  visibility:visible!important;
-  opacity:1!important;
-}
-.controls button,.timeline,#moveRange,#counter{
-  visibility:visible!important;
-  opacity:1!important;
-}
-body.mode-minimal .controls,
-body.mode-teaching .controls,
-body.mode-full .controls,
-body.board-focus .controls{
-  display:grid!important;
-}
-body.mode-minimal .timeline,
-body.mode-teaching .timeline,
-body.mode-full .timeline,
-body.board-focus .timeline{
-  display:grid!important;
-}
-body.board-focus .stableToolbar{display:flex!important}
-body.board-focus .rescueBtn{display:block!important}
-body.board-focus .compactbar,
-body.board-focus .top,
-body.board-focus .side,
-body.board-focus .head{
-  display:none!important;
-}
-body.board-focus .app{
-  grid-template-rows:minmax(0,1fr)!important;
-}
-body.board-focus .boardbox{
-  grid-template-rows:minmax(0,1fr) auto auto!important;
-}
-@media (orientation:portrait){
-  .stableToolbar{
-    top:calc(env(safe-area-inset-top,0px) + 6px);
-  }
-}
-@media (orientation:landscape){
-  .stableToolbar{
-    top:calc(env(safe-area-inset-top,0px) + 4px);
-  }
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-.compactbar{
-  grid-template-columns:minmax(0,1fr)!important;
-  min-height:36px!important;
-  padding:3px 8px!important;
-}
-#toggleInfoBtn,
-#viewMode,
-#focusBtn{
-  display:none!important;
-}
-.compactTitle{
-  text-align:center;
-  align-items:center;
-}
-.stableToolbar{
-  top:calc(env(safe-area-inset-top,0px) + 6px);
-}
-.stableToolbar #stableMenuBtn{
-  display:none!important;
-}
-.rescueBtn{
-  width:38px!important;
-  height:38px!important;
-  font-size:18px!important;
-  opacity:.72;
-}
-body:not(.stable-layout-error) .rescueBtn{
-  opacity:.28;
-}
-body:not(.stable-layout-error) .rescueBtn:active{
-  opacity:1;
-}
-@media (orientation:landscape){
-  .compactbar{
-    display:none!important;
-  }
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-html,body,.app,.work,.boardbox,.stage,.controls,.timeline{
-  scroll-behavior:auto!important;
-  overflow-anchor:none!important;
-}
-.controls button{
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-  outline:none!important;
-}
-.controls button:focus,
-.controls button:focus-visible,
-.controls button:active{
-  outline:none!important;
-  box-shadow:none!important;
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-.rescueBtn{
-  display:none!important;
-}
-body.stable-layout-error .rescueBtn{
-  display:block!important;
-  right:calc(env(safe-area-inset-right,0px) + 12px)!important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 58px)!important;
-  opacity:1!important;
-}
-.compactTitle{
-  display:flex!important;
-}
-@media (orientation:landscape){
-  .compactbar{
-    display:grid!important;
-    position:fixed!important;
-    left:12px;
-    top:calc(env(safe-area-inset-top,0px) + 8px);
-    z-index:998;
-    width:min(300px,34vw);
-    background:#120d09df;
-    border:1px solid #ffffff18;
-    border-radius:12px;
-  }
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-.stableToolbar{
-  display:flex!important;
-  visibility:visible!important;
-  opacity:1!important;
-  position:fixed!important;
-  left:50%!important;
-  transform:translateX(-50%)!important;
-  top:calc(env(safe-area-inset-top,0px) + 6px)!important;
-  z-index:5000!important;
-  max-width:calc(100vw - 20px)!important;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-  white-space:nowrap!important;
-  padding:5px!important;
-}
-.stableToolbar button{
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:58px!important;
-  min-width:58px!important;
-  height:48px!important;
-  min-height:48px!important;
-  visibility:visible!important;
-  opacity:1!important;
-  gap:1px!important;
-}
-.stableToolbar button span{
-  font-size:18px!important;
-  line-height:20px!important;
-}
-.stableToolbar button small{
-  display:block!important;
-  font-size:10px!important;
-  line-height:12px!important;
-  color:#f6e6c8!important;
-}
-.stableToolbar #stableMenuBtn{
-  display:flex!important;
-}
-.compactbar{
-  display:none!important;
-}
-body.board-focus .stableToolbar,
-body.mode-minimal .stableToolbar,
-body.mode-teaching .stableToolbar,
-body.mode-full .stableToolbar{
-  display:flex!important;
-}
-.controls,
-.timeline{
-  display:grid!important;
-  visibility:visible!important;
-  opacity:1!important;
-}
-.controls button,
-#moveRange,
-#counter{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-}
-.app{
-  padding-top:calc(env(safe-area-inset-top,0px) + 62px)!important;
-}
-body.board-focus .app{
-  padding-top:calc(env(safe-area-inset-top,0px) + 62px)!important;
-}
-@media (orientation:landscape){
-  .stableToolbar{
-    top:calc(env(safe-area-inset-top,0px) + 4px)!important;
-  }
-  .stableToolbar button{
-    width:54px!important;
-    min-width:54px!important;
-    height:44px!important;
-    min-height:44px!important;
-  }
-  .app{
-    padding-top:calc(env(safe-area-inset-top,0px) + 56px)!important;
-  }
-}
-@media (max-width:700px){
-  .stableToolbar button{
-    width:50px!important;
-    min-width:50px!important;
-  }
-  .stableToolbar button small{
-    font-size:9px!important;
-  }
-}
-
-
-/* Build002-020 Fix5 Info Drawer Repair */
-#infoDrawer{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  pointer-events:auto!important;
-  position:fixed!important;
-  top:calc(env(safe-area-inset-top,0px) + 62px)!important;
-  right:calc(env(safe-area-inset-right,0px) + 8px)!important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;
-  width:min(380px,92vw)!important;
-  max-width:92vw!important;
-  transform:translateX(calc(100% + 30px))!important;
-  transition:transform .2s ease!important;
-  z-index:6000!important;
-  overflow:auto!important;
-}
-body.drawer-open #infoDrawer{
-  transform:translateX(0)!important;
-}
-body.drawer-open::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:#0008;
-  z-index:5500;
-}
-#drawerCloseBtn{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  pointer-events:auto!important;
-  z-index:6100!important;
-}
-#stableMenuBtn{
-  pointer-events:auto!important;
-  cursor:pointer!important;
-}
-
 </style>
 </head>
-<body>
-<div class="stableToolbar" id="stableToolbar">
-  <button id="stableMenuBtn" title="資訊"><span>☰</span><small>資訊</small></button>
-  <button id="stableMinimalBtn" title="極簡模式"><span>◫</span><small>極簡</small></button>
-  <button id="stableTeachingBtn" title="教學模式"><span>📖</span><small>教學</small></button>
-  <button id="stableFullBtn" title="專業模式"><span>⚙</span><small>專業</small></button>
-  <button id="stableFocusBtn" title="棋盤全螢幕"><span>⛶</span><small>全螢幕</small></button>
-  <button id="stableRestoreBtn" title="還原版面"><span>↺</span><small>還原</small></button>
-</div>
-<button class="rescueBtn" id="rescueBtn" title="緊急恢復">🛟</button>
-
+<body class="mode-teaching">
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-020</div></header>
-<section class="panel compactbar">
-  <button class="iconBtn" id="toggleInfoBtn">☰ 資訊</button>
-  <div class="compactTitle"><strong id="compactGameName">內建範例棋譜</strong><span id="compactMove">0 / 10</span></div>
-  <select id="viewMode" aria-label="顯示模式">
-    <option value="minimal" selected>極簡模式</option>
-    <option value="teaching">教學模式</option>
-    <option value="full">完整模式</option>
-  </select>
-  <button class="iconBtn" id="focusBtn">⛶ 全螢幕</button>
-</section>
-<section class="panel hero legacyHero">
-<div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Fix5 Info Drawer Repair：資訊按鈕可正常開啟與關閉抽屜。</h2>
-<p>加入永久工具列與緊急恢復機制；橫直旋轉、模式切換與全螢幕後都能立即回復正常版面。</p>
-<div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
-</section>
+  <header class="toolbar">
+    <div class="gameTitle">
+      <strong id="gameName">內建範例棋譜</strong>
+      <span id="gameSummary">19 路｜0 / 10</span>
+    </div>
+    <nav class="toolButtons" aria-label="主要工具">
+      <button id="infoBtn"><span>☰</span>資訊</button>
+      <button id="minimalBtn"><span>◫</span>極簡</button>
+      <button id="teachingBtn"><span>📖</span>教學</button>
+      <button id="professionalBtn"><span>⚙</span>專業</button>
+      <button id="focusBtn"><span>⛶</span>全螢幕</button>
+      <button id="restoreBtn"><span>↺</span>還原</button>
+    </nav>
+  </header>
 
-<section class="work">
-<div class="panel boardbox">
-<div class="head"><div><div class="gold">PREMIUM GO BOARD</div><h2 id="boardTitle">19 路棋盤</h2></div><div class="badge" id="moveBadge">第 0 手</div></div>
-<div class="stage"><canvas id="goBoard"></canvas></div>
-<div class="controls"><button id="firstBtn">⏮</button><button id="prevBtn">◀</button><button id="playBtn" class="primary">▶</button><button id="nextBtn">▶</button><button id="lastBtn">⏭</button></div>
-<div class="timeline"><input id="moveRange" type="range" min="0" max="10" value="0"><span id="counter">0 / 10</span></div>
+  <main class="main">
+    <section class="boardPanel">
+      <div class="boardStage" id="boardStage"><canvas id="goBoard"></canvas></div>
+    </section>
+  </main>
+
+  <footer class="controlsPanel">
+    <div class="controls">
+      <button id="firstBtn" aria-label="第一手">⏮</button>
+      <button id="prevBtn" aria-label="上一手">◀</button>
+      <button id="playBtn" aria-label="播放">▶</button>
+      <button id="nextBtn" aria-label="下一手">▶</button>
+      <button id="lastBtn" aria-label="最後一手">⏭</button>
+    </div>
+    <div class="timeline">
+      <input id="moveRange" type="range" min="0" max="10" value="0">
+      <div id="counter">0 / 10</div>
+    </div>
+  </footer>
 </div>
 
-<aside class="panel side drawer" id="infoDrawer">
-<button class="drawerClose" id="drawerCloseBtn" aria-label="關閉資訊">✕</button>
-<section class="block infoBlock importBlock" id="importBox">
-<h3>選擇 SGF 檔案</h3>
-<input class="native-file" id="sgfFile" type="file">
-<p class="selected" id="selectedFile">尚未選擇檔案</p>
-<button class="btn primary" id="readAgainBtn">📖 重新讀取目前檔案</button>
-<button class="btn" id="sampleBtn">切換至 10 手範例棋譜</button>
-</section>
+<div class="drawerBackdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <button class="drawerClose" id="drawerCloseBtn">✕</button>
 
-<section class="block infoBlock advancedBlock"><h3>貼上 SGF 文字（備用）</h3><textarea id="sgfText" placeholder="貼上完整 SGF，例如 (;GM[1]FF[4]SZ[19]...)"></textarea><button class="btn primary" id="loadTextBtn">載入貼上的 SGF</button></section>
+  <section class="section">
+    <h3>載入 SGF</h3>
+    <div class="row"><input id="sgfFile" type="file" accept=".sgf,application/x-go-sgf,text/plain"></div>
+    <div class="row">
+      <button class="action" id="readAgainBtn">讀取目前檔案</button>
+      <button class="action secondary" id="sampleBtn">10 手範例</button>
+    </div>
+    <div id="selectedFile" class="status">尚未選擇檔案。</div>
+  </section>
 
-<section class="block infoBlock metaBlock"><h3>棋譜資訊</h3><dl class="meta">
-<div><dt>黑方</dt><dd id="pb">—</dd></div><div><dt>白方</dt><dd id="pw">—</dd></div><div><dt>結果</dt><dd id="re">—</dd></div><div><dt>日期</dt><dd id="dt">—</dd></div><div><dt>賽事</dt><dd id="ev">—</dd></div><div><dt>貼目</dt><dd id="km">—</dd></div><div><dt>讓子</dt><dd id="ha">—</dd></div><div><dt>總手數</dt><dd id="totalMoves">10</dd></div>
-</dl></section>
+  <section class="section advanced">
+    <h3>貼上 SGF 文字</h3>
+    <div class="row"><textarea id="sgfText" placeholder="貼上完整 SGF，例如 (;GM[1]FF[4]SZ[19]...)"></textarea></div>
+    <button class="action" id="loadTextBtn">載入貼上的 SGF</button>
+  </section>
 
-<section class="block infoBlock settingsBlock"><h3>顯示／播放</h3>
-<label class="opt"><span>手順顯示</span><select id="numberMode">
-<option value="all" selected>顯示全部</option>
-<option value="none">不顯示</option>
-<option value="10">最近 10 手</option>
-<option value="20">最近 20 手</option>
-<option value="30">最近 30 手</option>
-<option value="50">最近 50 手</option>
-<option value="100">最近 100 手</option>
-<option value="custom">自訂最近手數</option>
-</select></label>
-<label class="opt" id="customNumberRow" style="display:none"><span>最近手數</span><input id="customNumberCount" type="number" min="1" max="999" value="35"></label>
-<label class="opt"><span>最新一手紅圈</span><input id="showLast" type="checkbox" checked></label>
-<label class="opt"><span>棋子大小</span><select id="stoneScale"><option value="0.38">小</option><option value="0.42" selected>標準</option><option value="0.46">大</option></select></label>
-<label class="opt"><span>速度</span><select id="speed"><option value="1500">慢</option><option value="850" selected>正常</option><option value="400">快</option></select></label>
-</section>
+  <section class="section">
+    <h3>顯示設定</h3>
+    <div class="row"><label>手順</label>
+      <select id="numberMode">
+        <option value="all">全部</option>
+        <option value="none">不顯示</option>
+        <option value="10">最近 10 手</option>
+        <option value="20">最近 20 手</option>
+        <option value="30" selected>最近 30 手</option>
+        <option value="50">最近 50 手</option>
+        <option value="100">最近 100 手</option>
+        <option value="custom">自訂</option>
+      </select>
+    </div>
+    <div class="row" id="customNumberRow" style="display:none"><label>自訂手數</label><input id="customNumberCount" type="number" min="1" max="999" value="35"></div>
+    <div class="row"><label>最新一手紅圈</label><input id="showLast" type="checkbox" checked></div>
+    <div class="row"><label>棋子大小</label>
+      <select id="stoneScale">
+        <option value="0.38">小</option>
+        <option value="0.42" selected>標準</option>
+        <option value="0.46">大</option>
+      </select>
+    </div>
+    <div class="row"><label>播放速度</label>
+      <select id="speed">
+        <option value="1200">慢</option>
+        <option value="700" selected>標準</option>
+        <option value="350">快</option>
+      </select>
+    </div>
+  </section>
 
-<section class="block infoBlock teachingBlock"><h3>本手註解</h3><p class="comment" id="comment">棋譜起始位置。</p></section>
-<section class="block infoBlock advancedBlock"><h3>系統訊息</h3><p class="status" id="status">正在初始化。</p></section>
-<section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
+  <section class="section advanced">
+    <h3>棋譜資訊</h3>
+    <div class="metaGrid">
+      <span>黑方</span><span id="pb">—</span>
+      <span>白方</span><span id="pw">—</span>
+      <span>結果</span><span id="re">—</span>
+      <span>日期</span><span id="dt">—</span>
+      <span>賽事</span><span id="ev">—</span>
+      <span>貼目</span><span id="km">—</span>
+      <span>讓子</span><span id="ha">0</span>
+      <span>總手數</span><span id="totalMoves">10</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>本手註解</h3>
+    <div id="comment" class="status">棋譜起始位置。</div>
+  </section>
+
+  <section class="section advanced">
+    <h3>系統訊息</h3>
+    <div id="status" class="status">已載入內建範例棋譜。</div>
+  </section>
+
+  <section class="section advanced">
+    <h3>讀檔紀錄</h3>
+    <div id="debugLog">Build003 Ultimate Architecture 已啟動。</div>
+  </section>
 </aside>
-</section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-020 Fix5 Info Drawer Repair</span></footer>
-</div>
 
 <script>
 (function(){
 "use strict";
 function id(n){return document.getElementById(n)}
-function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
+function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-020 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build003 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -999,24 +334,16 @@ function parseSGF(text){
  var g={size:size,meta:{pb:first(root,"PB","—"),pw:first(root,"PW","—"),re:first(root,"RE","—"),dt:first(root,"DT","—"),ev:first(root,"EV",first(root,"GN","—")),km:first(root,"KM","—"),ha:first(root,"HA","0")},setup:[],moves:[]};
  (root.AB||[]).forEach(function(v){var p=xy(v);g.setup.push({c:1,pass:p.pass,x:p.x,y:p.y})});
  (root.AW||[]).forEach(function(v){var p=xy(v);g.setup.push({c:-1,pass:p.pass,x:p.x,y:p.y})});
- ns.forEach(function(n,idx){var m;if(n.B&&n.B.length){m=xy(n.B[0]);g.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}else if(n.W&&n.W.length){m=xy(n.W[0]);g.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}});
+ ns.forEach(function(n){var m;if(n.B&&n.B.length){m=xy(n.B[0]);g.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}else if(n.W&&n.W.length){m=xy(n.W[0]);g.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}});
  return g;
 }
 
 function Board(canvas){
  this.canvas=canvas;this.ctx=canvas.getContext("2d");this.size=19;this.grid=this.empty(19);this.last=null;this.width=0;
- this.resize=this.resize.bind(this);
- this._resizeTimer=null;
- this.queueResize=function(){
-   clearTimeout(this._resizeTimer);
-   this._resizeTimer=setTimeout(this.resize,140);
- }.bind(this);
+ this.resize=this.resize.bind(this);this.queueResize=this.queueResize.bind(this);
  window.addEventListener("resize",this.queueResize);
  window.addEventListener("orientationchange",this.queueResize);
- if(window.visualViewport){
-   window.visualViewport.addEventListener("resize",this.queueResize);
- }
- this.resize();
+ if(window.visualViewport)window.visualViewport.addEventListener("resize",this.queueResize);
 }
 Board.prototype.empty=function(n){var a=[];for(var y=0;y<n;y++)a.push(new Array(n).fill(null));return a};
 Board.prototype.inside=function(x,y){return x>=0&&y>=0&&x<this.size&&y<this.size};
@@ -1024,364 +351,85 @@ Board.prototype.nei=function(x,y){var a=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],r=[];f
 Board.prototype.group=function(x,y){var s=this.grid[y][x],st=[[x,y]],seen={},grp=[],lib={};while(st.length){var p=st.pop(),k=p[0]+","+p[1];if(seen[k])continue;seen[k]=1;grp.push(p);var n=this.nei(p[0],p[1]);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(!q)lib[n[i][0]+","+n[i][1]]=1;else if(q.c===s.c&&!seen[n[i][0]+","+n[i][1]])st.push(n[i])}}return{group:grp,lib:lib}};
 Board.prototype.apply=function(m,num){if(!m||m.pass||!this.inside(m.x,m.y)){this.last=null;return}this.grid[m.y][m.x]={c:m.c,n:num};var n=this.nei(m.x,m.y);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(q&&q.c===-m.c){var r=this.group(n[i][0],n[i][1]);if(!Object.keys(r.lib).length)for(var j=0;j<r.group.length;j++)this.grid[r.group[j][1]][r.group[j][0]]=null}}this.last={x:m.x,y:m.y}};
 Board.prototype.position=function(g,k){this.size=g.size;this.grid=this.empty(g.size);this.last=null;g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);for(var i=0;i<k;i++)this.apply(g.moves[i],i+1);this.draw()};
+Board.prototype.queueResize=function(){clearTimeout(this._timer);this._timer=setTimeout(this.resize,100)};
 Board.prototype.resize=function(){
- var rect=this.canvas.parentElement.getBoundingClientRect();
- var availableW=Math.max(240,Math.floor(rect.width*.985));
- var availableH=Math.max(240,Math.floor(rect.height*.985));
- var w=Math.max(240,Math.min(availableW,availableH,1100));
+ var rect=id("boardStage").getBoundingClientRect();
+ var w=Math.max(220,Math.floor(Math.min(rect.width,rect.height)*.985));
  var d=Math.max(1,window.devicePixelRatio||1);
- this.canvas.style.width=w+"px";
- this.canvas.style.height=w+"px";
- this.canvas.width=Math.round(w*d);
- this.canvas.height=Math.round(w*d);
- this.ctx.setTransform(d,0,0,d,0,0);
- this.dpr=d;
- this.width=w;
- this.draw();
+ this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";
+ this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);
+ this.ctx.setTransform(d,0,0,d,0,0);this.dpr=d;this.width=w;this.draw();
 };
 Board.prototype.draw=function(){
  if(!this.width)return;var c=this.ctx,d=this.dpr||1,snap=function(v){return Math.round(v*d)/d};
- var outerPad=Math.max(14,this.width*.042);
- var boardPixel=this.width-outerPad*2;
- var min=snap((this.width-boardPixel)/2);
- var max=snap(min+boardPixel);
- var cell=boardPixel/(this.size-1);
- var wood=c.createLinearGradient(0,0,this.width,this.width);
- wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");c.fillStyle=wood;c.fillRect(0,0,this.width,this.width);c.strokeStyle="#3e2a17";c.lineWidth=Math.max(1,this.width/720);
- for(var i=0;i<this.size;i++){var p=snap(min+i*cell);c.beginPath();c.moveTo(snap(min),p);c.lineTo(snap(max),p);c.stroke();c.beginPath();c.moveTo(p,snap(min));c.lineTo(p,snap(max));c.stroke()}
- var st=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];c.fillStyle="#332110";for(i=0;i<st.length;i++)for(var j=0;j<st.length;j++){if(this.size===9&&(st[i]===4||st[j]===4)&&!(st[i]===4&&st[j]===4))continue;c.beginPath();c.arc(snap(min+st[i]*cell),snap(min+st[j]*cell),Math.max(2.5,cell*.075),0,Math.PI*2);c.fill()}
- var scale=parseFloat(id("stoneScale").value||"0.42");var r=cell*scale;for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=snap(min+x*cell),cy=snap(min+y*cell),gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();if(s.n!==null){
- var mode=id("numberMode").value;
- var showNum=mode!=="none";
- if(showNum&&mode!=="all"){
-   var count=mode==="custom"?parseInt(id("customNumberCount").value||"35",10):parseInt(mode,10);
-   count=Math.max(1,isNaN(count)?35:count);
-   var cutoff=Math.max(1,index-count+1);
-   showNum=s.n>=cutoff;
- }
- if(showNum){
-   c.fillStyle=s.c===1?"#fff":"#25180c";
-   var digits=String(s.n).length;
-   var factor=digits>=3?.48:digits===2?.60:.72;
-   c.font="800 "+Math.max(9,r*factor)+"px sans-serif";
-   c.textAlign="center";c.textBaseline="middle";
-   c.fillText(String(s.n),cx,cy);
- }
-}}
+ var outerPad=Math.max(14,this.width*.043),boardPixel=this.width-outerPad*2;
+ var min=snap((this.width-boardPixel)/2),max=snap(min+boardPixel),cell=boardPixel/(this.size-1);
+ var wood=c.createLinearGradient(0,0,this.width,this.width);wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");
+ c.fillStyle=wood;c.fillRect(0,0,this.width,this.width);c.strokeStyle="#3e2a17";c.lineWidth=Math.max(1,this.width/720);
+ for(var i=0;i<this.size;i++){var p=snap(min+i*cell);c.beginPath();c.moveTo(min,p);c.lineTo(max,p);c.stroke();c.beginPath();c.moveTo(p,min);c.lineTo(p,max);c.stroke()}
+ var st=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];c.fillStyle="#332110";
+ for(i=0;i<st.length;i++)for(var j=0;j<st.length;j++){if(this.size===9&&(st[i]===4||st[j]===4)&&!(st[i]===4&&st[j]===4))continue;c.beginPath();c.arc(snap(min+st[i]*cell),snap(min+st[j]*cell),Math.max(2.5,cell*.075),0,Math.PI*2);c.fill()}
+ var scale=parseFloat(id("stoneScale").value||"0.42"),r=cell*scale;
+ for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=snap(min+x*cell),cy=snap(min+y*cell),gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();
+  if(s.n!==null){var mode=id("numberMode").value,show=mode!=="none";if(show&&mode!=="all"){var count=mode==="custom"?parseInt(id("customNumberCount").value||"35",10):parseInt(mode,10);var cutoff=Math.max(1,index-count+1);show=s.n>=cutoff}if(show){c.fillStyle=s.c===1?"#fff":"#25180c";var digits=String(s.n).length,factor=digits>=3?.48:digits===2?.60:.72;c.font="800 "+Math.max(9,r*factor)+"px sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(String(s.n),cx,cy)}}}
  if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(snap(min+this.last.x*cell),snap(min+this.last.y*cell),r*.76,0,Math.PI*2);c.stroke()}
 };
 
-var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userGameLocked=false,currentGameName="內建範例棋譜";
-var currentGameSnapshot={game:SAMPLE,name:"內建範例棋譜",file:null,index:0,userLocked:false};
-var stableView={scrollX:0,scrollY:0,boardTop:0,locked:false,restoreTimer:null};
-function meta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
+var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userLocked=false,currentGameName="內建範例棋譜";
+
+function updateMeta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){
  board.position(game,index);
- id("boardTitle").textContent=game.size+" 路棋盤";
- id("moveBadge").textContent="第 "+index+" 手";
- id("moveRange").max=game.moves.length;
- id("moveRange").value=index;
+ id("moveRange").max=game.moves.length;id("moveRange").value=index;
  id("counter").textContent=index+" / "+game.moves.length;
+ id("gameName").textContent=currentGameName;
+ id("gameSummary").textContent=game.size+" 路｜"+index+" / "+game.moves.length;
  id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
- id("compactMove").textContent=index+" / "+game.moves.length;
- currentGameSnapshot.game=game;
- currentGameSnapshot.name=currentGameName;
- currentGameSnapshot.file=currentFile;
- currentGameSnapshot.index=index;
- currentGameSnapshot.userLocked=userGameLocked;
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
 function load(g,name,source){
- stop();
- game=g;
- index=0;
- currentGameName=name;id("compactGameName").textContent=name;
- currentGameSnapshot={game:game,name:name,file:currentFile,index:index,userLocked:userGameLocked};
- if(source==="user")userGameLocked=true;
- if(source==="sample")userGameLocked=false;
- meta();
- render();
- status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);
- log("解析成功："+g.moves.length+" 手｜目前棋譜："+name);
+ stop();game=g;index=0;currentGameName=name;userLocked=source==="user";
+ updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手｜"+name);
 }
-function read(file){if(!file){status("未取得檔案，請重新選擇。",true);return}currentFile=file;id("selectedFile").classList.add("ok");id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";status("正在讀取："+file.name,false);log("取得檔案："+file.name);var fr=new FileReader();fr.onload=function(){try{load(parseSGF(decode(fr.result)),file.name,"user")}catch(e){status("載入失敗："+e.message,true);log("錯誤："+e.message)}};fr.onerror=function(){status("檔案讀取失敗。",true);log("FileReader Error")};fr.readAsArrayBuffer(file)}
-
-id("sgfFile").addEventListener("change",function(e){read(e.target.files&&e.target.files[0])});
-id("readAgainBtn").addEventListener("click",function(){read((id("sgfFile").files&&id("sgfFile").files[0])||currentFile)});
-id("sampleBtn").addEventListener("click",function(){
- if(userGameLocked&&!confirm("目前已載入使用者棋譜。確定要切換到 10 手範例棋譜嗎？"))return;
- if(userGameLocked){
-   var ok=window.confirm("目前已載入「"+currentGameName+"」。\n確定要切換成 10 手內建範例棋譜嗎？");
-   if(!ok){
-     log("已取消切換範例棋譜，保留目前棋譜："+currentGameName);
-     return;
-   }
- }
- load(SAMPLE,"內建範例棋譜","sample");
-});
-id("loadTextBtn").addEventListener("click",function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF","user")}catch(e){status("載入失敗："+e.message,true)}});
-id("firstBtn").onclick=function(){stop();index=0;render()};id("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
-id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
-id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("numberMode").onchange=function(){id("customNumberRow").style.display=this.value==="custom"?"flex":"none";render()};
-id("customNumberCount").oninput=render;
-id("showLast").onchange=render;
-id("stoneScale").onchange=render;
-
-
-
-
-
-function applyMode(mode){
- document.body.classList.remove("mode-minimal","mode-teaching","mode-full");
+function read(file){
+ if(!file){status("未取得檔案，請重新選擇。",true);return}
+ currentFile=file;id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";
+ var fr=new FileReader();fr.onload=function(){try{load(parseSGF(decode(fr.result)),file.name,"user")}catch(e){status("載入失敗："+e.message,true);log("錯誤："+e.message)}};fr.onerror=function(){status("檔案讀取失敗。",true)};fr.readAsArrayBuffer(file);
+}
+function setMode(mode){
+ document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");
  document.body.classList.add("mode-"+mode);
- id("viewMode").value=mode;
- try{localStorage.setItem("goViewMode",mode)}catch(e){}
- setTimeout(function(){board.resize()},80);
+ try{localStorage.setItem("goMode",mode)}catch(e){}
+ setTimeout(board.resize,60);
 }
-id("viewMode").addEventListener("change",function(){applyMode(this.value)});
-id("toggleInfoBtn").addEventListener("click",function(){
- document.body.classList.add("drawer-open");
-});
+function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
+function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
+function restoreLayout(){closeDrawer();document.body.classList.remove("board-focus");setMode("teaching");stop();requestAnimationFrame(function(){board.resize();render()})}
 
+id("infoBtn").onclick=openDrawer;id("drawerCloseBtn").onclick=closeDrawer;id("drawerBackdrop").onclick=closeDrawer;
+id("minimalBtn").onclick=function(){setMode("minimal")};
+id("teachingBtn").onclick=function(){setMode("teaching")};
+id("professionalBtn").onclick=function(){setMode("professional")};
+id("focusBtn").onclick=function(){document.body.classList.toggle("board-focus");setTimeout(board.resize,60)};
+id("restoreBtn").onclick=restoreLayout;
 
-id("focusBtn").addEventListener("click",function(){
- document.body.classList.toggle("board-focus");
- this.textContent=document.body.classList.contains("board-focus")?"✕":"⛶ 全螢幕";
- setTimeout(function(){board.resize()},100);
-});
-id("goBoard").addEventListener("dblclick",function(){
- document.body.classList.toggle("board-focus");
- id("focusBtn").textContent=document.body.classList.contains("board-focus")?"✕":"⛶ 全螢幕";
- setTimeout(function(){board.resize()},100);
-});
+id("sgfFile").onchange=function(e){read(e.target.files&&e.target.files[0])};
+id("readAgainBtn").onclick=function(){read((id("sgfFile").files&&id("sgfFile").files[0])||currentFile)};
+id("sampleBtn").onclick=function(){if(userLocked&&!confirm("目前已載入使用者棋譜。確定切換到 10 手範例嗎？"))return;load(SAMPLE,"內建範例棋譜","sample")};
+id("loadTextBtn").onclick=function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF","user")}catch(e){status("載入失敗："+e.message,true)}};
 
+id("firstBtn").onclick=function(){stop();index=0;render()};
+id("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};
+id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};
+id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
+id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
+id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};
+id("numberMode").onchange=function(){id("customNumberRow").style.display=this.value==="custom"?"flex":"none";render()};
+id("customNumberCount").oninput=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
 
-
-var resizeObserver=new ResizeObserver(function(){board.queueResize()});
-resizeObserver.observe(id("goBoard").parentElement);
-
-
-var fixedBoardAnchor={top:0,left:0,scrollX:0,scrollY:0};
-
-function captureBoardAnchor(){
- var r=id("goBoard").getBoundingClientRect();
- fixedBoardAnchor.top=r.top;
- fixedBoardAnchor.left=r.left;
- fixedBoardAnchor.scrollX=window.scrollX||0;
- fixedBoardAnchor.scrollY=window.scrollY||0;
-}
-
-function restoreBoardAnchor(){
- var boardEl=id("goBoard");
- if(!boardEl)return;
- var r=boardEl.getBoundingClientRect();
- var dy=r.top-fixedBoardAnchor.top;
- var dx=r.left-fixedBoardAnchor.left;
- if(Math.abs(dy)>.5||Math.abs(dx)>.5){
-   window.scrollTo(fixedBoardAnchor.scrollX+dx,fixedBoardAnchor.scrollY+dy);
- }else{
-   window.scrollTo(fixedBoardAnchor.scrollX,fixedBoardAnchor.scrollY);
- }
-}
-
-function runWithoutViewShift(action){
- captureBoardAnchor();
- action();
- requestAnimationFrame(function(){
-   restoreBoardAnchor();
-   requestAnimationFrame(restoreBoardAnchor);
- });
-}
-
-function forceControlsVisible(){
- var toolbar=id("stableToolbar");
- if(toolbar){
-   toolbar.style.display="flex";
-   toolbar.style.visibility="visible";
-   toolbar.style.opacity="1";
- }
- var controls=document.querySelector(".controls");
- var timeline=document.querySelector(".timeline");
- if(controls){
-   controls.style.display="grid";
-   controls.style.visibility="visible";
-   controls.style.opacity="1";
- }
- if(timeline){
-   timeline.style.display="grid";
-   timeline.style.visibility="visible";
-   timeline.style.opacity="1";
- }
- ["stableMenuBtn","stableMinimalBtn","stableTeachingBtn","stableFullBtn","stableFocusBtn","stableRestoreBtn",
-  "firstBtn","prevBtn","playBtn","nextBtn","lastBtn","moveRange","counter"].forEach(function(k){
-   var el=id(k);
-   if(el){
-     el.style.visibility="visible";
-     el.style.opacity="1";
-     if(k.indexOf("stable")===0)el.style.display="flex";
-   }
- });
-}
-
-function restoreStableLayout(){
- var keepGame=currentGameSnapshot.game||game;
- var keepName=currentGameSnapshot.name||currentGameName;
- var keepFile=currentGameSnapshot.file||currentFile;
- var keepIndex=Math.max(0,Math.min(currentGameSnapshot.index||index,keepGame.moves.length));
- var keepLocked=!!currentGameSnapshot.userLocked;
-
- closeInfoDrawer();
- document.body.classList.remove(
-   "info-open","board-focus",
-   "stable-layout-error",
-   "mode-minimal","mode-teaching","mode-full"
- );
- document.body.classList.add("mode-teaching");
- id("viewMode").value="teaching";
- id("focusBtn").textContent="⛶ 全螢幕";
-
- game=keepGame;
- currentGameName=keepName;
- currentFile=keepFile;
- index=keepIndex;
- userGameLocked=keepLocked;
- id("compactGameName").textContent=currentGameName;
-
- forceControlsVisible();
- try{localStorage.setItem("goViewMode","teaching")}catch(e){}
- requestAnimationFrame(function(){
-   board.resize();
-   render();
- });
- setTimeout(function(){
-   forceControlsVisible();
-   board.resize();
-   render();
- },180);
-}
-
-
-function openInfoDrawer(){
- document.body.classList.add("drawer-open");
- var drawer=id("infoDrawer");
- if(drawer){
-   drawer.setAttribute("aria-hidden","false");
-   drawer.scrollTop=0;
- }
-}
-function closeInfoDrawer(){
- document.body.classList.remove("drawer-open");
- var drawer=id("infoDrawer");
- if(drawer)drawer.setAttribute("aria-hidden","true");
-}
-id("stableMenuBtn").addEventListener("click",function(e){
- e.preventDefault();
- e.stopPropagation();
- if(document.body.classList.contains("drawer-open"))closeInfoDrawer();
- else openInfoDrawer();
-});
-id("drawerCloseBtn").addEventListener("click",function(e){
- e.preventDefault();
- e.stopPropagation();
- closeInfoDrawer();
-});
-id("infoDrawer").addEventListener("click",function(e){
- e.stopPropagation();
-});
-document.addEventListener("click",function(e){
- if(document.body.classList.contains("drawer-open") &&
-    !id("infoDrawer").contains(e.target) &&
-    !id("stableMenuBtn").contains(e.target)){
-   closeInfoDrawer();
- }
-});
-document.addEventListener("keydown",function(e){
- if(e.key==="Escape")closeInfoDrawer();
-});
-
-function stableMode(mode){
- document.body.classList.remove("mode-minimal","mode-teaching","mode-full","drawer-open","info-open","stable-hide-toolbar");
- document.body.classList.add("mode-"+mode);
- id("viewMode").value=mode;
- forceControlsVisible();
- try{localStorage.setItem("goViewMode",mode)}catch(e){}
- setTimeout(function(){board.resize();forceControlsVisible()},100);
-}
-
-
-id("stableMinimalBtn").addEventListener("click",function(){stableMode("minimal")});
-id("stableTeachingBtn").addEventListener("click",function(){stableMode("teaching")});
-id("stableFullBtn").addEventListener("click",function(){stableMode("full")});
-id("stableFocusBtn").addEventListener("click",function(){
- document.body.classList.toggle("board-focus");
- forceControlsVisible();
- setTimeout(function(){board.resize();forceControlsVisible()},100);
-});
-id("stableRestoreBtn").addEventListener("click",restoreStableLayout);
-id("rescueBtn").addEventListener("click",restoreStableLayout);
-
-function layoutHealthCheck(){
- var boardEl=id("goBoard"),controls=document.querySelector(".controls"),timeline=document.querySelector(".timeline"),toolbar=id("stableToolbar");
- var bad=!boardEl||!controls||!timeline||!toolbar||controls.offsetWidth===0||timeline.offsetWidth===0||toolbar.offsetWidth===0;
- document.body.classList.toggle("stable-layout-error",!!bad);
- id("rescueBtn").title=bad?"版面異常：按此恢復":"緊急恢復";
- forceControlsVisible();
- if(bad){
-   setTimeout(function(){board.resize();forceControlsVisible();render()},120);
- }
-}
-setInterval(layoutHealthCheck,1500);
-window.addEventListener("orientationchange",function(){
- forceControlsVisible();
- setTimeout(function(){
-   board.resize();
-   forceControlsVisible();
-   layoutHealthCheck();
- },260);
-});
-window.addEventListener("resize",function(){
- clearTimeout(window.__stableResizeTimer);
- window.__stableResizeTimer=setTimeout(function(){
-   board.resize();
-   forceControlsVisible();
-   layoutHealthCheck();
- },160);
-});
-
-
-["firstBtn","prevBtn","nextBtn","lastBtn","playBtn"].forEach(function(k){
- var el=id(k);
- if(!el)return;
- el.setAttribute("type","button");
- el.addEventListener("pointerdown",function(e){
-   captureBoardAnchor();
-   this.blur();
- },{passive:true,capture:true});
- el.addEventListener("click",function(){
-   this.blur();
-   requestAnimationFrame(function(){
-     restoreBoardAnchor();
-     requestAnimationFrame(restoreBoardAnchor);
-   });
- },true);
-});
-
-var savedMode="minimal";
-try{savedMode=localStorage.getItem("goViewMode")||"teaching"}catch(e){};if(["minimal","teaching","full"].indexOf(savedMode)<0)savedMode="teaching"
-applyMode(savedMode);
-
-log("Fix5 Info Drawer Repair：資訊按鈕、關閉按鈕與點擊遮罩均已修復");
-if(!userGameLocked){
-  load(SAMPLE,"內建範例棋譜","startup");
-}
-
-window.addEventListener("pageshow",function(){
- if(userGameLocked){
-   log("頁面恢復：保留目前棋譜「"+currentGameName+"」，不重新載入範例");
-   render();
- }
-});
-
+new ResizeObserver(function(){board.queueResize()}).observe(id("boardStage"));
+var saved="teaching";try{saved=localStorage.getItem("goMode")||"teaching"}catch(e){};if(["minimal","teaching","professional"].indexOf(saved)<0)saved="teaching";
+setMode(saved);updateMeta();render();setTimeout(board.resize,80);
 })();
 </script>
 </body>
