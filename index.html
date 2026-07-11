@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-018 Professional Teaching Layout</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-019 Master UI</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-018 Professional Teaching Layout: display-only refinements */
+/* Build002-019 Master UI: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-018 Professional Teaching Layout */
+/* Build002-019 Master UI */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -49,7 +49,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 #goBoard{margin-left:auto;margin-right:auto;display:block}
 #customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
 
-/* Build002-018 Professional Teaching Layout */
+/* Build002-019 Master UI */
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -88,7 +88,7 @@ body{
 }
 
 
-/* Build002-018 Professional Teaching Layout */
+/* Build002-019 Master UI */
 .compactbar{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto auto;
@@ -189,7 +189,7 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
 }
 
 
-/* Build002-018 Professional Teaching Layout */
+/* Build002-019 Master UI */
 html{
   scroll-behavior:auto!important;
   overflow-anchor:none;
@@ -227,7 +227,7 @@ body.view-switching *{
 }
 
 
-/* Build002-018 Professional Teaching Layout */
+/* Build002-019 Master UI */
 html,body{
   height:100%;
   overflow:hidden;
@@ -407,11 +407,141 @@ footer{display:none!important}
   #viewMode{max-width:118px}
 }
 
+
+/* Build002-019 Master UI */
+.compactbar{
+  min-height:42px!important;
+  padding:4px 7px!important;
+  gap:6px!important;
+}
+.iconBtn,#viewMode{
+  min-height:36px!important;
+  height:36px!important;
+  padding:4px 8px!important;
+  font-size:14px!important;
+}
+.boardbox{
+  padding:3px!important;
+  gap:2px!important;
+}
+.boardbox .head{
+  padding:0 3px 3px!important;
+}
+.stage{
+  width:100%!important;
+  height:100%!important;
+  padding:0!important;
+  margin:0!important;
+}
+#goBoard{
+  max-width:98%!important;
+  max-height:98%!important;
+}
+.controls{
+  grid-template-columns:repeat(5,minmax(42px,1fr))!important;
+  gap:4px!important;
+  margin-top:3px!important;
+}
+.controls button{
+  min-height:40px!important;
+  height:40px!important;
+  padding:2px 4px!important;
+  font-size:18px!important;
+  border-radius:10px!important;
+}
+.timeline{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  column-gap:9px!important;
+  margin-top:2px!important;
+  padding:0 4px 2px!important;
+}
+.timeline input[type="range"]{
+  width:100%!important;
+  height:22px!important;
+  margin:0!important;
+  accent-color:#e6b84e;
+}
+.timeline input[type="range"]::-webkit-slider-runnable-track{
+  height:4px;
+}
+.timeline input[type="range"]::-webkit-slider-thumb{
+  width:20px;
+  height:20px;
+  margin-top:-8px;
+}
+#counter{
+  min-width:74px;
+  text-align:right;
+  white-space:nowrap;
+  font-size:15px;
+}
+body.board-focus .compactbar,
+body.board-focus .top,
+body.board-focus footer,
+body.board-focus .side,
+body.board-focus .head{
+  display:none!important;
+}
+body.board-focus .boardbox{
+  padding:2px!important;
+  grid-template-rows:minmax(0,1fr) auto auto!important;
+}
+body.board-focus #goBoard{
+  max-width:99%!important;
+  max-height:99%!important;
+}
+body.board-focus .controls{
+  width:min(980px,99vw)!important;
+}
+body.board-focus .timeline{
+  width:min(980px,99vw)!important;
+}
+@media (orientation:landscape){
+  .compactbar{min-height:38px!important}
+  .boardbox{
+    grid-template-rows:minmax(0,1fr) auto auto!important;
+  }
+  .controls button{
+    min-height:38px!important;
+    height:38px!important;
+    font-size:17px!important;
+  }
+  #goBoard{
+    max-width:98.5%!important;
+    max-height:98.5%!important;
+  }
+}
+@media (orientation:portrait){
+  .compactbar{min-height:42px!important}
+  .boardbox{
+    grid-template-rows:minmax(0,1fr) auto auto!important;
+  }
+  .boardbox .head{display:none!important}
+  .controls{
+    grid-template-columns:repeat(5,minmax(36px,1fr))!important;
+  }
+  .controls button{
+    min-height:40px!important;
+    height:40px!important;
+    font-size:16px!important;
+  }
+  #goBoard{
+    max-width:98%!important;
+    max-height:98%!important;
+  }
+}
+@media(max-width:650px){
+  .controls button{font-size:15px!important}
+  #counter{font-size:14px;min-width:66px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-018</div></header>
+<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-019</div></header>
 <section class="panel compactbar">
   <button class="iconBtn" id="toggleInfoBtn">☰ 資訊</button>
   <div class="compactTitle"><strong id="compactGameName">內建範例棋譜</strong><span id="compactMove">0 / 10</span></div>
@@ -420,12 +550,12 @@ footer{display:none!important}
     <option value="teaching">教學模式</option>
     <option value="full">完整模式</option>
   </select>
-  <button class="iconBtn" id="focusBtn">⛶ 棋盤</button>
+  <button class="iconBtn" id="focusBtn">⛶ 全螢幕</button>
 </section>
 <section class="panel hero legacyHero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Professional Teaching Layout：固定棋盤、精簡控制列、抽屜式資訊。</h2>
-<p>以固定主舞台取代整頁捲動：棋盤與控制列保持原位，資訊改由抽屜展開。</p>
+<h2>Master UI：棋盤最大化、控制列壓縮、橫直畫面一致。</h2>
+<p>棋盤使用 95%～98% 可用空間；所有控制鍵固定單列，滑桿與手數合併為精簡控制區。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
 
@@ -475,7 +605,7 @@ footer{display:none!important}
 <section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-018 Professional Teaching Layout</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-019 Master UI</span></footer>
 </div>
 
 <script>
@@ -485,7 +615,7 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-018 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-019 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -566,9 +696,9 @@ Board.prototype.apply=function(m,num){if(!m||m.pass||!this.inside(m.x,m.y)){this
 Board.prototype.position=function(g,k){this.size=g.size;this.grid=this.empty(g.size);this.last=null;g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);for(var i=0;i<k;i++)this.apply(g.moves[i],i+1);this.draw()};
 Board.prototype.resize=function(){
  var rect=this.canvas.parentElement.getBoundingClientRect();
- var availableW=Math.max(260,Math.floor(rect.width-4));
- var availableH=Math.max(260,Math.floor(rect.height-4));
- var w=Math.max(260,Math.min(availableW,availableH,980));
+ var availableW=Math.max(240,Math.floor(rect.width*.985));
+ var availableH=Math.max(240,Math.floor(rect.height*.985));
+ var w=Math.max(240,Math.min(availableW,availableH,1100));
  var d=Math.max(1,window.devicePixelRatio||1);
  this.canvas.style.width=w+"px";
  this.canvas.style.height=w+"px";
@@ -581,7 +711,7 @@ Board.prototype.resize=function(){
 };
 Board.prototype.draw=function(){
  if(!this.width)return;var c=this.ctx,d=this.dpr||1,snap=function(v){return Math.round(v*d)/d};
- var outerPad=Math.max(18,this.width*.055);
+ var outerPad=Math.max(14,this.width*.042);
  var boardPixel=this.width-outerPad*2;
  var min=snap((this.width-boardPixel)/2);
  var max=snap(min+boardPixel);
@@ -701,7 +831,7 @@ var savedMode="minimal";
 try{savedMode=localStorage.getItem("goViewMode")||"minimal"}catch(e){}
 applyMode(savedMode);
 
-log("Professional Teaching Layout：棋盤與控制列固定，資訊使用抽屜，不再依賴頁面捲動");
+log("Master UI：棋盤使用接近完整可用空間，五個控制鍵固定單列，滑桿與手數合併");
 if(!userGameLocked){
   load(SAMPLE,"內建範例棋譜","startup");
 }
