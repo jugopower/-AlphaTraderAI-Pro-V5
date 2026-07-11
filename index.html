@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-012 Alignment Fix</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-013 Current Game Lock</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-012 Alignment Fix: display-only refinements */
+/* Build002-013 Current Game Lock: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-012 Alignment Fix */
+/* Build002-013 Current Game Lock */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -46,11 +46,11 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-012</div></header>
+<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-013</div></header>
 <section class="panel hero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Alignment Fix：修正棋子大小與交叉點對齊。</h2>
-<p>棋子中心與格線共用同一套座標；iPad 視窗縮放後會重新計算並對齊交叉點。</p>
+<h2>Current Game Lock：讀入 SGF 後，不再被 10 手範例棋譜覆蓋。</h2>
+<p>使用者棋譜成功載入後會鎖定目前棋譜；只有手動按下範例按鈕才會切換成 10 手範例。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
 
@@ -68,7 +68,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <input class="native-file" id="sgfFile" type="file">
 <p class="selected" id="selectedFile">尚未選擇檔案</p>
 <button class="btn primary" id="readAgainBtn">📖 重新讀取目前檔案</button>
-<button class="btn" id="sampleBtn">重新載入範例棋譜</button>
+<button class="btn" id="sampleBtn">切換至 10 手範例棋譜</button>
 </section>
 
 <section class="block"><h3>貼上 SGF 文字（備用）</h3><textarea id="sgfText" placeholder="貼上完整 SGF，例如 (;GM[1]FF[4]SZ[19]...)"></textarea><button class="btn primary" id="loadTextBtn">載入貼上的 SGF</button></section>
@@ -90,7 +90,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 <section class="block"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-012 Alignment Fix</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-013 Current Game Lock</span></footer>
 </div>
 
 <script>
@@ -100,7 +100,7 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-012 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-013 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -192,23 +192,53 @@ Board.prototype.draw=function(){
  if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(snap(min+this.last.x*cell),snap(min+this.last.y*cell),r*.76,0,Math.PI*2);c.stroke()}
 };
 
-var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null;
+var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userGameLocked=false,currentGameName="內建範例棋譜";
 function meta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){board.position(game,index);id("boardTitle").textContent=game.size+" 路棋盤";id("moveBadge").textContent="第 "+index+" 手";id("moveRange").max=game.moves.length;id("moveRange").value=index;id("counter").textContent=index+" / "+game.moves.length;id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。"}
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶ 播放"}
-function load(g,name){stop();game=g;index=0;meta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手")}
-function read(file){if(!file){status("未取得檔案，請重新選擇。",true);return}currentFile=file;id("selectedFile").classList.add("ok");id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";status("正在讀取："+file.name,false);log("取得檔案："+file.name);var fr=new FileReader();fr.onload=function(){try{load(parseSGF(decode(fr.result)),file.name)}catch(e){status("載入失敗："+e.message,true);log("錯誤："+e.message)}};fr.onerror=function(){status("檔案讀取失敗。",true);log("FileReader Error")};fr.readAsArrayBuffer(file)}
+function load(g,name,source){
+ stop();
+ game=g;
+ index=0;
+ currentGameName=name;
+ if(source==="user")userGameLocked=true;
+ if(source==="sample")userGameLocked=false;
+ meta();
+ render();
+ status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);
+ log("解析成功："+g.moves.length+" 手｜目前棋譜："+name);
+}
+function read(file){if(!file){status("未取得檔案，請重新選擇。",true);return}currentFile=file;id("selectedFile").classList.add("ok");id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";status("正在讀取："+file.name,false);log("取得檔案："+file.name);var fr=new FileReader();fr.onload=function(){try{load(parseSGF(decode(fr.result)),file.name,"user")}catch(e){status("載入失敗："+e.message,true);log("錯誤："+e.message)}};fr.onerror=function(){status("檔案讀取失敗。",true);log("FileReader Error")};fr.readAsArrayBuffer(file)}
 
 id("sgfFile").addEventListener("change",function(e){read(e.target.files&&e.target.files[0])});
 id("readAgainBtn").addEventListener("click",function(){read((id("sgfFile").files&&id("sgfFile").files[0])||currentFile)});
-id("sampleBtn").addEventListener("click",function(){load(SAMPLE,"內建範例棋譜")});
-id("loadTextBtn").addEventListener("click",function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF")}catch(e){status("載入失敗："+e.message,true)}});
+id("sampleBtn").addEventListener("click",function(){
+ if(userGameLocked){
+   var ok=window.confirm("目前已載入「"+currentGameName+"」。\n確定要切換成 10 手內建範例棋譜嗎？");
+   if(!ok){
+     log("已取消切換範例棋譜，保留目前棋譜："+currentGameName);
+     return;
+   }
+ }
+ load(SAMPLE,"內建範例棋譜","sample");
+});
+id("loadTextBtn").addEventListener("click",function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF","user")}catch(e){status("載入失敗："+e.message,true)}});
 id("firstBtn").onclick=function(){stop();index=0;render()};id("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
 id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
 id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("showNumbers").onchange=render;id("showLast").onchange=render;id("recentOnly").onchange=render;id("stoneScale").onchange=render;
 
-log("Alignment Fix：棋子半徑已修正，棋子中心與交叉點採同一座標");
-load(SAMPLE,"內建範例棋譜");
+log("Current Game Lock：使用者棋譜載入後不再自動切回 10 手範例");
+if(!userGameLocked){
+  load(SAMPLE,"內建範例棋譜","startup");
+}
+
+window.addEventListener("pageshow",function(){
+ if(userGameLocked){
+   log("頁面恢復：保留目前棋譜「"+currentGameName+"」，不重新載入範例");
+   render();
+ }
+});
+
 })();
 </script>
 </body>
