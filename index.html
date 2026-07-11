@@ -3,52 +3,146 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AlphaTraderAI Pro V5.0｜Build002-002 Fix 3</title>
+<meta name="theme-color" content="#0f0c09">
+<title>AlphaTraderAI Pro V5.0｜Build002-003</title>
 <style>
-:root{--bg:#0e0b08;--panel:#211912;--line:#f2c56b33;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ef6b63}
-*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;background:linear-gradient(160deg,#1b140f,#080605);min-height:100vh}
-button,input,select{font:inherit}.app{width:min(1250px,calc(100% - 12px));margin:auto;padding:10px 0 22px}
+:root{
+  --bg:#0e0b08;--panel:#211912;--panel2:#2b2118;--line:#f2c56b33;
+  --text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ef6b63;--ok:#70d89a
+}
+*{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{
+  margin:0;min-height:100vh;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;
+  background:radial-gradient(circle at 15% 0,#f2c56b1f,transparent 35%),linear-gradient(160deg,#1b140f,#080605)
+}
+button,input,select,textarea{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
+.app{width:min(1280px,calc(100% - 12px));margin:auto;padding:10px 0 22px}
 .panel{background:#211912ee;border:1px solid var(--line);border-radius:22px;box-shadow:0 16px 45px #0007}
-.top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;margin-bottom:12px}.top h1{margin:0;font-size:clamp(22px,3vw,34px)}.sub{margin:3px 0 0;color:var(--muted)}.ver{background:linear-gradient(145deg,#f6d38e,#d7a649);color:#251609;padding:9px 12px;border-radius:12px;font-weight:800}
-.hero{padding:22px;margin-bottom:12px}.hero h2{margin:6px 0 8px;font-size:clamp(28px,4vw,48px)}.hero p{margin:0;color:var(--muted)}.gold{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.12em}
-.work{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:12px}.boardbox{padding:10px}.head{display:flex;justify-content:space-between;align-items:center;padding:4px 4px 9px}.head h2{margin:2px 0 0}.badge{background:var(--gold);color:#251609;border-radius:999px;padding:8px 11px;font-weight:800}
-.stage{overflow:hidden;border-radius:18px;background:#d79c50;display:grid;place-items:center}canvas{width:100%;max-width:900px;display:block}
-.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}.controls button{min-height:46px;padding:10px 14px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0c;color:var(--text);font-weight:800}.controls .primary{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;border:0}
-.timeline{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}.timeline input{width:100%;accent-color:var(--gold)}
-.side{padding:12px}.block{background:#ffffff08;border-radius:15px;padding:13px}.block+.block{margin-top:10px}.block h3{margin:0 0 10px}
-.native-file{display:block;width:100%;padding:12px;border-radius:12px;background:#f7d78f;color:#251609;font-weight:800}
-.btn{display:block;width:100%;min-height:46px;margin-top:8px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0c;color:var(--text);font-weight:800}
-.meta{margin:0}.meta div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff12}.meta dt{color:var(--muted)}.meta dd{margin:0;text-align:right}
-.opt{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:8px 0;color:var(--muted)}.opt input{accent-color:var(--gold)}
-.status{margin:0;padding:10px;border-radius:11px;background:#f2c56b14;color:var(--gold);line-height:1.45}.comment{margin:0;min-height:60px;padding:10px;border-radius:11px;background:#ffffff08}
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;margin-bottom:12px}
+.top h1{margin:0;font-size:clamp(22px,3vw,34px)}
+.sub{margin:3px 0 0;color:var(--muted)}
+.ver{background:linear-gradient(145deg,#f6d38e,#d7a649);color:#251609;padding:9px 12px;border-radius:12px;font-weight:800}
+.hero{padding:22px;margin-bottom:12px}
+.hero h2{margin:6px 0 8px;font-size:clamp(28px,4vw,48px)}
+.hero p{margin:0;color:var(--muted)}
+.gold{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.12em}
+.work{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px}
+.boardbox{padding:10px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 4px 9px}
+.head h2{margin:2px 0 0}
+.badge{background:var(--gold);color:#251609;border-radius:999px;padding:8px 11px;font-weight:800}
+.stage{overflow:hidden;border-radius:18px;background:#d79c50;display:grid;place-items:center}
+canvas{width:100%;max-width:920px;display:block;touch-action:manipulation}
+.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.controls button,.btn{min-height:46px;padding:10px 14px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0c;color:var(--text);font-weight:800}
+.controls .primary,.btn.primary{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;border:0}
+.timeline{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}
+.timeline input{width:100%;accent-color:var(--gold)}
+.side{padding:12px}
+.block{background:#ffffff08;border-radius:15px;padding:13px}
+.block+.block{margin-top:10px}
+.block h3{margin:0 0 10px}
+.file-label{display:block;width:100%;padding:14px;border-radius:12px;background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;font-weight:800;text-align:center;cursor:pointer}
+#sgfFile{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.dropzone{margin-top:9px;padding:16px;border:2px dashed #f2c56b55;border-radius:12px;text-align:center;color:var(--muted);background:#f2c56b09}
+.dropzone.drag{border-color:var(--gold);background:#f2c56b18;color:var(--text)}
+.btn{display:block;width:100%;margin-top:8px}
+textarea{width:100%;min-height:110px;padding:10px;border-radius:11px;border:1px solid #ffffff1f;background:#130f0c;color:var(--text);resize:vertical}
+.meta{margin:0}
+.meta div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff12}
+.meta dt{color:var(--muted)}
+.meta dd{margin:0;text-align:right;max-width:60%;overflow-wrap:anywhere}
+.opt{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:8px 0;color:var(--muted)}
+.opt input{accent-color:var(--gold)}
+select{padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20}
+.status{margin:0;padding:10px;border-radius:11px;background:#f2c56b14;color:var(--gold);line-height:1.45}
+.comment{margin:0;min-height:60px;padding:10px;border-radius:11px;background:#ffffff08}
 footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;padding:14px 4px 2px}
-@media(max-width:900px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.block+.block{margin-top:0}}
+@media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-002 Fix 3</div></header>
+<header class="panel top">
+  <div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div>
+  <div class="ver">Build002-003</div>
+</header>
 
-<section class="panel hero"><div class="gold">IPAD 原生選檔版</div><h2>重新建立 SGF 載入核心。</h2><p>範例棋譜會自動載入並顯示 0 / 10；再使用下方原生檔案欄選擇 SGF。</p></section>
+<section class="panel hero">
+  <div class="gold">SGF 載入穩定版</div>
+  <h2>選檔、拖放、貼上 SGF 三種載入方式。</h2>
+  <p>開啟頁面後自動載入 10 手範例；iPad 請使用「選擇 SGF」，電腦也可拖放檔案。</p>
+</section>
 
 <section class="work">
 <div class="panel boardbox">
-<div class="head"><div><div class="gold">PREMIUM GO BOARD</div><h2 id="boardTitle">19 路棋盤</h2></div><div class="badge" id="moveBadge">第 0 手</div></div>
-<div class="stage"><canvas id="goBoard"></canvas></div>
-<div class="controls"><button id="firstBtn">⏮ 第一手</button><button id="prevBtn">◀ 上一步</button><button id="playBtn" class="primary">▶ 播放</button><button id="nextBtn">下一步 ▶</button><button id="lastBtn">最後一手 ⏭</button></div>
-<div class="timeline"><input id="moveRange" type="range" min="0" max="10" value="0"><span id="counter">0 / 10</span></div>
+  <div class="head">
+    <div><div class="gold">PREMIUM GO BOARD</div><h2 id="boardTitle">19 路棋盤</h2></div>
+    <div class="badge" id="moveBadge">第 0 手</div>
+  </div>
+
+  <div class="stage"><canvas id="goBoard"></canvas></div>
+
+  <div class="controls">
+    <button id="firstBtn">⏮ 第一手</button>
+    <button id="prevBtn">◀ 上一步</button>
+    <button id="playBtn" class="primary">▶ 播放</button>
+    <button id="nextBtn">下一步 ▶</button>
+    <button id="lastBtn">最後一手 ⏭</button>
+  </div>
+
+  <div class="timeline">
+    <input id="moveRange" type="range" min="0" max="10" value="0">
+    <span id="counter">0 / 10</span>
+  </div>
 </div>
 
 <aside class="panel side">
-<section class="block"><h3>載入棋譜</h3><input class="native-file" id="sgfFile" type="file" accept=".sgf,text/plain,application/x-go-sgf"><button class="btn" id="sampleBtn">重新載入範例棋譜</button></section>
-<section class="block"><h3>棋譜資訊</h3><dl class="meta"><div><dt>黑方</dt><dd id="pb">—</dd></div><div><dt>白方</dt><dd id="pw">—</dd></div><div><dt>結果</dt><dd id="re">—</dd></div><div><dt>日期</dt><dd id="dt">—</dd></div><div><dt>賽事</dt><dd id="ev">—</dd></div><div><dt>貼目</dt><dd id="km">—</dd></div></dl></section>
-<section class="block"><h3>顯示／播放</h3><label class="opt"><span>顯示手順</span><input id="showNumbers" type="checkbox" checked></label><label class="opt"><span>最新一手紅圈</span><input id="showLast" type="checkbox" checked></label><label class="opt"><span>速度</span><select id="speed"><option value="1500">慢</option><option value="850" selected>正常</option><option value="400">快</option></select></label></section>
-<section class="block"><h3>本手註解</h3><p class="comment" id="comment">棋譜起始位置。</p></section>
-<section class="block"><h3>系統訊息</h3><p class="status" id="status">JavaScript 已啟動，正在載入範例。</p></section>
+  <section class="block">
+    <h3>載入 SGF</h3>
+    <label class="file-label" for="sgfFile">📂 選擇 SGF</label>
+    <input id="sgfFile" type="file" accept=".sgf,text/plain,application/x-go-sgf">
+    <div class="dropzone" id="dropzone">電腦可將 SGF 拖到這裡</div>
+    <button class="btn" id="sampleBtn">重新載入範例棋譜</button>
+  </section>
+
+  <section class="block">
+    <h3>貼上 SGF 內容</h3>
+    <textarea id="sgfText" placeholder="可將 SGF 文字貼在這裡，例如 (;GM[1]FF[4]SZ[19]...)"></textarea>
+    <button class="btn primary" id="loadTextBtn">載入貼上的 SGF</button>
+  </section>
+
+  <section class="block">
+    <h3>棋譜資訊</h3>
+    <dl class="meta">
+      <div><dt>黑方</dt><dd id="pb">—</dd></div>
+      <div><dt>白方</dt><dd id="pw">—</dd></div>
+      <div><dt>結果</dt><dd id="re">—</dd></div>
+      <div><dt>日期</dt><dd id="dt">—</dd></div>
+      <div><dt>賽事</dt><dd id="ev">—</dd></div>
+      <div><dt>貼目</dt><dd id="km">—</dd></div>
+    </dl>
+  </section>
+
+  <section class="block">
+    <h3>顯示／播放</h3>
+    <label class="opt"><span>顯示手順</span><input id="showNumbers" type="checkbox" checked></label>
+    <label class="opt"><span>最新一手紅圈</span><input id="showLast" type="checkbox" checked></label>
+    <label class="opt"><span>速度</span>
+      <select id="speed"><option value="1500">慢</option><option value="850" selected>正常</option><option value="400">快</option></select>
+    </label>
+  </section>
+
+  <section class="block"><h3>本手註解</h3><p class="comment" id="comment">棋譜起始位置。</p></section>
+  <section class="block"><h3>系統訊息</h3><p class="status" id="status">正在載入範例棋譜。</p></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-002 Fix 3</span></footer>
+
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-003</span></footer>
 </div>
 
 <script>
@@ -57,80 +151,219 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 function byId(id){return document.getElementById(id)}
 
 var SAMPLE={
- size:19,
- meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-002 Fix 3 範例棋譜",km:"6.5"},
- setup:[],
- moves:[
-  {c:1,x:15,y:3,comment:"黑棋右上角小目"},
-  {c:-1,x:3,y:3,comment:"白棋左上角小目"},
-  {c:1,x:16,y:15,comment:"黑棋右下角"},
-  {c:-1,x:3,y:16,comment:"白棋左下角"},
-  {c:1,x:5,y:2,comment:"黑棋拆邊"},
-  {c:-1,x:2,y:5,comment:"白棋掛角"},
-  {c:1,x:16,y:5,comment:"黑棋右邊"},
-  {c:-1,x:13,y:2,comment:"白棋右上方"},
-  {c:1,x:14,y:2,comment:"黑棋接近"},
-  {c:-1,x:13,y:3,comment:"白棋應對"}
- ]
+  size:19,
+  meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-003 範例棋譜",km:"6.5"},
+  setup:[],
+  moves:[
+    {c:1,x:15,y:3,comment:"黑棋右上角小目"},
+    {c:-1,x:3,y:3,comment:"白棋左上角小目"},
+    {c:1,x:16,y:15,comment:"黑棋右下角"},
+    {c:-1,x:3,y:16,comment:"白棋左下角"},
+    {c:1,x:5,y:2,comment:"黑棋拆邊"},
+    {c:-1,x:2,y:5,comment:"白棋掛角"},
+    {c:1,x:16,y:5,comment:"黑棋右邊"},
+    {c:-1,x:13,y:2,comment:"白棋右上方"},
+    {c:1,x:14,y:2,comment:"黑棋接近"},
+    {c:-1,x:13,y:3,comment:"白棋應對"}
+  ]
 };
 
-function parseSGF(text){
- if(typeof text!=="string"||text.indexOf("(;")<0)throw new Error("SGF 格式不正確");
- var props=parseProps(text);
- var size=parseInt(first(props.SZ,"19"),10);
- var game={
-  size:size,
-  meta:{
-   pb:first(props.PB,"—"),pw:first(props.PW,"—"),re:first(props.RE,"—"),
-   dt:first(props.DT,"—"),ev:first(props.EV,first(props.GN,"—")),km:first(props.KM,"—")
-  },
-  setup:[],
-  moves:[]
- };
- var nodeRegex=/;([^;()]+)/g,match,node;
- while((match=nodeRegex.exec(text))!==null){
-  node=parseProps(match[1]);
-  if(node.B&&node.B.length){game.moves.push(makeMove(1,node.B[0],first(node.C,"")))}
-  else if(node.W&&node.W.length){game.moves.push(makeMove(-1,node.W[0],first(node.C,"")))}
- }
- return game;
+function parseProps(text){
+  var out={},re=/([A-Z]+)((?:\[(?:\\.|[^\]])*\])+)/g,m,vr,v,vals;
+  while((m=re.exec(text))!==null){
+    vals=[];vr=/\[((?:\\.|[^\]])*)\]/g;
+    while((v=vr.exec(m[2]))!==null){
+      vals.push(v[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\"))
+    }
+    out[m[1]]=vals;
+  }
+  return out;
 }
 function first(obj,key,fallback){return obj[key]&&obj[key].length?obj[key][0]:fallback}
-function makeMove(color,v,comment){if(!v||v.length<2)return{c:color,pass:true,x:-1,y:-1,comment:comment};return{c:color,pass:false,x:v.charCodeAt(0)-97,y:v.charCodeAt(1)-97,comment:comment}}
-function parseProps(text){
- var out={},re=/([A-Z]+)((?:\[(?:\\.|[^\]])*\])+)/g,m,vr,v,vals;
- while((m=re.exec(text))!==null){
-  vals=[];vr=/\[((?:\\.|[^\]])*)\]/g;
-  while((v=vr.exec(m[2]))!==null){vals.push(v[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\"))}
-  out[m[1]]=vals;
- }
- return out;
+function coord(v){return !v||v.length<2?{pass:true,x:-1,y:-1}:{pass:false,x:v.charCodeAt(0)-97,y:v.charCodeAt(1)-97}}
+function makeMove(color,v,comment){
+  var p=coord(v);
+  return{c:color,pass:p.pass,x:p.x,y:p.y,comment:comment||""}
+}
+function parseSGF(text){
+  if(typeof text!=="string"||text.indexOf("(;")<0)throw new Error("SGF 格式不正確");
+  var rootEnd=text.indexOf(";",2);
+  var rootText=rootEnd>1?text.slice(2,rootEnd):text;
+  var root=parseProps(rootText);
+  var game={
+    size:parseInt(first(root,"SZ","19"),10),
+    meta:{
+      pb:first(root,"PB","—"),pw:first(root,"PW","—"),re:first(root,"RE","—"),
+      dt:first(root,"DT","—"),ev:first(root,"EV",first(root,"GN","—")),km:first(root,"KM","—")
+    },
+    setup:[],moves:[]
+  };
+  (root.AB||[]).forEach(function(v){var p=coord(v);game.setup.push({c:1,pass:p.pass,x:p.x,y:p.y})});
+  (root.AW||[]).forEach(function(v){var p=coord(v);game.setup.push({c:-1,pass:p.pass,x:p.x,y:p.y})});
+
+  var main=text,depth=0,inValue=false,escaped=false,clean="",i,ch;
+  for(i=0;i<text.length;i++){
+    ch=text[i];
+    if(escaped){if(depth<=1)clean+=ch;escaped=false;continue}
+    if(ch==="\\"){if(depth<=1)clean+=ch;escaped=true;continue}
+    if(ch==="[")inValue=true;
+    if(ch==="]")inValue=false;
+    if(!inValue&&ch==="("){depth++;if(depth===1)continue;if(depth===2)break}
+    if(!inValue&&ch===")"){depth--;if(depth===0)break}
+    if(depth<=1)clean+=ch;
+  }
+
+  var nodeRegex=/;([^;()]+)/g,match,node;
+  while((match=nodeRegex.exec(clean))!==null){
+    node=parseProps(match[1]);
+    if(node.B&&node.B.length)game.moves.push(makeMove(1,node.B[0],first(node,"C","")));
+    else if(node.W&&node.W.length)game.moves.push(makeMove(-1,node.W[0],first(node,"C","")));
+  }
+  if(![9,13,19].includes(game.size))throw new Error("目前只支援 9、13、19 路棋盤");
+  return game;
 }
 
 function Board(canvas){
- this.canvas=canvas;this.ctx=canvas.getContext("2d");this.size=19;this.grid=[];this.last=null;
- this.resize=this.resize.bind(this);
- window.addEventListener("resize",this.resize);
- this.resize();
+  this.canvas=canvas;this.ctx=canvas.getContext("2d");this.size=19;this.grid=[];this.last=null;
+  this.resize=this.resize.bind(this);
+  window.addEventListener("resize",this.resize);
+  this.resize();
 }
 Board.prototype.empty=function(n){var a=[],y;for(y=0;y<n;y++)a.push(new Array(n).fill(null));return a};
 Board.prototype.inBounds=function(x,y){return x>=0&&y>=0&&x<this.size&&y<this.size};
 Board.prototype.neighbors=function(x,y){var a=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],r=[],i;for(i=0;i<a.length;i++)if(this.inBounds(a[i][0],a[i][1]))r.push(a[i]);return r};
-Board.prototype.group=function(x,y){var s=this.grid[y][x],stack=[[x,y]],seen={},group=[],libs={},p,key,n,i,z;while(stack.length){p=stack.pop();key=p[0]+","+p[1];if(seen[key])continue;seen[key]=1;group.push(p);n=this.neighbors(p[0],p[1]);for(i=0;i<n.length;i++){z=this.grid[n[i][1]][n[i][0]];if(!z)libs[n[i][0]+","+n[i][1]]=1;else if(z.c===s.c&&!seen[n[i][0]+","+n[i][1]])stack.push(n[i])}}return{group:group,libs:libs}};
-Board.prototype.apply=function(m,n){var i,nb,z,g,j;if(!m||m.pass||!this.inBounds(m.x,m.y)){this.last=null;return}this.grid[m.y][m.x]={c:m.c,n:n};nb=this.neighbors(m.x,m.y);for(i=0;i<nb.length;i++){z=this.grid[nb[i][1]][nb[i][0]];if(z&&z.c===-m.c){g=this.group(nb[i][0],nb[i][1]);if(Object.keys(g.libs).length===0)for(j=0;j<g.group.length;j++)this.grid[g.group[j][1]][g.group[j][0]]=null}}this.last={x:m.x,y:m.y}};
-Board.prototype.setPosition=function(game,index){var i,s;this.size=game.size;this.grid=this.empty(game.size);this.last=null;for(i=0;i<game.setup.length;i++){s=game.setup[i];if(!s.pass)this.grid[s.y][s.x]={c:s.c,n:null}}for(i=0;i<index;i++)this.apply(game.moves[i],i+1);this.draw()};
-Board.prototype.resize=function(){var parent=this.canvas.parentElement,w=Math.max(280,Math.min(parent.clientWidth||700,900)),d=window.devicePixelRatio||1;this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);this.ctx.setTransform(d,0,0,d,0,0);this.w=w;this.draw()};
-Board.prototype.draw=function(){if(!this.w)return;var x=this.ctx,pad=this.w*.065,min=pad,max=this.w-pad,cell=(max-min)/(this.size-1),i,p,stars,r,y,c,s,cx,cy;var wood=x.createLinearGradient(0,0,this.w,this.w);wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");x.fillStyle=wood;x.fillRect(0,0,this.w,this.w);x.strokeStyle="#3e2a17";x.lineWidth=Math.max(1,this.w/720);for(i=0;i<this.size;i++){p=min+i*cell;x.beginPath();x.moveTo(min,p);x.lineTo(max,p);x.stroke();x.beginPath();x.moveTo(p,min);x.lineTo(p,max);x.stroke()}stars=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];x.fillStyle="#332110";for(i=0;i<stars.length;i++)for(var j=0;j<stars.length;j++){x.beginPath();x.arc(min+stars[i]*cell,min+stars[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);x.fill()}r=cell*.465;for(y=0;y<this.size;y++)for(c=0;c<this.size;c++){s=this.grid[y][c];if(!s)continue;cx=min+c*cell;cy=min+y*cell;drawStone(x,cx,cy,r,s.c);if(byId("showNumbers").checked&&s.n!==null){x.fillStyle=s.c===1?"#fff":"#25180c";x.font="700 "+Math.max(10,r*.7)+"px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(String(s.n),cx,cy)}}if(byId("showLast").checked&&this.last){x.strokeStyle="#ef3e36";x.lineWidth=Math.max(2,r*.09);x.beginPath();x.arc(min+this.last.x*cell,min+this.last.y*cell,r*.76,0,Math.PI*2);x.stroke()}};
-function drawStone(x,cx,cy,r,c){x.save();x.shadowColor="#0007";x.shadowBlur=r*.3;x.shadowOffsetX=r*.12;x.shadowOffsetY=r*.15;var g=x.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);if(c===1){g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");g.addColorStop(.72,"#080808");g.addColorStop(1,"#000")}else{g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297")}x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.fill();x.restore()}
+Board.prototype.group=function(x,y){
+  var s=this.grid[y][x],stack=[[x,y]],seen={},group=[],libs={},p,key,n,i,z;
+  while(stack.length){
+    p=stack.pop();key=p[0]+","+p[1];if(seen[key])continue;
+    seen[key]=1;group.push(p);n=this.neighbors(p[0],p[1]);
+    for(i=0;i<n.length;i++){
+      z=this.grid[n[i][1]][n[i][0]];
+      if(!z)libs[n[i][0]+","+n[i][1]]=1;
+      else if(z.c===s.c&&!seen[n[i][0]+","+n[i][1]])stack.push(n[i]);
+    }
+  }
+  return{group:group,libs:libs};
+};
+Board.prototype.apply=function(m,n){
+  var i,nb,z,g,j;
+  if(!m||m.pass||!this.inBounds(m.x,m.y)){this.last=null;return}
+  this.grid[m.y][m.x]={c:m.c,n:n};
+  nb=this.neighbors(m.x,m.y);
+  for(i=0;i<nb.length;i++){
+    z=this.grid[nb[i][1]][nb[i][0]];
+    if(z&&z.c===-m.c){
+      g=this.group(nb[i][0],nb[i][1]);
+      if(Object.keys(g.libs).length===0){
+        for(j=0;j<g.group.length;j++)this.grid[g.group[j][1]][g.group[j][0]]=null;
+      }
+    }
+  }
+  this.last={x:m.x,y:m.y};
+};
+Board.prototype.setPosition=function(game,index){
+  var i,s;this.size=game.size;this.grid=this.empty(game.size);this.last=null;
+  for(i=0;i<game.setup.length;i++){s=game.setup[i];if(!s.pass&&this.inBounds(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}}
+  for(i=0;i<index;i++)this.apply(game.moves[i],i+1);
+  this.draw();
+};
+Board.prototype.resize=function(){
+  var parent=this.canvas.parentElement,w=Math.max(280,Math.min(parent.clientWidth||700,920)),d=window.devicePixelRatio||1;
+  this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";
+  this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);
+  this.ctx.setTransform(d,0,0,d,0,0);this.w=w;this.draw();
+};
+Board.prototype.draw=function(){
+  if(!this.w)return;
+  var x=this.ctx,pad=this.w*.065,min=pad,max=this.w-pad,cell=(max-min)/(this.size-1),i,p,stars,r,y,c,s,cx,cy,j;
+  var wood=x.createLinearGradient(0,0,this.w,this.w);
+  wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");
+  x.fillStyle=wood;x.fillRect(0,0,this.w,this.w);
+  x.strokeStyle="#3e2a17";x.lineWidth=Math.max(1,this.w/720);
+  for(i=0;i<this.size;i++){
+    p=min+i*cell;
+    x.beginPath();x.moveTo(min,p);x.lineTo(max,p);x.stroke();
+    x.beginPath();x.moveTo(p,min);x.lineTo(p,max);x.stroke();
+  }
+  stars=this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15];
+  x.fillStyle="#332110";
+  for(i=0;i<stars.length;i++)for(j=0;j<stars.length;j++){
+    if(this.size===9&&(stars[i]===4||stars[j]===4)&&!(stars[i]===4&&stars[j]===4))continue;
+    x.beginPath();x.arc(min+stars[i]*cell,min+stars[j]*cell,Math.max(2.5,cell*.075),0,Math.PI*2);x.fill();
+  }
+  r=cell*.465;
+  for(y=0;y<this.size;y++)for(c=0;c<this.size;c++){
+    s=this.grid[y][c];if(!s)continue;
+    cx=min+c*cell;cy=min+y*cell;drawStone(x,cx,cy,r,s.c);
+    if(byId("showNumbers").checked&&s.n!==null){
+      x.fillStyle=s.c===1?"#fff":"#25180c";
+      x.font="700 "+Math.max(10,r*.7)+"px sans-serif";
+      x.textAlign="center";x.textBaseline="middle";x.fillText(String(s.n),cx,cy);
+    }
+  }
+  if(byId("showLast").checked&&this.last){
+    x.strokeStyle="#ef3e36";x.lineWidth=Math.max(2,r*.09);
+    x.beginPath();x.arc(min+this.last.x*cell,min+this.last.y*cell,r*.76,0,Math.PI*2);x.stroke();
+  }
+};
+function drawStone(x,cx,cy,r,c){
+  x.save();x.shadowColor="#0007";x.shadowBlur=r*.3;x.shadowOffsetX=r*.12;x.shadowOffsetY=r*.15;
+  var g=x.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);
+  if(c===1){g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");g.addColorStop(.72,"#080808");g.addColorStop(1,"#000")}
+  else{g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297")}
+  x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.fill();x.restore();
+}
 
 var board=new Board(byId("goBoard")),game=SAMPLE,index=0,timer=null;
-function updateMeta(){byId("pb").textContent=game.meta.pb;byId("pw").textContent=game.meta.pw;byId("re").textContent=game.meta.re;byId("dt").textContent=game.meta.dt;byId("ev").textContent=game.meta.ev;byId("km").textContent=game.meta.km}
-function render(){board.setPosition(game,index);byId("boardTitle").textContent=game.size+" 路棋盤";byId("moveBadge").textContent="第 "+index+" 手";byId("moveRange").max=game.moves.length;byId("moveRange").value=index;byId("counter").textContent=index+" / "+game.moves.length;byId("comment").textContent=index?game.moves[index-1].comment||"本手沒有註解。":"棋譜起始位置。"}
+
+function updateMeta(){
+  byId("pb").textContent=game.meta.pb;byId("pw").textContent=game.meta.pw;
+  byId("re").textContent=game.meta.re;byId("dt").textContent=game.meta.dt;
+  byId("ev").textContent=game.meta.ev;byId("km").textContent=game.meta.km;
+}
+function render(){
+  board.setPosition(game,index);
+  byId("boardTitle").textContent=game.size+" 路棋盤";
+  byId("moveBadge").textContent="第 "+index+" 手";
+  byId("moveRange").max=game.moves.length;
+  byId("moveRange").value=index;
+  byId("counter").textContent=index+" / "+game.moves.length;
+  byId("comment").textContent=index?game.moves[index-1].comment||"本手沒有註解。":"棋譜起始位置。";
+}
 function stop(){if(timer)clearInterval(timer);timer=null;byId("playBtn").textContent="▶ 播放"}
-function loadGame(g,label){stop();game=g;index=0;updateMeta();render();byId("status").textContent="已載入："+label}
-function play(){if(timer){stop();return}if(index>=game.moves.length)index=0;byId("playBtn").textContent="⏸ 暫停";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(byId("speed").value,10))}
+function setStatus(text,error){
+  byId("status").style.color=error?"var(--danger)":"var(--gold)";
+  byId("status").textContent=text;
+}
+function loadGame(g,label){stop();game=g;index=0;updateMeta();render();setStatus("已載入："+label,false)}
+function loadText(text,label){
+  try{loadGame(parseSGF(text),label)}
+  catch(err){setStatus("載入失敗："+err.message,true)}
+}
+function play(){
+  if(timer){stop();return}
+  if(index>=game.moves.length)index=0;
+  byId("playBtn").textContent="⏸ 暫停";
+  timer=setInterval(function(){
+    if(index>=game.moves.length){stop();return}
+    index++;render();
+  },parseInt(byId("speed").value,10));
+}
+function readFile(file){
+  if(!file)return;
+  setStatus("正在讀取："+file.name,false);
+  var reader=new FileReader();
+  reader.onload=function(){loadText(String(reader.result),file.name)};
+  reader.onerror=function(){setStatus("讀取檔案失敗",true)};
+  reader.readAsText(file,"UTF-8");
+}
 
 byId("sampleBtn").onclick=function(){loadGame(SAMPLE,"內建範例棋譜")};
+byId("loadTextBtn").onclick=function(){
+  var text=byId("sgfText").value.trim();
+  if(!text){setStatus("請先貼上 SGF 文字。",true);return}
+  loadText(text,"貼上的 SGF");
+};
 byId("firstBtn").onclick=function(){stop();index=0;render()};
 byId("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};
 byId("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};
@@ -139,7 +372,16 @@ byId("playBtn").onclick=play;
 byId("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};
 byId("showNumbers").onchange=render;
 byId("showLast").onchange=render;
-byId("sgfFile").onchange=function(e){var f=e.target.files&&e.target.files[0];if(!f)return;byId("status").textContent="正在讀取："+f.name;var reader=new FileReader();reader.onload=function(){try{loadGame(parseSGF(String(reader.result)),f.name)}catch(err){byId("status").textContent="載入失敗："+err.message;byId("status").style.color="var(--danger)"}};reader.onerror=function(){byId("status").textContent="讀取檔案失敗"};reader.readAsText(f,"UTF-8")};
+byId("sgfFile").onchange=function(e){readFile(e.target.files&&e.target.files[0]);e.target.value=""};
+
+var drop=byId("dropzone");
+["dragenter","dragover"].forEach(function(name){
+  drop.addEventListener(name,function(e){e.preventDefault();e.stopPropagation();drop.classList.add("drag")})
+});
+["dragleave","drop"].forEach(function(name){
+  drop.addEventListener(name,function(e){e.preventDefault();e.stopPropagation();drop.classList.remove("drag")})
+});
+drop.addEventListener("drop",function(e){readFile(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0])});
 
 loadGame(SAMPLE,"內建範例棋譜");
 })();
