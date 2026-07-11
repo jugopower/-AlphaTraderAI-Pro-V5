@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f0c09" />
-  <title>AlphaTraderAI Pro V5.0｜朱老師 AI 圍棋教室</title>
+  <title>AlphaTraderAI Pro V5.0｜Build001-003</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -15,38 +15,56 @@
         <h1>AlphaTraderAI Pro V5.0</h1>
         <p class="subtitle">朱老師 AI 圍棋教室</p>
       </div>
-      <div class="club-badge"><strong>汐止圍棋club</strong><span>Build001-002</span></div>
+      <div class="version-badge">Build001-003</div>
     </header>
 
     <main>
       <section class="hero-panel">
-        <span class="hero-kicker">Premium 棋盤互動版</span>
-        <h2>13 路教學棋盤，棋子精準落在交叉點。</h2>
-        <p>可切換 9／13／19 路、點擊落子、悔棋與清空棋盤，已針對 iPad Air 觸控操作調整。</p>
+        <span class="hero-kicker">正式圍棋規則引擎</span>
+        <h2>可判斷氣、提子、自殺棋與打劫。</h2>
+        <p>本版已加入真正的圍棋規則，適合在 iPad Air 上直接測試。</p>
       </section>
 
       <section class="board-card">
         <div class="board-card-head">
-          <div><p class="eyebrow">PREMIUM GO BOARD</p><h2 id="boardTitle">13 路棋盤</h2></div>
-          <div class="turn-indicator" id="turnIndicator"><span class="turn-dot black"></span>黑棋落子</div>
+          <div>
+            <p class="eyebrow">PREMIUM GO BOARD</p>
+            <h2 id="boardTitle">13 路棋盤</h2>
+          </div>
+          <div class="turn-indicator" id="turnIndicator"></div>
         </div>
 
-        <div class="board-stage"><canvas id="goBoard" aria-label="圍棋棋盤"></canvas></div>
+        <div class="score-row">
+          <div>黑提子：<strong id="blackCaptures">0</strong></div>
+          <div>白提子：<strong id="whiteCaptures">0</strong></div>
+          <div id="message" class="message">請黑棋落子</div>
+        </div>
 
-        <div class="toolbar" role="toolbar">
-          <button type="button" id="undoBtn">↶ 悔棋</button>
-          <button type="button" id="clearBtn">○ 清空棋盤</button>
+        <div class="board-stage">
+          <canvas id="goBoard" aria-label="圍棋棋盤"></canvas>
+        </div>
+
+        <div class="toolbar">
+          <button id="undoBtn" type="button">↶ 悔棋</button>
+          <button id="clearBtn" type="button">○ 清空棋盤</button>
+
           <div class="size-group">
             <button type="button" data-size="9">9 路</button>
             <button type="button" data-size="13" class="active">13 路</button>
             <button type="button" data-size="19">19 路</button>
           </div>
         </div>
-        <p class="board-help">點一下交叉點即可落子；黑白會自動輪流。</p>
+
+        <p class="board-help">
+          點交叉點落子。無氣棋會自動提除；禁止自殺棋；同一劫爭位置不可立即回提。
+        </p>
       </section>
     </main>
 
-    <footer><p>汐止圍棋club｜朱老師 AI 圍棋教室</p><p>Build001-002</p></footer>
+    <footer>
+      <span>汐止圍棋club｜朱老師 AI 圍棋教室</span>
+      <span>AlphaTraderAI Pro V5.0</span>
+    </footer>
   </div>
 
   <script src="board.js"></script>
