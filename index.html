@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-016 Ultimate Professional</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-017 Stable View Engine</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-016 Ultimate Professional: display-only refinements */
+/* Build002-017 Stable View Engine: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-016 Ultimate Professional */
+/* Build002-017 Stable View Engine */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -49,7 +49,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 #goBoard{margin-left:auto;margin-right:auto;display:block}
 #customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
 
-/* Build002-016 Ultimate Professional */
+/* Build002-017 Stable View Engine */
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -88,7 +88,7 @@ body{
 }
 
 
-/* Build002-016 Ultimate Professional */
+/* Build002-017 Stable View Engine */
 .compactbar{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto auto;
@@ -161,7 +161,7 @@ body.board-focus .timeline{
 body.board-focus .stage{width:min(96vw,calc(100dvh - 190px),1000px)}
 body.board-focus #goBoard{width:100%!important;height:auto!important}
 .work{align-items:start}
-.stage{transition:width .18s ease}
+.stage{transition:none}
 @media (orientation:portrait){
   body.mode-minimal .stage{
     width:min(96vw,calc(100dvh - 250px),920px);
@@ -188,11 +188,49 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
   body.info-open.mode-minimal .side{grid-template-columns:1fr}
 }
 
+
+/* Build002-017 Stable View Engine */
+html{
+  scroll-behavior:auto!important;
+  overflow-anchor:none;
+}
+body{
+  overflow-anchor:none;
+  overscroll-behavior-y:none;
+}
+.compactbar,.boardbox,.stage,#goBoard,.controls,.timeline{
+  overflow-anchor:none;
+}
+.boardbox{
+  contain:layout paint;
+}
+.stage{
+  position:relative;
+  flex:none;
+}
+#goBoard{
+  position:relative;
+  flex:none;
+}
+button,select,input{
+  scroll-margin:0!important;
+}
+body.view-switching *{
+  transition:none!important;
+  animation:none!important;
+}
+@media (orientation:portrait){
+  .boardbox{min-height:auto}
+}
+@media (orientation:landscape){
+  .boardbox{min-height:auto!important}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-016</div></header>
+<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-017</div></header>
 <section class="panel compactbar">
   <button class="iconBtn" id="toggleInfoBtn">☰ 資訊</button>
   <div class="compactTitle"><strong id="compactGameName">內建範例棋譜</strong><span id="compactMove">0 / 10</span></div>
@@ -205,8 +243,8 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
 </section>
 <section class="panel hero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Ultimate Professional：棋盤最大化，資訊按需展開。</h2>
-<p>直放採極簡模式，橫放採可收合雙欄；棋盤永遠優先，其他資訊需要時再顯示。</p>
+<h2>Stable View Engine：操作時棋盤固定，不再跳動或滑走。</h2>
+<p>切換橫直、模式、第一手、下一手、播放與滑桿時，只更新棋盤內容，不改變頁面捲動位置。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
 
@@ -255,7 +293,7 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
 <section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-016 Ultimate Professional</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-017 Stable View Engine</span></footer>
 </div>
 
 <script>
@@ -265,7 +303,7 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-016 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-017 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -329,13 +367,16 @@ function Board(canvas){
  this._resizeTimer=null;
  this.queueResize=function(){
    clearTimeout(this._resizeTimer);
-   this._resizeTimer=setTimeout(this.resize,120);
+   captureView();
+   this._resizeTimer=setTimeout(function(){
+     this.resize();
+     restoreView();
+   }.bind(this),180);
  }.bind(this);
  window.addEventListener("resize",this.queueResize);
  window.addEventListener("orientationchange",this.queueResize);
  if(window.visualViewport){
    window.visualViewport.addEventListener("resize",this.queueResize);
-   window.visualViewport.addEventListener("scroll",this.queueResize);
  }
  this.resize();
 }
@@ -400,8 +441,10 @@ Board.prototype.draw=function(){
 };
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userGameLocked=false,currentGameName="內建範例棋譜";
+var stableView={scrollX:0,scrollY:0,boardTop:0,locked:false,restoreTimer:null};
 function meta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){
+ var sx=window.scrollX||0,sy=window.scrollY||0;
  board.position(game,index);
  id("boardTitle").textContent=game.size+" 路棋盤";
  id("moveBadge").textContent="第 "+index+" 手";
@@ -410,6 +453,7 @@ function render(){
  id("counter").textContent=index+" / "+game.moves.length;
  id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
  id("compactMove").textContent=index+" / "+game.moves.length;
+ requestAnimationFrame(function(){window.scrollTo(sx,sy)});
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶ 播放"}
 function load(g,name,source){
@@ -447,33 +491,85 @@ id("showLast").onchange=render;
 id("stoneScale").onchange=render;
 
 
+
+function captureView(){
+ stableView.scrollX=window.scrollX||0;
+ stableView.scrollY=window.scrollY||0;
+ var r=id("goBoard").getBoundingClientRect();
+ stableView.boardTop=r.top;
+}
+function restoreView(){
+ clearTimeout(stableView.restoreTimer);
+ var tries=0;
+ function keep(){
+   window.scrollTo(stableView.scrollX,stableView.scrollY);
+   tries++;
+   if(tries<5)stableView.restoreTimer=setTimeout(keep,50);
+ }
+ requestAnimationFrame(keep);
+}
+function withStableView(fn,resizeDelay){
+ if(stableView.locked){fn();return}
+ stableView.locked=true;
+ captureView();
+ document.body.classList.add("view-switching");
+ try{fn()}finally{
+   setTimeout(function(){
+     board.resize();
+     restoreView();
+     document.body.classList.remove("view-switching");
+     stableView.locked=false;
+   },resizeDelay||0);
+ }
+}
+
 function applyMode(mode){
- document.body.classList.remove("mode-minimal","mode-teaching","mode-full","info-open");
- document.body.classList.add("mode-"+mode);
- id("viewMode").value=mode;
- try{localStorage.setItem("goViewMode",mode)}catch(e){}
- setTimeout(function(){board.resize()},80);
+ withStableView(function(){
+   document.body.classList.remove("mode-minimal","mode-teaching","mode-full","info-open");
+   document.body.classList.add("mode-"+mode);
+   id("viewMode").value=mode;
+   try{localStorage.setItem("goViewMode",mode)}catch(e){}
+ },100);
 }
 id("viewMode").addEventListener("change",function(){applyMode(this.value)});
 id("toggleInfoBtn").addEventListener("click",function(){
- document.body.classList.toggle("info-open");
- setTimeout(function(){board.resize()},80);
+ withStableView(function(){document.body.classList.toggle("info-open")},100);
 });
 id("focusBtn").addEventListener("click",function(){
- document.body.classList.toggle("board-focus");
- this.textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
- setTimeout(function(){board.resize()},120);
+ var btn=this;
+ withStableView(function(){
+   document.body.classList.toggle("board-focus");
+   btn.textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
+ },140);
 });
 id("goBoard").addEventListener("dblclick",function(){
- document.body.classList.toggle("board-focus");
- id("focusBtn").textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
- setTimeout(function(){board.resize()},120);
+ withStableView(function(){
+   document.body.classList.toggle("board-focus");
+   id("focusBtn").textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
+ },140);
 });
+
+["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","toggleInfoBtn","focusBtn"].forEach(function(k){
+ var el=id(k);
+ if(!el)return;
+ el.addEventListener("pointerdown",function(e){
+   e.preventDefault();
+   this.blur();
+ },{passive:false});
+});
+id("moveRange").addEventListener("touchstart",function(){captureView()},{passive:true});
+id("moveRange").addEventListener("touchend",function(){restoreView()},{passive:true});
+window.addEventListener("focusin",function(e){
+ if(e.target&&e.target.tagName==="BUTTON"){
+   e.target.blur();
+ }
+});
+
 var savedMode="minimal";
 try{savedMode=localStorage.getItem("goViewMode")||"minimal"}catch(e){}
 applyMode(savedMode);
 
-log("Ultimate Professional：極簡、教學、完整三種模式；棋盤資訊可收合");
+log("Stable View Engine：按鈕、模式切換、橫直旋轉與滑桿操作均鎖定目前捲動位置");
 if(!userGameLocked){
   load(SAMPLE,"內建範例棋譜","startup");
 }
