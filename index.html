@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f0c09" />
-  <title>AlphaTraderAI Pro V5.0｜Build001-003</title>
+  <title>AlphaTraderAI Pro V5.0｜Build001-004</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -15,58 +15,87 @@
         <h1>AlphaTraderAI Pro V5.0</h1>
         <p class="subtitle">朱老師 AI 圍棋教室</p>
       </div>
-      <div class="version-badge">Build001-003</div>
+      <div class="version-badge">Build001-004</div>
     </header>
 
     <main>
       <section class="hero-panel">
-        <span class="hero-kicker">正式圍棋規則引擎</span>
-        <h2>可判斷氣、提子、自殺棋與打劫。</h2>
-        <p>本版已加入真正的圍棋規則，適合在 iPad Air 上直接測試。</p>
+        <span class="hero-kicker">SGF 棋譜播放器</span>
+        <h2>可載入 SGF、逐手播放、快轉與查看棋譜資訊。</h2>
+        <p>支援 iPad Air 的檔案選擇器，也可直接載入內建範例棋譜。</p>
       </section>
 
-      <section class="board-card">
-        <div class="board-card-head">
-          <div>
-            <p class="eyebrow">PREMIUM GO BOARD</p>
-            <h2 id="boardTitle">13 路棋盤</h2>
+      <section class="workspace">
+        <div class="board-card">
+          <div class="board-card-head">
+            <div>
+              <p class="eyebrow">PREMIUM GO BOARD</p>
+              <h2 id="boardTitle">19 路棋盤</h2>
+            </div>
+            <div class="move-badge" id="moveBadge">第 0 手</div>
           </div>
-          <div class="turn-indicator" id="turnIndicator"></div>
-        </div>
 
-        <div class="score-row">
-          <div>黑提子：<strong id="blackCaptures">0</strong></div>
-          <div>白提子：<strong id="whiteCaptures">0</strong></div>
-          <div id="message" class="message">請黑棋落子</div>
-        </div>
+          <div class="board-stage">
+            <canvas id="goBoard" aria-label="圍棋棋盤"></canvas>
+          </div>
 
-        <div class="board-stage">
-          <canvas id="goBoard" aria-label="圍棋棋盤"></canvas>
-        </div>
+          <div class="player-toolbar">
+            <button id="firstBtn" type="button" aria-label="第一手">⏮</button>
+            <button id="prevBtn" type="button" aria-label="上一手">◀</button>
+            <button id="playBtn" type="button" aria-label="播放">▶ 播放</button>
+            <button id="nextBtn" type="button" aria-label="下一手">▶</button>
+            <button id="lastBtn" type="button" aria-label="最後一手">⏭</button>
+          </div>
 
-        <div class="toolbar">
-          <button id="undoBtn" type="button">↶ 悔棋</button>
-          <button id="clearBtn" type="button">○ 清空棋盤</button>
-
-          <div class="size-group">
-            <button type="button" data-size="9">9 路</button>
-            <button type="button" data-size="13" class="active">13 路</button>
-            <button type="button" data-size="19">19 路</button>
+          <div class="slider-row">
+            <input id="moveSlider" type="range" min="0" max="0" value="0" />
+            <span id="moveCounter">0 / 0</span>
           </div>
         </div>
 
-        <p class="board-help">
-          點交叉點落子。無氣棋會自動提除；禁止自殺棋；同一劫爭位置不可立即回提。
-        </p>
+        <aside class="side-panel">
+          <section class="panel-block">
+            <p class="eyebrow">載入棋譜</p>
+            <label class="file-button" for="sgfFile">📂 選擇 SGF 檔案</label>
+            <input id="sgfFile" type="file" accept=".sgf,application/x-go-sgf,text/plain" hidden />
+            <button id="sampleBtn" class="secondary-btn" type="button">載入範例棋譜</button>
+          </section>
+
+          <section class="panel-block">
+            <p class="eyebrow">棋譜資訊</p>
+            <dl class="metadata-list">
+              <div><dt>黑方</dt><dd id="blackName">—</dd></div>
+              <div><dt>白方</dt><dd id="whiteName">—</dd></div>
+              <div><dt>結果</dt><dd id="result">—</dd></div>
+              <div><dt>日期</dt><dd id="gameDate">—</dd></div>
+              <div><dt>賽事</dt><dd id="eventName">—</dd></div>
+              <div><dt>貼目</dt><dd id="komi">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="panel-block">
+            <p class="eyebrow">播放設定</p>
+            <label class="speed-row">
+              <span>速度</span>
+              <select id="speedSelect">
+                <option value="1600">慢速</option>
+                <option value="900" selected>正常</option>
+                <option value="450">快速</option>
+              </select>
+            </label>
+            <p class="status-message" id="statusMessage">請載入 SGF 棋譜。</p>
+          </section>
+        </aside>
       </section>
     </main>
 
     <footer>
       <span>汐止圍棋club｜朱老師 AI 圍棋教室</span>
-      <span>AlphaTraderAI Pro V5.0</span>
+      <span>AlphaTraderAI Pro V5.0 · Build001-004</span>
     </footer>
   </div>
 
+  <script src="sgf.js"></script>
   <script src="board.js"></script>
   <script src="app.js"></script>
 </body>
