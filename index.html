@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-015 Responsive iPad</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-016 Ultimate Professional</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-015 Responsive iPad: display-only refinements */
+/* Build002-016 Ultimate Professional: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-015 Responsive iPad */
+/* Build002-016 Ultimate Professional */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -49,7 +49,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 #goBoard{margin-left:auto;margin-right:auto;display:block}
 #customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
 
-/* Build002-015 Responsive iPad */
+/* Build002-016 Ultimate Professional */
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -87,15 +87,126 @@ body{
   .side{grid-template-columns:1fr}
 }
 
+
+/* Build002-016 Ultimate Professional */
+.compactbar{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
+  margin-bottom:10px;
+  position:sticky;
+  top:calc(var(--safe-top) + 4px);
+  z-index:20;
+  backdrop-filter:blur(14px);
+}
+.compactTitle{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  line-height:1.15;
+}
+.compactTitle strong{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.compactTitle span{color:var(--gold);font-size:13px;margin-top:3px}
+.iconBtn,#viewMode{
+  border:1px solid #ffffff20;
+  border-radius:11px;
+  background:#ffffff0c;
+  color:var(--text);
+  min-height:42px;
+  padding:8px 11px;
+  font-weight:800;
+}
+.hero{display:none}
+body.mode-full .hero{display:block}
+body.mode-minimal .side{display:none!important}
+body.mode-minimal .work{grid-template-columns:1fr}
+body.mode-minimal .boardbox{padding:6px}
+body.mode-minimal .boardbox .head{padding:2px 4px 7px}
+body.mode-minimal footer{display:none}
+body.mode-teaching .advancedBlock,
+body.mode-teaching .metaBlock{display:none}
+body.mode-teaching .work{grid-template-columns:minmax(0,1fr) 330px}
+body.mode-full .side{display:block}
+body.info-open.mode-minimal .side{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  margin-top:10px;
+}
+body.info-open.mode-minimal .advancedBlock{display:none}
+body.board-focus .compactbar,
+body.board-focus .top,
+body.board-focus footer,
+body.board-focus .side,
+body.board-focus .head{display:none!important}
+body.board-focus .app{width:100%;padding:0}
+body.board-focus .work{display:block}
+body.board-focus .boardbox{
+  border:0;
+  border-radius:0;
+  min-height:100dvh;
+  justify-content:center;
+  background:#0b0806;
+  padding:calc(var(--safe-top) + 4px) calc(var(--safe-right) + 4px) calc(var(--safe-bottom) + 4px) calc(var(--safe-left) + 4px);
+}
+body.board-focus .controls,
+body.board-focus .timeline{
+  width:min(920px,96vw);
+}
+body.board-focus .stage{width:min(96vw,calc(100dvh - 190px),1000px)}
+body.board-focus #goBoard{width:100%!important;height:auto!important}
+.work{align-items:start}
+.stage{transition:width .18s ease}
+@media (orientation:portrait){
+  body.mode-minimal .stage{
+    width:min(96vw,calc(100dvh - 250px),920px);
+  }
+  body.mode-minimal .controls{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+  }
+  body.mode-minimal #playBtn{grid-column:span 2}
+  body.mode-teaching .work{grid-template-columns:1fr}
+  body.mode-teaching .side{display:grid;grid-template-columns:1fr}
+}
+@media (orientation:landscape){
+  body.mode-minimal .stage{
+    width:min(70vw,calc(100dvh - 205px),980px);
+  }
+  body.mode-minimal .boardbox{min-height:calc(100dvh - 90px)}
+  body.mode-teaching .stage{width:min(65vw,calc(100dvh - 210px),920px)}
+  body.mode-full .work{grid-template-columns:minmax(0,1fr) 360px}
+}
+@media(max-width:760px){
+  .compactbar{grid-template-columns:auto minmax(0,1fr) auto}
+  #focusBtn{grid-column:1/-1}
+  body.info-open.mode-minimal .side{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-015</div></header>
+<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-016</div></header>
+<section class="panel compactbar">
+  <button class="iconBtn" id="toggleInfoBtn">☰ 資訊</button>
+  <div class="compactTitle"><strong id="compactGameName">內建範例棋譜</strong><span id="compactMove">0 / 10</span></div>
+  <select id="viewMode" aria-label="顯示模式">
+    <option value="minimal" selected>極簡模式</option>
+    <option value="teaching">教學模式</option>
+    <option value="full">完整模式</option>
+  </select>
+  <button class="iconBtn" id="focusBtn">⛶ 棋盤</button>
+</section>
 <section class="panel hero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Responsive iPad：橫放、直放都完整顯示棋盤。</h2>
-<p>依 iPad 方向與可視範圍自動縮放棋盤，保留完整邊界，不遮住最外圈棋子。</p>
+<h2>Ultimate Professional：棋盤最大化，資訊按需展開。</h2>
+<p>直放採極簡模式，橫放採可收合雙欄；棋盤永遠優先，其他資訊需要時再顯示。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
 
@@ -108,7 +219,7 @@ body{
 </div>
 
 <aside class="panel side">
-<section class="block" id="importBox">
+<section class="block infoBlock importBlock" id="importBox">
 <h3>選擇 SGF 檔案</h3>
 <input class="native-file" id="sgfFile" type="file">
 <p class="selected" id="selectedFile">尚未選擇檔案</p>
@@ -116,13 +227,13 @@ body{
 <button class="btn" id="sampleBtn">切換至 10 手範例棋譜</button>
 </section>
 
-<section class="block"><h3>貼上 SGF 文字（備用）</h3><textarea id="sgfText" placeholder="貼上完整 SGF，例如 (;GM[1]FF[4]SZ[19]...)"></textarea><button class="btn primary" id="loadTextBtn">載入貼上的 SGF</button></section>
+<section class="block infoBlock advancedBlock"><h3>貼上 SGF 文字（備用）</h3><textarea id="sgfText" placeholder="貼上完整 SGF，例如 (;GM[1]FF[4]SZ[19]...)"></textarea><button class="btn primary" id="loadTextBtn">載入貼上的 SGF</button></section>
 
-<section class="block"><h3>棋譜資訊</h3><dl class="meta">
+<section class="block infoBlock metaBlock"><h3>棋譜資訊</h3><dl class="meta">
 <div><dt>黑方</dt><dd id="pb">—</dd></div><div><dt>白方</dt><dd id="pw">—</dd></div><div><dt>結果</dt><dd id="re">—</dd></div><div><dt>日期</dt><dd id="dt">—</dd></div><div><dt>賽事</dt><dd id="ev">—</dd></div><div><dt>貼目</dt><dd id="km">—</dd></div><div><dt>讓子</dt><dd id="ha">—</dd></div><div><dt>總手數</dt><dd id="totalMoves">10</dd></div>
 </dl></section>
 
-<section class="block"><h3>顯示／播放</h3>
+<section class="block infoBlock settingsBlock"><h3>顯示／播放</h3>
 <label class="opt"><span>手順顯示</span><select id="numberMode">
 <option value="all" selected>顯示全部</option>
 <option value="none">不顯示</option>
@@ -139,12 +250,12 @@ body{
 <label class="opt"><span>速度</span><select id="speed"><option value="1500">慢</option><option value="850" selected>正常</option><option value="400">快</option></select></label>
 </section>
 
-<section class="block"><h3>本手註解</h3><p class="comment" id="comment">棋譜起始位置。</p></section>
-<section class="block"><h3>系統訊息</h3><p class="status" id="status">正在初始化。</p></section>
-<section class="block"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
+<section class="block infoBlock teachingBlock"><h3>本手註解</h3><p class="comment" id="comment">棋譜起始位置。</p></section>
+<section class="block infoBlock advancedBlock"><h3>系統訊息</h3><p class="status" id="status">正在初始化。</p></section>
+<section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-015 Responsive iPad</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-016 Ultimate Professional</span></footer>
 </div>
 
 <script>
@@ -154,7 +265,7 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-015 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-016 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -298,13 +409,14 @@ function render(){
  id("moveRange").value=index;
  id("counter").textContent=index+" / "+game.moves.length;
  id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
+ id("compactMove").textContent=index+" / "+game.moves.length;
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶ 播放"}
 function load(g,name,source){
  stop();
  game=g;
  index=0;
- currentGameName=name;
+ currentGameName=name;id("compactGameName").textContent=name;
  if(source==="user")userGameLocked=true;
  if(source==="sample")userGameLocked=false;
  meta();
@@ -334,7 +446,34 @@ id("customNumberCount").oninput=render;
 id("showLast").onchange=render;
 id("stoneScale").onchange=render;
 
-log("Responsive iPad：橫放、直放與 Safari 工具列變化時，棋盤會自動重算並完整置中");
+
+function applyMode(mode){
+ document.body.classList.remove("mode-minimal","mode-teaching","mode-full","info-open");
+ document.body.classList.add("mode-"+mode);
+ id("viewMode").value=mode;
+ try{localStorage.setItem("goViewMode",mode)}catch(e){}
+ setTimeout(function(){board.resize()},80);
+}
+id("viewMode").addEventListener("change",function(){applyMode(this.value)});
+id("toggleInfoBtn").addEventListener("click",function(){
+ document.body.classList.toggle("info-open");
+ setTimeout(function(){board.resize()},80);
+});
+id("focusBtn").addEventListener("click",function(){
+ document.body.classList.toggle("board-focus");
+ this.textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
+ setTimeout(function(){board.resize()},120);
+});
+id("goBoard").addEventListener("dblclick",function(){
+ document.body.classList.toggle("board-focus");
+ id("focusBtn").textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
+ setTimeout(function(){board.resize()},120);
+});
+var savedMode="minimal";
+try{savedMode=localStorage.getItem("goViewMode")||"minimal"}catch(e){}
+applyMode(savedMode);
+
+log("Ultimate Professional：極簡、教學、完整三種模式；棋盤資訊可收合");
 if(!userGameLocked){
   load(SAMPLE,"內建範例棋譜","startup");
 }
