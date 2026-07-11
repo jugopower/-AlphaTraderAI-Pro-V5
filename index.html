@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#17120d" />
+  <title>AlphaTraderAI Pro V5.0｜朱老師 AI 圍棋教室</title>
+  <meta name="description" content="AlphaTraderAI Pro V5.0－朱老師 AI 圍棋教室，專為 iPad Air 打造的圍棋教學平台。" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="stone black"></span>
+          <span class="stone white"></span>
+        </div>
+        <div>
+          <p class="eyebrow">AI GO TEACHING PLATFORM</p>
+          <h1>AlphaTraderAI Pro V5.0</h1>
+          <p class="subtitle">朱老師 AI 圍棋教室</p>
+        </div>
+      </div>
+      <div class="club-badge">
+        <strong>汐止圍棋club</strong>
+        <span>創立於 1985</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <span class="hero-kicker">AI 對局 × 實戰解析 × 棋力提升</span>
+          <h2>把棋譜、死活題與教學內容，集中在同一個平台。</h2>
+          <p>第一版先完成 iPad Air 可用的教學首頁，接著逐步加入 Premium 棋盤、SGF 播放器與 13 路死活教室。</p>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-action="teaching"><span class="button-icon">▶</span>開始教學</button>
+            <button class="secondary-button" type="button" data-action="demo">查看棋盤展示</button>
+          </div>
+        </div>
+
+        <div class="board-preview" aria-label="13 路棋盤展示">
+          <div class="preview-label"><span>Premium Go Board</span><strong>13 路</strong></div>
+          <div class="mini-board" aria-hidden="true">
+            <div class="grid"></div>
+            <span class="preview-stone black s1"></span>
+            <span class="preview-stone white s2"></span>
+            <span class="preview-stone black s3"></span>
+            <span class="preview-stone white s4"></span>
+            <span class="preview-stone black s5"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-heading">
+        <div><p class="eyebrow">BUILD 001</p><h2>教學首頁</h2></div>
+        <span class="version-chip">Demo V1.0</span>
+      </section>
+
+      <section class="feature-grid" aria-label="主要功能">
+        <button class="feature-card active-card" type="button" data-action="teaching">
+          <span class="feature-icon">🎓</span>
+          <span class="feature-content"><strong>教學模式</strong><small>大畫面、簡潔工具列，適合課堂與投影。</small></span>
+          <span class="arrow">→</span>
+        </button>
+        <button class="feature-card" type="button" data-action="sgf">
+          <span class="feature-icon">📂</span>
+          <span class="feature-content"><strong>棋譜中心</strong><small>未來可匯入 SGF、管理棋譜與播放對局。</small></span>
+          <span class="status-badge">下一版</span>
+        </button>
+        <button class="feature-card" type="button" data-action="problem">
+          <span class="feature-icon">🧩</span>
+          <span class="feature-content"><strong>13 路死活教室</strong><small>黑先活、白先殺、手筋與課堂練習。</small></span>
+          <span class="status-badge">規劃中</span>
+        </button>
+        <button class="feature-card" type="button" data-action="settings">
+          <span class="feature-icon">⚙️</span>
+          <span class="feature-content"><strong>系統設定</strong><small>棋盤主題、棋子樣式與 iPad 顯示設定。</small></span>
+          <span class="status-badge">規劃中</span>
+        </button>
+      </section>
+
+      <section class="status-panel">
+        <div><p class="eyebrow">目前版本</p><h3>Build 001－首頁 Alpha</h3></div>
+        <div class="status-items">
+          <span class="status-item complete">首頁介面</span>
+          <span class="status-item pending">Premium 棋盤</span>
+          <span class="status-item pending">SGF 播放器</span>
+          <span class="status-item pending">13 路死活</span>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>汐止圍棋club｜朱老師 AI 圍棋教室</p>
+      <p>AlphaTraderAI Pro V5.0 · Build 001</p>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const toast = document.getElementById("toast");
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(window.__toastTimer);
+      window.__toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+    document.querySelectorAll("[data-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const messages = {
+          teaching: "教學模式將在 Premium 棋盤完成後啟用。",
+          demo: "下一步會加入 9／13／19 路 Premium 棋盤。",
+          sgf: "SGF 棋譜中心列入下一個 Build。",
+          problem: "13 路死活教室已列入後續版本。",
+          settings: "系統設定將在棋盤模組完成後加入。"
+        };
+        showToast(messages[button.dataset.action] || "功能開發中。");
+      });
+    });
+  </script>
+</body>
+</html>
