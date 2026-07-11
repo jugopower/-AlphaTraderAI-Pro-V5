@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f0c09">
+<title>AlphaTraderAI Pro V5.0｜Build001-005 Fix 1</title>
+<style>
+:root{--bg:#0f0c09;--panel:#211912ee;--line:#f5d69d29;--text:#fff8eb;--muted:#d9c8ad;--gold:#f2c56b}
+*{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;background:radial-gradient(circle at 15% 0,#f2c56b20,transparent 34%),linear-gradient(160deg,#1a130e,#080605)}
+button,input,select{font:inherit}
+.app{width:min(1240px,calc(100% - 14px));margin:auto;padding:12px 0 22px}
+.card,.top,.hero,.tabs{border:1px solid var(--line);box-shadow:0 18px 50px #0006;background:var(--panel)}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 17px;border-radius:21px;margin-bottom:14px}
+.top h1{margin:0;font-size:clamp(22px,3vw,34px)}.sub{margin:3px 0 0;color:var(--muted)}.ver{padding:9px 12px;border-radius:13px;background:linear-gradient(145deg,#f6d38e,#d6a447);color:#261607;font-weight:800}
+.hero{padding:clamp(18px,4vw,34px);border-radius:26px;margin-bottom:12px}.hero h2{margin:8px 0 10px;font-size:clamp(28px,4.5vw,52px);line-height:1.07}.hero p{margin:0;color:var(--muted);font-size:17px}
+.gold{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.13em}
+.tabs{display:flex;gap:8px;padding:8px;border-radius:17px;margin-bottom:12px}.tabs button{flex:1;min-height:46px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-weight:800}.tabs .active{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609}
+.work{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}.card{border-radius:25px}.board-card{padding:10px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 4px 9px}.head h2{margin:2px 0 0}.badge{padding:8px 11px;border-radius:999px;background:#f2c56b;color:#251609;font-weight:800}
+.opts{display:flex;gap:18px;flex-wrap:wrap;padding:9px 11px;margin-bottom:9px;border-radius:12px;background:#ffffff0b;color:var(--muted)}.opts input{accent-color:var(--gold)}
+.stage{display:grid;place-items:center;overflow:hidden;border-radius:20px;background:linear-gradient(145deg,#e7b86d,#bd7c34)}
+#goBoard{display:block;width:100%;height:auto;max-width:900px;touch-action:manipulation}
+.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}.controls button,.btn{min-height:45px;padding:9px 14px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0c;color:var(--text);font-weight:800}.controls button:active,.btn:active{transform:scale(.98)}
+.slider{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:11px}.slider input{width:100%;accent-color:var(--gold)}.count{color:var(--muted)}
+.side{padding:12px}.block{padding:13px;border-radius:16px;background:#ffffff09}.block+.block{margin-top:10px}.btn{display:block;width:100%;text-align:center;margin-top:8px}.primary{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;border:0}.problem{padding:10px;border-radius:11px;background:#f2c56b16;color:var(--gold);font-weight:800}
+dl{margin:0}dl div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff12}dt{color:var(--muted)}dd{margin:0;text-align:right;font-weight:700}.speed{display:flex;justify-content:space-between;align-items:center;color:var(--muted)}select{padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20}.status{margin:10px 0 0;color:var(--gold);line-height:1.45}
+footer{display:flex;justify-content:space-between;gap:8px;padding:14px 4px 2px;color:#a9967c;font-size:13px}
+[hidden]{display:none!important}
+@media(max-width:930px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.block+.block{margin-top:0}}
+@media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.slider{grid-template-columns:1fr}footer{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build001-005 Fix 1</div></header>
+
+<section class="hero"><div class="gold">教學棋盤修正版</div><h2>棋盤格線、星位、棋子與手順已恢復。</h2><p>初始題型棋子不顯示數字；解答手順顯示 1、2、3……，適用 9／13／19 路。</p></section>
+
+<nav class="tabs"><button id="sgfTab" class="active">📂 棋譜模式</button><button id="problemTab">🧩 死活題模式</button></nav>
+
+<section class="work">
+  <div class="card board-card">
+    <div class="head"><div><div class="gold">PREMIUM GO BOARD</div><h2 id="boardTitle">19 路棋盤</h2></div><div class="badge" id="moveBadge">第 0 手</div></div>
+    <div class="opts"><label><input id="showNumbers" type="checkbox" checked> 顯示手順</label><label><input id="showLast" type="checkbox" checked> 最新一手</label></div>
+    <div class="stage"><canvas id="goBoard"></canvas></div>
+    <div class="controls"><button id="firstBtn">⏮</button><button id="prevBtn">◀</button><button id="playBtn">▶ 播放</button><button id="nextBtn">▶</button><button id="lastBtn">⏭</button></div>
+    <div class="slider"><input id="moveRange" type="range" min="0" max="0" value="0"><span class="count" id="counter">0 / 0</span></div>
+  </div>
+
+  <aside class="card side">
+    <section class="block sgfOnly"><div class="gold">載入棋譜</div><label class="btn primary" for="sgfFile">📂 選擇 SGF</label><input id="sgfFile" type="file" accept=".sgf,text/plain" hidden><button class="btn" id="sampleBtn">載入範例棋譜</button></section>
+    <section class="block problemOnly" hidden><div class="gold">死活題</div><h3>13 路示範題</h3><p class="problem">黑先殺白</p><button class="btn" id="restartBtn">重新作答</button><button class="btn primary" id="answerBtn">顯示答案</button></section>
+    <section class="block"><div class="gold">棋譜／題目資訊</div><dl><div><dt>黑方</dt><dd id="pb">—</dd></div><div><dt>白方</dt><dd id="pw">—</dd></div><div><dt>結果</dt><dd id="re">—</dd></div><div><dt>日期</dt><dd id="dt">—</dd></div><div><dt>名稱</dt><dd id="ev">—</dd></div><div><dt>貼目</dt><dd id="km">—</dd></div></dl></section>
+    <section class="block"><div class="gold">播放設定</div><label class="speed"><span>速度</span><select id="speedSelect"><option value="1600">慢速</option><option value="900" selected>正常</option><option value="450">快速</option></select></label><p class="status" id="status">載入中……</p></section>
+  </aside>
+</section>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build001-005 Fix 1</span></footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+class SGFParser{
+  static parse(text){
+    if(typeof text!=="string"||!text.includes("(;"))throw new Error("SGF 格式不正確");
+    const main=this.main(text.slice(text.indexOf("(;")));
+    const nodes=this.nodes(main);
+    const root=this.props(nodes[0]||"");
+    const meta={pb:root.PB?.[0]||"—",pw:root.PW?.[0]||"—",re:root.RE?.[0]||"—",dt:root.DT?.[0]||"—",ev:root.EV?.[0]||root.GN?.[0]||"—",km:root.KM?.[0]||"—"};
+    const setup=[],moves=[];
+    (root.AB||[]).forEach(v=>setup.push({c:1,...this.xy(v)}));
+    (root.AW||[]).forEach(v=>setup.push({c:-1,...this.xy(v)}));
+    for(let i=1;i<nodes.length;i++){
+      const p=this.props(nodes[i]);
+      if(p.B)moves.push({c:1,...this.xy(p.B[0]),comment:p.C?.[0]||""});
+      else if(p.W)moves.push({c:-1,...this.xy(p.W[0]),comment:p.C?.[0]||""});
+    }
+    return{size:Number(root.SZ?.[0]||19),meta,setup,moves};
+  }
+  static main(t){let o="",d=0,v=false,e=false;for(const ch of t){if(e){if(d<=1)o+=ch;e=false;continue}if(ch==="\\"){if(d<=1)o+=ch;e=true;continue}if(ch==="[")v=true;if(ch==="]")v=false;if(!v&&ch==="("){d++;if(d===1)continue}if(!v&&ch===")"){if(d===1)break;d--;continue}if(d<=1)o+=ch}return o}
+  static nodes(t){const a=[];let c="",v=false,e=false;for(const ch of t){if(e){c+=ch;e=false;continue}if(ch==="\\"){c+=ch;e=true;continue}if(ch==="[")v=true;if(ch==="]")v=false;if(ch===";"&&!v){if(c.trim())a.push(c);c=""}else c+=ch}if(c.trim())a.push(c);return a}
+  static props(s){const o={},r=/([A-Z]+)((?:\[(?:\\.|[^\]])*\])+)/g;let m;while((m=r.exec(s))){const a=[],q=/\[((?:\\.|[^\]])*)\]/g;let n;while((n=q.exec(m[2])))a.push(n[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\"));o[m[1]]=a}return o}
+  static xy(v){return!v||v.length<2?{pass:true,x:-1,y:-1}:{pass:false,x:v.charCodeAt(0)-97,y:v.charCodeAt(1)-97}}
+}
+
+class BoardView{
+  constructor(canvas){
+    this.canvas=canvas;
+    this.ctx=canvas.getContext("2d");
+    if(!this.ctx)throw new Error("瀏覽器無法建立棋盤畫布");
+    this.size=19;this.grid=[];this.last=null;this.showNumbers=true;this.showLast=true;
+    this.resize=this.resize.bind(this);
+    if("ResizeObserver" in window){this.ro=new ResizeObserver(this.resize);this.ro.observe(canvas.parentElement)}
+    window.addEventListener("resize",this.resize);
+    this.resize();
+  }
+  empty(n){return Array.from({length:n},()=>Array(n).fill(null))}
+  setOptions(showNumbers,showLast){this.showNumbers=showNumbers;this.showLast=showLast;this.draw()}
+  setPosition(game,index){
+    this.size=game.size;this.grid=this.empty(game.size);this.last=null;
+    game.setup.forEach(s=>{if(!s.pass&&this.inBounds(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}});
+    for(let k=0;k<index;k++)this.applyMove(game.moves[k],k+1);
+    this.draw();
+  }
+  inBounds(x,y){return x>=0&&y>=0&&x<this.size&&y<this.size}
+  neighbors(x,y){return[[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([a,b])=>this.inBounds(a,b))}
+  group(x,y){
+    const start=this.grid[y][x]; if(!start)return{g:[],l:new Set()};
+    const stack=[[x,y]],visited=new Set(),group=[],libs=new Set();
+    while(stack.length){
+      const[a,b]=stack.pop(),key=a+","+b;if(visited.has(key))continue;
+      visited.add(key);group.push([a,b]);
+      for(const[p,q]of this.neighbors(a,b)){
+        const z=this.grid[q][p];
+        if(!z)libs.add(p+","+q);
+        else if(z.c===start.c&&!visited.has(p+","+q))stack.push([p,q]);
+      }
+    }
+    return{g:group,l:libs};
+  }
+  applyMove(m,n){
+    if(!m||m.pass||!this.inBounds(m.x,m.y)){this.last=null;return}
+    this.grid[m.y][m.x]={c:m.c,n};
+    for(const[a,b]of this.neighbors(m.x,m.y)){
+      const z=this.grid[b][a];
+      if(z&&z.c===-m.c){const r=this.group(a,b);if(r.l.size===0)r.g.forEach(([p,q])=>this.grid[q][p]=null)}
+    }
+    this.last={x:m.x,y:m.y};
+  }
+  resize(){
+    const parent=this.canvas.parentElement;
+    const size=Math.max(280,Math.min(parent.clientWidth||700,900));
+    const dpr=Math.max(1,window.devicePixelRatio||1);
+    this.canvas.style.width=size+"px";this.canvas.style.height=size+"px";
+    this.canvas.width=Math.round(size*dpr);this.canvas.height=Math.round(size*dpr);
+    this.ctx.setTransform(dpr,0,0,dpr,0,0);this.cssSize=size;this.draw();
+  }
+  geometry(){const pad=this.cssSize*.065,min=pad,max=this.cssSize-pad,cell=(max-min)/(this.size-1);return{min,max,cell}}
+  starIndexes(){return this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15]}
+  draw(){
+    if(!this.cssSize)return;
+    const x=this.ctx,{min,max,cell}=this.geometry();
+    x.clearRect(0,0,this.cssSize,this.cssSize);
+    const wood=x.createLinearGradient(0,0,this.cssSize,this.cssSize);
+    wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");
+    x.fillStyle=wood;x.fillRect(0,0,this.cssSize,this.cssSize);
+
+    x.strokeStyle="#3e2a17";x.lineWidth=Math.max(1,this.cssSize/720);
+    for(let i=0;i<this.size;i++){
+      const p=min+i*cell;
+      x.beginPath();x.moveTo(min,p);x.lineTo(max,p);x.stroke();
+      x.beginPath();x.moveTo(p,min);x.lineTo(p,max);x.stroke();
+    }
+
+    x.fillStyle="#332110";
+    for(const a of this.starIndexes())for(const b of this.starIndexes()){
+      if(this.size===9&&(a===4||b===4)&&!(a===4&&b===4))continue;
+      x.beginPath();x.arc(min+a*cell,min+b*cell,Math.max(2.5,cell*.075),0,Math.PI*2);x.fill();
+    }
+
+    const r=cell*.465;
+    for(let y=0;y<this.size;y++)for(let col=0;col<this.size;col++){
+      const s=this.grid[y][col];if(!s)continue;
+      const cx=min+col*cell,cy=min+y*cell;
+      this.drawStone(cx,cy,r,s.c);
+      if(this.showNumbers&&s.n!==null){
+        x.fillStyle=s.c===1?"#fffdf7":"#25180c";
+        x.font=`700 ${Math.max(10,r*.72)}px -apple-system,sans-serif`;
+        x.textAlign="center";x.textBaseline="middle";x.fillText(String(s.n),cx,cy+r*.03);
+      }
+    }
+    if(this.showLast&&this.last){
+      x.strokeStyle="#ef3e36";x.lineWidth=Math.max(2,r*.09);
+      x.beginPath();x.arc(min+this.last.x*cell,min+this.last.y*cell,r*.76,0,Math.PI*2);x.stroke();
+    }
+  }
+  drawStone(cx,cy,r,c){
+    const x=this.ctx;x.save();x.shadowColor="#0007";x.shadowBlur=r*.3;x.shadowOffsetX=r*.12;x.shadowOffsetY=r*.15;
+    const g=x.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);
+    if(c===1){g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");g.addColorStop(.72,"#080808");g.addColorStop(1,"#000")}
+    else{g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297")}
+    x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.fill();x.restore();
+  }
+}
+
+const el=id=>document.getElementById(id);
+const canvas=el("goBoard");
+const view=new BoardView(canvas);
+const elements={
+  sgfTab:el("sgfTab"),problemTab:el("problemTab"),boardTitle:el("boardTitle"),moveBadge:el("moveBadge"),
+  showNumbers:el("showNumbers"),showLast:el("showLast"),first:el("firstBtn"),prev:el("prevBtn"),
+  play:el("playBtn"),next:el("nextBtn"),last:el("lastBtn"),range:el("moveRange"),counter:el("counter"),
+  file:el("sgfFile"),sample:el("sampleBtn"),restart:el("restartBtn"),answer:el("answerBtn"),
+  speed:el("speedSelect"),status:el("status"),pb:el("pb"),pw:el("pw"),re:el("re"),dt:el("dt"),ev:el("ev"),km:el("km")
+};
+
+const problem=`(;GM[1]FF[4]SZ[13]KM[0]PB[黑先]PW[白棋]EV[13 路死活示範題]AB[dd][ed][fd][dc][fc][dg][eg][fg]AW[de][ee][fe][df][ff];B[ef]C[第一手：先點眼];W[ec];B[gc]C[第三手：封住外氣];W[ge];B[gg]C[黑棋完成殺白])`;
+const sample=`(;GM[1]FF[4]SZ[19]KM[6.5]PB[朱老師]PW[AI 示範棋手]RE[B+R]DT[2026-07-11]EV[Build001-005 Fix 1 範例棋譜];B[pd]C[黑棋右上角小目];W[dd];B[qp];W[dq];B[fc];W[cf];B[qf];W[nc];B[oc];W[nd])`;
+
+let game=null,index=0,timer=null;
+
+function updateMeta(m){elements.pb.textContent=m.pb;elements.pw.textContent=m.pw;elements.re.textContent=m.re;elements.dt.textContent=m.dt;elements.ev.textContent=m.ev;elements.km.textContent=m.km}
+function render(){
+  view.setOptions(elements.showNumbers.checked,elements.showLast.checked);
+  view.setPosition(game,index);
+  elements.moveBadge.textContent=`第 ${index} 手`;
+  elements.range.max=String(game.moves.length);elements.range.value=String(index);
+  elements.counter.textContent=`${index} / ${game.moves.length}`;
+  elements.boardTitle.textContent=`${game.size} 路棋盤`;
+  elements.status.textContent=index?game.moves[index-1].comment||"教學播放中":"起始棋形";
+}
+function stop(){if(timer)clearInterval(timer);timer=null;elements.play.textContent="▶ 播放"}
+function load(text,label){stop();game=SGFParser.parse(text);index=0;updateMeta(game.meta);render();elements.status.textContent="已載入："+label}
+function setMode(mode){
+  elements.sgfTab.classList.toggle("active",mode==="sgf");elements.problemTab.classList.toggle("active",mode==="problem");
+  document.querySelectorAll(".sgfOnly").forEach(e=>e.hidden=mode!=="sgf");
+  document.querySelectorAll(".problemOnly").forEach(e=>e.hidden=mode!=="problem");
+  load(mode==="sgf"?sample:problem,mode==="sgf"?"內建範例棋譜":"13 路死活示範題");
+}
+function play(){
+  if(timer){stop();return}
+  if(index>=game.moves.length)index=0;
+  elements.play.textContent="⏸ 暫停";
+  timer=setInterval(()=>{if(index>=game.moves.length){stop();return}index++;render()},Number(elements.speed.value));
+}
+
+elements.sgfTab.addEventListener("click",()=>setMode("sgf"));
+elements.problemTab.addEventListener("click",()=>setMode("problem"));
+elements.sample.addEventListener("click",()=>load(sample,"內建範例棋譜"));
+elements.restart.addEventListener("click",()=>{stop();index=0;render();elements.status.textContent="請思考黑棋第一手"});
+elements.answer.addEventListener("click",()=>{stop();index=game.moves.length;render();elements.status.textContent="已顯示完整答案手順"});
+elements.first.addEventListener("click",()=>{stop();index=0;render()});
+elements.prev.addEventListener("click",()=>{stop();index=Math.max(0,index-1);render()});
+elements.next.addEventListener("click",()=>{stop();index=Math.min(game.moves.length,index+1);render()});
+elements.last.addEventListener("click",()=>{stop();index=game.moves.length;render()});
+elements.play.addEventListener("click",play);
+elements.range.addEventListener("input",()=>{stop();index=Number(elements.range.value);render()});
+elements.showNumbers.addEventListener("change",render);
+elements.showLast.addEventListener("change",render);
+elements.file.addEventListener("change",async event=>{
+  const file=event.target.files?.[0];if(!file)return;
+  try{load(await file.text(),file.name)}catch(err){elements.status.textContent="載入失敗："+err.message}
+  event.target.value="";
+});
+
+setMode("sgf");
+})();
+</script>
+</body>
+</html>
