@@ -4,649 +4,407 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-001</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-002</title>
 <style>
 :root{
-  --bg:#0f0c09;--panel:#211912ee;--panel2:#2a2119;
-  --line:#f5d69d29;--text:#fff8eb;--muted:#d9c8ad;
-  --gold:#f2c56b;--green:#6fd69a;--danger:#ef6b63;
+  --bg:#0f0c09;--panel:#211912ee;--panel2:#2a2119;--line:#f5d69d29;
+  --text:#fff8eb;--muted:#d9c8ad;--gold:#f2c56b;--danger:#ef6b63;
 }
 *{box-sizing:border-box}
 html{background:var(--bg);-webkit-text-size-adjust:100%}
 body{
   margin:0;min-height:100vh;color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;
-  background:
-    radial-gradient(circle at 15% 0,#f2c56b20,transparent 34%),
-    linear-gradient(160deg,#1a130e,#080605);
+  background:radial-gradient(circle at 15% 0,#f2c56b20,transparent 34%),
+  linear-gradient(160deg,#1a130e,#080605);
 }
 button,input,select{font:inherit}
 button{-webkit-tap-highlight-color:transparent}
-.app{width:min(1240px,calc(100% - 14px));margin:auto;padding:12px 0 24px}
+.app{width:min(1280px,calc(100% - 14px));margin:auto;padding:12px 0 24px}
 .card,.top,.hero,.tabs{
-  border:1px solid var(--line);
-  box-shadow:0 18px 50px #0006;
-  background:var(--panel);
+  border:1px solid var(--line);box-shadow:0 18px 50px #0006;background:var(--panel)
 }
-.top{
-  display:flex;justify-content:space-between;gap:12px;align-items:center;
-  padding:15px 17px;border-radius:21px;margin-bottom:14px
-}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 17px;border-radius:21px;margin-bottom:14px}
 .top h1{margin:0;font-size:clamp(22px,3vw,34px)}
 .sub{margin:3px 0 0;color:var(--muted)}
-.ver{
-  padding:9px 12px;border-radius:13px;
-  background:linear-gradient(145deg,#f6d38e,#d6a447);
-  color:#261607;font-weight:800
-}
+.ver{padding:9px 12px;border-radius:13px;background:linear-gradient(145deg,#f6d38e,#d6a447);color:#261607;font-weight:800}
 .hero{padding:clamp(18px,4vw,34px);border-radius:26px;margin-bottom:12px}
 .hero h2{margin:8px 0 10px;font-size:clamp(28px,4.5vw,52px);line-height:1.07}
 .hero p{margin:0;color:var(--muted);font-size:17px}
 .gold{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.13em}
-.workspace{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}
-.card{border-radius:25px}
-.board-card{padding:10px}
-.head{
-  display:flex;justify-content:space-between;align-items:center;gap:10px;
-  padding:5px 4px 9px
-}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px}
+.card{border-radius:25px}.board-card{padding:10px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 4px 9px}
 .head h2{margin:2px 0 0}
-.badge{
-  padding:8px 11px;border-radius:999px;background:#f2c56b;
-  color:#251609;font-weight:800
+.badge{padding:8px 11px;border-radius:999px;background:#f2c56b;color:#251609;font-weight:800}
+.stage{display:grid;place-items:center;overflow:hidden;border-radius:20px;background:linear-gradient(145deg,#e7b86d,#bd7c34)}
+#goBoard{display:block;width:100%;height:auto;max-width:920px;touch-action:manipulation}
+.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.controls button,.btn{
+  min-height:45px;padding:9px 14px;border:1px solid #ffffff20;border-radius:12px;
+  background:#ffffff0c;color:var(--text);font-weight:800
 }
-.info-row{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:8px;margin-bottom:9px
-}
-.info-box{
-  padding:10px;border-radius:12px;background:#ffffff0b;
-  text-align:center;color:var(--muted);font-size:13px
-}
-.info-box strong{display:block;color:var(--text);font-size:18px;margin-top:3px}
-.stage{
-  display:grid;place-items:center;overflow:hidden;border-radius:20px;
-  background:linear-gradient(145deg,#e7b86d,#bd7c34)
-}
-#goBoard{
-  display:block;width:100%;height:auto;max-width:900px;
-  touch-action:manipulation
-}
-.toolbar{
-  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px
-}
-.toolbar button{
-  min-height:45px;padding:9px 14px;border:1px solid #ffffff20;
-  border-radius:12px;background:#ffffff0c;color:var(--text);font-weight:800
-}
-.toolbar button.active{
-  background:linear-gradient(145deg,#f7d78f,#d9a747);
-  color:#251609;border-color:transparent
-}
-.toolbar button:active{transform:scale(.98)}
+.controls .primary,.btn.primary{background:linear-gradient(145deg,#f7d78f,#d9a747);color:#251609;border:0}
+.controls button:active,.btn:active{transform:scale(.98)}
+.timeline{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:11px}
+.timeline input{width:100%;accent-color:var(--gold)}
+.counter{color:var(--muted);font-variant-numeric:tabular-nums}
 .side{padding:12px}
 .block{padding:13px;border-radius:16px;background:#ffffff09}
 .block+.block{margin-top:10px}
 .block h3{margin:0 0 10px}
-.option{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:12px;padding:9px 0;border-bottom:1px solid #ffffff12;color:var(--muted)
-}
+.btn{display:block;width:100%;text-align:center;margin-top:8px;cursor:pointer}
+.meta{margin:0}
+.meta div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff12}
+.meta div:last-child{border-bottom:0}
+.meta dt{color:var(--muted)}
+.meta dd{margin:0;text-align:right;font-weight:700;max-width:60%;overflow-wrap:anywhere}
+.option{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #ffffff12;color:var(--muted)}
 .option:last-child{border-bottom:0}
 .option input{accent-color:var(--gold)}
-.size-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.size-buttons button{
-  min-height:44px;border:1px solid #ffffff20;border-radius:11px;
-  background:#ffffff0c;color:var(--text);font-weight:800
-}
-.size-buttons button.active{
-  background:linear-gradient(145deg,#f7d78f,#d9a747);
-  color:#251609;border-color:transparent
-}
-.status{
-  min-height:46px;margin:0;padding:10px;border-radius:11px;
-  color:var(--gold);background:#f2c56b12;line-height:1.45
-}
-.legend{display:grid;gap:8px;color:var(--muted);font-size:14px}
-.legend span{display:flex;align-items:center;gap:8px}
-.dot{width:11px;height:11px;border-radius:50%;display:inline-block}
-.dot.green{background:var(--green)}
-.dot.red{background:var(--danger)}
-footer{
-  display:flex;justify-content:space-between;gap:8px;
-  padding:14px 4px 2px;color:#a9967c;font-size:13px
-}
-@media(max-width:930px){
-  .workspace{grid-template-columns:1fr}
-  .side{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-  .block+.block{margin-top:0}
-}
-@media(max-width:700px){
-  .ver{display:none}
-  .info-row{grid-template-columns:repeat(2,1fr)}
-  .side{grid-template-columns:1fr}
-  .toolbar button{flex:1}
-  footer{flex-direction:column}
-}
+select{padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20}
+.status{min-height:52px;margin:0;padding:10px;border-radius:11px;color:var(--gold);background:#f2c56b12;line-height:1.45}
+.comment{min-height:70px;margin:0;padding:11px;border-radius:11px;color:var(--text);background:#ffffff08;line-height:1.55}
+.variation-list{display:grid;gap:7px}
+.variation-list button{min-height:40px;border:1px solid #ffffff20;border-radius:10px;background:#ffffff0c;color:var(--text);font-weight:700;text-align:left;padding:8px 10px}
+.variation-list button.active{background:#f2c56b24;border-color:#f2c56b66}
+footer{display:flex;justify-content:space-between;gap:8px;padding:14px 4px 2px;color:#a9967c;font-size:13px}
+@media(max-width:960px){.workspace{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.block+.block{margin-top:0}}
+@media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="top">
-    <div>
-      <div class="gold">AI GO TEACHING PLATFORM</div>
-      <h1>AlphaTraderAI Pro V5.0</h1>
-      <p class="sub">朱老師 AI 圍棋教室</p>
-    </div>
-    <div class="ver">Build002-001</div>
-  </header>
+<header class="top">
+  <div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div>
+  <div class="ver">Build002-002</div>
+</header>
 
-  <section class="hero">
-    <div class="gold">核心棋盤引擎</div>
-    <h2>真正圍棋規則：氣、提子、自殺禁手、劫與虛手。</h2>
-    <p>支援 9／13／19 路、悔棋、重設、手順顯示與 iPad Air 觸控操作。</p>
-  </section>
+<section class="hero">
+  <div class="gold">PROFESSIONAL SGF PLAYER</div>
+  <h2>專業 SGF 棋譜播放器。</h2>
+  <p>支援載入 SGF、主線與第一層變化、手順數字、提子同步、播放速度、註解與棋譜資訊。</p>
+</section>
 
-  <section class="workspace">
-    <div class="card board-card">
-      <div class="head">
-        <div>
-          <div class="gold">PREMIUM GO BOARD</div>
-          <h2 id="boardTitle">13 路棋盤</h2>
-        </div>
-        <div class="badge" id="turnBadge">黑棋落子</div>
-      </div>
-
-      <div class="info-row">
-        <div class="info-box">手數<strong id="moveCount">0</strong></div>
-        <div class="info-box">黑提子<strong id="blackCaptures">0</strong></div>
-        <div class="info-box">白提子<strong id="whiteCaptures">0</strong></div>
-        <div class="info-box">連續虛手<strong id="passCount">0</strong></div>
-      </div>
-
-      <div class="stage"><canvas id="goBoard" aria-label="互動圍棋棋盤"></canvas></div>
-
-      <div class="toolbar">
-        <button id="undoBtn" type="button">↶ 悔棋</button>
-        <button id="passBtn" type="button">⏭ 虛手</button>
-        <button id="resetBtn" type="button">○ 重設</button>
-      </div>
+<section class="workspace">
+  <div class="card board-card">
+    <div class="head">
+      <div><div class="gold">PREMIUM GO BOARD</div><h2 id="boardTitle">19 路棋盤</h2></div>
+      <div class="badge" id="moveBadge">第 0 手</div>
     </div>
 
-    <aside class="card side">
-      <section class="block">
-        <h3>棋盤大小</h3>
-        <div class="size-buttons">
-          <button type="button" data-size="9">9 路</button>
-          <button type="button" data-size="13" class="active">13 路</button>
-          <button type="button" data-size="19">19 路</button>
-        </div>
-      </section>
+    <div class="stage"><canvas id="goBoard"></canvas></div>
 
-      <section class="block">
-        <h3>顯示設定</h3>
-        <label class="option"><span>顯示手順</span><input id="showNumbers" type="checkbox" checked></label>
-        <label class="option"><span>最新一手紅圈</span><input id="showLast" type="checkbox" checked></label>
-        <label class="option"><span>顯示座標</span><input id="showCoords" type="checkbox"></label>
-      </section>
+    <div class="controls">
+      <button id="firstBtn">⏮ 第一手</button>
+      <button id="prevBtn">◀ 上一步</button>
+      <button id="playBtn" class="primary">▶ 播放</button>
+      <button id="nextBtn">下一步 ▶</button>
+      <button id="lastBtn">最後一手 ⏭</button>
+    </div>
 
-      <section class="block">
-        <h3>系統訊息</h3>
-        <p class="status" id="status">請黑棋落子。</p>
-        <div class="legend">
-          <span><i class="dot green"></i>合法落子</span>
-          <span><i class="dot red"></i>禁手／劫爭提示</span>
-        </div>
-      </section>
-    </aside>
-  </section>
+    <div class="timeline">
+      <input id="moveRange" type="range" min="0" max="0" value="0">
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+  </div>
 
-  <footer>
-    <span>汐止圍棋club｜朱老師 AI 圍棋教室</span>
-    <span>Build002-001 Core Engine</span>
-  </footer>
+  <aside class="card side">
+    <section class="block">
+      <h3>載入棋譜</h3>
+      <label class="btn primary" for="sgfFile">📂 選擇 SGF</label>
+      <input id="sgfFile" type="file" accept=".sgf,text/plain" hidden>
+      <button class="btn" id="sampleBtn">載入範例棋譜</button>
+    </section>
+
+    <section class="block">
+      <h3>棋譜資訊</h3>
+      <dl class="meta">
+        <div><dt>黑方</dt><dd id="pb">—</dd></div>
+        <div><dt>白方</dt><dd id="pw">—</dd></div>
+        <div><dt>結果</dt><dd id="re">—</dd></div>
+        <div><dt>日期</dt><dd id="dt">—</dd></div>
+        <div><dt>賽事</dt><dd id="ev">—</dd></div>
+        <div><dt>貼目</dt><dd id="km">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="block">
+      <h3>顯示／播放</h3>
+      <label class="option"><span>顯示手順</span><input id="showNumbers" type="checkbox" checked></label>
+      <label class="option"><span>最新一手紅圈</span><input id="showLast" type="checkbox" checked></label>
+      <label class="option"><span>顯示座標</span><input id="showCoords" type="checkbox"></label>
+      <label class="option"><span>播放速度</span>
+        <select id="speedSelect">
+          <option value="1600">慢速</option>
+          <option value="900" selected>正常</option>
+          <option value="450">快速</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="block">
+      <h3>變化圖</h3>
+      <div class="variation-list" id="variationList">
+        <button class="active" data-path="0">主線</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>本手註解</h3>
+      <p class="comment" id="commentText">棋譜起始位置。</p>
+    </section>
+
+    <section class="block">
+      <h3>系統訊息</h3>
+      <p class="status" id="status">請載入 SGF 棋譜。</p>
+    </section>
+  </aside>
+</section>
+
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-002 SGF Player</span></footer>
 </div>
 
 <script>
 (function(){
 "use strict";
+const $=id=>document.getElementById(id);
 
-const $ = (id) => document.getElementById(id);
+class SGFParser{
+  static parse(text){
+    if(typeof text!=="string"||!text.includes("(;"))throw new Error("SGF 格式不正確");
+    const tree=this.parseTree(text);
+    const root=tree.sequence[0]||{};
+    const size=Number(root.SZ?.[0]||19);
+    const meta={
+      pb:root.PB?.[0]||"—",pw:root.PW?.[0]||"—",re:root.RE?.[0]||"—",
+      dt:root.DT?.[0]||"—",ev:root.EV?.[0]||root.GN?.[0]||"—",km:root.KM?.[0]||"—"
+    };
+    const setup=[];
+    (root.AB||[]).forEach(v=>setup.push({c:1,...this.xy(v)}));
+    (root.AW||[]).forEach(v=>setup.push({c:-1,...this.xy(v)}));
 
-class GoEngine {
-  constructor(size=13){
-    this.size=size;
-    this.reset();
+    const mainMoves=this.sequenceToMoves(tree.sequence.slice(1));
+    const variations=tree.children.map((child,idx)=>({
+      name:`變化 ${idx+1}`,
+      moves:this.sequenceToMoves(child.sequence)
+    }));
+    return{size,meta,setup,mainMoves,variations};
   }
 
-  emptyBoard(){
-    return Array.from({length:this.size},()=>Array(this.size).fill(0));
-  }
-
-  cloneBoard(board=this.board){
-    return board.map(row=>row.slice());
-  }
-
-  reset(){
-    this.board=this.emptyBoard();
-    this.toPlay=1;
-    this.history=[];
-    this.positionHistory=[this.serialize(this.board)];
-    this.captures={black:0,white:0};
-    this.moveNumber=0;
-    this.lastMove=null;
-    this.consecutivePasses=0;
-  }
-
-  setSize(size){
-    if(![9,13,19].includes(size))return;
-    this.size=size;
-    this.reset();
-  }
-
-  serialize(board){
-    return board.map(row=>row.join("")).join("/");
-  }
-
-  inBounds(x,y){
-    return x>=0&&y>=0&&x<this.size&&y<this.size;
-  }
-
-  neighbors(x,y){
-    return [[x-1,y],[x+1,y],[x,y-1],[x,y+1]]
-      .filter(([nx,ny])=>this.inBounds(nx,ny));
-  }
-
-  groupAndLiberties(board,x,y){
-    const color=board[y][x];
-    const stack=[[x,y]];
-    const visited=new Set();
-    const group=[];
-    const liberties=new Set();
-
-    while(stack.length){
-      const [cx,cy]=stack.pop();
-      const key=cx+","+cy;
-      if(visited.has(key))continue;
-      visited.add(key);
-      group.push([cx,cy]);
-
-      for(const [nx,ny] of this.neighbors(cx,cy)){
-        const value=board[ny][nx];
-        if(value===0)liberties.add(nx+","+ny);
-        else if(value===color&&!visited.has(nx+","+ny))stack.push([nx,ny]);
+  static parseTree(text){
+    let i=text.indexOf("(");
+    const parseVariation=()=>{
+      if(text[i]!=="(")throw new Error("SGF 樹狀結構錯誤");
+      i++;
+      const sequence=[];
+      const children=[];
+      while(i<text.length){
+        this.skipSpace(text,()=>i++,()=>text[i]);
+        const ch=text[i];
+        if(ch===";"){sequence.push(this.parseNode(text,()=>i++,()=>text[i]));continue}
+        if(ch==="("){children.push(parseVariation());continue}
+        if(ch===")"){i++;break}
+        i++;
       }
-    }
-    return{group,liberties};
+      return{sequence,children};
+    };
+    return parseVariation();
   }
 
-  removeGroup(board,group){
-    for(const [x,y] of group)board[y][x]=0;
+  static skipSpace(text,inc,get){
+    while(/\s/.test(get()||""))inc();
   }
 
-  tryMove(x,y){
-    if(!this.inBounds(x,y))return{ok:false,message:"超出棋盤範圍"};
-    if(this.board[y][x]!==0)return{ok:false,message:"此交叉點已有棋子"};
-
-    const next=this.cloneBoard();
-    next[y][x]=this.toPlay;
-    const opponent=-this.toPlay;
-    let captured=0;
-
-    for(const [nx,ny] of this.neighbors(x,y)){
-      if(next[ny][nx]!==opponent)continue;
-      const result=this.groupAndLiberties(next,nx,ny);
-      if(result.liberties.size===0){
-        captured+=result.group.length;
-        this.removeGroup(next,result.group);
+  static parseNode(text,inc,get){
+    const props={};inc();
+    while(true){
+      while(/\s/.test(get()||""))inc();
+      let key="";
+      while(/[A-Z]/.test(get()||"")){key+=get();inc()}
+      if(!key)break;
+      const values=[];
+      while(true){
+        while(/\s/.test(get()||""))inc();
+        if(get()!=="[")break;
+        inc();
+        let value="",escaped=false;
+        while(get()!==undefined){
+          const ch=get();inc();
+          if(escaped){value+=ch;escaped=false;continue}
+          if(ch==="\\"){escaped=true;continue}
+          if(ch==="]")break;
+          value+=ch;
+        }
+        values.push(value);
       }
+      props[key]=values;
     }
+    return props;
+  }
 
-    const own=this.groupAndLiberties(next,x,y);
-    if(own.liberties.size===0)return{ok:false,message:"不能下自殺棋"};
-
-    const serialized=this.serialize(next);
-    if(this.positionHistory.includes(serialized)){
-      return{ok:false,message:"劫爭／同形反覆：此手禁止"};
+  static sequenceToMoves(sequence){
+    const moves=[];
+    for(const props of sequence){
+      if(props.B)moves.push({c:1,...this.xy(props.B[0]),comment:props.C?.[0]||""});
+      else if(props.W)moves.push({c:-1,...this.xy(props.W[0]),comment:props.C?.[0]||""});
     }
-
-    return{ok:true,next,captured,serialized};
+    return moves;
   }
 
-  play(x,y){
-    const result=this.tryMove(x,y);
-    if(!result.ok)return result;
-
-    this.history.push(this.snapshot());
-    this.board=result.next;
-    this.positionHistory.push(result.serialized);
-    this.moveNumber++;
-    this.consecutivePasses=0;
-    this.lastMove={x,y,number:this.moveNumber,color:this.toPlay};
-
-    if(result.captured>0){
-      if(this.toPlay===1)this.captures.black+=result.captured;
-      else this.captures.white+=result.captured;
-    }
-
-    const played=this.toPlay;
-    this.toPlay=-this.toPlay;
-
-    return{
-      ok:true,
-      message:result.captured>0
-        ? `${played===1?"黑棋":"白棋"}提掉 ${result.captured} 子`
-        : `${played===1?"黑棋":"白棋"}已落子`
-    };
-  }
-
-  pass(){
-    this.history.push(this.snapshot());
-    this.moveNumber++;
-    this.consecutivePasses++;
-    this.lastMove={pass:true,number:this.moveNumber,color:this.toPlay};
-    const played=this.toPlay;
-    this.toPlay=-this.toPlay;
-
-    return{
-      ok:true,
-      message:this.consecutivePasses>=2
-        ? "雙方連續虛手，對局可進入終局"
-        : `${played===1?"黑棋":"白棋"}虛手`
-    };
-  }
-
-  undo(){
-    const snapshot=this.history.pop();
-    if(!snapshot)return{ok:false,message:"目前沒有可悔的棋"};
-
-    this.board=snapshot.board;
-    this.toPlay=snapshot.toPlay;
-    this.captures=snapshot.captures;
-    this.moveNumber=snapshot.moveNumber;
-    this.lastMove=snapshot.lastMove;
-    this.consecutivePasses=snapshot.consecutivePasses;
-    this.positionHistory=snapshot.positionHistory;
-
-    return{ok:true,message:"已悔棋"};
-  }
-
-  snapshot(){
-    return{
-      board:this.cloneBoard(),
-      toPlay:this.toPlay,
-      captures:{...this.captures},
-      moveNumber:this.moveNumber,
-      lastMove:this.lastMove?{...this.lastMove}:null,
-      consecutivePasses:this.consecutivePasses,
-      positionHistory:this.positionHistory.slice()
-    };
+  static xy(v){
+    return!v||v.length<2?{pass:true,x:-1,y:-1}:{pass:false,x:v.charCodeAt(0)-97,y:v.charCodeAt(1)-97};
   }
 }
 
-class GoBoardUI {
-  constructor(canvas,engine){
-    this.canvas=canvas;
-    this.ctx=canvas.getContext("2d");
+class SGFBoard{
+  constructor(canvas){
+    this.canvas=canvas;this.ctx=canvas.getContext("2d");
     if(!this.ctx)throw new Error("無法建立棋盤畫布");
-    this.engine=engine;
-    this.showNumbers=true;
-    this.showLast=true;
-    this.showCoords=false;
-    this.stoneNumbers=Array.from({length:engine.size},()=>Array(engine.size).fill(null));
-
-    this.handlePointer=this.handlePointer.bind(this);
+    this.size=19;this.grid=[];this.last=null;this.showNumbers=true;this.showLast=true;this.showCoords=false;
     this.resize=this.resize.bind(this);
-    canvas.addEventListener("pointerup",this.handlePointer);
-
-    if("ResizeObserver" in window){
-      this.ro=new ResizeObserver(this.resize);
-      this.ro.observe(canvas.parentElement);
-    }
-    window.addEventListener("resize",this.resize);
-    this.resize();
+    if("ResizeObserver"in window){this.ro=new ResizeObserver(this.resize);this.ro.observe(canvas.parentElement)}
+    window.addEventListener("resize",this.resize);this.resize();
   }
-
-  syncSize(){
-    this.stoneNumbers=Array.from({length:this.engine.size},()=>Array(this.engine.size).fill(null));
-    for(const item of this.engine.history){
-      if(item.lastMove&&!item.lastMove.pass){
-        this.stoneNumbers[item.lastMove.y][item.lastMove.x]=item.lastMove.number;
+  empty(n){return Array.from({length:n},()=>Array(n).fill(null))}
+  inBounds(x,y){return x>=0&&y>=0&&x<this.size&&y<this.size}
+  neighbors(x,y){return[[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([a,b])=>this.inBounds(a,b))}
+  group(x,y){
+    const start=this.grid[y][x];if(!start)return{g:[],l:new Set()};
+    const stack=[[x,y]],visited=new Set(),group=[],libs=new Set();
+    while(stack.length){
+      const[a,b]=stack.pop(),key=a+","+b;if(visited.has(key))continue;
+      visited.add(key);group.push([a,b]);
+      for(const[p,q]of this.neighbors(a,b)){
+        const z=this.grid[q][p];
+        if(!z)libs.add(p+","+q);
+        else if(z.c===start.c&&!visited.has(p+","+q))stack.push([p,q]);
       }
     }
-    const last=this.engine.lastMove;
-    if(last&&!last.pass)this.stoneNumbers[last.y][last.x]=last.number;
+    return{g:group,l:libs};
   }
-
+  apply(move,number){
+    if(!move||move.pass||!this.inBounds(move.x,move.y)){this.last=null;return}
+    this.grid[move.y][move.x]={c:move.c,n:number};
+    for(const[a,b]of this.neighbors(move.x,move.y)){
+      const z=this.grid[b][a];
+      if(z&&z.c===-move.c){
+        const r=this.group(a,b);
+        if(r.l.size===0)r.g.forEach(([p,q])=>this.grid[q][p]=null);
+      }
+    }
+    this.last={x:move.x,y:move.y,n:number};
+  }
+  setPosition(game,moves,index){
+    this.size=game.size;this.grid=this.empty(game.size);this.last=null;
+    game.setup.forEach(s=>{if(!s.pass&&this.inBounds(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}});
+    for(let i=0;i<index;i++)this.apply(moves[i],i+1);
+    this.draw();
+  }
   resize(){
-    const parentWidth=this.canvas.parentElement.clientWidth||700;
-    const size=Math.max(280,Math.min(parentWidth,900));
+    const size=Math.max(280,Math.min(this.canvas.parentElement.clientWidth||700,920));
     const dpr=Math.max(1,window.devicePixelRatio||1);
-    this.canvas.style.width=size+"px";
-    this.canvas.style.height=size+"px";
-    this.canvas.width=Math.round(size*dpr);
-    this.canvas.height=Math.round(size*dpr);
-    this.ctx.setTransform(dpr,0,0,dpr,0,0);
-    this.cssSize=size;
-    this.draw();
+    this.canvas.style.width=size+"px";this.canvas.style.height=size+"px";
+    this.canvas.width=Math.round(size*dpr);this.canvas.height=Math.round(size*dpr);
+    this.ctx.setTransform(dpr,0,0,dpr,0,0);this.cssSize=size;this.draw();
   }
-
   geometry(){
-    const coordSpace=this.showCoords?0.085:0.065;
-    const pad=this.cssSize*coordSpace;
-    const min=pad,max=this.cssSize-pad;
-    const cell=(max-min)/(this.engine.size-1);
-    return{min,max,cell};
+    const pad=this.cssSize*(this.showCoords?.085:.065);
+    return{min:pad,max:this.cssSize-pad,cell:(this.cssSize-2*pad)/(this.size-1)};
   }
-
-  handlePointer(event){
-    const rect=this.canvas.getBoundingClientRect();
-    const sx=this.cssSize/rect.width,sy=this.cssSize/rect.height;
-    const px=(event.clientX-rect.left)*sx;
-    const py=(event.clientY-rect.top)*sy;
-    const {min,cell}=this.geometry();
-
-    const x=Math.round((px-min)/cell);
-    const y=Math.round((py-min)/cell);
-    if(!this.engine.inBounds(x,y))return;
-
-    const exactX=min+x*cell,exactY=min+y*cell;
-    if(Math.hypot(px-exactX,py-exactY)>cell*.48)return;
-
-    const result=this.engine.play(x,y);
-    if(result.ok){
-      this.stoneNumbers[y][x]=this.engine.moveNumber;
-      this.removeCapturedNumbers();
-    }
-    updateUI(result.message,!result.ok);
-    this.draw();
-  }
-
-  removeCapturedNumbers(){
-    for(let y=0;y<this.engine.size;y++){
-      for(let x=0;x<this.engine.size;x++){
-        if(this.engine.board[y][x]===0)this.stoneNumbers[y][x]=null;
-      }
-    }
-  }
-
-  starIndexes(){
-    if(this.engine.size===9)return[2,4,6];
-    if(this.engine.size===13)return[3,6,9];
-    return[3,9,15];
-  }
-
+  stars(){return this.size===9?[2,4,6]:this.size===13?[3,6,9]:[3,9,15]}
   draw(){
     if(!this.cssSize)return;
-    const ctx=this.ctx;
-    const {min,max,cell}=this.geometry();
-
-    ctx.clearRect(0,0,this.cssSize,this.cssSize);
-
-    const wood=ctx.createLinearGradient(0,0,this.cssSize,this.cssSize);
-    wood.addColorStop(0,"#efc57d");
-    wood.addColorStop(.5,"#dca253");
-    wood.addColorStop(1,"#bd7731");
-    ctx.fillStyle=wood;
-    ctx.fillRect(0,0,this.cssSize,this.cssSize);
-
-    ctx.strokeStyle="#3e2a17";
-    ctx.lineWidth=Math.max(1,this.cssSize/720);
-    for(let i=0;i<this.engine.size;i++){
-      const p=min+i*cell;
-      ctx.beginPath();ctx.moveTo(min,p);ctx.lineTo(max,p);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(p,min);ctx.lineTo(p,max);ctx.stroke();
+    const x=this.ctx,{min,max,cell}=this.geometry();
+    x.clearRect(0,0,this.cssSize,this.cssSize);
+    const wood=x.createLinearGradient(0,0,this.cssSize,this.cssSize);
+    wood.addColorStop(0,"#efc57d");wood.addColorStop(.5,"#dca253");wood.addColorStop(1,"#bd7731");
+    x.fillStyle=wood;x.fillRect(0,0,this.cssSize,this.cssSize);
+    x.strokeStyle="#3e2a17";x.lineWidth=Math.max(1,this.cssSize/720);
+    for(let i=0;i<this.size;i++){const p=min+i*cell;x.beginPath();x.moveTo(min,p);x.lineTo(max,p);x.stroke();x.beginPath();x.moveTo(p,min);x.lineTo(p,max);x.stroke()}
+    x.fillStyle="#332110";
+    for(const a of this.stars())for(const b of this.stars()){if(this.size===9&&(a===4||b===4)&&!(a===4&&b===4))continue;x.beginPath();x.arc(min+a*cell,min+b*cell,Math.max(2.5,cell*.075),0,Math.PI*2);x.fill()}
+    if(this.showCoords)this.coords(min,max,cell);
+    const r=cell*.465;
+    for(let y=0;y<this.size;y++)for(let c=0;c<this.size;c++){
+      const s=this.grid[y][c];if(!s)continue;
+      const cx=min+c*cell,cy=min+y*cell;this.stone(cx,cy,r,s.c);
+      if(this.showNumbers&&s.n!==null){x.fillStyle=s.c===1?"#fff":"#25180c";x.font=`700 ${Math.max(10,r*.7)}px sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(String(s.n),cx,cy)}
     }
-
-    ctx.fillStyle="#332110";
-    for(const sx of this.starIndexes()){
-      for(const sy of this.starIndexes()){
-        if(this.engine.size===9&&(sx===4||sy===4)&&!(sx===4&&sy===4))continue;
-        ctx.beginPath();
-        ctx.arc(min+sx*cell,min+sy*cell,Math.max(2.5,cell*.075),0,Math.PI*2);
-        ctx.fill();
-      }
-    }
-
-    if(this.showCoords)this.drawCoordinates(min,max,cell);
-
-    const radius=cell*.465;
-    for(let y=0;y<this.engine.size;y++){
-      for(let x=0;x<this.engine.size;x++){
-        const color=this.engine.board[y][x];
-        if(color===0)continue;
-        const cx=min+x*cell,cy=min+y*cell;
-        this.drawStone(cx,cy,radius,color);
-
-        const number=this.stoneNumbers[y][x];
-        if(this.showNumbers&&number!==null){
-          ctx.fillStyle=color===1?"#fffdf7":"#25180c";
-          ctx.font=`700 ${Math.max(10,radius*.7)}px -apple-system,sans-serif`;
-          ctx.textAlign="center";
-          ctx.textBaseline="middle";
-          ctx.fillText(String(number),cx,cy+radius*.03);
-        }
-      }
-    }
-
-    const last=this.engine.lastMove;
-    if(this.showLast&&last&&!last.pass){
-      ctx.strokeStyle="#ef3e36";
-      ctx.lineWidth=Math.max(2,radius*.09);
-      ctx.beginPath();
-      ctx.arc(min+last.x*cell,min+last.y*cell,radius*.76,0,Math.PI*2);
-      ctx.stroke();
-    }
+    if(this.showLast&&this.last){x.strokeStyle="#ef3e36";x.lineWidth=Math.max(2,r*.09);x.beginPath();x.arc(min+this.last.x*cell,min+this.last.y*cell,r*.76,0,Math.PI*2);x.stroke()}
   }
-
-  drawCoordinates(min,max,cell){
-    const ctx=this.ctx;
-    const letters="ABCDEFGHJKLMNOPQRST";
-    ctx.fillStyle="#4b321b";
-    ctx.font=`600 ${Math.max(10,cell*.25)}px -apple-system,sans-serif`;
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
-
-    for(let i=0;i<this.engine.size;i++){
-      const p=min+i*cell;
-      ctx.fillText(letters[i],p,min-cell*.48);
-      ctx.fillText(letters[i],p,max+cell*.48);
-      const n=String(this.engine.size-i);
-      ctx.fillText(n,min-cell*.5,p);
-      ctx.fillText(n,max+cell*.5,p);
-    }
+  coords(min,max,cell){
+    const letters="ABCDEFGHJKLMNOPQRST",x=this.ctx;x.fillStyle="#4b321b";x.font=`600 ${Math.max(10,cell*.25)}px sans-serif`;x.textAlign="center";x.textBaseline="middle";
+    for(let i=0;i<this.size;i++){const p=min+i*cell;x.fillText(letters[i],p,min-cell*.48);x.fillText(letters[i],p,max+cell*.48);const n=String(this.size-i);x.fillText(n,min-cell*.5,p);x.fillText(n,max+cell*.5,p)}
   }
-
-  drawStone(cx,cy,radius,color){
-    const ctx=this.ctx;
-    ctx.save();
-    ctx.shadowColor="#0007";
-    ctx.shadowBlur=radius*.3;
-    ctx.shadowOffsetX=radius*.12;
-    ctx.shadowOffsetY=radius*.15;
-
-    const g=ctx.createRadialGradient(
-      cx-radius*.32,cy-radius*.36,radius*.05,cx,cy,radius
-    );
-    if(color===1){
-      g.addColorStop(0,"#737373");
-      g.addColorStop(.25,"#242424");
-      g.addColorStop(.72,"#080808");
-      g.addColorStop(1,"#000");
-    }else{
-      g.addColorStop(0,"#fff");
-      g.addColorStop(.48,"#f7f1e7");
-      g.addColorStop(.82,"#d7d0c5");
-      g.addColorStop(1,"#aaa297");
-    }
-    ctx.fillStyle=g;
-    ctx.beginPath();
-    ctx.arc(cx,cy,radius,0,Math.PI*2);
-    ctx.fill();
-    ctx.restore();
+  stone(cx,cy,r,c){
+    const x=this.ctx;x.save();x.shadowColor="#0007";x.shadowBlur=r*.3;x.shadowOffsetX=r*.12;x.shadowOffsetY=r*.15;
+    const g=x.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);
+    if(c===1){g.addColorStop(0,"#737373");g.addColorStop(.25,"#242424");g.addColorStop(.72,"#080808");g.addColorStop(1,"#000")}
+    else{g.addColorStop(0,"#fff");g.addColorStop(.48,"#f7f1e7");g.addColorStop(.82,"#d7d0c5");g.addColorStop(1,"#aaa297")}
+    x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.fill();x.restore();
   }
 }
 
-const engine=new GoEngine(13);
-const ui=new GoBoardUI($("goBoard"),engine);
+const board=new SGFBoard($("goBoard"));
+let game=null,currentMoves=[],index=0,timer=null,currentPath="0";
 
-function updateUI(message,isError=false){
-  $("boardTitle").textContent=`${engine.size} 路棋盤`;
-  $("turnBadge").textContent=engine.toPlay===1?"黑棋落子":"白棋落子";
-  $("moveCount").textContent=String(engine.moveNumber);
-  $("blackCaptures").textContent=String(engine.captures.black);
-  $("whiteCaptures").textContent=String(engine.captures.white);
-  $("passCount").textContent=String(engine.consecutivePasses);
-  $("status").textContent=message||"";
-  $("status").style.color=isError?"var(--danger)":"var(--gold)";
+const sample=`(;GM[1]FF[4]SZ[19]KM[6.5]PB[朱老師]PW[AI 示範棋手]RE[B+R]DT[2026-07-11]EV[Build002-002 範例棋譜]
+;B[pd]C[黑棋右上角小目];W[dd];B[qp];W[dq];B[fc];W[cf];B[qf];W[nc];B[oc];W[nd]
+(;B[pe]C[主變化：黑棋壓迫右上白棋];W[oe];B[pf];W[ne])
+(;B[qq]C[第二變化：黑棋轉向右下角];W[dc];B[cp];W[qc]))`;
+
+function stop(){if(timer)clearInterval(timer);timer=null;$("playBtn").textContent="▶ 播放"}
+function updateMeta(m){$("pb").textContent=m.pb;$("pw").textContent=m.pw;$("re").textContent=m.re;$("dt").textContent=m.dt;$("ev").textContent=m.ev;$("km").textContent=m.km}
+function chooseMoves(path){
+  currentPath=path;
+  currentMoves=game.mainMoves.slice();
+  if(path!=="0"){
+    const v=game.variations[Number(path)-1];
+    if(v)currentMoves=currentMoves.concat(v.moves);
+  }
+  index=0;buildVariationButtons();render();
+}
+function buildVariationButtons(){
+  const box=$("variationList");
+  box.innerHTML="";
+  const main=document.createElement("button");main.textContent="主線";main.dataset.path="0";main.classList.toggle("active",currentPath==="0");box.appendChild(main);
+  game.variations.forEach((v,i)=>{const b=document.createElement("button");b.textContent=v.name;b.dataset.path=String(i+1);b.classList.toggle("active",currentPath===String(i+1));box.appendChild(b)});
+  box.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{stop();chooseMoves(b.dataset.path)}));
+}
+function render(){
+  board.showNumbers=$("showNumbers").checked;board.showLast=$("showLast").checked;board.showCoords=$("showCoords").checked;
+  board.setPosition(game,currentMoves,index);
+  $("boardTitle").textContent=`${game.size} 路棋盤`;
+  $("moveBadge").textContent=`第 ${index} 手`;
+  $("moveRange").max=String(currentMoves.length);$("moveRange").value=String(index);
+  $("counter").textContent=`${index} / ${currentMoves.length}`;
+  $("commentText").textContent=index?currentMoves[index-1].comment||"本手沒有註解。":"棋譜起始位置。";
+}
+function load(text,label){
+  stop();game=SGFParser.parse(text);updateMeta(game.meta);currentPath="0";currentMoves=game.mainMoves.slice();index=0;buildVariationButtons();render();$("status").textContent="已載入："+label;
+}
+function play(){
+  if(timer){stop();return}
+  if(index>=currentMoves.length)index=0;
+  $("playBtn").textContent="⏸ 暫停";
+  timer=setInterval(()=>{if(index>=currentMoves.length){stop();return}index++;render()},Number($("speedSelect").value));
 }
 
-$("undoBtn").addEventListener("click",()=>{
-  const result=engine.undo();
-  ui.syncSize();
-  ui.draw();
-  updateUI(result.message,!result.ok);
-});
+$("sgfFile").addEventListener("change",async e=>{const f=e.target.files?.[0];if(!f)return;try{load(await f.text(),f.name)}catch(err){$("status").textContent="載入失敗："+err.message}e.target.value=""});
+$("sampleBtn").addEventListener("click",()=>load(sample,"內建範例棋譜"));
+$("firstBtn").addEventListener("click",()=>{stop();index=0;render()});
+$("prevBtn").addEventListener("click",()=>{stop();index=Math.max(0,index-1);render()});
+$("nextBtn").addEventListener("click",()=>{stop();index=Math.min(currentMoves.length,index+1);render()});
+$("lastBtn").addEventListener("click",()=>{stop();index=currentMoves.length;render()});
+$("playBtn").addEventListener("click",play);
+$("moveRange").addEventListener("input",()=>{stop();index=Number($("moveRange").value);render()});
+$("showNumbers").addEventListener("change",render);
+$("showLast").addEventListener("change",render);
+$("showCoords").addEventListener("change",render);
+$("speedSelect").addEventListener("change",()=>{if(timer){stop();play()}});
 
-$("passBtn").addEventListener("click",()=>{
-  const result=engine.pass();
-  ui.draw();
-  updateUI(result.message,false);
-});
-
-$("resetBtn").addEventListener("click",()=>{
-  if(confirm("確定要重設棋盤嗎？")){
-    engine.reset();
-    ui.syncSize();
-    ui.draw();
-    updateUI("棋盤已重設。");
-  }
-});
-
-document.querySelectorAll("[data-size]").forEach(button=>{
-  button.addEventListener("click",()=>{
-    const size=Number(button.dataset.size);
-    if(engine.moveNumber>0&&!confirm("切換棋盤會清除目前棋局，是否繼續？"))return;
-
-    document.querySelectorAll("[data-size]").forEach(b=>b.classList.toggle("active",b===button));
-    engine.setSize(size);
-    ui.syncSize();
-    ui.draw();
-    updateUI(`已切換為 ${size} 路棋盤。`);
-  });
-});
-
-$("showNumbers").addEventListener("change",()=>{
-  ui.showNumbers=$("showNumbers").checked;ui.draw();
-});
-$("showLast").addEventListener("change",()=>{
-  ui.showLast=$("showLast").checked;ui.draw();
-});
-$("showCoords").addEventListener("change",()=>{
-  ui.showCoords=$("showCoords").checked;ui.draw();
-});
-
-updateUI("請黑棋落子。");
+load(sample,"內建範例棋譜");
 })();
 </script>
 </body>
