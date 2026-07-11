@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0c09">
-<title>AlphaTraderAI Pro V5.0｜Build002-017 Stable View Engine</title>
+<title>AlphaTraderAI Pro V5.0｜Build002-018 Professional Teaching Layout</title>
 <style>
 :root{--bg:#0d0a08;--panel:#211912;--line:#f2c56b35;--text:#fff8eb;--muted:#d8c7ad;--gold:#f2c56b;--danger:#ff7770;--ok:#72dc98}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -27,7 +27,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 @media(max-width:960px){.work{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.block+.block{margin-top:0}}
 @media(max-width:700px){.ver{display:none}.side{grid-template-columns:1fr}.controls button{flex:1}.timeline{grid-template-columns:1fr}footer{flex-direction:column;gap:4px}}
 
-/* Build002-017 Stable View Engine: display-only refinements */
+/* Build002-018 Professional Teaching Layout: display-only refinements */
 .stage{box-shadow:inset 0 0 0 1px #ffffff12,inset 0 -18px 40px #7a3f151f}
 .controls button{min-width:118px}
 #playBtn{box-shadow:0 8px 22px #d8a74b38}
@@ -38,7 +38,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 }
 
 
-/* Build002-017 Stable View Engine */
+/* Build002-018 Professional Teaching Layout */
 .stage{padding:0}
 #goBoard{touch-action:manipulation}
 
@@ -49,7 +49,7 @@ footer{display:flex;justify-content:space-between;color:#a9957a;font-size:13px;p
 #goBoard{margin-left:auto;margin-right:auto;display:block}
 #customNumberCount{width:96px;padding:7px 9px;border-radius:9px;background:#261d16;color:var(--text);border:1px solid #ffffff20;text-align:center}
 
-/* Build002-017 Stable View Engine */
+/* Build002-018 Professional Teaching Layout */
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -88,7 +88,7 @@ body{
 }
 
 
-/* Build002-017 Stable View Engine */
+/* Build002-018 Professional Teaching Layout */
 .compactbar{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto auto;
@@ -189,7 +189,7 @@ body.board-focus #goBoard{width:100%!important;height:auto!important}
 }
 
 
-/* Build002-017 Stable View Engine */
+/* Build002-018 Professional Teaching Layout */
 html{
   scroll-behavior:auto!important;
   overflow-anchor:none;
@@ -226,11 +226,192 @@ body.view-switching *{
   .boardbox{min-height:auto!important}
 }
 
+
+/* Build002-018 Professional Teaching Layout */
+html,body{
+  height:100%;
+  overflow:hidden;
+}
+body{
+  margin:0;
+}
+.app{
+  width:100%;
+  height:100dvh;
+  max-width:none;
+  padding:calc(var(--safe-top) + 6px) calc(var(--safe-right) + 6px) calc(var(--safe-bottom) + 6px) calc(var(--safe-left) + 6px);
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
+  gap:6px;
+}
+.top{
+  margin:0;
+  padding:8px 12px;
+}
+.top .sub,.top .gold{display:none}
+.top h1{font-size:clamp(18px,2.4vw,28px)}
+.compactbar{
+  position:static;
+  margin:0;
+  padding:6px 8px;
+  min-height:48px;
+}
+.legacyHero{display:none!important}
+.work{
+  min-height:0;
+  height:100%;
+  display:block!important;
+}
+.boardbox{
+  height:100%;
+  min-height:0;
+  padding:6px;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto auto;
+  align-items:center;
+  overflow:hidden;
+}
+.boardbox .head{
+  width:100%;
+  padding:2px 4px 5px;
+}
+.stage{
+  width:100%;
+  height:100%;
+  min-height:0;
+  margin:0 auto;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+#goBoard{
+  display:block;
+  max-width:100%;
+  max-height:100%;
+}
+.controls{
+  width:100%;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(44px,1fr));
+  gap:6px;
+  margin-top:6px;
+}
+.controls button{
+  min-width:0;
+  min-height:44px;
+  height:44px;
+  padding:4px 6px;
+  font-size:20px;
+}
+.controls #playBtn{grid-column:auto!important}
+.timeline{
+  width:100%;
+  margin-top:4px;
+  grid-template-columns:minmax(0,1fr) auto;
+}
+.timeline input{height:28px}
+.drawer{
+  position:fixed;
+  z-index:80;
+  top:calc(var(--safe-top) + 6px);
+  bottom:calc(var(--safe-bottom) + 6px);
+  right:calc(var(--safe-right) + 6px);
+  width:min(360px,92vw);
+  overflow:auto;
+  display:block!important;
+  transform:translateX(calc(100% + 24px));
+  transition:transform .18s ease;
+  box-shadow:0 18px 50px #000b;
+  padding:48px 12px 16px;
+}
+body.drawer-open .drawer{transform:translateX(0)}
+.drawerClose{
+  position:absolute;
+  top:8px;
+  right:8px;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  border:1px solid #ffffff20;
+  background:#ffffff10;
+  color:var(--text);
+  font-weight:900;
+}
+body.drawer-open::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:70;
+  background:#0008;
+}
+body.drawer-open .drawer{z-index:90}
+body.mode-minimal .side,
+body.mode-teaching .side,
+body.mode-full .side{
+  display:block!important;
+}
+body.mode-minimal .advancedBlock,
+body.mode-teaching .advancedBlock{display:none}
+body.mode-minimal .metaBlock,
+body.mode-minimal .teachingBlock{display:none}
+body.mode-teaching .metaBlock{display:none}
+body.info-open.mode-minimal .side{display:block!important}
+body.board-focus .top,
+body.board-focus .compactbar,
+body.board-focus footer,
+body.board-focus .head{display:none!important}
+body.board-focus .app{
+  padding:calc(var(--safe-top) + 4px) calc(var(--safe-right) + 4px) calc(var(--safe-bottom) + 4px) calc(var(--safe-left) + 4px);
+  grid-template-rows:minmax(0,1fr);
+}
+body.board-focus .boardbox{
+  min-height:0;
+  height:100%;
+  grid-template-rows:minmax(0,1fr) auto auto;
+}
+body.board-focus .stage{
+  width:100%;
+  height:100%;
+}
+footer{display:none!important}
+
+@media (orientation:landscape){
+  .app{grid-template-rows:auto minmax(0,1fr)}
+  .top{display:none}
+  .compactbar{min-height:44px}
+  .boardbox{
+    grid-template-rows:minmax(0,1fr) auto auto;
+  }
+  .boardbox .head{display:none}
+  .controls button{
+    min-height:40px;
+    height:40px;
+    font-size:18px;
+  }
+  .timeline{margin-top:2px}
+  .drawer{width:min(330px,42vw)}
+}
+@media (orientation:portrait){
+  .top{display:none}
+  .compactbar{min-height:46px}
+  .boardbox{
+    grid-template-rows:auto minmax(0,1fr) auto auto;
+  }
+}
+@media(max-width:700px){
+  .compactbar{
+    grid-template-columns:auto minmax(0,1fr) auto;
+  }
+  #focusBtn{grid-column:auto}
+  #viewMode{max-width:118px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-017</div></header>
+<header class="panel top"><div><div class="gold">AI GO TEACHING PLATFORM</div><h1>AlphaTraderAI Pro V5.0</h1><p class="sub">朱老師 AI 圍棋教室</p></div><div class="ver">Build002-018</div></header>
 <section class="panel compactbar">
   <button class="iconBtn" id="toggleInfoBtn">☰ 資訊</button>
   <div class="compactTitle"><strong id="compactGameName">內建範例棋譜</strong><span id="compactMove">0 / 10</span></div>
@@ -241,10 +422,10 @@ body.view-switching *{
   </select>
   <button class="iconBtn" id="focusBtn">⛶ 棋盤</button>
 </section>
-<section class="panel hero">
+<section class="panel hero legacyHero">
 <div class="gold">ULTIMATE IPAD STABLE</div>
-<h2>Stable View Engine：操作時棋盤固定，不再跳動或滑走。</h2>
-<p>切換橫直、模式、第一手、下一手、播放與滑桿時，只更新棋盤內容，不改變頁面捲動位置。</p>
+<h2>Professional Teaching Layout：固定棋盤、精簡控制列、抽屜式資訊。</h2>
+<p>以固定主舞台取代整頁捲動：棋盤與控制列保持原位，資訊改由抽屜展開。</p>
 <div class="quick"><a href="#importBox">前往「選擇 SGF」</a></div>
 </section>
 
@@ -252,11 +433,12 @@ body.view-switching *{
 <div class="panel boardbox">
 <div class="head"><div><div class="gold">PREMIUM GO BOARD</div><h2 id="boardTitle">19 路棋盤</h2></div><div class="badge" id="moveBadge">第 0 手</div></div>
 <div class="stage"><canvas id="goBoard"></canvas></div>
-<div class="controls"><button id="firstBtn">⏮ 第一手</button><button id="prevBtn">◀ 上一步</button><button id="playBtn" class="primary">▶ 播放</button><button id="nextBtn">下一步 ▶</button><button id="lastBtn">最後一手 ⏭</button></div>
+<div class="controls"><button id="firstBtn">⏮</button><button id="prevBtn">◀</button><button id="playBtn" class="primary">▶</button><button id="nextBtn">▶</button><button id="lastBtn">⏭</button></div>
 <div class="timeline"><input id="moveRange" type="range" min="0" max="10" value="0"><span id="counter">0 / 10</span></div>
 </div>
 
-<aside class="panel side">
+<aside class="panel side drawer" id="infoDrawer">
+<button class="drawerClose" id="drawerCloseBtn" aria-label="關閉資訊">✕</button>
 <section class="block infoBlock importBlock" id="importBox">
 <h3>選擇 SGF 檔案</h3>
 <input class="native-file" id="sgfFile" type="file">
@@ -293,7 +475,7 @@ body.view-switching *{
 <section class="block infoBlock advancedBlock"><h3>讀檔紀錄</h3><pre class="debug" id="debugLog">程式尚未啟動。</pre></section>
 </aside>
 </section>
-<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-017 Stable View Engine</span></footer>
+<footer><span>汐止圍棋club｜朱老師 AI 圍棋教室</span><span>Build002-018 Professional Teaching Layout</span></footer>
 </div>
 
 <script>
@@ -303,7 +485,7 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");if(e.textContent==="程式尚未啟動。")e.textContent="";e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-017 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-11",ev:"Build002-018 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 
 function decode(buffer){
@@ -367,11 +549,7 @@ function Board(canvas){
  this._resizeTimer=null;
  this.queueResize=function(){
    clearTimeout(this._resizeTimer);
-   captureView();
-   this._resizeTimer=setTimeout(function(){
-     this.resize();
-     restoreView();
-   }.bind(this),180);
+   this._resizeTimer=setTimeout(this.resize,140);
  }.bind(this);
  window.addEventListener("resize",this.queueResize);
  window.addEventListener("orientationchange",this.queueResize);
@@ -388,16 +566,9 @@ Board.prototype.apply=function(m,num){if(!m||m.pass||!this.inside(m.x,m.y)){this
 Board.prototype.position=function(g,k){this.size=g.size;this.grid=this.empty(g.size);this.last=null;g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);for(var i=0;i<k;i++)this.apply(g.moves[i],i+1);this.draw()};
 Board.prototype.resize=function(){
  var rect=this.canvas.parentElement.getBoundingClientRect();
- var parentW=rect.width||700;
- var vv=window.visualViewport;
- var viewportW=vv?vv.width:window.innerWidth;
- var viewportH=vv?vv.height:window.innerHeight;
- var landscape=viewportW>viewportH;
- var safeGap=landscape?150:190;
- var heightLimit=Math.max(280,viewportH-safeGap);
- var widthLimit=Math.max(280,parentW-4);
- var maxBoard=landscape?Math.min(920,viewportW*.67):Math.min(920,viewportW-24);
- var w=Math.floor(Math.max(280,Math.min(widthLimit,heightLimit,maxBoard)));
+ var availableW=Math.max(260,Math.floor(rect.width-4));
+ var availableH=Math.max(260,Math.floor(rect.height-4));
+ var w=Math.max(260,Math.min(availableW,availableH,980));
  var d=Math.max(1,window.devicePixelRatio||1);
  this.canvas.style.width=w+"px";
  this.canvas.style.height=w+"px";
@@ -444,7 +615,6 @@ var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=nu
 var stableView={scrollX:0,scrollY:0,boardTop:0,locked:false,restoreTimer:null};
 function meta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){
- var sx=window.scrollX||0,sy=window.scrollY||0;
  board.position(game,index);
  id("boardTitle").textContent=game.size+" 路棋盤";
  id("moveBadge").textContent="第 "+index+" 手";
@@ -453,9 +623,8 @@ function render(){
  id("counter").textContent=index+" / "+game.moves.length;
  id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
  id("compactMove").textContent=index+" / "+game.moves.length;
- requestAnimationFrame(function(){window.scrollTo(sx,sy)});
 }
-function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶ 播放"}
+function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
 function load(g,name,source){
  stop();
  game=g;
@@ -492,84 +661,47 @@ id("stoneScale").onchange=render;
 
 
 
-function captureView(){
- stableView.scrollX=window.scrollX||0;
- stableView.scrollY=window.scrollY||0;
- var r=id("goBoard").getBoundingClientRect();
- stableView.boardTop=r.top;
-}
-function restoreView(){
- clearTimeout(stableView.restoreTimer);
- var tries=0;
- function keep(){
-   window.scrollTo(stableView.scrollX,stableView.scrollY);
-   tries++;
-   if(tries<5)stableView.restoreTimer=setTimeout(keep,50);
- }
- requestAnimationFrame(keep);
-}
-function withStableView(fn,resizeDelay){
- if(stableView.locked){fn();return}
- stableView.locked=true;
- captureView();
- document.body.classList.add("view-switching");
- try{fn()}finally{
-   setTimeout(function(){
-     board.resize();
-     restoreView();
-     document.body.classList.remove("view-switching");
-     stableView.locked=false;
-   },resizeDelay||0);
- }
-}
+
 
 function applyMode(mode){
- withStableView(function(){
-   document.body.classList.remove("mode-minimal","mode-teaching","mode-full","info-open");
-   document.body.classList.add("mode-"+mode);
-   id("viewMode").value=mode;
-   try{localStorage.setItem("goViewMode",mode)}catch(e){}
- },100);
+ document.body.classList.remove("mode-minimal","mode-teaching","mode-full");
+ document.body.classList.add("mode-"+mode);
+ id("viewMode").value=mode;
+ try{localStorage.setItem("goViewMode",mode)}catch(e){}
+ setTimeout(function(){board.resize()},80);
 }
 id("viewMode").addEventListener("change",function(){applyMode(this.value)});
 id("toggleInfoBtn").addEventListener("click",function(){
- withStableView(function(){document.body.classList.toggle("info-open")},100);
+ document.body.classList.add("drawer-open");
 });
-id("focusBtn").addEventListener("click",function(){
- var btn=this;
- withStableView(function(){
-   document.body.classList.toggle("board-focus");
-   btn.textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
- },140);
+id("drawerCloseBtn").addEventListener("click",function(){
+ document.body.classList.remove("drawer-open");
 });
-id("goBoard").addEventListener("dblclick",function(){
- withStableView(function(){
-   document.body.classList.toggle("board-focus");
-   id("focusBtn").textContent=document.body.classList.contains("board-focus")?"✕ 離開全螢幕":"⛶ 棋盤";
- },140);
-});
-
-["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","toggleInfoBtn","focusBtn"].forEach(function(k){
- var el=id(k);
- if(!el)return;
- el.addEventListener("pointerdown",function(e){
-   e.preventDefault();
-   this.blur();
- },{passive:false});
-});
-id("moveRange").addEventListener("touchstart",function(){captureView()},{passive:true});
-id("moveRange").addEventListener("touchend",function(){restoreView()},{passive:true});
-window.addEventListener("focusin",function(e){
- if(e.target&&e.target.tagName==="BUTTON"){
-   e.target.blur();
+document.addEventListener("click",function(e){
+ if(document.body.classList.contains("drawer-open")&&!id("infoDrawer").contains(e.target)&&!id("toggleInfoBtn").contains(e.target)){
+   document.body.classList.remove("drawer-open");
  }
 });
+id("focusBtn").addEventListener("click",function(){
+ document.body.classList.toggle("board-focus");
+ this.textContent=document.body.classList.contains("board-focus")?"✕":"⛶";
+ setTimeout(function(){board.resize()},100);
+});
+id("goBoard").addEventListener("dblclick",function(){
+ document.body.classList.toggle("board-focus");
+ id("focusBtn").textContent=document.body.classList.contains("board-focus")?"✕":"⛶";
+ setTimeout(function(){board.resize()},100);
+});
 
+
+
+var resizeObserver=new ResizeObserver(function(){board.queueResize()});
+resizeObserver.observe(id("goBoard").parentElement);
 var savedMode="minimal";
 try{savedMode=localStorage.getItem("goViewMode")||"minimal"}catch(e){}
 applyMode(savedMode);
 
-log("Stable View Engine：按鈕、模式切換、橫直旋轉與滑桿操作均鎖定目前捲動位置");
+log("Professional Teaching Layout：棋盤與控制列固定，資訊使用抽屜，不再依賴頁面捲動");
 if(!userGameLocked){
   load(SAMPLE,"內建範例棋譜","startup");
 }
