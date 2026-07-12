@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-2130">
-<title>AlphaTraderAI Pro V5.0｜Build013 Fix1 Orientation Recovery</title>
+<meta name="app-version" content="20260712-2205">
+<title>AlphaTraderAI Pro V5.0｜Build013 Fix2 Portrait Toolbar Recovery</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build013 Fix1 Orientation Recovery */
+/* Build013 Fix2 Portrait Toolbar Recovery */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build013 Fix1 Orientation Recovery */
+/* Build013 Fix2 Portrait Toolbar Recovery */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build013 Fix1 Orientation Recovery */
+/* Build013 Fix2 Portrait Toolbar Recovery */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build013 Fix1 Orientation Recovery */
+/* Build013 Fix2 Portrait Toolbar Recovery */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -449,7 +449,7 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
 @media(max-width:900px){body.cloud-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}.cloudPanel{width:min(440px,96vw)}}
 
 
-/* Build013 Fix1 Orientation Recovery */
+/* Build013 Fix2 Portrait Toolbar Recovery */
 .aiToolbarBtn{
   position:relative;
   overflow:hidden;
@@ -513,7 +513,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 }
 
 
-/* Build013 Fix1 Orientation Recovery */
+/* Build013 Fix2 Portrait Toolbar Recovery */
 :root{
   --pro-left:178px;
   --pro-right:92px;
@@ -641,6 +641,59 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 .orientationRecoveryBtn{position:fixed;z-index:9999;right:12px;bottom:12px;width:62px;height:62px;border-radius:18px;border:1px solid #f0c86b66;background:linear-gradient(160deg,#2a1c12f5,#100b08f7);color:#fff8e9;box-shadow:0 10px 30px #000b;display:none;place-items:center}
 .orientationRecoveryBtn span{font-size:26px;color:#efc66d}.orientationRecoveryBtn small{font-size:10px}
 @media (orientation:portrait),(max-width:899px){.orientationRecoveryBtn{display:grid!important}body .topbar{display:flex!important}body .proLeftRail,body .proRightRail{display:none!important}body .studio{grid-template-columns:1fr!important;grid-template-areas:"top" "main" "bottom"!important}}
+
+/* Build013 Fix2 Portrait Toolbar Recovery */
+.portraitToolbar{
+  position:fixed;
+  z-index:9998;
+  left:calc(env(safe-area-inset-left) + 8px);
+  right:calc(env(safe-area-inset-right) + 8px);
+  top:calc(env(safe-area-inset-top) + 8px);
+  min-height:64px;
+  padding:6px;
+  border:1px solid #d8b56a45;
+  border-radius:16px;
+  background:linear-gradient(180deg,#1c130df4,#0d0906f4);
+  box-shadow:0 10px 30px #000b,inset 0 1px 0 #ffffff12;
+  display:none;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:5px;
+}
+.portraitToolbar button{
+  min-width:0;
+  min-height:50px;
+  border:1px solid #d8b56a35;
+  border-radius:11px;
+  background:linear-gradient(160deg,#241910,#120d09);
+  color:#fff8e9;
+  display:grid;
+  place-items:center;
+  padding:4px 2px;
+}
+.portraitToolbar button span{
+  display:block;
+  color:#efc66d;
+  font-size:18px;
+  line-height:18px;
+  font-weight:900;
+}
+.portraitToolbar button small{
+  display:block;
+  color:#e9d7b6;
+  font-size:9px;
+  margin-top:2px;
+}
+.portraitToolbar button:active{transform:scale(.95)}
+@media (orientation:portrait), (max-width:899px){
+  .portraitToolbar{display:grid!important}
+  .orientationRecoveryBtn{display:none!important}
+  body .studio{
+    padding-top:calc(env(safe-area-inset-top) + 82px)!important;
+  }
+  body .topbar{display:none!important}
+  body .main{min-height:0!important}
+}
+
 </style>
 </head>
 <body class="mode-teaching">
@@ -1051,12 +1104,12 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build013 Fix1 Orientation Recovery 已啟動。</div>
+    <div id="status" class="status">Build013 Fix2 Portrait Toolbar Recovery 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build013 Fix1 Orientation Recovery 已啟動。</div>
+    <div id="debugLog">Build013 Fix2 Portrait Toolbar Recovery 已啟動。</div>
   </section>
 </aside>
 
@@ -1064,7 +1117,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-2130";
+var APP_VERSION="20260712-2205";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -1420,7 +1473,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build013 Fix1 Orientation Recovery",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build013 Fix2 Portrait Toolbar Recovery",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
@@ -1516,12 +1569,30 @@ function openDrawer(){document.body.classList.add("drawer-open");id("drawer").se
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
 
 function forceOrientationRecovery(){
- try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen()}catch(e){}
- document.body.classList.remove("mode-professional","mode-teaching","focus-board","cloud-open","ai-open","drawer-open","play-open");
+ try{
+  if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen();
+ }catch(e){}
+ var removeClasses=[
+  "mode-professional","mode-teaching","focus-board","cloud-open",
+  "ai-open","drawer-open","play-open","play-active"
+ ];
+ removeClasses.forEach(function(c){document.body.classList.remove(c)});
  document.body.classList.add("mode-complete");
  try{localStorage.setItem("goMode","complete")}catch(e){}
- ["cloudPanel","aiPanel","drawer","playPanel"].forEach(function(k){var e=id(k);if(e)e.setAttribute("aria-hidden","true")});
- requestAnimationFrame(function(){try{measureLayout()}catch(e){}try{board.resize()}catch(e){}try{board.draw()}catch(e){}window.scrollTo(0,0)});
+ ["cloudPanel","aiPanel","drawer","playPanel"].forEach(function(k){
+  var el=id(k);
+  if(el){
+   el.setAttribute("aria-hidden","true");
+   el.style.removeProperty("transform");
+   el.style.removeProperty("display");
+  }
+ });
+ requestAnimationFrame(function(){
+  try{measureLayout()}catch(e){}
+  try{board.resize()}catch(e){}
+  try{board.draw()}catch(e){}
+  window.scrollTo(0,0);
+ });
 }
 function evaluateOrientationRecovery(){
  if(window.matchMedia("(orientation: portrait)").matches||window.innerWidth<900)forceOrientationRecovery();
@@ -1707,12 +1778,36 @@ async function probeNewestVersion(){
 }
 setInterval(probeNewestVersion,60000);
 setTimeout(probeNewestVersion,5000);
+
 id("orientationRecoveryBtn").onclick=forceOrientationRecovery;
+document.querySelectorAll("[data-fix2-proxy]").forEach(function(btn){
+ btn.addEventListener("click",function(){
+  var target=id(this.getAttribute("data-fix2-proxy"));
+  if(target)target.click();
+ });
+});
+id("portraitResetBtn").onclick=function(){
+ forceOrientationRecovery();
+ var toolbar=id("portraitToolbar");
+ if(toolbar)toolbar.scrollIntoView({block:"start",behavior:"auto"});
+};
+
 window.addEventListener("orientationchange",function(){setTimeout(evaluateOrientationRecovery,250)});
-window.addEventListener("resize",function(){clearTimeout(window.__ort);window.__ort=setTimeout(evaluateOrientationRecovery,180)});
+window.addEventListener("resize",function(){var pt=id("portraitToolbar");if(pt&&window.innerWidth<900)pt.style.display="grid";clearTimeout(window.__ort);window.__ort=setTimeout(evaluateOrientationRecovery,180)});
 document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(evaluateOrientationRecovery,120)});
 setTimeout(evaluateOrientationRecovery,120);
 })();
 </script>
-<button id="orientationRecoveryBtn" class="orientationRecoveryBtn" aria-label="還原正常版面"><span>↺</span><small>還原</small></button></body>
+<button id="orientationRecoveryBtn" class="orientationRecoveryBtn" aria-label="還原正常版面"><span>↺</span><small>還原</small></button>
+<nav id="portraitToolbar" class="portraitToolbar" aria-label="直式功能列">
+  <button data-fix2-proxy="infoBtn"><span>☰</span><small>資訊</small></button>
+  <button data-fix2-proxy="tutorialBtn"><span>▣</span><small>教學</small></button>
+  <button data-fix2-proxy="aiBtn"><span>AI</span><small>AI分析</small></button>
+  <button data-fix2-proxy="playModeBtn"><span>♟</span><small>人機</small></button>
+  <button data-fix2-proxy="cloudBtn"><span>◉</span><small>KataGo</small></button>
+  <button data-fix2-proxy="focusBtn"><span>⛶</span><small>放大</small></button>
+  <button id="portraitResetBtn"><span>↺</span><small>還原</small></button>
+</nav>
+
+</body>
 </html>
