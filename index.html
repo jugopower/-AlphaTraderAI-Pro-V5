@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260712-2345">
-<title>AlphaTrader AI Pro V5｜Build015 Ultimate Go Studio</title>
+<meta name="app-version" content="20260712-2358">
+<title>AlphaTrader AI Pro V5｜Build015.1 SGF Engine Recovery</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -92,7 +92,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build015 Ultimate Go Studio</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build015.1 SGF Engine Recovery</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -119,16 +119,21 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   </section>
 </div>
 
-<input id="sgfFile" type="file" accept=".sgf,application/x-go-sgf,text/plain" hidden>
+<input id="sgfFile" type="file" accept=".sgf,.SGF,application/x-go-sgf,application/octet-stream,text/plain" hidden>
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260712-2345</p>
+  <p>版本：20260712-2358</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
   </div>
+  <label style="margin-top:12px">貼上 SGF 文字
+    <textarea id="sgfPaste" rows="7" placeholder="例如：(;GM[1]FF[4]SZ[19];B[pd];W[dd]...)"></textarea>
+  </label>
+  <button class="action" id="loadPasteBtn" style="width:100%;margin-top:10px">載入貼上的 SGF</button>
   <p id="fileInfo">尚未載入棋譜。</p>
+  <div class="card"><small>解析狀態</small><p id="parseInfo">等待 SGF。</p></div>
 </div></div>
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
@@ -162,12 +167,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260712-2345";
+const APP_VERSION="20260712-2358";
 
 const $=id=>document.getElementById(id);
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{}
 };
 
 function toast(msg){
@@ -205,25 +210,126 @@ function resetView(){
   resizeBoard(); drawBoard(); toast("已還原正常版面");
 }
 
-function parseSGF(text){
-  const size=Number((text.match(/SZ\[(\d+)\]/)||[])[1]||19);
-  const pb=(text.match(/PB\[([^\]]*)\]/)||[])[1]||"黑方";
-  const pw=(text.match(/PW\[([^\]]*)\]/)||[])[1]||"白方";
-  const moves=[];
-  const re=/;([BW])\[([a-z]{0,2})\]/g; let m;
-  while((m=re.exec(text))){
-    if(!m[2]){moves.push({c:m[1],pass:true});continue}
-    moves.push({c:m[1],x:m[2].charCodeAt(0)-97,y:m[2].charCodeAt(1)-97});
+function sgfUnescape(value){
+  return value.replace(/\\\r?\n/g,"").replace(/\\(.)/g,"$1");
+}
+function parseSGFProperties(nodeText){
+  const props={}; let i=0;
+  while(i<nodeText.length){
+    while(i<nodeText.length && !/[A-Za-z]/.test(nodeText[i]))i++;
+    if(i>=nodeText.length)break;
+    let key="";
+    while(i<nodeText.length && /[A-Za-z]/.test(nodeText[i]))key+=nodeText[i++];
+    key=key.toUpperCase();
+    while(i<nodeText.length && /\s/.test(nodeText[i]))i++;
+    const values=[];
+    while(nodeText[i]==="["){
+      i++; let val="";
+      while(i<nodeText.length){
+        const ch=nodeText[i++];
+        if(ch==="\\"){
+          if(i<nodeText.length){
+            const next=nodeText[i++];
+            if(next==="\r" && nodeText[i]==="\n")i++;
+            else if(next!=="\n")val+=next;
+          }
+        }else if(ch==="]"){break}
+        else val+=ch;
+      }
+      values.push(val);
+      while(i<nodeText.length && /\s/.test(nodeText[i]))i++;
+    }
+    if(key && values.length)props[key]=values;
   }
-  return {size,pb,pw,moves};
+  return props;
+}
+function extractMainLineNodes(text){
+  const start=text.indexOf("(");
+  if(start<0)throw new Error("找不到 SGF 棋譜起始符號 (");
+  const nodes=[]; let depth=0,inValue=false,escape=false,nodeStart=-1;
+  for(let i=start;i<text.length;i++){
+    const ch=text[i];
+    if(inValue){
+      if(escape){escape=false;continue}
+      if(ch==="\\"){escape=true;continue}
+      if(ch==="]"){inValue=false}
+      continue;
+    }
+    if(ch==="["){inValue=true;continue}
+    if(ch==="("){depth++;continue}
+    if(ch===")"){
+      if(depth===1 && nodeStart>=0){
+        nodes.push(text.slice(nodeStart,i));nodeStart=-1;
+      }
+      depth--;
+      if(depth===0)break;
+      continue;
+    }
+    if(depth===1 && ch===";"){
+      if(nodeStart>=0)nodes.push(text.slice(nodeStart,i));
+      nodeStart=i+1;
+    }
+  }
+  return nodes.filter(Boolean);
+}
+function sgfCoord(value,size){
+  if(value==="" || value==null)return {pass:true};
+  if(value.length<2)return {pass:true};
+  const x=value.toLowerCase().charCodeAt(0)-97;
+  const y=value.toLowerCase().charCodeAt(1)-97;
+  if(x<0||y<0||x>=size||y>=size)return {pass:true};
+  return {x,y};
+}
+function parseSGF(text){
+  if(typeof text!=="string")throw new Error("SGF 內容不是文字");
+  text=text.replace(/^\uFEFF/,"").trim();
+  const nodes=extractMainLineNodes(text);
+  if(!nodes.length)throw new Error("SGF 中找不到節點");
+  const root=parseSGFProperties(nodes[0]);
+  const size=Math.max(2,Math.min(52,Number(root.SZ?.[0]||19)));
+  const info={
+    pb:sgfUnescape(root.PB?.[0]||"黑方"),
+    pw:sgfUnescape(root.PW?.[0]||"白方"),
+    br:sgfUnescape(root.BR?.[0]||""),
+    wr:sgfUnescape(root.WR?.[0]||""),
+    result:sgfUnescape(root.RE?.[0]||"—"),
+    date:sgfUnescape(root.DT?.[0]||""),
+    event:sgfUnescape(root.EV?.[0]||""),
+    komi:sgfUnescape(root.KM?.[0]||""),
+    handicap:sgfUnescape(root.HA?.[0]||"")
+  };
+  const setupB=(root.AB||[]).map(v=>sgfCoord(v,size)).filter(p=>!p.pass);
+  const setupW=(root.AW||[]).map(v=>sgfCoord(v,size)).filter(p=>!p.pass);
+  const moves=[];
+  for(const nodeText of nodes){
+    const p=parseSGFProperties(nodeText);
+    if(p.B){
+      const c=sgfCoord(p.B[0],size); moves.push({c:"B",...c,comment:sgfUnescape(p.C?.[0]||"")});
+    }else if(p.W){
+      const c=sgfCoord(p.W[0],size); moves.push({c:"W",...c,comment:sgfUnescape(p.C?.[0]||"")});
+    }
+  }
+  return {size,...info,moves,setupB,setupW,nodes:nodes.length};
 }
 function loadSGFText(text,name){
-  const g=parseSGF(text);
-  state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
-  state.humanMode=false; state.bestPoint=null;
-  $("blackName").textContent=g.pb; $("whiteName").textContent=g.pw;
-  $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-  syncUI(); resizeBoard(); drawBoard(); toast("棋譜載入成功");
+  try{
+    const g=parseSGF(text);
+    state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
+    state.setupB=g.setupB; state.setupW=g.setupW; state.gameInfo=g;
+    state.humanMode=false; state.bestPoint=null;
+    $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
+    $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
+    $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。結果：${g.result}`;
+    syncUI(); resizeBoard(); drawBoard(); toast("棋譜完整載入");
+    return true;
+  }catch(err){
+    console.error(err);
+    $("fileInfo").textContent="棋譜載入失敗。";
+    $("parseInfo").textContent="解析錯誤："+err.message;
+    toast("SGF 解析失敗");
+    return false;
+  }
 }
 
 const canvas=$("board"),ctx=canvas.getContext("2d");
@@ -237,6 +343,8 @@ function resizeBoard(){
 }
 function positionAtMove(n){
   const board=Array.from({length:state.size},()=>Array(state.size).fill(null));
+  (state.setupB||[]).forEach(p=>{if(board[p.y])board[p.y][p.x]="B"});
+  (state.setupW||[]).forEach(p=>{if(board[p.y])board[p.y][p.x]="W"});
   for(let i=0;i<n;i++){
     const mv=state.moves[i]; if(!mv||mv.pass)continue;
     if(mv.x>=0&&mv.y>=0&&mv.x<state.size&&mv.y<state.size)board[mv.y][mv.x]=mv.c;
@@ -314,13 +422,40 @@ document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.
 document.querySelectorAll(".modal-backdrop").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)closeModal(m.id)}));
 
 $("chooseSgfBtn").onclick=()=>$("sgfFile").click();
+async function decodeSGFFile(file){
+  const buf=await file.arrayBuffer();
+  let text=new TextDecoder("utf-8",{fatal:false}).decode(buf);
+  const bad=(text.match(/\uFFFD/g)||[]).length;
+  if(bad>2){
+    try{
+      const big5=new TextDecoder("big5",{fatal:false}).decode(buf);
+      if((big5.match(/\uFFFD/g)||[]).length<bad)text=big5;
+    }catch(e){}
+  }
+  return text;
+}
 $("sgfFile").onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;
-  loadSGFText(await f.text(),f.name);e.target.value="";
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  $("parseInfo").textContent="正在讀取 "+f.name+"…";
+  try{
+    const text=await decodeSGFFile(f);
+    loadSGFText(text,f.name);
+  }catch(err){
+    console.error(err);
+    $("parseInfo").textContent="檔案讀取失敗："+err.message;
+    toast("無法讀取檔案");
+  }finally{
+    e.target.value="";
+  }
+};
+$("loadPasteBtn").onclick=()=>{
+  const text=$("sgfPaste").value.trim();
+  if(!text){toast("請先貼上 SGF 文字");return}
+  loadSGFText(text,"貼上的 SGF");
 };
 $("newGameBtn").onclick=()=>{
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;
-  $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};
+  $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
 $("bestMoveBtn").onclick=()=>{
@@ -331,7 +466,7 @@ $("explainBtn").onclick=()=>{
   $("aiText").textContent=state.index?"朱老師 AI 建議：先處理弱棋，再考慮全局大場。":"請先載入棋譜或開始對局。";
 };
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
   state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   syncUI();closeModal("humanModal");toast("人機對弈已開始");
 };
@@ -362,7 +497,7 @@ $("apiKey").value=localStorage.getItem("katagoApiKey")||"";
 window.addEventListener("resize",()=>{clearTimeout(window._rz);window._rz=setTimeout(()=>{resizeBoard();drawBoard()},120)});
 window.addEventListener("orientationchange",()=>setTimeout(()=>{resizeBoard();drawBoard()},250));
 
-resizeBoard();syncUI();toast("Build015 已啟動");
+resizeBoard();syncUI();toast("Build015.1 已啟動");
 </script>
 </body>
 </html>
