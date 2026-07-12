@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-1315">
-<title>AlphaTraderAI Pro V5.0｜Build007 Fix2 Cache Killer</title>
+<meta name="app-version" content="20260712-1405">
+<title>AlphaTraderAI Pro V5.0｜Build008 AI Analysis Engine</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build007 Fix2 Cache Killer */
+/* Build008 AI Analysis Engine */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build007 Fix2 Cache Killer */
+/* Build008 AI Analysis Engine */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build007 Fix2 Cache Killer */
+/* Build008 AI Analysis Engine */
 .updateToast{
   position:fixed;
   left:50%;
@@ -307,6 +307,110 @@ body.board-focus .studio{
 .updateToast.show{display:block}
 .updateToast strong{color:#efc66d}
 
+
+/* Build008 AI Analysis Engine */
+.aiPanel{
+  position:fixed;
+  z-index:70;
+  top:calc(var(--safe-top) + 8px);
+  right:calc(var(--safe-right) + 8px);
+  bottom:calc(var(--safe-bottom) + 8px);
+  width:min(390px,94vw);
+  transform:translateX(calc(100% + 24px));
+  transition:transform .2s ease;
+  background:#120d09f7;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 18px 50px #000c;
+  overflow:auto;
+  padding:10px;
+}
+body.ai-open .aiPanel{transform:translateX(0)}
+.aiHeader{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px;
+  margin-bottom:8px;
+  border-radius:12px;
+  background:#1b130df5;
+  border:1px solid #ffffff12;
+}
+.aiHeader strong,.aiHeader small{display:block}
+.aiHeader small{color:var(--gold);margin-top:2px}
+.aiHeader button{
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid #ffffff18;background:#ffffff0c;color:#fff
+}
+.aiCard{
+  margin-bottom:9px;
+  padding:11px;
+  border-radius:14px;
+  background:#21170f;
+  border:1px solid #ffffff10;
+}
+.aiCard h3{margin:0 0 10px;font-size:17px}
+.aiOverview{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px}
+.winSide span{display:block;color:var(--muted);font-size:11px}
+.winSide strong{font-size:20px}
+.winSide.white{text-align:right}
+.winBar{
+  height:13px;
+  background:#efe6d8;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid #ffffff22;
+}
+#blackWinBar{height:100%;width:50%;background:#181818;transition:width .25s ease}
+.aiStats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.aiStats div{padding:8px;border-radius:10px;background:#0d0906;text-align:center}
+.aiStats span{display:block;color:var(--muted);font-size:11px}
+.aiStats strong{display:block;margin-top:4px;font-size:16px}
+.aiComment{margin-top:9px;padding:9px;border-radius:10px;background:#342411;color:#f1d59b;line-height:1.45}
+.recommendList{display:grid;gap:7px}
+.recommendItem{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:8px;
+  align-items:center;
+  padding:8px;
+  border-radius:10px;
+  background:#0d0906;
+  border:1px solid #ffffff0e;
+}
+.recommendRank{
+  width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#f7d47c,#dda73e);
+  color:#211407;font-weight:900
+}
+.recommendItem small{display:block;color:var(--muted);margin-top:2px}
+.recommendItem button{
+  border:1px solid #ffffff18;background:#ffffff0c;color:#fff;border-radius:8px;padding:6px 8px
+}
+#winChart{
+  width:100%;
+  height:150px;
+  display:block;
+  border-radius:10px;
+  background:#0d0906;
+}
+.chartLegend{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:5px}
+.aiActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.aiActions button{
+  border:1px solid #ffffff18;border-radius:9px;background:#ffffff0c;color:#fff;padding:9px;font-weight:800
+}
+.aiNote{margin-top:9px;color:var(--muted);font-size:12px;line-height:1.45}
+body.ai-open .studio{padding-right:min(398px,40vw)}
+@media (max-width:900px){
+  body.ai-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}
+  .aiPanel{width:min(430px,96vw)}
+}
+
 </style>
 </head>
 <body class="mode-teaching">
@@ -322,6 +426,7 @@ body.board-focus .studio{
       <button id="minimalBtn" data-low-priority="1"><span>◫</span><small>極簡</small></button>
       <button id="teachingBtn"><span>📖</span><small>教學</small></button>
       <button id="professionalBtn" data-low-priority="1"><span>⚙</span><small>專業</small></button>
+      <button id="aiBtn"><span>🧠</span><small>AI分析</small></button>
       <button id="focusBtn"><span>⛶</span><small>全螢幕</small></button>
       <button id="restoreBtn"><span>↺</span><small>還原</small></button>
     </nav>
@@ -351,6 +456,63 @@ body.board-focus .studio{
 <div id="updateToast" class="updateToast">
   <strong>已載入最新版</strong>｜版本 20260712-1315
 </div>
+
+<aside id="aiPanel" class="aiPanel" aria-hidden="true">
+  <div class="aiHeader">
+    <div>
+      <strong>AI Analysis Engine</strong>
+      <small id="aiEngineStatus">離線示範模式</small>
+    </div>
+    <button id="aiCloseBtn">✕</button>
+  </div>
+
+  <section class="aiCard aiOverview">
+    <div class="winSide black">
+      <span>黑方勝率</span>
+      <strong id="blackWinRate">50.0%</strong>
+    </div>
+    <div class="winBar"><div id="blackWinBar"></div></div>
+    <div class="winSide white">
+      <span>白方勝率</span>
+      <strong id="whiteWinRate">50.0%</strong>
+    </div>
+  </section>
+
+  <section class="aiCard">
+    <h3>目前形勢</h3>
+    <div class="aiStats">
+      <div><span>目數差</span><strong id="scoreLead">0.0</strong></div>
+      <div><span>本手評價</span><strong id="moveGrade">—</strong></div>
+      <div><span>勝率變化</span><strong id="winDelta">0.0%</strong></div>
+    </div>
+    <div id="aiComment" class="aiComment">尚未分析目前手數。</div>
+  </section>
+
+  <section class="aiCard">
+    <h3>AI 推薦手</h3>
+    <div id="recommendList" class="recommendList"></div>
+  </section>
+
+  <section class="aiCard">
+    <h3>勝率曲線</h3>
+    <canvas id="winChart" width="360" height="150"></canvas>
+    <div class="chartLegend"><span>黑方勝率</span><span id="chartMoveLabel">第 0 手</span></div>
+  </section>
+
+  <section class="aiCard">
+    <h3>分析控制</h3>
+    <div class="aiActions">
+      <button id="analyzeCurrentBtn">分析目前手</button>
+      <button id="analyzeGameBtn">分析整局</button>
+      <button id="toggleSuggestionsBtn">顯示推薦點</button>
+      <button id="exportAnalysisBtn">匯出分析</button>
+    </div>
+    <div class="aiNote">
+      目前是內建離線評估器，用於介面、流程與教學示範；真正 KataGo 分析需另接伺服器或原生 App 引擎。
+    </div>
+  </section>
+</aside>
+
 <div id="drawerBackdrop" class="drawerBackdrop"></div>
 <aside id="drawer" class="drawer" aria-hidden="true">
   <button id="drawerCloseBtn" class="drawerClose">✕</button>
@@ -414,12 +576,12 @@ body.board-focus .studio{
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build007 Fix2 Cache Killer 已啟動。</div>
+    <div id="status" class="status">Build008 AI Analysis Engine 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build007 Fix2 Cache Killer 已啟動。</div>
+    <div id="debugLog">Build008 AI Analysis Engine 已啟動。</div>
   </section>
 </aside>
 
@@ -427,7 +589,7 @@ body.board-focus .studio{
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-1315";
+var APP_VERSION="20260712-1405";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -497,7 +659,7 @@ if("serviceWorker" in navigator){
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build007 Fix2 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build008 AI 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -601,19 +763,169 @@ Board.prototype.draw=function(){
  var scale=parseFloat(id("stoneScale").value||"0.42"),r=cell*scale;
  for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=snap(min+x*cell),cy=snap(min+y*cell),gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();
   if(s.n!==null){var mode=id("numberMode").value,show=mode!=="none";if(show&&mode!=="all"){var count=parseInt(mode,10);var cutoff=Math.max(1,index-count+1);show=s.n>=cutoff}if(show){c.fillStyle=s.c===1?"#fff":"#25180c";var digits=String(s.n).length,factor=digits>=3?.48:digits===2?.60:.72;c.font="800 "+Math.max(9,r*factor)+"px sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(String(s.n),cx,cy)}}}
+
+ if(showAISuggestions&&aiCurrentSuggestions&&aiCurrentSuggestions.length){
+   for(var si=0;si<aiCurrentSuggestions.length;si++){
+     var sg=aiCurrentSuggestions[si],sx=snap(min+sg.x*cell),sy=snap(min+sg.y*cell);
+     c.save();
+     c.fillStyle=si===0?"#3ddc84":"#ffd166";
+     c.globalAlpha=.88;
+     c.beginPath();c.arc(sx,sy,r*.52,0,Math.PI*2);c.fill();
+     c.globalAlpha=1;
+     c.fillStyle="#111";
+     c.font="900 "+Math.max(10,r*.65)+"px sans-serif";
+     c.textAlign="center";c.textBaseline="middle";
+     c.fillText(String(si+1),sx,sy);
+     c.restore();
+   }
+ }
+
  if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(snap(min+this.last.x*cell),snap(min+this.last.y*cell),r*.76,0,Math.PI*2);c.stroke()}
 };
+
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,currentGameName="內建範例棋譜";
+var aiAnalysis=[],showAISuggestions=false,aiCurrentSuggestions=[];
+
+function coordLabel(x,y,size){
+ var letters="ABCDEFGHJKLMNOPQRST";
+ var row=size-y;
+ return (letters[x]||"?")+row;
+}
+function seededNoise(n){
+ var x=Math.sin(n*12.9898+78.233)*43758.5453;
+ return x-Math.floor(x);
+}
+function estimatePosition(moveIndex){
+ var base=50;
+ var trend=0;
+ for(var i=0;i<moveIndex;i++){
+   var m=game.moves[i];
+   if(!m||m.pass)continue;
+   var center=(game.size-1)/2;
+   var dist=Math.abs(m.x-center)+Math.abs(m.y-center);
+   var positional=(game.size-dist)/(game.size*2);
+   trend+=(m.c===1?1:-1)*(0.7+positional*1.8);
+   trend+=(seededNoise(i+game.size)-0.5)*1.4;
+ }
+ var black=Math.max(3,Math.min(97,base+trend));
+ var prev=moveIndex>0?estimatePositionRaw(moveIndex-1):50;
+ var delta=black-prev;
+ var score=(black-50)*0.38;
+ return {black:black,white:100-black,delta:delta,score:score};
+}
+function estimatePositionRaw(moveIndex){
+ var base=50,trend=0;
+ for(var i=0;i<moveIndex;i++){
+   var m=game.moves[i];if(!m||m.pass)continue;
+   var center=(game.size-1)/2;
+   var dist=Math.abs(m.x-center)+Math.abs(m.y-center);
+   var positional=(game.size-dist)/(game.size*2);
+   trend+=(m.c===1?1:-1)*(0.7+positional*1.8);
+   trend+=(seededNoise(i+game.size)-0.5)*1.4;
+ }
+ return Math.max(3,Math.min(97,base+trend));
+}
+function gradeDelta(delta,moveColor){
+ var effective=moveColor===1?delta:-delta;
+ if(effective>2.5)return {label:"好手",symbol:"💎",comment:"這手明顯改善局面，方向與效率都很好。"};
+ if(effective>0.7)return {label:"良手",symbol:"✓",comment:"這手穩健，維持或小幅提升局勢。"};
+ if(effective>-0.8)return {label:"正常",symbol:"•",comment:"這手大致符合局面需要，勝率變化不大。"};
+ if(effective>-2.5)return {label:"疑問手",symbol:"⚠",comment:"這手略有損失，可以考慮更積極或更有效率的下法。"};
+ return {label:"惡手",symbol:"✕",comment:"這手造成較明顯損失，值得回到本手重新研究。"};
+}
+function occupiedAt(moveIndex){
+ var occ={};
+ (game.setup||[]).forEach(function(s){if(!s.pass)occ[s.x+","+s.y]=1});
+ for(var i=0;i<moveIndex;i++){var m=game.moves[i];if(m&&!m.pass)occ[m.x+","+m.y]=1}
+ return occ;
+}
+function generateSuggestions(moveIndex){
+ var occ=occupiedAt(moveIndex),size=game.size,pts=[];
+ var anchors=size===19?[[3,3],[15,3],[3,15],[15,15],[9,9],[3,9],[15,9],[9,3],[9,15]]:[[2,2],[size-3,2],[2,size-3],[size-3,size-3],[Math.floor(size/2),Math.floor(size/2)]];
+ anchors.forEach(function(p,idx){
+   if(!occ[p[0]+","+p[1]])pts.push({x:p[0],y:p[1],value:1.8-seededNoise(moveIndex+idx)*1.4});
+ });
+ for(var y=1;y<size-1&&pts.length<5;y+=Math.max(2,Math.floor(size/5))){
+   for(var x=1;x<size-1&&pts.length<5;x+=Math.max(2,Math.floor(size/5))){
+     if(!occ[x+","+y])pts.push({x:x,y:y,value:1.6-seededNoise(moveIndex+x+y)*1.3});
+   }
+ }
+ pts.sort(function(a,b){return b.value-a.value});
+ return pts.slice(0,3).map(function(p,i){return {x:p.x,y:p.y,coord:coordLabel(p.x,p.y,size),winrate:Math.max(5,Math.min(95,estimatePositionRaw(moveIndex)+(i===0?1.6:0.8-i*.5))),visits:1200-i*320}});
+}
+function analyzeAt(moveIndex){
+ var result=estimatePosition(moveIndex);
+ var move=moveIndex>0?game.moves[moveIndex-1]:null;
+ var grade=move?gradeDelta(result.delta,move.c):{label:"起始",symbol:"•",comment:"棋譜起始位置。"};
+ var suggestions=generateSuggestions(moveIndex);
+ aiAnalysis[moveIndex]={move:moveIndex,black:result.black,white:result.white,delta:result.delta,score:result.score,grade:grade,suggestions:suggestions};
+ return aiAnalysis[moveIndex];
+}
+function analyzeWholeGame(){
+ aiAnalysis=[];
+ for(var i=0;i<=game.moves.length;i++)analyzeAt(i);
+ updateAI(index);
+ drawWinChart();
+}
+function updateAI(moveIndex){
+ var a=aiAnalysis[moveIndex]||analyzeAt(moveIndex);
+ id("blackWinRate").textContent=a.black.toFixed(1)+"%";
+ id("whiteWinRate").textContent=a.white.toFixed(1)+"%";
+ id("blackWinBar").style.width=a.black.toFixed(1)+"%";
+ id("scoreLead").textContent=(a.score>=0?"黑 +":"白 +")+Math.abs(a.score).toFixed(1);
+ id("moveGrade").textContent=a.grade.symbol+" "+a.grade.label;
+ id("winDelta").textContent=(a.delta>=0?"+":"")+a.delta.toFixed(1)+"%";
+ id("aiComment").textContent=a.grade.comment;
+ id("chartMoveLabel").textContent="第 "+moveIndex+" 手";
+ aiCurrentSuggestions=a.suggestions;
+ renderRecommendations();
+ drawWinChart();
+ board.draw();
+}
+function renderRecommendations(){
+ var box=id("recommendList");box.innerHTML="";
+ aiCurrentSuggestions.forEach(function(s,i){
+   var row=document.createElement("div");row.className="recommendItem";
+   row.innerHTML='<div class="recommendRank">'+(i+1)+'</div><div><strong>'+s.coord+'</strong><small>預估黑勝率 '+s.winrate.toFixed(1)+'%｜模擬 '+s.visits+' 次</small></div>';
+   var btn=document.createElement("button");btn.textContent="定位";
+   btn.onclick=function(){showAISuggestions=true;board.draw()};
+   row.appendChild(btn);box.appendChild(row);
+ });
+}
+function drawWinChart(){
+ var canvas=id("winChart"),ctx=canvas.getContext("2d"),w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);ctx.fillStyle="#0d0906";ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle="#ffffff18";ctx.lineWidth=1;
+ for(var i=1;i<4;i++){var y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ var max=Math.max(1,game.moves.length);
+ ctx.strokeStyle="#efc66d";ctx.lineWidth=2;ctx.beginPath();
+ for(var m=0;m<=max;m++){
+   var a=aiAnalysis[m]||analyzeAt(m);
+   var x=m/max*w,y=h-(a.black/100*h);
+   if(m===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+ }
+ ctx.stroke();
+ var currentX=index/max*w,currentA=aiAnalysis[index]||analyzeAt(index),currentY=h-(currentA.black/100*h);
+ ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
+}
+function exportAnalysis(){
+ var payload={build:"Build008 AI Analysis Engine",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+ var url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
+ document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
+
 function updateMeta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){
  id("goBoard").classList.remove("pulse-last");
  board.position(game,index);id("moveRange").max=game.moves.length;id("moveRange").value=index;
  id("counter").textContent=index+" / "+game.moves.length;id("gameName").textContent=currentGameName;
  id("gameSummary").textContent=game.size+" 路｜"+index+" / "+game.moves.length;
- id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";if(index){requestAnimationFrame(function(){id("goBoard").classList.add("pulse-last")})}
+ id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";if(index){requestAnimationFrame(function(){id("goBoard").classList.add("pulse-last")})}if(document.body.classList.contains("ai-open"))updateAI(index);
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
-function load(g,name){stop();game=g;index=0;currentGameName=name;updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手｜"+name)}
+function load(g,name){stop();game=g;index=0;aiAnalysis=[];showAISuggestions=false;currentGameName=name;updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手｜"+name)}
 function read(file){
  if(!file){status("未取得檔案。",true);return}
  currentFile=file;id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";
@@ -660,6 +972,16 @@ function setMode(mode){document.body.classList.remove("mode-minimal","mode-teach
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
 function restoreLayout(){closeDrawer();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
+
+function openAI(){document.body.classList.add("ai-open");id("aiPanel").setAttribute("aria-hidden","false");updateAI(index);measureLayout()}
+function closeAI(){document.body.classList.remove("ai-open");id("aiPanel").setAttribute("aria-hidden","true");showAISuggestions=false;measureLayout();board.draw()}
+id("aiBtn").onclick=openAI;
+id("aiCloseBtn").onclick=closeAI;
+id("analyzeCurrentBtn").onclick=function(){aiAnalysis[index]=null;updateAI(index);showUpdateToast("<strong>目前手已分析</strong>")};
+id("analyzeGameBtn").onclick=function(){analyzeWholeGame();showUpdateToast("<strong>整局分析完成</strong>｜離線示範模式")};
+id("toggleSuggestionsBtn").onclick=function(){showAISuggestions=!showAISuggestions;this.textContent=showAISuggestions?"隱藏推薦點":"顯示推薦點";board.draw()};
+id("exportAnalysisBtn").onclick=exportAnalysis;
+
 id("infoBtn").onclick=openDrawer;id("drawerCloseBtn").onclick=closeDrawer;id("drawerBackdrop").onclick=closeDrawer;
 id("minimalBtn").onclick=function(){preserveViewportAction(function(){setMode("minimal")})};id("teachingBtn").onclick=function(){preserveViewportAction(function(){setMode("teaching")})};id("professionalBtn").onclick=function(){preserveViewportAction(function(){setMode("professional")})};
 id("focusBtn").onclick=function(){preserveViewportAction(function(){document.body.classList.toggle("board-focus")})};id("restoreBtn").onclick=restoreLayout;
