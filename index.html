@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-1930">
-<title>AlphaTraderAI Pro V5.0｜Build013 Ultimate Go Studio RC1</title>
+<meta name="app-version" content="20260712-2130">
+<title>AlphaTraderAI Pro V5.0｜Build013 Fix1 Orientation Recovery</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build013 Ultimate Go Studio RC1 */
+/* Build013 Fix1 Orientation Recovery */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build013 Ultimate Go Studio RC1 */
+/* Build013 Fix1 Orientation Recovery */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build013 Ultimate Go Studio RC1 */
+/* Build013 Fix1 Orientation Recovery */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build013 Ultimate Go Studio RC1 */
+/* Build013 Fix1 Orientation Recovery */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -449,7 +449,7 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
 @media(max-width:900px){body.cloud-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}.cloudPanel{width:min(440px,96vw)}}
 
 
-/* Build013 Ultimate Go Studio RC1 */
+/* Build013 Fix1 Orientation Recovery */
 .aiToolbarBtn{
   position:relative;
   overflow:hidden;
@@ -513,7 +513,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 }
 
 
-/* Build013 Ultimate Go Studio RC1 */
+/* Build013 Fix1 Orientation Recovery */
 :root{
   --pro-left:178px;
   --pro-right:92px;
@@ -637,6 +637,10 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 .coachActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
 .coachActions button{border:1px solid #ffffff18;border-radius:9px;background:#ffffff0c;color:#fff;padding:9px 6px;font-weight:800}
 
+
+.orientationRecoveryBtn{position:fixed;z-index:9999;right:12px;bottom:12px;width:62px;height:62px;border-radius:18px;border:1px solid #f0c86b66;background:linear-gradient(160deg,#2a1c12f5,#100b08f7);color:#fff8e9;box-shadow:0 10px 30px #000b;display:none;place-items:center}
+.orientationRecoveryBtn span{font-size:26px;color:#efc66d}.orientationRecoveryBtn small{font-size:10px}
+@media (orientation:portrait),(max-width:899px){.orientationRecoveryBtn{display:grid!important}body .topbar{display:flex!important}body .proLeftRail,body .proRightRail{display:none!important}body .studio{grid-template-columns:1fr!important;grid-template-areas:"top" "main" "bottom"!important}}
 </style>
 </head>
 <body class="mode-teaching">
@@ -1047,12 +1051,12 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build013 Ultimate Go Studio RC1 已啟動。</div>
+    <div id="status" class="status">Build013 Fix1 Orientation Recovery 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build013 Ultimate Go Studio RC1 已啟動。</div>
+    <div id="debugLog">Build013 Fix1 Orientation Recovery 已啟動。</div>
   </section>
 </aside>
 
@@ -1060,7 +1064,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-1930";
+var APP_VERSION="20260712-2130";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -1416,7 +1420,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build013 Ultimate Go Studio RC1",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build013 Fix1 Orientation Recovery",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
@@ -1510,7 +1514,21 @@ function preserveViewportAction(fn){
 function setMode(mode){document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");document.body.classList.add("mode-"+mode);try{localStorage.setItem("goMode",mode)}catch(e){};setTimeout(board.resize,60)}
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
-function restoreLayout(){closeDrawer();closeAI();closePlayPanel();closeCloudPanel();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
+
+function forceOrientationRecovery(){
+ try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen()}catch(e){}
+ document.body.classList.remove("mode-professional","mode-teaching","focus-board","cloud-open","ai-open","drawer-open","play-open");
+ document.body.classList.add("mode-complete");
+ try{localStorage.setItem("goMode","complete")}catch(e){}
+ ["cloudPanel","aiPanel","drawer","playPanel"].forEach(function(k){var e=id(k);if(e)e.setAttribute("aria-hidden","true")});
+ requestAnimationFrame(function(){try{measureLayout()}catch(e){}try{board.resize()}catch(e){}try{board.draw()}catch(e){}window.scrollTo(0,0)});
+}
+function evaluateOrientationRecovery(){
+ if(window.matchMedia("(orientation: portrait)").matches||window.innerWidth<900)forceOrientationRecovery();
+ else requestAnimationFrame(function(){try{measureLayout()}catch(e){}try{board.resize()}catch(e){}try{board.draw()}catch(e){}});
+}
+
+function restoreLayout(){forceOrientationRecovery();closeDrawer();closeAI();closePlayPanel();closeCloudPanel();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
 
 
 id("goBoard").addEventListener("click",function(e){if(!playState.active||playState.resigned)return;if(playState.mode==="human-ai"&&playState.turn!==playState.humanColor)return;if(playState.mode==="ai-ai")return;var rect=this.getBoundingClientRect(),px=e.clientX-rect.left,py=e.clientY-rect.top,outerPad=Math.max(14,this.clientWidth*.043),boardPixel=this.clientWidth-outerPad*2,cell=boardPixel/(playState.size-1),x=Math.round((px-outerPad)/cell),y=Math.round((py-outerPad)/cell),r=tryPlayMove(x,y,playState.turn,false);id("playMessage").textContent=r.ok?("落子於 "+coordLabel(x,y,playState.size)+(r.captured?"，提子 "+r.captured:"")):r.msg;updatePlayUI();if(r.ok&&playState.mode==="human-ai"&&playState.turn===playState.aiColor)setTimeout(aiPlayMove,350)});
@@ -1689,7 +1707,12 @@ async function probeNewestVersion(){
 }
 setInterval(probeNewestVersion,60000);
 setTimeout(probeNewestVersion,5000);
+id("orientationRecoveryBtn").onclick=forceOrientationRecovery;
+window.addEventListener("orientationchange",function(){setTimeout(evaluateOrientationRecovery,250)});
+window.addEventListener("resize",function(){clearTimeout(window.__ort);window.__ort=setTimeout(evaluateOrientationRecovery,180)});
+document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(evaluateOrientationRecovery,120)});
+setTimeout(evaluateOrientationRecovery,120);
 })();
 </script>
-</body>
+<button id="orientationRecoveryBtn" class="orientationRecoveryBtn" aria-label="還原正常版面"><span>↺</span><small>還原</small></button></body>
 </html>
