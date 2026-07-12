@@ -4,336 +4,146 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b0806">
-<title>AlphaTraderAI Pro V5.0｜Build005 Fix2 Persistent Toolbar & iPad Picker</title>
+<title>AlphaTraderAI Pro V5.0｜Build006 Professional Go Studio</title>
 <style>
 :root{
-  --bg:#0b0806;--panel:#1a130e;--panel2:#241a12;--line:#f0c46a38;
-  --text:#fff7e7;--muted:#d7c4a8;--gold:#f0c46a;--danger:#ff6b63;--ok:#6edb95;
+  --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
+  --text:#fff8e9;--muted:#d8c6aa;--gold:#efc66d;--ok:#76dd9e;--danger:#ff6b63;
   --safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);
 }
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif}
 button,input,select,textarea{font:inherit}
 button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.app{
-  height:100dvh;
+.studio{
+  width:100%;height:100dvh;
   display:grid;
   grid-template-rows:auto minmax(0,1fr) auto;
-  padding:calc(var(--safe-top) + 6px) calc(var(--safe-right) + 6px) calc(var(--safe-bottom) + 6px) calc(var(--safe-left) + 6px);
   gap:6px;
+  padding:calc(var(--safe-top) + 6px) calc(var(--safe-right) + 6px) calc(var(--safe-bottom) + 6px) calc(var(--safe-left) + 6px);
 }
-.toolbar{
-  min-height:52px;
+.topbar{
+  min-height:54px;
   display:grid;
   grid-template-columns:minmax(180px,1fr) auto;
   align-items:center;
   gap:8px;
   padding:6px 8px;
-  background:#17100be8;
   border:1px solid var(--line);
   border-radius:16px;
-  box-shadow:0 8px 24px #0008;
+  background:#17100bef;
+  box-shadow:0 8px 28px #0008;
 }
-.gameTitle{min-width:0}
-.gameTitle strong,.gameTitle span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gameTitle strong{font-size:16px}
-.gameTitle span{font-size:12px;color:var(--gold);margin-top:2px}
-.toolButtons{display:flex;gap:5px;overflow-x:auto}
-.toolButtons button{
-  min-width:58px;height:40px;padding:3px 7px;border-radius:10px;border:1px solid #ffffff18;
-  background:#ffffff0b;color:var(--text);font-weight:800;font-size:12px
+.identity{min-width:0;text-align:left}
+.identity strong,.identity span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.identity strong{font-size:17px}
+.identity span{font-size:12px;color:var(--gold);margin-top:2px}
+.toolbar{display:flex;gap:5px;justify-content:center;overflow-x:auto}
+.toolbar button{
+  width:58px;min-width:58px;height:42px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  border:1px solid #ffffff18;border-radius:10px;background:#ffffff0c;color:#fff;font-weight:800
 }
-.toolButtons button span{display:block;font-size:16px;line-height:17px}
-.main{
-  min-height:0;
-  display:grid;
-  grid-template-columns:minmax(0,1fr);
+.toolbar button span{font-size:16px;line-height:17px}
+.toolbar button small{font-size:10px;line-height:11px;color:#f3dfbd}
+.main{min-height:0;display:grid}
+.boardShell{
+  min-height:0;display:grid;place-items:center;
+  border:1px solid var(--line);border-radius:18px;background:#100b07;overflow:hidden;
 }
-.boardPanel{
-  min-height:0;
-  display:grid;
-  grid-template-rows:minmax(0,1fr);
-  background:#120d09;
-  border:1px solid var(--line);
-  border-radius:20px;
-  overflow:hidden;
-}
-.boardStage{
-  min-width:0;min-height:0;
-  display:flex;align-items:center;justify-content:center;
-  padding:4px;
-}
+.boardStage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:4px}
 #goBoard{display:block;max-width:100%;max-height:100%}
-.controlsPanel{
-  display:grid;
-  grid-template-rows:auto auto;
-  gap:4px;
-  padding:4px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:#17100be8;
+.bottom{
+  display:grid;grid-template-rows:auto auto;gap:4px;
+  padding:4px;border:1px solid var(--line);border-radius:16px;background:#17100bef
 }
-.controls{
-  display:grid;
-  grid-template-columns:repeat(5,minmax(48px,1fr));
-  gap:4px;
-}
+.controls{display:grid;grid-template-columns:repeat(5,minmax(54px,1fr));gap:4px}
 .controls button{
-  height:42px;border-radius:10px;border:1px solid #ffffff18;background:#211810;color:#fff;
+  height:42px;border:1px solid #ffffff18;border-radius:10px;background:#211810;color:#fff;
   font-size:20px;font-weight:900
 }
-.controls #playBtn{background:linear-gradient(145deg,#f6d47d,#e1ad42);color:#201307}
-.timeline{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  align-items:center;
-  gap:8px;
-}
-#moveRange{width:100%;accent-color:#e6b34b}
-#counter{min-width:78px;text-align:right;font-size:15px;color:var(--text)}
-.drawerBackdrop{
-  position:fixed;inset:0;background:#0008;z-index:50;display:none
-}
+#playBtn{background:linear-gradient(145deg,#f8d77f,#dfaa41);color:#201307}
+.timeline{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+#moveRange{width:100%;accent-color:#e8b74c}
+#counter{min-width:88px;text-align:right;font-size:15px}
+.drawerBackdrop{display:none;position:fixed;inset:0;background:#0008;z-index:50}
 .drawer{
   position:fixed;z-index:60;
-  top:calc(var(--safe-top) + 8px);bottom:calc(var(--safe-bottom) + 8px);
-  right:calc(var(--safe-right) + 8px);width:min(420px,94vw);
-  background:#17100bf5;border:1px solid var(--line);border-radius:18px;
-  box-shadow:0 18px 50px #000c;
+  top:calc(var(--safe-top) + 8px);right:calc(var(--safe-right) + 8px);
+  bottom:calc(var(--safe-bottom) + 8px);width:min(430px,94vw);
   transform:translateX(calc(100% + 24px));transition:transform .18s ease;
-  overflow:auto;padding:52px 12px 18px
+  background:#17100bf7;border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 18px 50px #000c;overflow:auto;padding:52px 12px 18px
 }
 body.drawer-open .drawer{transform:translateX(0)}
 body.drawer-open .drawerBackdrop{display:block}
-.drawerClose{
-  position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:10px;
-  border:1px solid #ffffff18;background:#ffffff0c;color:#fff;font-weight:900
-}
-.section{
-  background:#231910;border:1px solid #ffffff10;border-radius:14px;padding:12px;margin-bottom:10px
-}
+.drawerClose{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:10px;border:1px solid #ffffff18;background:#ffffff0c;color:#fff}
+.section{background:#22170f;border:1px solid #ffffff10;border-radius:14px;padding:12px;margin-bottom:10px}
 .section h3{margin:0 0 10px;font-size:18px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
-.row label{color:var(--muted);min-width:80px}
-.row input[type=file]{max-width:100%}
-.row input,.row select,.row textarea{
-  flex:1;min-width:0;background:#0e0a07;border:1px solid #ffffff18;border-radius:9px;color:#fff;padding:9px
-}
+.row label{min-width:88px;color:var(--muted)}
+.row input,.row select,.row textarea{flex:1;min-width:0;background:#0d0906;color:#fff;border:1px solid #ffffff18;border-radius:9px;padding:9px}
 .row textarea{min-height:110px;resize:vertical}
-.action{
-  border:0;border-radius:10px;background:linear-gradient(145deg,#f6d47d,#dfaa40);color:#211407;
-  font-weight:900;padding:10px 12px
-}
+.action{border:0;border-radius:10px;background:linear-gradient(145deg,#f7d47c,#dda73e);color:#211407;font-weight:900;padding:10px 12px}
 .secondary{background:#ffffff0d;color:#fff;border:1px solid #ffffff18}
-.status{
-  white-space:pre-wrap;background:#332311;color:var(--gold);padding:10px;border-radius:10px;line-height:1.45
-}
+.fileActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.status{white-space:pre-wrap;background:#332311;color:var(--gold);padding:10px;border-radius:10px;line-height:1.45}
 .metaGrid{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;font-size:14px}
 .metaGrid span:nth-child(odd){color:var(--muted)}
 #debugLog{white-space:pre-wrap;background:#080604;padding:10px;border-radius:10px;max-height:180px;overflow:auto;font:12px/1.45 ui-monospace,monospace}
-.mode-minimal .toolbar .gameTitle{display:block}
-.mode-minimal .toolbar{grid-template-columns:auto;justify-content:center}
-.mode-minimal .toolButtons button[data-hide-minimal="1"]{display:none}
+.mode-minimal .identity{display:none}
+.mode-minimal .topbar{grid-template-columns:auto;justify-content:center}
+.mode-minimal .toolbar button[data-optional="1"]{display:none}
 .mode-teaching .advanced{display:none}
-.board-focus .toolbar{display:grid}
-.board-focus .app{grid-template-rows:minmax(0,1fr) auto;padding-top:calc(var(--safe-top) + 3px)}
-.board-focus .boardPanel{border-radius:0}
+.board-focus .topbar{display:none}
+.board-focus .studio{grid-template-rows:minmax(0,1fr) auto;padding-top:calc(var(--safe-top) + 3px)}
+.board-focus .boardShell{border-radius:0}
 @media (orientation:landscape){
-  .app{grid-template-rows:auto minmax(0,1fr) auto}
-  .toolbar{min-height:46px}
-  .toolButtons button{height:36px;min-width:54px}
+  .topbar{min-height:44px;padding:4px 6px}
+  .toolbar button{width:52px;min-width:52px;height:34px}
+  .toolbar button span{font-size:14px}
+  .toolbar button small{font-size:9px}
   .controls button{height:38px}
 }
-@media (max-width:760px){
-  .toolbar{grid-template-columns:1fr}
-  .toolButtons{justify-content:center}
-  .gameTitle{text-align:center}
-  .toolButtons button{min-width:52px}
+@media (max-width:820px){
+  .topbar{grid-template-columns:1fr}
+  .identity{text-align:center}
+  .toolbar{justify-content:center}
 }
-
-/* Build005 Fix2 Persistent Toolbar & iPad Picker */
-.jumpBar{
-  display:grid;
-  grid-template-columns:auto minmax(90px,140px) auto;
-  gap:8px;
-  align-items:center;
-}
-.jumpBar input{
-  width:100%;
-  background:#0e0a07;
-  border:1px solid #ffffff18;
-  border-radius:9px;
-  color:#fff;
-  padding:9px;
-}
-.compatList{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:7px;
-  font-size:13px;
-}
-.compatItem{
-  background:#0e0a07;
-  border:1px solid #ffffff10;
-  border-radius:9px;
-  padding:8px;
-  color:var(--muted);
-}
-.compatItem.ok{color:var(--ok)}
-.markLegend{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  font-size:12px;
-}
-.markLegend span{
-  padding:5px 7px;
-  border-radius:8px;
-  background:#0e0a07;
-  border:1px solid #ffffff10;
-}
-
-
-/* Build005 Fix2 Persistent Toolbar & iPad Picker */
-.fileActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.fileActions button{width:100%}
-.dropZone{border:2px dashed #ffffff24;border-radius:12px;padding:14px;text-align:center;color:var(--muted);background:#0d0906}
-.dropZone.dragover{border-color:var(--gold);color:var(--gold);background:#2a1b0c}
-.recentList{display:grid;gap:7px}
-.recentItem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:#0d0906;border:1px solid #ffffff10;border-radius:10px;padding:9px}
-.recentItem strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.recentItem small{color:var(--muted)}
-.recentItem button{border:1px solid #ffffff18;background:#ffffff0c;color:#fff;border-radius:8px;padding:7px 9px}
-.fileDiag{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:13px}
-.fileDiag span:nth-child(odd){color:var(--muted)}
-
-/* Build005 Fix2 Persistent Toolbar & iPad Picker */
-#chooseFileBtn,#modernPickerBtn{min-height:46px}
-.universalHint{color:var(--ok)}
-
-/* Build005 Fix2 Persistent Toolbar & iPad Picker */
-.toolbar{
-  display:grid!important;
-  visibility:visible!important;
-  opacity:1!important;
-  position:relative!important;
-  z-index:100!important;
-}
-body.mode-minimal .toolbar{
-  display:grid!important;
-  grid-template-columns:minmax(160px,1fr) auto!important;
-}
-body.mode-minimal .toolbar .gameTitle{
-  display:block!important;
-}
-body.mode-minimal .toolButtons button[data-hide-minimal="1"]{
-  display:inline-flex!important;
-}
-.toolButtons{
-  display:flex!important;
-  visibility:visible!important;
-  opacity:1!important;
-  flex-wrap:nowrap!important;
-}
-.toolButtons button{
-  display:inline-flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  visibility:visible!important;
-  opacity:1!important;
-}
-.board-focus .toolbar{
-  display:grid!important;
-}
-.board-focus .app{
-  grid-template-rows:auto minmax(0,1fr) auto!important;
-  padding-top:calc(var(--safe-top) + 6px)!important;
-}
-.floatingMenuBtn{
-  position:fixed;
-  left:calc(var(--safe-left) + 10px);
-  top:calc(var(--safe-top) + 10px);
-  z-index:1000;
-  width:46px;height:46px;
-  border-radius:12px;
-  border:1px solid #ffffff22;
-  background:#17100bf2;
-  color:#fff;
-  font-size:24px;
-  box-shadow:0 8px 24px #0009;
-}
-.quickMenu{
-  position:fixed;
-  left:calc(var(--safe-left) + 10px);
-  top:calc(var(--safe-top) + 64px);
-  z-index:1001;
-  width:min(260px,82vw);
-  background:#17100bf5;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:8px;
-  box-shadow:0 16px 44px #000c;
-  display:none;
-}
-body.quick-menu-open .quickMenu{display:grid;gap:6px}
-.quickMenu button{
-  text-align:left;
-  border:1px solid #ffffff18;
-  background:#ffffff0b;
-  color:#fff;
-  border-radius:9px;
-  padding:10px;
-}
-@media (orientation:landscape){
-  .toolbar{min-height:44px!important;padding:4px 6px!important}
-  .toolButtons button{height:34px!important;min-width:48px!important;font-size:10px!important}
-  .toolButtons button span{font-size:14px!important}
-}
-
 </style>
 </head>
 <body class="mode-teaching">
-<button id="floatingMenuBtn" class="floatingMenuBtn" title="開啟主選單">☰</button>
-<div id="quickMenu" class="quickMenu">
-  <button data-action="info">☰ 資訊與載入 SGF</button>
-  <button data-action="minimal">◫ 極簡模式</button>
-  <button data-action="teaching">📖 教學模式</button>
-  <button data-action="professional">⚙ 專業模式</button>
-  <button data-action="focus">⛶ 全螢幕切換</button>
-  <button data-action="restore">↺ 還原版面</button>
-</div>
-
-<div class="app">
-  <header class="toolbar">
-    <div class="gameTitle">
+<div class="studio">
+  <header class="topbar">
+    <div class="identity">
       <strong id="gameName">內建範例棋譜</strong>
       <span id="gameSummary">19 路｜0 / 10</span>
     </div>
-    <nav class="toolButtons" aria-label="主要工具">
-      <button id="infoBtn"><span>☰</span>資訊</button>
-      <button id="minimalBtn"><span>◫</span>極簡</button>
-      <button id="teachingBtn"><span>📖</span>教學</button>
-      <button id="professionalBtn"><span>⚙</span>專業</button>
-      <button id="focusBtn"><span>⛶</span>全螢幕</button>
-      <button id="restoreBtn"><span>↺</span>還原</button>
+    <nav class="toolbar">
+      <button id="infoBtn"><span>☰</span><small>資訊</small></button>
+      <button id="minimalBtn"><span>◫</span><small>極簡</small></button>
+      <button id="teachingBtn"><span>📖</span><small>教學</small></button>
+      <button id="professionalBtn"><span>⚙</span><small>專業</small></button>
+      <button id="focusBtn"><span>⛶</span><small>全螢幕</small></button>
+      <button id="restoreBtn"><span>↺</span><small>還原</small></button>
     </nav>
   </header>
 
   <main class="main">
-    <section class="boardPanel">
+    <section class="boardShell">
       <div class="boardStage" id="boardStage"><canvas id="goBoard"></canvas></div>
     </section>
   </main>
 
-  <footer class="controlsPanel">
+  <footer class="bottom">
     <div class="controls">
-      <button id="firstBtn" aria-label="第一手">⏮</button>
-      <button id="prevBtn" aria-label="上一手">◀</button>
-      <button id="playBtn" aria-label="播放">▶</button>
-      <button id="nextBtn" aria-label="下一手">▶</button>
-      <button id="lastBtn" aria-label="最後一手">⏭</button>
+      <button id="firstBtn">⏮</button>
+      <button id="prevBtn">◀</button>
+      <button id="playBtn">▶</button>
+      <button id="nextBtn">▶</button>
+      <button id="lastBtn">⏭</button>
     </div>
     <div class="timeline">
       <input id="moveRange" type="range" min="0" max="10" value="0">
@@ -342,37 +152,18 @@ body.quick-menu-open .quickMenu{display:grid;gap:6px}
   </footer>
 </div>
 
-<div class="drawerBackdrop" id="drawerBackdrop"></div>
-<aside class="drawer" id="drawer" aria-hidden="true">
-  <button class="drawerClose" id="drawerCloseBtn">✕</button>
+<div id="drawerBackdrop" class="drawerBackdrop"></div>
+<aside id="drawer" class="drawer" aria-hidden="true">
+  <button id="drawerCloseBtn" class="drawerClose">✕</button>
 
-  
   <section class="section">
-    <h3>Universal SGF Picker</h3>
+    <h3>SGF 檔案</h3>
     <input id="sgfFile" type="file" hidden>
     <div class="fileActions">
-      <button class="action" id="chooseFileBtn">選擇 SGF 檔案</button>
-      <button class="action secondary" id="modernPickerBtn">iPad 檔案選擇器</button>
-      <button class="action secondary" id="readAgainBtn">重新讀取目前棋譜</button>
-      <button class="action secondary" id="sampleBtn">10 手範例</button>
+      <button class="action" id="chooseFileBtn">選擇 SGF</button>
+      <button class="action secondary" id="readAgainBtn">重新讀取</button>
     </div>
-    <div id="dropZone" class="dropZone" style="margin-top:10px">可將 SGF 拖曳到這裡，或使用上方按鈕選檔。</div>
     <div id="selectedFile" class="status" style="margin-top:10px">尚未選擇檔案。</div>
-    <div class="status" style="margin-top:8px;color:var(--muted)">
-      iPad 若把 .sgf 顯示成未知格式，本版仍可選取；系統會依檔案內容判斷是否為 SGF。 網頁版仍使用 Safari 提供的系統檔案視窗，無法直接呼叫 App 專用的 Document Browser。
-    </div>
-    <div class="fileDiag" style="margin-top:10px">
-      <span>檔案名稱</span><span id="diagName">—</span>
-      <span>檔案大小</span><span id="diagSize">—</span>
-      <span>檔案類型</span><span id="diagType">—</span>
-      <span>最後修改</span><span id="diagModified">—</span>
-      <span>讀取方式</span><span id="diagMethod">—</span>
-      <span>狀態</span><span id="diagStatus">尚未讀取</span>
-    </div>
-  </section>
-  <section class="section">
-    <h3>最近開啟</h3>
-    <div id="recentList" class="recentList"><div class="status">目前沒有最近紀錄。</div></div>
   </section>
 
   <section class="section advanced">
@@ -392,55 +183,18 @@ body.quick-menu-open .quickMenu{display:grid;gap:6px}
         <option value="30" selected>最近 30 手</option>
         <option value="50">最近 50 手</option>
         <option value="100">最近 100 手</option>
-        <option value="custom">自訂</option>
       </select>
     </div>
-    <div class="row" id="customNumberRow" style="display:none"><label>自訂手數</label><input id="customNumberCount" type="number" min="1" max="999" value="35"></div>
     <div class="row"><label>最新一手紅圈</label><input id="showLast" type="checkbox" checked></div>
     <div class="row"><label>棋子大小</label>
-      <select id="stoneScale">
-        <option value="0.38">小</option>
-        <option value="0.42" selected>標準</option>
-        <option value="0.46">大</option>
-      </select>
+      <select id="stoneScale"><option value="0.38">小</option><option value="0.42" selected>標準</option><option value="0.46">大</option></select>
     </div>
     <div class="row"><label>播放速度</label>
-      <select id="speed">
-        <option value="1200">慢</option>
-        <option value="700" selected>標準</option>
-        <option value="350">快</option>
-      </select>
-    </div>
-  </section>
-
-  
-  <section class="section">
-    <h3>快速跳到手數</h3>
-    <div class="jumpBar">
-      <label for="jumpMove">第</label>
-      <input id="jumpMove" type="number" min="0" value="0">
-      <button class="action" id="jumpBtn">前往</button>
+      <select id="speed"><option value="1200">慢</option><option value="700" selected>標準</option><option value="350">快</option></select>
     </div>
   </section>
 
   <section class="section advanced">
-    <h3>SGF 相容性</h3>
-    <div class="compatList">
-      <div class="compatItem ok">AB／AW／AE</div>
-      <div class="compatItem ok">C 註解</div>
-      <div class="compatItem ok">LB 標籤</div>
-      <div class="compatItem ok">TR／SQ／CR／MA</div>
-      <div class="compatItem ok">Pass</div>
-      <div class="compatItem ok">Handicap</div>
-      <div class="compatItem ok">主變化讀取</div>
-      <div class="compatItem ok">UTF-8／UTF-16</div>
-    </div>
-    <div class="markLegend" style="margin-top:9px">
-      <span>△ 三角</span><span>□ 方框</span><span>○ 圓圈</span><span>× 標記</span><span>A 標籤</span>
-    </div>
-  </section>
-
-<section class="section advanced">
     <h3>棋譜資訊</h3>
     <div class="metaGrid">
       <span>黑方</span><span id="pb">—</span>
@@ -451,9 +205,6 @@ body.quick-menu-open .quickMenu{display:grid;gap:6px}
       <span>貼目</span><span id="km">—</span>
       <span>讓子</span><span id="ha">0</span>
       <span>總手數</span><span id="totalMoves">10</span>
-      <span>變化數</span><span id="variationCount">0</span>
-      <span>Pass</span><span id="passCount">0</span>
-      <span>目前手數</span><span id="currentMoveMeta">0</span>
     </div>
   </section>
 
@@ -464,12 +215,12 @@ body.quick-menu-open .quickMenu{display:grid;gap:6px}
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">已載入內建範例棋譜。</div>
+    <div id="status" class="status">Build006 Professional Go Studio 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build005 Fix2 Persistent Toolbar & iPad Picker 已啟動。</div>
+    <div id="debugLog">Build006 Professional Go Studio 已啟動。</div>
   </section>
 </aside>
 
@@ -479,19 +230,12 @@ body.quick-menu-open .quickMenu{display:grid;gap:6px}
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build004 範例棋譜",km:"6.5",ha:"0"},setup:[],erase:[],marks:[],variationCount:0,moves:[
-{c:1,x:15,y:3,comment:"黑棋右上角小目",marks:[{type:"TR",x:15,y:3}]},
-{c:-1,x:3,y:3,comment:"白棋左上角小目"},
-{c:1,x:16,y:15,comment:"黑棋右下角"},
-{c:-1,x:3,y:16,comment:"白棋左下角"},
-{c:1,x:5,y:2,comment:"黑棋拆邊"},
-{c:-1,x:2,y:5,comment:"白棋掛角"},
-{c:1,x:16,y:5,comment:"黑棋右邊"},
-{c:-1,x:13,y:2,comment:"白棋右上方"},
-{c:1,x:14,y:2,comment:"黑棋接近"},
-{c:-1,x:13,y:3,comment:"白棋應對",marks:[{type:"LB",x:13,y:3,label:"A"}]}]};
-
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build006 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+{c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
+{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
+{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
+{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},
+{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
 function decode(buffer){
  var b=new Uint8Array(buffer);
  if(b.length>1&&b[0]===255&&b[1]===254)return new TextDecoder("utf-16le").decode(buffer);
@@ -534,41 +278,23 @@ function tree(text,i){
 }
 function first(p,k,d){return p[k]&&p[k].length?p[k][0]:d}
 function xy(v){return !v||v.length<2?{pass:true,x:-1,y:-1}:{pass:false,x:v.charCodeAt(0)-97,y:v.charCodeAt(1)-97}}
-function countVariations(t){var n=t.children.length;for(var i=0;i<t.children.length;i++)n+=countVariations(t.children[i]);return n}
 function mainline(t){var a=t.seq.slice(),c=t;while(c.children.length){c=c.children[0];a=a.concat(c.seq)}return a}
 function parseSGF(text){
  text=String(text||"").replace(/^\uFEFF/,"").trim();
  var start=text.indexOf("(");if(start<0||text.indexOf("(;",start)<0)throw Error("這不是有效的 SGF");
- var parsedTree=tree(text,start).t,ns=mainline(parsedTree);if(!ns.length)throw Error("找不到 SGF 節點");
+ var ns=mainline(tree(text,start).t);if(!ns.length)throw Error("找不到 SGF 節點");
  var root=ns[0],size=parseInt(first(root,"SZ","19"),10);if([9,13,19].indexOf(size)<0)throw Error("目前只支援 9、13、19 路");
- var g={size:size,meta:{pb:first(root,"PB","—"),pw:first(root,"PW","—"),re:first(root,"RE","—"),dt:first(root,"DT","—"),ev:first(root,"EV",first(root,"GN","—")),km:first(root,"KM","—"),ha:first(root,"HA","0")},setup:[],erase:[],marks:[],variationCount:countVariations(parsedTree),moves:[]};
- function addPoints(arr,target,c){(arr||[]).forEach(function(v){var p=xy(v);if(!p.pass)target.push({c:c,x:p.x,y:p.y})})}
- addPoints(root.AB,g.setup,1);addPoints(root.AW,g.setup,-1);
- (root.AE||[]).forEach(function(v){var p=xy(v);if(!p.pass)g.erase.push({x:p.x,y:p.y})});
- function readMarks(n){
-   var marks=[];
-   ["TR","SQ","CR","MA"].forEach(function(k){(n[k]||[]).forEach(function(v){var p=xy(v);if(!p.pass)marks.push({type:k,x:p.x,y:p.y})})});
-   (n.LB||[]).forEach(function(v){var parts=v.split(":");var p=xy(parts[0]);if(!p.pass)marks.push({type:"LB",x:p.x,y:p.y,label:parts.slice(1).join(":")||""})});
-   return marks;
- }
- g.marks=readMarks(root);
- ns.forEach(function(n){
-   var m,marks=readMarks(n);
-   if(n.AB||n.AW||n.AE){
-     addPoints(n.AB,g.setup,1);addPoints(n.AW,g.setup,-1);
-     (n.AE||[]).forEach(function(v){var p=xy(v);if(!p.pass)g.erase.push({x:p.x,y:p.y})});
-   }
-   if(n.B&&n.B.length){m=xy(n.B[0]);g.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C",""),marks:marks})}
-   else if(n.W&&n.W.length){m=xy(n.W[0]);g.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C",""),marks:marks})}
- });
+ var g={size:size,meta:{pb:first(root,"PB","—"),pw:first(root,"PW","—"),re:first(root,"RE","—"),dt:first(root,"DT","—"),ev:first(root,"EV",first(root,"GN","—")),km:first(root,"KM","—"),ha:first(root,"HA","0")},setup:[],moves:[]};
+ (root.AB||[]).forEach(function(v){var p=xy(v);g.setup.push({c:1,pass:p.pass,x:p.x,y:p.y})});
+ (root.AW||[]).forEach(function(v){var p=xy(v);g.setup.push({c:-1,pass:p.pass,x:p.x,y:p.y})});
+ ns.forEach(function(n){var m;if(n.B&&n.B.length){m=xy(n.B[0]);g.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}else if(n.W&&n.W.length){m=xy(n.W[0]);g.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}});
  return g;
 }
-
+function looksLikeSGF(text){var s=String(text||"").replace(/^\uFEFF/,"").trim();return !!s&&s.indexOf("(;")>=0&&/(?:GM|FF|SZ|B|W|AB|AW)\s*\[/.test(s)}
 function Board(canvas){
  this.canvas=canvas;this.ctx=canvas.getContext("2d");this.size=19;this.grid=this.empty(19);this.last=null;this.width=0;
  this.resize=this.resize.bind(this);this.queueResize=this.queueResize.bind(this);
- window.addEventListener("resize",this.queueResize);
- window.addEventListener("orientationchange",this.queueResize);
+ window.addEventListener("resize",this.queueResize);window.addEventListener("orientationchange",this.queueResize);
  if(window.visualViewport)window.visualViewport.addEventListener("resize",this.queueResize);
 }
 Board.prototype.empty=function(n){var a=[];for(var y=0;y<n;y++)a.push(new Array(n).fill(null));return a};
@@ -576,20 +302,13 @@ Board.prototype.inside=function(x,y){return x>=0&&y>=0&&x<this.size&&y<this.size
 Board.prototype.nei=function(x,y){var a=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],r=[];for(var i=0;i<a.length;i++)if(this.inside(a[i][0],a[i][1]))r.push(a[i]);return r};
 Board.prototype.group=function(x,y){var s=this.grid[y][x],st=[[x,y]],seen={},grp=[],lib={};while(st.length){var p=st.pop(),k=p[0]+","+p[1];if(seen[k])continue;seen[k]=1;grp.push(p);var n=this.nei(p[0],p[1]);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(!q)lib[n[i][0]+","+n[i][1]]=1;else if(q.c===s.c&&!seen[n[i][0]+","+n[i][1]])st.push(n[i])}}return{group:grp,lib:lib}};
 Board.prototype.apply=function(m,num){if(!m||m.pass||!this.inside(m.x,m.y)){this.last=null;return}this.grid[m.y][m.x]={c:m.c,n:num};var n=this.nei(m.x,m.y);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(q&&q.c===-m.c){var r=this.group(n[i][0],n[i][1]);if(!Object.keys(r.lib).length)for(var j=0;j<r.group.length;j++)this.grid[r.group[j][1]][r.group[j][0]]=null}}this.last={x:m.x,y:m.y}};
-Board.prototype.position=function(g,k){
- this.size=g.size;this.grid=this.empty(g.size);this.last=null;this.marks=(g.marks||[]).slice();
- g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);
- (g.erase||[]).forEach(function(p){if(this.inside(p.x,p.y))this.grid[p.y][p.x]=null},this);
- for(var i=0;i<k;i++){this.apply(g.moves[i],i+1);if(g.moves[i].marks&&g.moves[i].marks.length)this.marks=this.marks.concat(g.moves[i].marks)}
- this.draw()
-};
+Board.prototype.position=function(g,k){this.size=g.size;this.grid=this.empty(g.size);this.last=null;g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);for(var i=0;i<k;i++)this.apply(g.moves[i],i+1);this.draw()};
 Board.prototype.queueResize=function(){clearTimeout(this._timer);this._timer=setTimeout(this.resize,100)};
 Board.prototype.resize=function(){
  var rect=id("boardStage").getBoundingClientRect();
- var w=Math.max(220,Math.floor(Math.min(rect.width,rect.height)*.985));
+ var w=Math.max(220,Math.floor(Math.min(rect.width,rect.height)*.99));
  var d=Math.max(1,window.devicePixelRatio||1);
- this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";
- this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);
+ this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);
  this.ctx.setTransform(d,0,0,d,0,0);this.dpr=d;this.width=w;this.draw();
 };
 Board.prototype.draw=function(){
@@ -603,218 +322,42 @@ Board.prototype.draw=function(){
  for(i=0;i<st.length;i++)for(var j=0;j<st.length;j++){if(this.size===9&&(st[i]===4||st[j]===4)&&!(st[i]===4&&st[j]===4))continue;c.beginPath();c.arc(snap(min+st[i]*cell),snap(min+st[j]*cell),Math.max(2.5,cell*.075),0,Math.PI*2);c.fill()}
  var scale=parseFloat(id("stoneScale").value||"0.42"),r=cell*scale;
  for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=snap(min+x*cell),cy=snap(min+y*cell),gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();
-  if(s.n!==null){var mode=id("numberMode").value,show=mode!=="none";if(show&&mode!=="all"){var count=mode==="custom"?parseInt(id("customNumberCount").value||"35",10):parseInt(mode,10);var cutoff=Math.max(1,index-count+1);show=s.n>=cutoff}if(show){c.fillStyle=s.c===1?"#fff":"#25180c";var digits=String(s.n).length,factor=digits>=3?.48:digits===2?.60:.72;c.font="800 "+Math.max(9,r*factor)+"px sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(String(s.n),cx,cy)}}}
-
- if(this.marks&&this.marks.length){
-  c.save();c.lineWidth=Math.max(2,r*.11);c.strokeStyle="#d62828";c.fillStyle="#d62828";c.textAlign="center";c.textBaseline="middle";
-  for(var mi=0;mi<this.marks.length;mi++){
-   var mk=this.marks[mi],mx=snap(min+mk.x*cell),my=snap(min+mk.y*cell),mr=r*.58;
-   if(mk.type==="TR"){c.beginPath();c.moveTo(mx,my-mr);c.lineTo(mx-mr*.86,my+mr*.5);c.lineTo(mx+mr*.86,my+mr*.5);c.closePath();c.stroke()}
-   else if(mk.type==="SQ"){c.strokeRect(mx-mr*.68,my-mr*.68,mr*1.36,mr*1.36)}
-   else if(mk.type==="CR"){c.beginPath();c.arc(mx,my,mr*.72,0,Math.PI*2);c.stroke()}
-   else if(mk.type==="MA"){c.beginPath();c.moveTo(mx-mr*.7,my-mr*.7);c.lineTo(mx+mr*.7,my+mr*.7);c.moveTo(mx+mr*.7,my-mr*.7);c.lineTo(mx-mr*.7,my+mr*.7);c.stroke()}
-   else if(mk.type==="LB"){c.font="900 "+Math.max(10,r*.78)+"px sans-serif";c.fillText(mk.label||"",mx,my)}
-  }
-  c.restore();
- }
+  if(s.n!==null){var mode=id("numberMode").value,show=mode!=="none";if(show&&mode!=="all"){var count=parseInt(mode,10);var cutoff=Math.max(1,index-count+1);show=s.n>=cutoff}if(show){c.fillStyle=s.c===1?"#fff":"#25180c";var digits=String(s.n).length,factor=digits>=3?.48:digits===2?.60:.72;c.font="800 "+Math.max(9,r*factor)+"px sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(String(s.n),cx,cy)}}}
  if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(snap(min+this.last.x*cell),snap(min+this.last.y*cell),r*.76,0,Math.PI*2);c.stroke()}
 };
-
-
-var recentFiles=[];
-try{recentFiles=JSON.parse(localStorage.getItem("recentSGFMeta")||"[]")}catch(e){recentFiles=[]}
-function formatBytes(n){if(!Number.isFinite(n))return "—";if(n<1024)return n+" bytes";if(n<1048576)return (n/1024).toFixed(1)+" KB";return (n/1048576).toFixed(2)+" MB"}
-function updateFileDiagnostics(file,method,stateText){
- id("diagName").textContent=file&&file.name?file.name:"—";
- id("diagSize").textContent=file?formatBytes(file.size):"—";
- id("diagType").textContent=file&&file.type?file.type:"未知格式（仍可嘗試讀取）";
- id("diagModified").textContent=file&&file.lastModified?new Date(file.lastModified).toLocaleString():"—";
- id("diagMethod").textContent=method||"—";
- id("diagStatus").textContent=stateText||"尚未讀取";
-}
-function saveRecentMeta(file,moves,size){
- if(!file||!file.name)return;
- var item={name:file.name,size:file.size||0,lastModified:file.lastModified||0,moves:moves||0,boardSize:size||19,openedAt:Date.now()};
- recentFiles=recentFiles.filter(function(x){return !(x.name===item.name&&x.size===item.size&&x.lastModified===item.lastModified)});
- recentFiles.unshift(item);recentFiles=recentFiles.slice(0,8);
- try{localStorage.setItem("recentSGFMeta",JSON.stringify(recentFiles))}catch(e){}
- renderRecentList();
-}
-function renderRecentList(){
- var box=id("recentList");
- if(!recentFiles.length){box.innerHTML='<div class="status">目前沒有最近紀錄。</div>';return}
- box.innerHTML="";
- recentFiles.forEach(function(item){
-  var row=document.createElement("div");row.className="recentItem";
-  var info=document.createElement("div"),title=document.createElement("strong"),sub=document.createElement("small");
-  title.textContent=item.name;sub.textContent=(item.boardSize||19)+" 路｜"+(item.moves||0)+" 手｜"+formatBytes(item.size||0);
-  info.appendChild(title);info.appendChild(sub);
-  var btn=document.createElement("button");btn.type="button";btn.textContent="重新選取";
-  btn.onclick=function(){id("sgfFile").value="";id("sgfFile").click()};
-  row.appendChild(info);row.appendChild(btn);box.appendChild(row);
- });
-}
-
-function looksLikeSGF(text){
- var s=String(text||"").replace(/^\uFEFF/,"").trim();
- if(!s)return false;
- if(s.indexOf("(;")<0)return false;
- return /(?:GM|FF|SZ|B|W|AB|AW)\s*\[/.test(s);
-}
-
-function validateFile(file){
- if(!file)throw Error("沒有取得檔案");
- if(file.size===0)throw Error("檔案大小為 0 bytes");
- if(file.size>20*1024*1024)throw Error("檔案超過 20 MB，請確認是否為 SGF");
-}
-async function readViaModernPicker(){
- if(!window.showOpenFilePicker)throw Error("此 Safari 版本不支援現代檔案選擇器");
- var handles=await window.showOpenFilePicker({
-   multiple:false,
-   excludeAcceptAllOption:false,
-   types:[{
-     description:"SGF 或文字檔",
-     accept:{
-       "application/octet-stream":[".sgf",".txt"],
-       "text/plain":[".sgf",".txt"]
-     }
-   }]
- });
- if(!handles||!handles.length)throw Error("沒有選擇檔案");
- read(await handles[0].getFile(),"通用 iPad 檔案選擇器");
-}
-
-var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userLocked=false,currentGameName="內建範例棋譜";
-
-function updateMeta(){
- ["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});
- id("totalMoves").textContent=game.moves.length;
- id("variationCount").textContent=game.variationCount||0;
- id("passCount").textContent=game.moves.filter(function(m){return !!m.pass}).length;
-}
+var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,currentGameName="內建範例棋譜";
+function updateMeta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){
- board.position(game,index);
- id("moveRange").max=game.moves.length;id("moveRange").value=index;
- id("counter").textContent=index+" / "+game.moves.length;
- id("gameName").textContent=currentGameName;
+ board.position(game,index);id("moveRange").max=game.moves.length;id("moveRange").value=index;
+ id("counter").textContent=index+" / "+game.moves.length;id("gameName").textContent=currentGameName;
  id("gameSummary").textContent=game.size+" 路｜"+index+" / "+game.moves.length;
- id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";id("currentMoveMeta").textContent=index;id("jumpMove").max=game.moves.length;id("jumpMove").value=index;
+ id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
-function load(g,name,source){
- stop();game=g;index=0;currentGameName=name;userLocked=source==="user";
- updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length+"｜變化數："+(g.variationCount||0),false);log("解析成功："+g.moves.length+" 手｜"+name);
+function load(g,name){stop();game=g;index=0;currentGameName=name;updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手｜"+name)}
+function read(file){
+ if(!file){status("未取得檔案。",true);return}
+ currentFile=file;id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";
+ var fr=new FileReader();fr.onload=function(){try{var decoded=decode(fr.result);if(!looksLikeSGF(decoded))throw Error("檔案內容不是可辨識的 SGF");load(parseSGF(decoded),file.name)}catch(e){status("載入失敗："+e.message,true);log("錯誤："+e.message)}};fr.onerror=function(){status("檔案讀取失敗。",true)};fr.readAsArrayBuffer(file);
 }
-function read(file,method){
- try{validateFile(file)}catch(e){status("❌ "+e.message,true);updateFileDiagnostics(file,method||"通用檔案選擇器","失敗："+e.message);return}
- currentFile=file;
- var readMethod=method||"通用檔案選擇器";
- id("selectedFile").textContent="已選擇："+file.name+"（"+formatBytes(file.size)+"）";
- updateFileDiagnostics(file,readMethod,"正在讀取");
- var fr=new FileReader();
- fr.onload=function(){
-  try{
-   var decoded=decode(fr.result);if(!looksLikeSGF(decoded))throw Error("檔案內容不是可辨識的 SGF");
-   var parsed=parseSGF(decoded);load(parsed,file.name,"user");
-   updateFileDiagnostics(file,readMethod,"✅ 成功載入");saveRecentMeta(file,parsed.moves.length,parsed.size);
-  }catch(e){status("❌ 載入失敗："+e.message+"\n提示：可選 .sgf、.txt 或未知副檔名，只要內容是 SGF 即可。",true);updateFileDiagnostics(file,readMethod,"失敗："+e.message);log("錯誤："+e.message)}
- };
- fr.onerror=function(){status("❌ 檔案讀取失敗，可能是 Safari 權限或檔案存取問題。",true);updateFileDiagnostics(file,readMethod,"Safari 讀取失敗")};
- fr.onabort=function(){status("已取消讀取。",true);updateFileDiagnostics(file,readMethod,"已取消")};
- fr.readAsArrayBuffer(file);
-}
-
-function ensureToolbarVisible(){
- var t=document.querySelector(".toolbar");
- if(t){
-   t.style.display="grid";
-   t.style.visibility="visible";
-   t.style.opacity="1";
- }
- var tools=document.querySelector(".toolButtons");
- if(tools){
-   tools.style.display="flex";
-   tools.style.visibility="visible";
-   tools.style.opacity="1";
- }
-}
-function toggleQuickMenu(force){
- var open=typeof force==="boolean"?force:!document.body.classList.contains("quick-menu-open");
- document.body.classList.toggle("quick-menu-open",open);
-}
-id("floatingMenuBtn").onclick=function(e){e.preventDefault();e.stopPropagation();toggleQuickMenu()};
-id("quickMenu").onclick=function(e){
- var btn=e.target.closest("button[data-action]");if(!btn)return;
- var action=btn.getAttribute("data-action");
- toggleQuickMenu(false);
- if(action==="info")openDrawer();
- else if(action==="minimal")setMode("minimal");
- else if(action==="teaching")setMode("teaching");
- else if(action==="professional")setMode("professional");
- else if(action==="focus"){document.body.classList.toggle("board-focus");setTimeout(function(){ensureToolbarVisible();board.resize()},60)}
- else if(action==="restore")restoreLayout();
-};
-document.addEventListener("click",function(e){
- if(document.body.classList.contains("quick-menu-open")&&!id("quickMenu").contains(e.target)&&e.target!==id("floatingMenuBtn"))toggleQuickMenu(false);
-});
-id("boardStage").addEventListener("dblclick",function(){ensureToolbarVisible()});
-var longPressTimer=null;
-id("boardStage").addEventListener("touchstart",function(){longPressTimer=setTimeout(ensureToolbarVisible,900)},{passive:true});
-["touchend","touchcancel","touchmove"].forEach(function(evt){id("boardStage").addEventListener(evt,function(){clearTimeout(longPressTimer)},{passive:true})});
-
-function setMode(mode){
- document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");
- document.body.classList.add("mode-"+mode);
- try{localStorage.setItem("goMode",mode)}catch(e){}
- setTimeout(function(){ensureToolbarVisible();board.resize()},60);
-}
+function setMode(mode){document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");document.body.classList.add("mode-"+mode);try{localStorage.setItem("goMode",mode)}catch(e){};setTimeout(board.resize,60)}
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
-function restoreLayout(){closeDrawer();toggleQuickMenu(false);document.body.classList.remove("board-focus");setMode("teaching");stop();ensureToolbarVisible();requestAnimationFrame(function(){board.resize();render()})}
-
+function restoreLayout(){closeDrawer();document.body.classList.remove("board-focus");setMode("teaching");stop();requestAnimationFrame(function(){board.resize();render()})}
 id("infoBtn").onclick=openDrawer;id("drawerCloseBtn").onclick=closeDrawer;id("drawerBackdrop").onclick=closeDrawer;
-id("minimalBtn").onclick=function(){setMode("minimal")};
-id("teachingBtn").onclick=function(){setMode("teaching")};
-id("professionalBtn").onclick=function(){setMode("professional")};
-id("focusBtn").onclick=function(){document.body.classList.toggle("board-focus");setTimeout(board.resize,60)};
-id("restoreBtn").onclick=restoreLayout;
-
+id("minimalBtn").onclick=function(){setMode("minimal")};id("teachingBtn").onclick=function(){setMode("teaching")};id("professionalBtn").onclick=function(){setMode("professional")};
+id("focusBtn").onclick=function(){document.body.classList.toggle("board-focus");setTimeout(board.resize,60)};id("restoreBtn").onclick=restoreLayout;
 id("chooseFileBtn").onclick=function(){id("sgfFile").value="";id("sgfFile").click()};
-id("sgfFile").onchange=function(e){var file=e.target.files&&e.target.files[0];if(file)read(file,"通用 iPad 檔案選擇器")};
-id("modernPickerBtn").onclick=async function(){
- try{await readViaModernPicker()}
- catch(e){if(e&&e.name==="AbortError")return;status("⚠️ "+e.message+"\n已改用一般檔案選擇器。",true);id("sgfFile").value="";id("sgfFile").click()}
-};
-id("readAgainBtn").onclick=function(){var f=(id("sgfFile").files&&id("sgfFile").files[0])||currentFile;if(!f){status("尚未選擇棋譜。",true);return}read(f,"重新讀取目前棋譜")};
-id("sampleBtn").onclick=function(){if(userLocked&&!confirm("目前已載入使用者棋譜。確定切換到 10 手範例嗎？"))return;load(SAMPLE,"內建範例棋譜","sample")};
-id("loadTextBtn").onclick=function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF","user")}catch(e){status("載入失敗："+e.message,true)}};
-
-id("firstBtn").onclick=function(){stop();index=0;render()};
-id("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};
-id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};
-id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
+id("sgfFile").onchange=function(e){var f=e.target.files&&e.target.files[0];if(f)read(f)};
+id("readAgainBtn").onclick=function(){if(currentFile)read(currentFile);else status("尚未選擇棋譜。",true)};
+id("loadTextBtn").onclick=function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF")}catch(e){status("載入失敗："+e.message,true)}};
+id("firstBtn").onclick=function(){stop();index=0;render()};id("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};
+id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
 id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
-id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};
-id("jumpBtn").onclick=function(){
- stop();
- var n=parseInt(id("jumpMove").value,10);
- if(isNaN(n))n=0;
- index=Math.max(0,Math.min(game.moves.length,n));
- render();
-};
-id("jumpMove").onkeydown=function(e){if(e.key==="Enter")id("jumpBtn").click()};
-id("numberMode").onchange=function(){id("customNumberRow").style.display=this.value==="custom"?"flex":"none";render()};
-id("customNumberCount").oninput=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
-
-
-["dragenter","dragover"].forEach(function(evt){id("dropZone").addEventListener(evt,function(e){e.preventDefault();e.stopPropagation();this.classList.add("dragover")})});
-["dragleave","drop"].forEach(function(evt){id("dropZone").addEventListener(evt,function(e){e.preventDefault();e.stopPropagation();this.classList.remove("dragover")})});
-id("dropZone").addEventListener("drop",function(e){var file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(file)read(file,"拖放")});
-renderRecentList();
+id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("numberMode").onchange=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
 new ResizeObserver(function(){board.queueResize()}).observe(id("boardStage"));
 var saved="teaching";try{saved=localStorage.getItem("goMode")||"teaching"}catch(e){};if(["minimal","teaching","professional"].indexOf(saved)<0)saved="teaching";
-setMode(saved);updateMeta();render();renderRecentList();updateFileDiagnostics(null,"—","尚未讀取");ensureToolbarVisible();setTimeout(function(){ensureToolbarVisible();board.resize()},80);
-setInterval(ensureToolbarVisible,1200);
+setMode(saved);updateMeta();render();setTimeout(board.resize,80);
 })();
 </script>
 </body>
