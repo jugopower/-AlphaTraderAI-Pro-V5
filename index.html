@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-1510">
-<title>AlphaTraderAI Pro V5.0｜Build009 Professional AI Studio + Human vs AI</title>
+<meta name="app-version" content="20260712-1630">
+<title>AlphaTraderAI Pro V5.0｜Build010 Real KataGo Cloud Connector</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build009 Professional AI Studio + Human vs AI */
+/* Build010 Real KataGo Cloud Connector */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build009 Professional AI Studio + Human vs AI */
+/* Build010 Real KataGo Cloud Connector */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build009 Professional AI Studio + Human vs AI */
+/* Build010 Real KataGo Cloud Connector */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build009 Professional AI Studio + Human vs AI */
+/* Build010 Real KataGo Cloud Connector */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -418,6 +418,36 @@ body.play-open .playPanel{transform:translateX(0)}
 .playHeader{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:8px;margin-bottom:8px;border-radius:12px;background:#1b130df5;border:1px solid #ffffff12}.playHeader strong,.playHeader small{display:block}.playHeader small{color:var(--gold);margin-top:2px}.playHeader button{width:34px;height:34px;border-radius:9px;border:1px solid #ffffff18;background:#ffffff0c;color:#fff}
 .playCard{margin-bottom:9px;padding:11px;border-radius:14px;background:#21170f;border:1px solid #ffffff10}.playCard h3{margin:0 0 10px;font-size:17px}.playGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.playGrid label{display:grid;gap:4px;color:var(--muted);font-size:12px}.playGrid select,.playGrid input{width:100%;background:#0d0906;color:#fff;border:1px solid #ffffff18;border-radius:9px;padding:8px}.playPrimary{width:100%;margin-top:10px;padding:11px;border:0;border-radius:10px;background:linear-gradient(145deg,#f7d47c,#dda73e);color:#211407;font-weight:900}.playActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.playActions button{border:1px solid #ffffff18;border-radius:9px;background:#ffffff0c;color:#fff;padding:9px;font-weight:800}.playStats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.playStats div{padding:8px;border-radius:10px;background:#0d0906;text-align:center}.playStats span{display:block;color:var(--muted);font-size:11px}.playStats strong{display:block;margin-top:4px;font-size:15px}.playMessage{margin-top:9px;padding:9px;border-radius:10px;background:#342411;color:#f1d59b;line-height:1.45}.playNote{color:var(--muted);font-size:12px;line-height:1.45}body.play-active #goBoard{cursor:crosshair}@media(max-width:900px){.playPanel{width:min(430px,96vw)}}
 
+
+/* Build010 KataGo Cloud */
+.cloudPanel{
+  position:fixed;z-index:80;top:calc(var(--safe-top) + 8px);
+  right:calc(var(--safe-right) + 8px);bottom:calc(var(--safe-bottom) + 8px);
+  width:min(410px,95vw);transform:translateX(calc(100% + 24px));
+  transition:transform .2s ease;background:#120d09f8;border:1px solid var(--line);
+  border-radius:18px;box-shadow:0 18px 50px #000c;overflow:auto;padding:10px
+}
+body.cloud-open .cloudPanel{transform:translateX(0)}
+.cloudHeader{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;
+  padding:8px;margin-bottom:8px;border-radius:12px;background:#1b130df5;border:1px solid #ffffff12}
+.cloudHeader strong,.cloudHeader small{display:block}
+.cloudHeader small{color:var(--gold);margin-top:2px}
+.cloudHeader button{width:34px;height:34px;border-radius:9px;border:1px solid #ffffff18;background:#ffffff0c;color:#fff}
+.cloudCard{margin-bottom:9px;padding:11px;border-radius:14px;background:#21170f;border:1px solid #ffffff10}
+.cloudCard h3{margin:0 0 10px;font-size:17px}
+.cloudCard label{display:grid;gap:4px;color:var(--muted);font-size:12px;margin-bottom:9px}
+.cloudCard input,.cloudCard select{width:100%;background:#0d0906;color:#fff;border:1px solid #ffffff18;border-radius:9px;padding:9px}
+.cloudActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.cloudActions button{border:1px solid #ffffff18;border-radius:9px;background:#ffffff0c;color:#fff;padding:9px;font-weight:800}
+.cloudMessage{margin-top:9px;padding:9px;border-radius:10px;background:#342411;color:#f1d59b;line-height:1.45;word-break:break-word}
+.cloudStats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.cloudStats div{padding:8px;border-radius:10px;background:#0d0906;text-align:center}
+.cloudStats span{display:block;color:var(--muted);font-size:11px}
+.cloudStats strong{display:block;margin-top:4px;font-size:15px}
+.cloudNote{color:var(--muted);font-size:12px;line-height:1.5}
+body.cloud-open .studio{padding-right:min(418px,40vw)}
+@media(max-width:900px){body.cloud-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}.cloudPanel{width:min(440px,96vw)}}
+
 </style>
 </head>
 <body class="mode-teaching">
@@ -435,6 +465,7 @@ body.play-open .playPanel{transform:translateX(0)}
       <button id="professionalBtn" data-low-priority="1"><span>⚙</span><small>專業</small></button>
       <button id="aiBtn"><span>🧠</span><small>AI分析</small></button>
       <button id="playModeBtn"><span>🎮</span><small>人機對弈</small></button>
+      <button id="cloudBtn"><span>☁️</span><small>KataGo</small></button>
       <button id="focusBtn"><span>⛶</span><small>全螢幕</small></button>
       <button id="restoreBtn"><span>↺</span><small>還原</small></button>
     </nav>
@@ -465,6 +496,80 @@ body.play-open .playPanel{transform:translateX(0)}
   <strong>已載入最新版</strong>｜版本 20260712-1315
 </div>
 
+
+
+<aside id="cloudPanel" class="cloudPanel" aria-hidden="true">
+  <div class="cloudHeader">
+    <div>
+      <strong>Real KataGo Cloud</strong>
+      <small id="cloudStatus">尚未連線</small>
+    </div>
+    <button id="cloudCloseBtn">✕</button>
+  </div>
+
+  <section class="cloudCard">
+    <h3>雲端連線設定</h3>
+    <label>API 網址
+      <input id="cloudApiUrl" type="url" placeholder="https://你的-katago-server.onrender.com">
+    </label>
+    <label>API 金鑰
+      <input id="cloudApiKey" type="password" placeholder="伺服器設定的 API_KEY">
+    </label>
+    <div class="cloudActions">
+      <button id="saveCloudBtn">儲存設定</button>
+      <button id="testCloudBtn">測試連線</button>
+    </div>
+    <div id="cloudMessage" class="cloudMessage">請先部署後端，再填入 API 網址。</div>
+  </section>
+
+  <section class="cloudCard">
+    <h3>KataGo 分析設定</h3>
+    <label>分析強度
+      <select id="cloudVisits">
+        <option value="50">快速 50 visits</option>
+        <option value="150" selected>一般 150 visits</option>
+        <option value="500">深入 500 visits</option>
+        <option value="1200">教學 1200 visits</option>
+      </select>
+    </label>
+    <label>規則
+      <select id="cloudRules">
+        <option value="japanese" selected>日本規則</option>
+        <option value="chinese">中國規則</option>
+        <option value="tromp-taylor">Tromp-Taylor</option>
+      </select>
+    </label>
+    <label>逾時秒數
+      <select id="cloudTimeout">
+        <option value="15">15 秒</option>
+        <option value="30" selected>30 秒</option>
+        <option value="60">60 秒</option>
+      </select>
+    </label>
+    <div class="cloudActions">
+      <button id="cloudAnalyzeBtn">分析目前局面</button>
+      <button id="cloudMoveBtn">KataGo 下一手</button>
+    </div>
+  </section>
+
+  <section class="cloudCard">
+    <h3>真實分析結果</h3>
+    <div class="cloudStats">
+      <div><span>黑勝率</span><strong id="realBlackWin">—</strong></div>
+      <div><span>目數差</span><strong id="realScoreLead">—</strong></div>
+      <div><span>推薦手</span><strong id="realBestMove">—</strong></div>
+    </div>
+    <div id="realPV" class="cloudMessage">主變化尚未取得。</div>
+  </section>
+
+  <section class="cloudCard">
+    <h3>重要說明</h3>
+    <div class="cloudNote">
+      GitHub Pages 只有前端，必須另外部署本壓縮檔內的 <b>katago-cloud-server</b>。
+      API 金鑰只儲存在您的 iPad 瀏覽器與伺服器環境變數，不要寫進公開 GitHub 程式碼。
+    </div>
+  </section>
+</aside>
 
 <aside id="playPanel" class="playPanel" aria-hidden="true">
   <div class="playHeader"><div><strong>Human vs AI</strong><small id="playStatus">尚未開始對局</small></div><button id="playCloseBtn">✕</button></div>
@@ -600,12 +705,12 @@ body.play-open .playPanel{transform:translateX(0)}
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build009 Professional AI Studio + Human vs AI 已啟動。</div>
+    <div id="status" class="status">Build010 Real KataGo Cloud Connector 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build009 Professional AI Studio + Human vs AI 已啟動。</div>
+    <div id="debugLog">Build010 Real KataGo Cloud Connector 已啟動。</div>
   </section>
 </aside>
 
@@ -613,7 +718,7 @@ body.play-open .playPanel{transform:translateX(0)}
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-1510";
+var APP_VERSION="20260712-1630";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -683,7 +788,7 @@ if("serviceWorker" in navigator){
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build009 人機對弈範例",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build010 KataGo Cloud 範例",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -954,7 +1059,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build009 Professional AI Studio + Human vs AI",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build010 Real KataGo Cloud Connector",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
@@ -1016,13 +1121,121 @@ function preserveViewportAction(fn){
 function setMode(mode){document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");document.body.classList.add("mode-"+mode);try{localStorage.setItem("goMode",mode)}catch(e){};setTimeout(board.resize,60)}
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
-function restoreLayout(){closeDrawer();closeAI();closePlayPanel();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
+function restoreLayout(){closeDrawer();closeAI();closePlayPanel();closeCloudPanel();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
 
 
 id("goBoard").addEventListener("click",function(e){if(!playState.active||playState.resigned)return;if(playState.mode==="human-ai"&&playState.turn!==playState.humanColor)return;if(playState.mode==="ai-ai")return;var rect=this.getBoundingClientRect(),px=e.clientX-rect.left,py=e.clientY-rect.top,outerPad=Math.max(14,this.clientWidth*.043),boardPixel=this.clientWidth-outerPad*2,cell=boardPixel/(playState.size-1),x=Math.round((px-outerPad)/cell),y=Math.round((py-outerPad)/cell),r=tryPlayMove(x,y,playState.turn,false);id("playMessage").textContent=r.ok?("落子於 "+coordLabel(x,y,playState.size)+(r.captured?"，提子 "+r.captured:"")):r.msg;updatePlayUI();if(r.ok&&playState.mode==="human-ai"&&playState.turn===playState.aiColor)setTimeout(aiPlayMove,350)});
 
 function openAI(){document.body.classList.add("ai-open");id("aiPanel").setAttribute("aria-hidden","false");updateAI(index);measureLayout()}
 function closeAI(){document.body.classList.remove("ai-open");id("aiPanel").setAttribute("aria-hidden","true");showAISuggestions=false;measureLayout();board.draw()}
+
+
+var cloudConfig={apiUrl:"",apiKey:""};
+try{cloudConfig=JSON.parse(localStorage.getItem("katagoCloudConfig")||'{"apiUrl":"","apiKey":""}')}catch(e){}
+function normalizeApiUrl(url){return String(url||"").trim().replace(/\/+$/,"")}
+function openCloudPanel(){
+ document.body.classList.add("cloud-open");
+ id("cloudPanel").setAttribute("aria-hidden","false");
+ id("cloudApiUrl").value=cloudConfig.apiUrl||"";
+ id("cloudApiKey").value=cloudConfig.apiKey||"";
+ measureLayout();
+}
+function closeCloudPanel(){document.body.classList.remove("cloud-open");id("cloudPanel").setAttribute("aria-hidden","true");measureLayout()}
+function saveCloudConfig(){
+ cloudConfig.apiUrl=normalizeApiUrl(id("cloudApiUrl").value);
+ cloudConfig.apiKey=id("cloudApiKey").value.trim();
+ try{localStorage.setItem("katagoCloudConfig",JSON.stringify(cloudConfig))}catch(e){}
+ id("cloudMessage").textContent="設定已儲存在此 iPad。";
+}
+async function cloudFetch(path,options){
+ var base=normalizeApiUrl(cloudConfig.apiUrl||id("cloudApiUrl").value);
+ if(!base)throw Error("尚未填入 API 網址");
+ var headers=Object.assign({"Content-Type":"application/json"},(options&&options.headers)||{});
+ var key=cloudConfig.apiKey||id("cloudApiKey").value.trim();
+ if(key)headers["X-API-Key"]=key;
+ var timeout=parseInt(id("cloudTimeout").value||"30",10)*1000;
+ var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},timeout);
+ try{
+  var res=await fetch(base+path,Object.assign({},options||{},{headers:headers,signal:controller.signal,cache:"no-store"}));
+  var text=await res.text(),data={};
+  try{data=text?JSON.parse(text):{}}catch(e){throw Error("伺服器回傳非 JSON："+text.slice(0,120))}
+  if(!res.ok)throw Error(data.detail||data.error||("HTTP "+res.status));
+  return data;
+ }finally{clearTimeout(timer)}
+}
+function currentMovesForCloud(){
+ return game.moves.slice(0,index).map(function(m){return {color:m.c===1?"B":"W",x:m.pass?-1:m.x,y:m.pass?-1:m.y}});
+}
+function cloudPayload(){
+ return {
+  board_size:game.size,
+  komi:parseFloat((game.meta&&game.meta.km)||id("playKomi").value||"6.5"),
+  rules:id("cloudRules").value,
+  max_visits:parseInt(id("cloudVisits").value,10),
+  moves:currentMovesForCloud()
+ };
+}
+function applyRealAnalysis(data){
+ var root=data.rootInfo||data.root_info||{};
+ var infos=data.moveInfos||data.move_infos||[];
+ var blackWin=root.winrate!=null?root.winrate*100:(data.black_winrate!=null?data.black_winrate:NaN);
+ if(Number.isFinite(blackWin)){
+  id("realBlackWin").textContent=blackWin.toFixed(1)+"%";
+  id("blackWinRate").textContent=blackWin.toFixed(1)+"%";
+  id("whiteWinRate").textContent=(100-blackWin).toFixed(1)+"%";
+  id("blackWinBar").style.width=blackWin.toFixed(1)+"%";
+ }
+ var score=root.scoreLead!=null?root.scoreLead:data.score_lead;
+ id("realScoreLead").textContent=Number.isFinite(score)?((score>=0?"黑 +":"白 +")+Math.abs(score).toFixed(1)):"—";
+ var best=infos[0]||data.best_move||{};
+ var move=typeof best==="string"?best:(best.move||"—");
+ id("realBestMove").textContent=move;
+ var pv=(best.pv||data.pv||[]).join(" → ");
+ id("realPV").textContent=pv?("主變化："+pv):"主變化尚未取得。";
+ id("cloudStatus").textContent="真正 KataGo 已連線";
+ id("cloudMessage").textContent="分析完成。";
+}
+async function testCloud(){
+ saveCloudConfig();id("cloudMessage").textContent="正在測試連線…";id("cloudStatus").textContent="連線中";
+ try{
+  var data=await cloudFetch("/health",{method:"GET"});
+  id("cloudStatus").textContent=data.katago_ready?"KataGo 已就緒":"伺服器在線，KataGo 尚未就緒";
+  id("cloudMessage").textContent="連線成功｜版本："+(data.version||"unknown");
+ }catch(e){id("cloudStatus").textContent="連線失敗";id("cloudMessage").textContent="❌ "+e.message}
+}
+async function analyzeCloud(){
+ saveCloudConfig();id("cloudMessage").textContent="KataGo 分析中…";id("cloudStatus").textContent="思考中";
+ try{applyRealAnalysis(await cloudFetch("/analyze",{method:"POST",body:JSON.stringify(cloudPayload())}))}
+ catch(e){id("cloudStatus").textContent="分析失敗";id("cloudMessage").textContent="❌ "+e.message}
+}
+function gtpToXY(move,size){
+ if(!move||move.toLowerCase()==="pass")return {pass:true,x:-1,y:-1};
+ var letters="ABCDEFGHJKLMNOPQRSTUVWXYZ",x=letters.indexOf(move[0].toUpperCase()),row=parseInt(move.slice(1),10);
+ return {pass:false,x:x,y:size-row};
+}
+async function requestCloudMove(){
+ saveCloudConfig();id("cloudMessage").textContent="KataGo 思考下一手…";id("cloudStatus").textContent="思考中";
+ try{
+  var data=await cloudFetch("/genmove",{method:"POST",body:JSON.stringify(cloudPayload())});
+  applyRealAnalysis(data.analysis||data);
+  var mv=gtpToXY(data.move||data.best_move,game.size);
+  if(playState&&playState.active){
+   if(mv.pass)playPass(true);
+   else{
+    playState.aiThinking=false;
+    var result=tryPlayMove(mv.x,mv.y,playState.turn);
+    id("playMessage").textContent=result.ok?("KataGo 下在 "+(data.move||"")):("KataGo 落子失敗："+result.msg);
+   }
+  }
+  id("cloudMessage").textContent="KataGo 建議："+(data.move||data.best_move||"—");
+ }catch(e){id("cloudStatus").textContent="請求失敗";id("cloudMessage").textContent="❌ "+e.message}
+}
+id("cloudBtn").onclick=openCloudPanel;
+id("cloudCloseBtn").onclick=closeCloudPanel;
+id("saveCloudBtn").onclick=saveCloudConfig;
+id("testCloudBtn").onclick=testCloud;
+id("cloudAnalyzeBtn").onclick=analyzeCloud;
+id("cloudMoveBtn").onclick=requestCloudMove;
 
 function openPlayPanel(){document.body.classList.add("play-open");id("playPanel").setAttribute("aria-hidden","false");measureLayout()}
 function closePlayPanel(){document.body.classList.remove("play-open");id("playPanel").setAttribute("aria-hidden","true");measureLayout()}
