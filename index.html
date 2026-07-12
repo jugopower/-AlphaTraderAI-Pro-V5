@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-1405">
-<title>AlphaTraderAI Pro V5.0｜Build008 AI Analysis Engine</title>
+<meta name="app-version" content="20260712-1510">
+<title>AlphaTraderAI Pro V5.0｜Build009 Professional AI Studio + Human vs AI</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build008 AI Analysis Engine */
+/* Build009 Professional AI Studio + Human vs AI */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build008 AI Analysis Engine */
+/* Build009 Professional AI Studio + Human vs AI */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build008 AI Analysis Engine */
+/* Build009 Professional AI Studio + Human vs AI */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build008 AI Analysis Engine */
+/* Build009 Professional AI Studio + Human vs AI */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -411,6 +411,13 @@ body.ai-open .studio{padding-right:min(398px,40vw)}
   .aiPanel{width:min(430px,96vw)}
 }
 
+
+/* Build009 Human vs AI */
+.playPanel{position:fixed;z-index:75;top:calc(var(--safe-top) + 8px);right:calc(var(--safe-right) + 8px);bottom:calc(var(--safe-bottom) + 8px);width:min(400px,94vw);transform:translateX(calc(100% + 24px));transition:transform .2s ease;background:#120d09f7;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px #000c;overflow:auto;padding:10px}
+body.play-open .playPanel{transform:translateX(0)}
+.playHeader{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:8px;margin-bottom:8px;border-radius:12px;background:#1b130df5;border:1px solid #ffffff12}.playHeader strong,.playHeader small{display:block}.playHeader small{color:var(--gold);margin-top:2px}.playHeader button{width:34px;height:34px;border-radius:9px;border:1px solid #ffffff18;background:#ffffff0c;color:#fff}
+.playCard{margin-bottom:9px;padding:11px;border-radius:14px;background:#21170f;border:1px solid #ffffff10}.playCard h3{margin:0 0 10px;font-size:17px}.playGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.playGrid label{display:grid;gap:4px;color:var(--muted);font-size:12px}.playGrid select,.playGrid input{width:100%;background:#0d0906;color:#fff;border:1px solid #ffffff18;border-radius:9px;padding:8px}.playPrimary{width:100%;margin-top:10px;padding:11px;border:0;border-radius:10px;background:linear-gradient(145deg,#f7d47c,#dda73e);color:#211407;font-weight:900}.playActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.playActions button{border:1px solid #ffffff18;border-radius:9px;background:#ffffff0c;color:#fff;padding:9px;font-weight:800}.playStats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.playStats div{padding:8px;border-radius:10px;background:#0d0906;text-align:center}.playStats span{display:block;color:var(--muted);font-size:11px}.playStats strong{display:block;margin-top:4px;font-size:15px}.playMessage{margin-top:9px;padding:9px;border-radius:10px;background:#342411;color:#f1d59b;line-height:1.45}.playNote{color:var(--muted);font-size:12px;line-height:1.45}body.play-active #goBoard{cursor:crosshair}@media(max-width:900px){.playPanel{width:min(430px,96vw)}}
+
 </style>
 </head>
 <body class="mode-teaching">
@@ -427,6 +434,7 @@ body.ai-open .studio{padding-right:min(398px,40vw)}
       <button id="teachingBtn"><span>📖</span><small>教學</small></button>
       <button id="professionalBtn" data-low-priority="1"><span>⚙</span><small>專業</small></button>
       <button id="aiBtn"><span>🧠</span><small>AI分析</small></button>
+      <button id="playModeBtn"><span>🎮</span><small>人機對弈</small></button>
       <button id="focusBtn"><span>⛶</span><small>全螢幕</small></button>
       <button id="restoreBtn"><span>↺</span><small>還原</small></button>
     </nav>
@@ -456,6 +464,22 @@ body.ai-open .studio{padding-right:min(398px,40vw)}
 <div id="updateToast" class="updateToast">
   <strong>已載入最新版</strong>｜版本 20260712-1315
 </div>
+
+
+<aside id="playPanel" class="playPanel" aria-hidden="true">
+  <div class="playHeader"><div><strong>Human vs AI</strong><small id="playStatus">尚未開始對局</small></div><button id="playCloseBtn">✕</button></div>
+  <section class="playCard"><h3>新對局設定</h3><div class="playGrid">
+    <label>對局模式<select id="gameMode"><option value="human-ai">人類 vs AI</option><option value="human-human">人人對局</option><option value="ai-ai">AI vs AI</option></select></label>
+    <label>棋盤<select id="playBoardSize"><option value="19">19 路</option><option value="13">13 路</option><option value="9">9 路</option></select></label>
+    <label>人類執子<select id="humanColor"><option value="black">執黑</option><option value="white">執白</option></select></label>
+    <label>AI 強度<select id="aiStrength"><option value="beginner">入門</option><option value="kyu">級位</option><option value="dan" selected>初段</option><option value="highdan">高段</option><option value="pro">職業級示範</option></select></label>
+    <label>貼目<input id="playKomi" type="number" step="0.5" value="6.5"></label>
+    <label>讓子<select id="handicap"><option value="0">不讓子</option><option value="2">2 子</option><option value="3">3 子</option><option value="4">4 子</option><option value="5">5 子</option><option value="6">6 子</option><option value="7">7 子</option><option value="8">8 子</option><option value="9">9 子</option></select></label>
+  </div><button id="startGameBtn" class="playPrimary">開始新對局</button></section>
+  <section class="playCard"><h3>對局控制</h3><div class="playActions"><button id="undoBtn">悔棋</button><button id="passBtn">停一手</button><button id="hintBtn">AI 提示</button><button id="resignBtn">認輸</button><button id="restartGameBtn">重新開始</button><button id="saveGameBtn">儲存 SGF</button></div></section>
+  <section class="playCard"><h3>即時資訊</h3><div class="playStats"><div><span>目前手數</span><strong id="playMoveCount">0</strong></div><div><span>輪到</span><strong id="turnLabel">黑方</strong></div><div><span>提子</span><strong id="captureLabel">黑 0｜白 0</strong></div></div><div id="playMessage" class="playMessage">請先開始新對局。</div></section>
+  <section class="playCard"><h3>說明</h3><div class="playNote">目前 AI 使用內建離線示範對弈器，不是真正 KataGo。正式高段與職業級需在 Build010 串接 KataGo。</div></section>
+</aside>
 
 <aside id="aiPanel" class="aiPanel" aria-hidden="true">
   <div class="aiHeader">
@@ -576,12 +600,12 @@ body.ai-open .studio{padding-right:min(398px,40vw)}
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build008 AI Analysis Engine 已啟動。</div>
+    <div id="status" class="status">Build009 Professional AI Studio + Human vs AI 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build008 AI Analysis Engine 已啟動。</div>
+    <div id="debugLog">Build009 Professional AI Studio + Human vs AI 已啟動。</div>
   </section>
 </aside>
 
@@ -589,7 +613,7 @@ body.ai-open .studio{padding-right:min(398px,40vw)}
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-1405";
+var APP_VERSION="20260712-1510";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -659,7 +683,7 @@ if("serviceWorker" in navigator){
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build008 AI 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build009 人機對弈範例",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -786,6 +810,27 @@ Board.prototype.draw=function(){
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,currentGameName="內建範例棋譜";
 var aiAnalysis=[],showAISuggestions=false,aiCurrentSuggestions=[];
 
+var playState={active:false,mode:"human-ai",size:19,humanColor:1,aiColor:-1,turn:1,board:[],history:[],captures:{black:0,white:0},passes:0,resigned:false,aiThinking:false};
+function newEmptyBoard(size){var b=[];for(var y=0;y<size;y++)b.push(new Array(size).fill(0));return b}
+function cloneBoard(b){return b.map(function(r){return r.slice()})}
+function playNeighbors(x,y,size){return [[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(function(p){return p[0]>=0&&p[1]>=0&&p[0]<size&&p[1]<size})}
+function playGroup(board,x,y){var color=board[y][x],stack=[[x,y]],seen={},stones=[],libs={};while(stack.length){var p=stack.pop(),k=p[0]+","+p[1];if(seen[k])continue;seen[k]=1;stones.push(p);playNeighbors(p[0],p[1],board.length).forEach(function(n){var v=board[n[1]][n[0]];if(v===0)libs[n[0]+","+n[1]]=1;else if(v===color&&!seen[n[0]+","+n[1]])stack.push(n)})}return{stones:stones,libs:libs}}
+function boardKey(b){return b.map(function(r){return r.join("")}).join("/")}
+function tryPlayMove(x,y,color,simulate){if(!playState.active||playState.resigned||(!simulate&&playState.aiThinking))return{ok:false,msg:"目前無法落子"};if(x<0||y<0||x>=playState.size||y>=playState.size)return{ok:false,msg:"超出棋盤"};if(playState.board[y][x]!==0)return{ok:false,msg:"該交叉點已有棋子"};var before=cloneBoard(playState.board),oldCaps={black:playState.captures.black,white:playState.captures.white};playState.board[y][x]=color;var captured=0;playNeighbors(x,y,playState.size).forEach(function(n){if(playState.board[n[1]][n[0]]===-color){var g=playGroup(playState.board,n[0],n[1]);if(Object.keys(g.libs).length===0){g.stones.forEach(function(s){playState.board[s[1]][s[0]]=0;captured++})}}});var own=playGroup(playState.board,x,y);if(Object.keys(own.libs).length===0){playState.board=before;return{ok:false,msg:"禁止自殺"}}var last=playState.history.length?playState.history[playState.history.length-1]:null;if(last&&last.beforeKey===boardKey(playState.board)){playState.board=before;return{ok:false,msg:"劫爭：不能立即回提"}}if(color===1)playState.captures.black+=captured;else playState.captures.white+=captured;if(!simulate){playState.history.push({board:before,beforeKey:boardKey(before),turn:playState.turn,captures:oldCaps,move:{x:x,y:y,color:color}});playState.turn=-color;playState.passes=0;syncPlayToViewer()}return{ok:true,captured:captured}}
+function syncPlayToViewer(){game={size:playState.size,meta:{pb:playState.humanColor===1?"人類":"AI",pw:playState.humanColor===-1?"人類":"AI",re:"—",dt:new Date().toISOString().slice(0,10),ev:"Human vs AI",km:String(parseFloat(id("playKomi").value||"6.5")),ha:String(parseInt(id("handicap").value||"0",10))},setup:[],moves:[]};playState.history.forEach(function(h){if(h.move)game.moves.push({c:h.move.color,x:h.move.x,y:h.move.y,pass:!!h.move.pass,comment:"人機對弈"})});index=game.moves.length;currentGameName="Human vs AI";updateMeta();render();updatePlayUI()}
+function updatePlayUI(){id("playMoveCount").textContent=playState.history.length;id("turnLabel").textContent=playState.turn===1?"黑方":"白方";id("captureLabel").textContent="黑 "+playState.captures.black+"｜白 "+playState.captures.white;id("playStatus").textContent=playState.active?(playState.aiThinking?"AI 思考中…":"對局進行中"):"尚未開始對局"}
+function handicapPoints(size,n){var pts=size===19?[[3,15],[15,3],[15,15],[3,3],[3,9],[15,9],[9,3],[9,15],[9,9]]:size===13?[[3,9],[9,3],[9,9],[3,3],[3,6],[9,6],[6,3],[6,9],[6,6]]:[[2,6],[6,2],[6,6],[2,2],[2,4],[6,4],[4,2],[4,6],[4,4]];return pts.slice(0,n)}
+function startNewGame(){var size=parseInt(id("playBoardSize").value,10),mode=id("gameMode").value,hc=id("humanColor").value==="black"?1:-1;playState={active:true,mode:mode,size:size,humanColor:hc,aiColor:-hc,turn:1,board:newEmptyBoard(size),history:[],captures:{black:0,white:0},passes:0,resigned:false,aiThinking:false};var h=parseInt(id("handicap").value||"0",10);if(h>1){handicapPoints(size,h).forEach(function(p){playState.board[p[1]][p[0]]=1});playState.turn=-1}document.body.classList.add("play-active");syncPlayToViewer();id("playMessage").textContent="新對局已開始。";if(mode==="human-ai"&&playState.turn===playState.aiColor)setTimeout(aiPlayMove,400);if(mode==="ai-ai")setTimeout(aiPlayMove,400)}
+function scoreCandidate(x,y){var c=(playState.size-1)/2,dist=Math.abs(x-c)+Math.abs(y-c),corner=Math.min(x,y,playState.size-1-x,playState.size-1-y),s=id("aiStrength").value,noise=s==="beginner"?4:s==="kyu"?2.5:s==="dan"?1.2:s==="highdan"?.6:.3;return(playState.size-dist)*1.2+(corner<5?2:0)+seededNoise(x*31+y*17+playState.history.length)*noise}
+function legalCandidates(color){var arr=[];for(var y=0;y<playState.size;y++)for(var x=0;x<playState.size;x++){if(playState.board[y][x]!==0)continue;var b=cloneBoard(playState.board),caps={black:playState.captures.black,white:playState.captures.white};var r=tryPlayMove(x,y,color,true);playState.board=b;playState.captures=caps;if(r.ok)arr.push({x:x,y:y,score:scoreCandidate(x,y)})}return arr}
+function aiPlayMove(){if(!playState.active||playState.resigned)return;playState.aiThinking=true;updatePlayUI();id("playMessage").textContent="AI 思考中…";setTimeout(function(){var cand=legalCandidates(playState.turn);if(!cand.length){playState.aiThinking=false;playPass(true);return}cand.sort(function(a,b){return b.score-a.score});var pick=id("aiStrength").value==="beginner"?Math.floor(seededNoise(playState.history.length+7)*Math.min(8,cand.length)):0,choice=cand[Math.min(cand.length-1,pick)];playState.aiThinking=false;tryPlayMove(choice.x,choice.y,playState.turn,false);id("playMessage").textContent="AI 下在 "+coordLabel(choice.x,choice.y,playState.size);if(playState.mode==="ai-ai"&&playState.active)setTimeout(aiPlayMove,450)},400)}
+function playPass(fromAI){if(!playState.active)return;var before=cloneBoard(playState.board),caps={black:playState.captures.black,white:playState.captures.white};playState.history.push({board:before,beforeKey:boardKey(before),turn:playState.turn,captures:caps,move:{pass:true,color:playState.turn}});playState.turn=-playState.turn;playState.passes++;playState.aiThinking=false;syncPlayToViewer();id("playMessage").textContent=(fromAI?"AI":"玩家")+" 停一手。";if(playState.passes>=2){playState.active=false;document.body.classList.remove("play-active");id("playMessage").textContent="雙方連續停一手，對局結束。";updatePlayUI();return}if(playState.mode==="human-ai"&&playState.turn===playState.aiColor)setTimeout(aiPlayMove,300);if(playState.mode==="ai-ai")setTimeout(aiPlayMove,300)}
+function undoPlay(){if(!playState.history.length)return;var steps=playState.mode==="human-ai"?Math.min(2,playState.history.length):1;while(steps--&&playState.history.length){var h=playState.history.pop();playState.board=cloneBoard(h.board);playState.turn=h.turn;playState.captures={black:h.captures.black,white:h.captures.white}}playState.passes=0;playState.resigned=false;playState.active=true;syncPlayToViewer();id("playMessage").textContent="已悔棋。"}
+function resignPlay(){if(!playState.active)return;playState.resigned=true;playState.active=false;document.body.classList.remove("play-active");id("playMessage").textContent=(playState.turn===1?"黑方":"白方")+"認輸，對局結束。";updatePlayUI()}
+function hintPlay(){var cand=legalCandidates(playState.turn);cand.sort(function(a,b){return b.score-a.score});if(!cand.length){id("playMessage").textContent="目前沒有可用提示。";return}aiCurrentSuggestions=cand.slice(0,3).map(function(c,i){return{x:c.x,y:c.y,coord:coordLabel(c.x,c.y,playState.size),winrate:50-i,visits:600-i*150}});showAISuggestions=true;board.draw();id("playMessage").textContent="已顯示 AI 推薦點。"}
+function savePlaySGF(){var sgf="(;GM[1]FF[4]CA[UTF-8]SZ["+playState.size+"]KM["+id("playKomi").value+"]";playState.history.forEach(function(h){if(!h.move)return;var color=h.move.color===1?"B":"W",coord=h.move.pass?"":String.fromCharCode(97+h.move.x)+String.fromCharCode(97+h.move.y);sgf+=";"+color+"["+coord+"]"});sgf+=")";var blob=new Blob([sgf],{type:"application/x-go-sgf"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="human-vs-ai-"+Date.now()+".sgf";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000)}
+
+
 function coordLabel(x,y,size){
  var letters="ABCDEFGHJKLMNOPQRST";
  var row=size-y;
@@ -909,7 +954,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build008 AI Analysis Engine",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build009 Professional AI Studio + Human vs AI",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
@@ -971,10 +1016,18 @@ function preserveViewportAction(fn){
 function setMode(mode){document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");document.body.classList.add("mode-"+mode);try{localStorage.setItem("goMode",mode)}catch(e){};setTimeout(board.resize,60)}
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
-function restoreLayout(){closeDrawer();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
+function restoreLayout(){closeDrawer();closeAI();closePlayPanel();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
+
+
+id("goBoard").addEventListener("click",function(e){if(!playState.active||playState.resigned)return;if(playState.mode==="human-ai"&&playState.turn!==playState.humanColor)return;if(playState.mode==="ai-ai")return;var rect=this.getBoundingClientRect(),px=e.clientX-rect.left,py=e.clientY-rect.top,outerPad=Math.max(14,this.clientWidth*.043),boardPixel=this.clientWidth-outerPad*2,cell=boardPixel/(playState.size-1),x=Math.round((px-outerPad)/cell),y=Math.round((py-outerPad)/cell),r=tryPlayMove(x,y,playState.turn,false);id("playMessage").textContent=r.ok?("落子於 "+coordLabel(x,y,playState.size)+(r.captured?"，提子 "+r.captured:"")):r.msg;updatePlayUI();if(r.ok&&playState.mode==="human-ai"&&playState.turn===playState.aiColor)setTimeout(aiPlayMove,350)});
 
 function openAI(){document.body.classList.add("ai-open");id("aiPanel").setAttribute("aria-hidden","false");updateAI(index);measureLayout()}
 function closeAI(){document.body.classList.remove("ai-open");id("aiPanel").setAttribute("aria-hidden","true");showAISuggestions=false;measureLayout();board.draw()}
+
+function openPlayPanel(){document.body.classList.add("play-open");id("playPanel").setAttribute("aria-hidden","false");measureLayout()}
+function closePlayPanel(){document.body.classList.remove("play-open");id("playPanel").setAttribute("aria-hidden","true");measureLayout()}
+id("playModeBtn").onclick=openPlayPanel;id("playCloseBtn").onclick=closePlayPanel;id("startGameBtn").onclick=startNewGame;id("restartGameBtn").onclick=startNewGame;id("undoBtn").onclick=undoPlay;id("passBtn").onclick=function(){playPass(false)};id("resignBtn").onclick=resignPlay;id("hintBtn").onclick=hintPlay;id("saveGameBtn").onclick=savePlaySGF;
+
 id("aiBtn").onclick=openAI;
 id("aiCloseBtn").onclick=closeAI;
 id("analyzeCurrentBtn").onclick=function(){aiAnalysis[index]=null;updateAI(index);showUpdateToast("<strong>目前手已分析</strong>")};
