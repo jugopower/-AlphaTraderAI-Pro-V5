@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-0045">
-<title>AlphaTrader AI Pro V5｜Build016.1 Professional SGF Engine</title>
+<meta name="app-version" content="20260713-0115">
+<title>AlphaTrader AI Pro V5｜Build016.2 Ultimate Rules Engine</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -92,7 +92,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.1 Professional SGF Engine</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.2 Ultimate Rules Engine</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -101,7 +101,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <div class="stat"><small>黑方提子</small><b id="blackCaptures">0</b></div>
       <div class="stat"><small>白方提子</small><b id="whiteCaptures">0</b></div>
       <div class="stat"><small>棋盤</small><b id="boardSizeText">19路</b></div>
-      <div class="stat"><small>狀態</small><b id="statusText">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">提子啟用</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div>
+      <div class="stat"><small>狀態</small><b id="statusText">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div>
     </div>
   </aside>
 
@@ -125,7 +125,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-0045</p>
+  <p>版本：20260713-0115</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -169,12 +169,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260713-0045";
+const APP_VERSION="20260713-0115";
 
 const $=id=>document.getElementById(id);
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0
+  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false
 };
 
 function toast(msg){
@@ -334,7 +334,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。專業提子引擎已啟用，含 AB/AW/AE 節點。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Ultimate Rules Engine 已啟用，逐手建立真實棋盤快照。結果：${g.result}`;
     syncUI(); resizeBoard(); drawBoard(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -367,123 +367,161 @@ function positionHash(board){
 function neighbors(x,y,size){
   const out=[];
   if(x>0)out.push([x-1,y]);
-  if(x<size-1)out.push([x+1,y]);
+  if(x+1<size)out.push([x+1,y]);
   if(y>0)out.push([x,y-1]);
-  if(y<size-1)out.push([x,y+1]);
+  if(y+1<size)out.push([x,y+1]);
   return out;
 }
-function collectGroup(board,x,y){
+function groupAt(board,x,y){
   const color=board[y]?.[x];
-  if(!color)return {stones:[],liberties:new Set()};
+  if(!color)return {color:null,stones:[],liberties:new Set()};
   const stack=[[x,y]],seen=new Set(),stones=[],liberties=new Set();
   while(stack.length){
     const [cx,cy]=stack.pop(),key=cx+","+cy;
     if(seen.has(key))continue;
     seen.add(key);stones.push([cx,cy]);
     for(const [nx,ny] of neighbors(cx,cy,board.length)){
-      const v=board[ny][nx];
-      if(v==null)liberties.add(nx+","+ny);
-      else if(v===color&&!seen.has(nx+","+ny))stack.push([nx,ny]);
+      const value=board[ny][nx];
+      if(value===null)liberties.add(nx+","+ny);
+      else if(value===color&&!seen.has(nx+","+ny))stack.push([nx,ny]);
     }
   }
-  return {stones,liberties};
+  return {color,stones,liberties};
 }
-function removeGroup(board,stones){
+function removeStones(board,stones){
   for(const [x,y] of stones)board[y][x]=null;
 }
-function applySetupAction(board,action){
+function applySetup(board,action){
   const next=clonePosition(board);
-  for(const p of action.remove||[])if(next[p.y])next[p.y][p.x]=null;
-  for(const p of action.addB||[])if(next[p.y])next[p.y][p.x]="B";
-  for(const p of action.addW||[])if(next[p.y])next[p.y][p.x]="W";
+  for(const p of action.remove||[])if(p&&next[p.y])next[p.y][p.x]=null;
+  for(const p of action.addB||[])if(p&&next[p.y])next[p.y][p.x]="B";
+  for(const p of action.addW||[])if(p&&next[p.y])next[p.y][p.x]="W";
   return next;
 }
-function playMoveOnPosition(board,move,options={}){
-  const {enforceSuicide=false,koHash=null}=options;
-  if(!move||move.pass)return {ok:true,board:clonePosition(board),captured:0,hash:positionHash(board)};
-  if(!Number.isInteger(move.x)||!Number.isInteger(move.y)||move.x<0||move.y<0||move.x>=board.length||move.y>=board.length){
-    return {ok:false,error:"落子超出棋盤",board:clonePosition(board),captured:0,hash:positionHash(board)};
+function executeMove(board,move,{rejectSuicide=false,koHash=null}={}){
+  const original=clonePosition(board);
+  if(!move||move.pass)return {ok:true,board:original,captured:0,hash:positionHash(original),pass:true};
+  const {x,y,c}=move;
+  if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||y>=board.length||x>=board.length){
+    return {ok:false,error:"落子超出棋盤",board:original,captured:0,hash:positionHash(original)};
   }
-  if(board[move.y][move.x]){
-    return {ok:false,error:"重複落子",board:clonePosition(board),captured:0,hash:positionHash(board)};
+  if(board[y][x]!==null){
+    return {ok:false,error:"重複落子",board:original,captured:0,hash:positionHash(original)};
   }
 
   const next=clonePosition(board);
-  next[move.y][move.x]=move.c;
+  next[y][x]=c;
+  const opponent=c==="B"?"W":"B";
   let captured=0;
-  const checked=new Set();
+  const processed=new Set();
 
-  for(const [nx,ny] of neighbors(move.x,move.y,next.length)){
-    const enemyColor=next[ny][nx];
-    if(enemyColor && enemyColor!==move.c){
-      const enemy=collectGroup(next,nx,ny);
-      const signature=enemy.stones.map(([sx,sy])=>sx+","+sy).sort().join("|");
-      if(checked.has(signature))continue;
-      checked.add(signature);
-      if(enemy.liberties.size===0){
-        captured+=enemy.stones.length;
-        removeGroup(next,enemy.stones);
-      }
+  for(const [nx,ny] of neighbors(x,y,next.length)){
+    if(next[ny][nx]!==opponent)continue;
+    const group=groupAt(next,nx,ny);
+    const sig=group.stones.map(([sx,sy])=>sx+","+sy).sort().join("|");
+    if(processed.has(sig))continue;
+    processed.add(sig);
+    if(group.liberties.size===0){
+      captured+=group.stones.length;
+      removeStones(next,group.stones);
     }
   }
 
-  const own=collectGroup(next,move.x,move.y);
+  const own=groupAt(next,x,y);
   if(own.liberties.size===0){
-    if(enforceSuicide){
-      return {ok:false,error:"自殺禁手",board:clonePosition(board),captured:0,hash:positionHash(board)};
+    if(rejectSuicide){
+      return {ok:false,error:"自殺禁手",board:original,captured:0,hash:positionHash(original)};
     }
-    removeGroup(next,own.stones);
+    removeStones(next,own.stones);
   }
 
   const hash=positionHash(next);
-  if(koHash && hash===koHash){
-    return {ok:false,error:"打劫：不可立即回提",board:clonePosition(board),captured:0,hash:positionHash(board)};
+  if(koHash&&hash===koHash){
+    return {ok:false,error:"打劫：不可立即回提",board:original,captured:0,hash:positionHash(original)};
   }
-  return {ok:true,board:next,captured,hash};
+  return {ok:true,board:next,captured,hash,pass:false};
+}
+function normalizedActions(){
+  if(state.actions&&state.actions.length)return state.actions;
+  return state.moves.map(move=>({addB:[],addW:[],remove:[],move}));
 }
 function buildReplayCache(){
   let board=emptyPosition(state.size);
-  let blackCaptures=0,whiteCaptures=0,illegal=0;
-  const cache=[{board:clonePosition(board),blackCaptures,whiteCaptures,hash:positionHash(board)}];
-  const actions=(state.actions&&state.actions.length)?state.actions:state.moves.map(m=>({addB:[],addW:[],remove:[],move:m}));
+  let blackCaptures=0,whiteCaptures=0,illegal=0,moveNo=0;
+  let hashTwoPliesAgo=null;
+  const cache=[{board:clonePosition(board),blackCaptures,whiteCaptures,lastCapture:0,hash:positionHash(board)}];
 
-  let moveNo=0;
-  let twoMovesAgoHash=null;
-  for(const action of actions){
-    if(action.addB?.length||action.addW?.length||action.remove?.length){
-      board=applySetupAction(board,action);
-      twoMovesAgoHash=null;
+  for(const action of normalizedActions()){
+    if((action.addB&&action.addB.length)||(action.addW&&action.addW.length)||(action.remove&&action.remove.length)){
+      board=applySetup(board,action);
+      hashTwoPliesAgo=null;
     }
-    if(action.move){
-      const beforeHash=positionHash(board);
-      const result=playMoveOnPosition(board,action.move,{
-        enforceSuicide:false,
-        koHash:twoMovesAgoHash
-      });
-      if(result.ok){
-        board=result.board;
-        if(action.move.c==="B")blackCaptures+=result.captured;
-        else whiteCaptures+=result.captured;
-      }else{
-        illegal++;
-      }
-      twoMovesAgoHash=beforeHash;
-      moveNo++;
-      cache[moveNo]={board:clonePosition(board),blackCaptures,whiteCaptures,hash:positionHash(board)};
+    if(!action.move)continue;
+
+    const beforeHash=positionHash(board);
+    const result=executeMove(board,action.move,{rejectSuicide:false,koHash:hashTwoPliesAgo});
+    let lastCapture=0;
+    if(result.ok){
+      board=result.board;
+      lastCapture=result.captured;
+      if(action.move.c==="B")blackCaptures+=result.captured;
+      else whiteCaptures+=result.captured;
+    }else{
+      illegal++;
     }
+
+    hashTwoPliesAgo=beforeHash;
+    moveNo++;
+    cache[moveNo]={
+      board:clonePosition(board),
+      blackCaptures,
+      whiteCaptures,
+      lastCapture,
+      hash:positionHash(board)
+    };
+  }
+
+  while(cache.length<state.moves.length+1){
+    const last=cache[cache.length-1];
+    cache.push({
+      board:clonePosition(last.board),
+      blackCaptures:last.blackCaptures,
+      whiteCaptures:last.whiteCaptures,
+      lastCapture:0,
+      hash:last.hash
+    });
   }
   state.replayCache=cache;
   state.illegalCount=illegal;
 }
 function positionAtMove(n){
   if(!state.replayCache||state.replayCache.length!==state.moves.length+1)buildReplayCache();
-  const idx=Math.max(0,Math.min(state.moves.length,n));
+  const idx=Math.max(0,Math.min(state.moves.length,Number(n)||0));
   const snap=state.replayCache[idx]||state.replayCache[state.replayCache.length-1];
   return {
     board:clonePosition(snap.board),
     blackCaptures:snap.blackCaptures,
-    whiteCaptures:snap.whiteCaptures
+    whiteCaptures:snap.whiteCaptures,
+    lastCapture:snap.lastCapture
   };
+}
+function verifyRulesEngine(){
+  let b=emptyPosition(5);
+  b[1][1]="W";b[0][1]="B";b[1][0]="B";b[1][2]="B";
+  let r=executeMove(b,{c:"B",x:1,y:2},{rejectSuicide:true});
+  if(!r.ok||r.captured!==1||r.board[1][1]!==null)return false;
+
+  b=emptyPosition(5);
+  b[1][1]="W";b[1][2]="W";
+  b[0][1]="B";b[0][2]="B";b[1][0]="B";b[1][3]="B";b[2][1]="B";
+  r=executeMove(b,{c:"B",x:2,y:2},{rejectSuicide:true});
+  if(!r.ok||r.captured!==2||r.board[1][1]!==null||r.board[1][2]!==null)return false;
+
+  b=emptyPosition(3);
+  b[0][1]="W";b[1][0]="W";b[1][2]="W";b[2][1]="W";
+  r=executeMove(b,{c:"B",x:1,y:1},{rejectSuicide:true});
+  if(r.ok)return false;
+  return true;
 }
 function coordLabel(x,y){
   const letters="ABCDEFGHJKLMNOPQRST";
@@ -541,8 +579,11 @@ function syncUI(){
   state.whiteCaptures=pos.whiteCaptures;
   $("blackCaptures").textContent=state.blackCaptures;
   $("whiteCaptures").textContent=state.whiteCaptures;
+  state.lastCapture=pos.lastCapture||0;
+  $("lastCapture").textContent=state.lastCapture;
   $("illegalMoves").textContent=state.illegalCount||0;
-  $("engineText").textContent="提子正常";
+  $("snapshotText").textContent=state.replayCache?.length||0;
+  $("engineText").textContent=state.engineVerified?"規則正常":"待驗證";
   drawBoard();
 }
 function goTo(n){state.index=Math.max(0,Math.min(state.moves.length,n));syncUI()}
@@ -595,7 +636,7 @@ $("loadPasteBtn").onclick=()=>{
   loadSGFText(text,"貼上的 SGF");
 };
 $("newGameBtn").onclick=()=>{
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
@@ -607,7 +648,7 @@ $("explainBtn").onclick=()=>{
   $("aiText").textContent=state.index?"朱老師 AI 建議：先處理弱棋，再考慮全局大場。":"請先載入棋譜或開始對局。";
 };
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
   state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   syncUI();closeModal("humanModal");toast("人機對弈已開始");
 };
@@ -621,7 +662,7 @@ canvas.addEventListener("click",e=>{
   const prev=state.index>0?positionAtMove(state.index-1).board:null;
   const previousHash=prev?positionHash(prev):null;
   const move={c:state.turn,x,y};
-  const result=playMoveOnPosition(current,move,{enforceSuicide:true,previousHash});
+  const result=executeMove(current,move,{rejectSuicide:true,koHash:previousHash});
   if(!result.ok){toast(result.error);return}
 
   state.moves=state.moves.slice(0,state.index);state.actions=[];state.replayCache=[];
@@ -643,7 +684,7 @@ canvas.addEventListener("click",e=>{
       const pts=[];
       for(let yy=0;yy<state.size;yy++)for(let xx=0;xx<state.size;xx++){
         if(aiCurrent[yy][xx])continue;
-        const test=playMoveOnPosition(aiCurrent,{c:state.turn,x:xx,y:yy},{enforceSuicide:true,previousHash:aiPreviousHash});
+        const test=executeMove(aiCurrent,{c:state.turn,x:xx,y:yy},{rejectSuicide:true,koHash:aiPreviousHash});
         if(test.ok)pts.push([xx,yy]);
       }
       if(pts.length){
@@ -663,20 +704,19 @@ $("apiKey").value=localStorage.getItem("katagoApiKey")||"";
 window.addEventListener("resize",()=>{clearTimeout(window._rz);window._rz=setTimeout(()=>{resizeBoard();drawBoard()},120)});
 window.addEventListener("orientationchange",()=>setTimeout(()=>{resizeBoard();drawBoard()},250));
 
-function captureEngineSelfTest(){
-  const b=emptyPosition(5);
-  b[1][1]="W";
-  b[0][1]="B";b[1][0]="B";b[1][2]="B";
-  const r=playMoveOnPosition(b,{c:"B",x:1,y:2},{enforceSuicide:true});
-  return r.ok && r.captured===1 && r.board[1][1]===null;
-}
+
+
+
+state.engineVerified=verifyRulesEngine();
 resizeBoard();syncUI();
-if(captureEngineSelfTest()){
-  toast("Build016.1 提子引擎測試通過");
+if(state.engineVerified){
+  $("engineText").textContent="規則正常";
+  toast("Build016.2 規則引擎測試通過");
 }else{
   $("engineText").textContent="引擎異常";
-  toast("提子引擎自我測試失敗");
+  toast("規則引擎自我測試失敗");
 }
+
 </script>
 </body>
 </html>
