@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-2245">
-<title>AlphaTraderAI Pro V5.0｜Build014 Ultimate Go Studio</title>
+<meta name="app-version" content="20260712-2315">
+<title>AlphaTraderAI Pro V5.0｜Build014.1 State Recovery</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -449,7 +449,7 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
 @media(max-width:900px){body.cloud-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}.cloudPanel{width:min(440px,96vw)}}
 
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 .aiToolbarBtn{
   position:relative;
   overflow:hidden;
@@ -513,7 +513,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 }
 
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 :root{
   --pro-left:178px;
   --pro-right:92px;
@@ -642,7 +642,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 .orientationRecoveryBtn span{font-size:26px;color:#efc66d}.orientationRecoveryBtn small{font-size:10px}
 @media (orientation:portrait),(max-width:899px){.orientationRecoveryBtn{display:grid!important}body .topbar{display:flex!important}body .proLeftRail,body .proRightRail{display:none!important}body .studio{grid-template-columns:1fr!important;grid-template-areas:"top" "main" "bottom"!important}}
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 .portraitToolbar{
   position:fixed;
   z-index:9998;
@@ -695,7 +695,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 }
 
 
-/* Build014 Ultimate Go Studio */
+/* Build014.1 State Recovery */
 .screenRepairBtn{
   position:fixed;
   z-index:10000;
@@ -773,6 +773,40 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
     height:106px!important;
   }
   body .orientationRecoveryBtn{display:none!important}
+}
+
+
+/* Build014.1 State Recovery */
+.recoveryToast{
+  position:fixed;
+  z-index:10020;
+  left:50%;
+  bottom:92px;
+  transform:translateX(-50%) translateY(20px);
+  min-width:220px;
+  max-width:min(82vw,520px);
+  padding:12px 16px;
+  border-radius:12px;
+  border:1px solid #efc66d55;
+  background:#17100cf4;
+  color:#fff8e9;
+  box-shadow:0 12px 32px #000c;
+  text-align:center;
+  font-weight:800;
+  opacity:0;
+  pointer-events:none;
+  transition:.2s ease;
+}
+.recoveryToast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+.screenRepairBtn.repairing{
+  animation:repairPulse .75s ease-in-out infinite alternate;
+}
+@keyframes repairPulse{
+  from{box-shadow:0 10px 30px #000c,inset 0 1px 0 #ffffff14}
+  to{box-shadow:0 0 0 4px #efc66d33,0 0 30px #efc66d88}
 }
 
 </style>
@@ -1185,12 +1219,12 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build014 Ultimate Go Studio 已啟動。</div>
+    <div id="status" class="status">Build014.1 State Recovery 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build014 Ultimate Go Studio 已啟動。</div>
+    <div id="debugLog">Build014.1 State Recovery 已啟動。</div>
   </section>
 </aside>
 
@@ -1198,7 +1232,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-2245";
+var APP_VERSION="20260712-2315";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -1554,7 +1588,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build014 Ultimate Go Studio",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build014.1 State Recovery",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
@@ -1599,7 +1633,7 @@ function render(){
  board.position(game,index);id("moveRange").max=game.moves.length;id("moveRange").value=index;
  id("counter").textContent=index+" / "+game.moves.length;id("gameName").textContent=currentGameName;
  id("gameSummary").textContent=game.size+" 路｜"+index+" / "+game.moves.length;
- id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";if(index){requestAnimationFrame(function(){id("goBoard").classList.add("pulse-last")})}if(document.body.classList.contains("ai-open"))updateAI(index);updateProfessionalUI();
+ id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";if(index){requestAnimationFrame(function(){id("goBoard").classList.add("pulse-last")})}if(document.body.classList.contains("ai-open"))updateAI(index);updateProfessionalUI();saveStudioState();
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
 function load(g,name){stop();game=g;index=0;aiAnalysis=[];showAISuggestions=false;currentGameName=name;updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手｜"+name)}
@@ -1650,7 +1684,83 @@ function openDrawer(){document.body.classList.add("drawer-open");id("drawer").se
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
 
 
-function repairStudioScreen(){
+
+var RECOVERY_KEY="build0141StudioState";
+var recoveryToastTimer=null;
+
+function showRecoveryToast(message){
+ var t=id("recoveryToast");
+ if(!t)return;
+ t.textContent=message;
+ t.classList.add("show");
+ clearTimeout(recoveryToastTimer);
+ recoveryToastTimer=setTimeout(function(){t.classList.remove("show")},1800);
+}
+
+function snapshotStudioState(){
+ try{
+  return {
+   version:APP_VERSION,
+   savedAt:Date.now(),
+   game:game,
+   index:index,
+   filename:currentFilename||"",
+   displayMode:id("moveNumbers")?id("moveNumbers").value:"last30",
+   latestCircle:id("lastMoveCircle")?id("lastMoveCircle").checked:true,
+   stoneSize:id("stoneSize")?id("stoneSize").value:"normal",
+   playbackSpeed:id("speed")?id("speed").value:"normal",
+   mode:document.body.classList.contains("mode-professional")?"professional":
+        document.body.classList.contains("mode-teaching")?"teaching":"complete"
+  };
+ }catch(e){
+  return null;
+ }
+}
+
+function saveStudioState(){
+ var state=snapshotStudioState();
+ if(!state)return;
+ try{localStorage.setItem(RECOVERY_KEY,JSON.stringify(state))}catch(e){}
+}
+
+function applyStudioState(state){
+ if(!state||!state.game||!Array.isArray(state.game.moves))return false;
+ try{
+  game=state.game;
+  index=Math.max(0,Math.min(Number(state.index)||0,game.moves.length));
+  currentFilename=state.filename||"";
+  if(id("moveNumbers")&&state.displayMode)id("moveNumbers").value=state.displayMode;
+  if(id("lastMoveCircle"))id("lastMoveCircle").checked=state.latestCircle!==false;
+  if(id("stoneSize")&&state.stoneSize)id("stoneSize").value=state.stoneSize;
+  if(id("speed")&&state.playbackSpeed)id("speed").value=state.playbackSpeed;
+  updateMeta();
+  updateMoveComment();
+  updateInfoStatus();
+  render();
+  requestAnimationFrame(function(){
+   try{measureLayout()}catch(e){}
+   try{board.resize()}catch(e){}
+   try{board.draw()}catch(e){}
+  });
+  return true;
+ }catch(e){
+  return false;
+ }
+}
+
+function restoreStudioState(){
+ var state=null;
+ try{state=JSON.parse(localStorage.getItem(RECOVERY_KEY)||"null")}catch(e){}
+ if(!state)return false;
+ return applyStudioState(state);
+}
+
+function fullStateRecovery(){
+ var btn=id("screenRepairBtn");
+ if(btn)btn.classList.add("repairing");
+ showRecoveryToast("正在修復畫面與棋譜…");
+ var preserved=snapshotStudioState();
+
  try{
   document.body.classList.remove(
    "mode-professional","mode-teaching","focus-board","cloud-open",
@@ -1661,15 +1771,25 @@ function repairStudioScreen(){
    var el=id(k);
    if(el)el.setAttribute("aria-hidden","true");
   });
+
   var main=document.querySelector(".main");
   var shell=document.querySelector(".boardShell");
   var stage=document.querySelector(".boardStage");
   var canvas=id("goBoard");
-  if(main){main.style.display="block";main.style.visibility="visible";main.style.opacity="1";}
-  if(shell){shell.style.display="flex";shell.style.visibility="visible";shell.style.opacity="1";}
-  if(stage){stage.style.display="flex";stage.style.visibility="visible";stage.style.opacity="1";}
-  if(canvas){canvas.style.display="block";canvas.style.visibility="visible";canvas.style.opacity="1";}
-  try{localStorage.setItem("goMode","complete")}catch(e){}
+  [main,shell,stage,canvas].forEach(function(el){
+   if(el){
+    el.style.removeProperty("display");
+    el.style.removeProperty("visibility");
+    el.style.removeProperty("opacity");
+    el.style.removeProperty("width");
+    el.style.removeProperty("height");
+   }
+  });
+
+  var ok=false;
+  if(preserved&&preserved.game&&preserved.game.moves)ok=applyStudioState(preserved);
+  if(!ok)ok=restoreStudioState();
+
   requestAnimationFrame(function(){
    try{measureLayout()}catch(e){}
    try{board.resize()}catch(e){}
@@ -1677,11 +1797,19 @@ function repairStudioScreen(){
    setTimeout(function(){
     try{board.resize()}catch(e){}
     try{board.draw()}catch(e){}
-   },120);
+    if(btn)btn.classList.remove("repairing");
+    showRecoveryToast(ok?"修復完成，棋譜與手數已保留。":"畫面已恢復。");
+   },140);
   });
  }catch(e){
-  location.reload();
+  if(btn)btn.classList.remove("repairing");
+  showRecoveryToast("修復失敗，正在重新載入。");
+  setTimeout(function(){location.reload()},500);
  }
+}
+
+function repairStudioScreen(){
+ fullStateRecovery();
 }
 function boardHealthCheck(){
  var canvas=id("goBoard");
@@ -1721,24 +1849,24 @@ function evaluateOrientationRecovery(){
  else requestAnimationFrame(function(){try{measureLayout()}catch(e){}try{board.resize()}catch(e){}try{board.draw()}catch(e){}});
 }
 
-function restoreLayout(){forceOrientationRecovery();closeDrawer();closeAI();closePlayPanel();closeCloudPanel();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
-
-
-id("goBoard").addEventListener("click",function(e){if(!playState.active||playState.resigned)return;if(playState.mode==="human-ai"&&playState.turn!==playState.humanColor)return;if(playState.mode==="ai-ai")return;var rect=this.getBoundingClientRect(),px=e.clientX-rect.left,py=e.clientY-rect.top,outerPad=Math.max(14,this.clientWidth*.043),boardPixel=this.clientWidth-outerPad*2,cell=boardPixel/(playState.size-1),x=Math.round((px-outerPad)/cell),y=Math.round((py-outerPad)/cell),r=tryPlayMove(x,y,playState.turn,false);id("playMessage").textContent=r.ok?("落子於 "+coordLabel(x,y,playState.size)+(r.captured?"，提子 "+r.captured:"")):r.msg;updatePlayUI();if(r.ok&&playState.mode==="human-ai"&&playState.turn===playState.aiColor)setTimeout(aiPlayMove,350)});
-
-function openAI(){document.body.classList.add("ai-open");id("aiPanel").setAttribute("aria-hidden","false");updateAI(index);measureLayout()}
-function closeAI(){document.body.classList.remove("ai-open");id("aiPanel").setAttribute("aria-hidden","true");showAISuggestions=false;measureLayout();board.draw()}
-
-
-var cloudConfig={apiUrl:"",apiKey:""};
-try{cloudConfig=JSON.parse(localStorage.getItem("katagoCloudConfig")||'{"apiUrl":"","apiKey":""}')}catch(e){}
-function normalizeApiUrl(url){return String(url||"").trim().replace(/\/+$/,"")}
-function openCloudPanel(){
- document.body.classList.add("cloud-open");
- id("cloudPanel").setAttribute("aria-hidden","false");
- id("cloudApiUrl").value=cloudConfig.apiUrl||"";
- id("cloudApiKey").value=cloudConfig.apiKey||"";
- measureLayout();
+function restoreLayout(){
+ saveStudioState();
+ try{
+  document.body.classList.remove(
+   "mode-professional","mode-teaching","focus-board","cloud-open",
+   "ai-open","drawer-open","play-open"
+  );
+  document.body.classList.add("mode-complete");
+  ["cloudPanel","aiPanel","drawer","playPanel"].forEach(function(k){
+   var el=id(k);if(el)el.setAttribute("aria-hidden","true");
+  });
+  requestAnimationFrame(function(){
+   try{measureLayout()}catch(e){}
+   try{board.resize()}catch(e){}
+   try{board.draw()}catch(e){}
+   showRecoveryToast("已還原正常版面。");
+  });
+ }catch(e){}
 }
 function closeCloudPanel(){document.body.classList.remove("cloud-open");id("cloudPanel").setAttribute("aria-hidden","true");measureLayout()}
 function saveCloudConfig(){
@@ -1919,9 +2047,33 @@ window.addEventListener("resize",function(){var pt=id("portraitToolbar");if(pt&&
 document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(evaluateOrientationRecovery,120)});
 
 setTimeout(evaluateOrientationRecovery,120);
-id("screenRepairBtn").onclick=repairStudioScreen;
+
+(function(){
+ var repairBtn=id("screenRepairBtn");
+ if(repairBtn){
+  repairBtn.onclick=function(e){e.preventDefault();e.stopPropagation();fullStateRecovery();};
+  repairBtn.addEventListener("touchend",function(e){e.preventDefault();e.stopPropagation();fullStateRecovery();},{passive:false});
+ }
+})();
+
 setInterval(boardHealthCheck,1200);
-window.addEventListener("pageshow",function(){setTimeout(repairStudioScreen,160)});
+
+window.addEventListener("pageshow",function(){
+ setTimeout(function(){
+  if(!restoreStudioState())repairStudioScreen();
+ },160);
+});
+window.addEventListener("beforeunload",saveStudioState);
+document.addEventListener("visibilitychange",function(){
+ if(document.hidden)saveStudioState();
+ else setTimeout(function(){restoreStudioState();repairStudioScreen()},120);
+});
+setInterval(saveStudioState,2000);
+setTimeout(function(){
+ var restored=restoreStudioState();
+ if(restored)showRecoveryToast("已恢復上次棋譜與手數。");
+},220);
+
 window.addEventListener("orientationchange",function(){setTimeout(repairStudioScreen,350)});
 
 })();
@@ -1941,6 +2093,9 @@ window.addEventListener("orientationchange",function(){setTimeout(repairStudioSc
 <button id="screenRepairBtn" class="screenRepairBtn" aria-label="修復畫面" title="修復畫面">
   <span>🛟</span><small>修復</small>
 </button>
+
+
+<div id="recoveryToast" class="recoveryToast" role="status" aria-live="polite"></div>
 
 </body>
 </html>
