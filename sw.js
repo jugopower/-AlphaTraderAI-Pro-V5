@@ -1,4 +1,4 @@
-const APP_VERSION="20260712-2315";
+const APP_VERSION="20260712-2245-fix2";
 self.addEventListener("install",event=>{self.skipWaiting();});
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
