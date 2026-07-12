@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-1630">
-<title>AlphaTraderAI Pro V5.0｜Build010 Real KataGo Cloud Connector</title>
+<meta name="app-version" content="20260712-1705">
+<title>AlphaTraderAI Pro V5.0｜Build011 Elegant AI Icon</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build010 Real KataGo Cloud Connector */
+/* Build011 Elegant AI Icon */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build010 Real KataGo Cloud Connector */
+/* Build011 Elegant AI Icon */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build010 Real KataGo Cloud Connector */
+/* Build011 Elegant AI Icon */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build010 Real KataGo Cloud Connector */
+/* Build011 Elegant AI Icon */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -448,6 +448,70 @@ body.cloud-open .cloudPanel{transform:translateX(0)}
 body.cloud-open .studio{padding-right:min(418px,40vw)}
 @media(max-width:900px){body.cloud-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}.cloudPanel{width:min(440px,96vw)}}
 
+
+/* Build011 Elegant AI Icon */
+.aiToolbarBtn{
+  position:relative;
+  overflow:hidden;
+}
+.aiToolbarBtn::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border-radius:8px;
+  background:radial-gradient(circle at 35% 20%,#f6d77f25,transparent 55%);
+  pointer-events:none;
+}
+.aiToolbarBtn .aiIcon{
+  position:relative;
+  z-index:1;
+  display:grid!important;
+  place-items:center;
+  width:23px;
+  height:23px;
+  margin:0 auto;
+  line-height:1!important;
+}
+.aiToolbarBtn .aiIcon svg{
+  width:23px;
+  height:23px;
+  overflow:visible;
+  filter:drop-shadow(0 2px 3px #0008);
+}
+.aiToolbarBtn .aiIconCore{
+  fill:url(#aiIconGradient);
+  stroke:#fff2b8;
+  stroke-width:1.4;
+  stroke-linejoin:round;
+}
+.aiToolbarBtn .aiIconLine{
+  fill:none;
+  stroke:#2a190b;
+  stroke-width:2.1;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.aiToolbarBtn .aiIconNode{
+  fill:#fff7d4;
+  stroke:#2a190b;
+  stroke-width:1.4;
+}
+.aiToolbarBtn:hover .aiIcon svg,
+.aiToolbarBtn:focus-visible .aiIcon svg{
+  transform:scale(1.06);
+}
+.aiToolbarBtn .aiIcon svg{
+  transition:transform .16s ease,filter .16s ease;
+}
+.aiToolbarBtn:active .aiIcon svg{
+  transform:scale(.94);
+}
+body.layout-compact .aiToolbarBtn .aiIcon,
+body.layout-compact .aiToolbarBtn .aiIcon svg{
+  width:21px!important;
+  height:21px!important;
+}
+
 </style>
 </head>
 <body class="mode-teaching">
@@ -463,7 +527,28 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
       <button id="minimalBtn" data-low-priority="1"><span>◫</span><small>極簡</small></button>
       <button id="teachingBtn"><span>📖</span><small>教學</small></button>
       <button id="professionalBtn" data-low-priority="1"><span>⚙</span><small>專業</small></button>
-      <button id="aiBtn"><span>🧠</span><small>AI分析</small></button>
+      <button id="aiBtn" class="aiToolbarBtn" aria-label="AI 分析">
+  <span class="aiIcon" aria-hidden="true">
+    <svg viewBox="0 0 64 64" focusable="false">
+      <defs>
+        <linearGradient id="aiIconGradient" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fff1a8"/>
+          <stop offset="0.5" stop-color="#f2c35b"/>
+          <stop offset="1" stop-color="#d58b2e"/>
+        </linearGradient>
+      </defs>
+      <path class="aiIconCore" d="M25.5 12.5c-5.3 0-9.7 4.2-9.9 9.5-4.6 1.3-7.9 5.5-7.9 10.5 0 4 2.1 7.5 5.3 9.4-.2.8-.3 1.6-.3 2.5 0 5.8 4.7 10.5 10.5 10.5 3.5 0 6.7-1.7 8.6-4.4 1.9 2.7 5.1 4.4 8.6 4.4 5.8 0 10.5-4.7 10.5-10.5 0-.9-.1-1.7-.3-2.5 3.2-1.9 5.3-5.4 5.3-9.4 0-5-3.3-9.2-7.9-10.5-.2-5.3-4.6-9.5-9.9-9.5-2.5 0-4.8.9-6.6 2.4-1.8-1.5-4.1-2.4-6.6-2.4Z"/>
+      <path class="aiIconLine" d="M31.8 15.5v33M23 22.5c4.8 0 8.8 3.9 8.8 8.8M40.6 22.5c-4.8 0-8.8 3.9-8.8 8.8M19.2 34.2h8.3M36.1 34.2h8.3M22.3 44c4.5 0 8.1-3.6 8.1-8.1M41.3 44c-4.5 0-8.1-3.6-8.1-8.1"/>
+      <circle class="aiIconNode" cx="19.2" cy="34.2" r="2.4"/>
+      <circle class="aiIconNode" cx="44.4" cy="34.2" r="2.4"/>
+      <circle class="aiIconNode" cx="23" cy="22.5" r="2.2"/>
+      <circle class="aiIconNode" cx="40.6" cy="22.5" r="2.2"/>
+      <circle class="aiIconNode" cx="22.3" cy="44" r="2.2"/>
+      <circle class="aiIconNode" cx="41.3" cy="44" r="2.2"/>
+    </svg>
+  </span>
+  <small>AI分析</small>
+</button>
       <button id="playModeBtn"><span>🎮</span><small>人機對弈</small></button>
       <button id="cloudBtn"><span>☁️</span><small>KataGo</small></button>
       <button id="focusBtn"><span>⛶</span><small>全螢幕</small></button>
@@ -705,12 +790,12 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build010 Real KataGo Cloud Connector 已啟動。</div>
+    <div id="status" class="status">Build011 Elegant AI Icon 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build010 Real KataGo Cloud Connector 已啟動。</div>
+    <div id="debugLog">Build011 Elegant AI Icon 已啟動。</div>
   </section>
 </aside>
 
@@ -718,7 +803,7 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-1630";
+var APP_VERSION="20260712-1705";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -788,7 +873,7 @@ if("serviceWorker" in navigator){
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build010 KataGo Cloud 範例",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build011 AI Studio 範例",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -1059,7 +1144,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build010 Real KataGo Cloud Connector",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build011 Elegant AI Icon",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
