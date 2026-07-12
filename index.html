@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b0806">
-<title>AlphaTraderAI Pro V5.0｜Build004 Ultimate SGF Engine</title>
+<title>AlphaTraderAI Pro V5.0｜Build005 Professional File System</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#1a130e;--panel2:#241a12;--line:#f0c46a38;
@@ -152,7 +152,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolButtons button{min-width:52px}
 }
 
-/* Build004 Ultimate SGF Engine */
+/* Build005 Professional File System */
 .jumpBar{
   display:grid;
   grid-template-columns:auto minmax(90px,140px) auto;
@@ -194,6 +194,19 @@ body.drawer-open .drawerBackdrop{display:block}
   border:1px solid #ffffff10;
 }
 
+
+/* Build005 Professional File System */
+.fileActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fileActions button{width:100%}
+.dropZone{border:2px dashed #ffffff24;border-radius:12px;padding:14px;text-align:center;color:var(--muted);background:#0d0906}
+.dropZone.dragover{border-color:var(--gold);color:var(--gold);background:#2a1b0c}
+.recentList{display:grid;gap:7px}
+.recentItem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:#0d0906;border:1px solid #ffffff10;border-radius:10px;padding:9px}
+.recentItem strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recentItem small{color:var(--muted)}
+.recentItem button{border:1px solid #ffffff18;background:#ffffff0c;color:#fff;border-radius:8px;padding:7px 9px}
+.fileDiag{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:13px}
+.fileDiag span:nth-child(odd){color:var(--muted)}
 </style>
 </head>
 <body class="mode-teaching">
@@ -238,14 +251,30 @@ body.drawer-open .drawerBackdrop{display:block}
 <aside class="drawer" id="drawer" aria-hidden="true">
   <button class="drawerClose" id="drawerCloseBtn">✕</button>
 
+  
   <section class="section">
-    <h3>載入 SGF</h3>
-    <div class="row"><input id="sgfFile" type="file" accept=".sgf,application/x-go-sgf,text/plain"></div>
-    <div class="row">
-      <button class="action" id="readAgainBtn">讀取目前檔案</button>
+    <h3>專業棋譜檔案系統</h3>
+    <input id="sgfFile" type="file" accept=".sgf,application/x-go-sgf,text/plain" hidden>
+    <div class="fileActions">
+      <button class="action" id="chooseFileBtn">選擇 SGF 檔案</button>
+      <button class="action secondary" id="modernPickerBtn">使用 iPad 檔案選擇器</button>
+      <button class="action secondary" id="readAgainBtn">重新讀取目前棋譜</button>
       <button class="action secondary" id="sampleBtn">10 手範例</button>
     </div>
-    <div id="selectedFile" class="status">尚未選擇檔案。</div>
+    <div id="dropZone" class="dropZone" style="margin-top:10px">可將 SGF 拖曳到這裡，或使用上方按鈕選檔。</div>
+    <div id="selectedFile" class="status" style="margin-top:10px">尚未選擇檔案。</div>
+    <div class="fileDiag" style="margin-top:10px">
+      <span>檔案名稱</span><span id="diagName">—</span>
+      <span>檔案大小</span><span id="diagSize">—</span>
+      <span>檔案類型</span><span id="diagType">—</span>
+      <span>最後修改</span><span id="diagModified">—</span>
+      <span>讀取方式</span><span id="diagMethod">—</span>
+      <span>狀態</span><span id="diagStatus">尚未讀取</span>
+    </div>
+  </section>
+  <section class="section">
+    <h3>最近開啟</h3>
+    <div id="recentList" class="recentList"><div class="status">目前沒有最近紀錄。</div></div>
   </section>
 
   <section class="section advanced">
@@ -342,7 +371,7 @@ body.drawer-open .drawerBackdrop{display:block}
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build004 Ultimate SGF Engine 已啟動。</div>
+    <div id="debugLog">Build005 Professional File System 已啟動。</div>
   </section>
 </aside>
 
@@ -493,6 +522,54 @@ Board.prototype.draw=function(){
  if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(snap(min+this.last.x*cell),snap(min+this.last.y*cell),r*.76,0,Math.PI*2);c.stroke()}
 };
 
+
+var recentFiles=[];
+try{recentFiles=JSON.parse(localStorage.getItem("recentSGFMeta")||"[]")}catch(e){recentFiles=[]}
+function formatBytes(n){if(!Number.isFinite(n))return "—";if(n<1024)return n+" bytes";if(n<1048576)return (n/1024).toFixed(1)+" KB";return (n/1048576).toFixed(2)+" MB"}
+function updateFileDiagnostics(file,method,stateText){
+ id("diagName").textContent=file&&file.name?file.name:"—";
+ id("diagSize").textContent=file?formatBytes(file.size):"—";
+ id("diagType").textContent=file&&file.type?file.type:"未提供";
+ id("diagModified").textContent=file&&file.lastModified?new Date(file.lastModified).toLocaleString():"—";
+ id("diagMethod").textContent=method||"—";
+ id("diagStatus").textContent=stateText||"尚未讀取";
+}
+function saveRecentMeta(file,moves,size){
+ if(!file||!file.name)return;
+ var item={name:file.name,size:file.size||0,lastModified:file.lastModified||0,moves:moves||0,boardSize:size||19,openedAt:Date.now()};
+ recentFiles=recentFiles.filter(function(x){return !(x.name===item.name&&x.size===item.size&&x.lastModified===item.lastModified)});
+ recentFiles.unshift(item);recentFiles=recentFiles.slice(0,8);
+ try{localStorage.setItem("recentSGFMeta",JSON.stringify(recentFiles))}catch(e){}
+ renderRecentList();
+}
+function renderRecentList(){
+ var box=id("recentList");
+ if(!recentFiles.length){box.innerHTML='<div class="status">目前沒有最近紀錄。</div>';return}
+ box.innerHTML="";
+ recentFiles.forEach(function(item){
+  var row=document.createElement("div");row.className="recentItem";
+  var info=document.createElement("div"),title=document.createElement("strong"),sub=document.createElement("small");
+  title.textContent=item.name;sub.textContent=(item.boardSize||19)+" 路｜"+(item.moves||0)+" 手｜"+formatBytes(item.size||0);
+  info.appendChild(title);info.appendChild(sub);
+  var btn=document.createElement("button");btn.type="button";btn.textContent="重新選取";
+  btn.onclick=function(){id("sgfFile").value="";id("sgfFile").click()};
+  row.appendChild(info);row.appendChild(btn);box.appendChild(row);
+ });
+}
+function validateFile(file){
+ if(!file)throw Error("沒有取得檔案");
+ if(file.size===0)throw Error("檔案大小為 0 bytes");
+ if(file.size>20*1024*1024)throw Error("檔案超過 20 MB，請確認是否為 SGF");
+ var name=(file.name||"").toLowerCase();
+ if(name&&!name.endsWith(".sgf"))throw Error("這個檔案不是 .sgf");
+}
+async function readViaModernPicker(){
+ if(!window.showOpenFilePicker)throw Error("此 Safari 版本不支援現代檔案選擇器");
+ var handles=await window.showOpenFilePicker({multiple:false,types:[{description:"SGF 圍棋棋譜",accept:{"application/x-go-sgf":[".sgf"],"text/plain":[".sgf"]}}]});
+ if(!handles||!handles.length)throw Error("沒有選擇檔案");
+ read(await handles[0].getFile(),"iPad 檔案選擇器");
+}
+
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userLocked=false,currentGameName="內建範例棋譜";
 
 function updateMeta(){
@@ -514,10 +591,23 @@ function load(g,name,source){
  stop();game=g;index=0;currentGameName=name;userLocked=source==="user";
  updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length+"｜變化數："+(g.variationCount||0),false);log("解析成功："+g.moves.length+" 手｜"+name);
 }
-function read(file){
- if(!file){status("未取得檔案，請重新選擇。",true);return}
- currentFile=file;id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";
- var fr=new FileReader();fr.onload=function(){try{load(parseSGF(decode(fr.result)),file.name,"user")}catch(e){status("載入失敗："+e.message,true);log("錯誤："+e.message)}};fr.onerror=function(){status("檔案讀取失敗。",true)};fr.readAsArrayBuffer(file);
+function read(file,method){
+ try{validateFile(file)}catch(e){status("❌ "+e.message,true);updateFileDiagnostics(file,method||"傳統檔案選擇器","失敗："+e.message);return}
+ currentFile=file;
+ var readMethod=method||"傳統檔案選擇器";
+ id("selectedFile").textContent="已選擇："+file.name+"（"+formatBytes(file.size)+"）";
+ updateFileDiagnostics(file,readMethod,"正在讀取");
+ var fr=new FileReader();
+ fr.onload=function(){
+  try{
+   var decoded=decode(fr.result);if(decoded.indexOf("(;")<0)throw Error("檔案內容看起來不是 SGF");
+   var parsed=parseSGF(decoded);load(parsed,file.name,"user");
+   updateFileDiagnostics(file,readMethod,"✅ 成功載入");saveRecentMeta(file,parsed.moves.length,parsed.size);
+  }catch(e){status("❌ 載入失敗："+e.message,true);updateFileDiagnostics(file,readMethod,"失敗："+e.message);log("錯誤："+e.message)}
+ };
+ fr.onerror=function(){status("❌ 檔案讀取失敗，可能是 Safari 權限或檔案存取問題。",true);updateFileDiagnostics(file,readMethod,"Safari 讀取失敗")};
+ fr.onabort=function(){status("已取消讀取。",true);updateFileDiagnostics(file,readMethod,"已取消")};
+ fr.readAsArrayBuffer(file);
 }
 function setMode(mode){
  document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");
@@ -536,8 +626,13 @@ id("professionalBtn").onclick=function(){setMode("professional")};
 id("focusBtn").onclick=function(){document.body.classList.toggle("board-focus");setTimeout(board.resize,60)};
 id("restoreBtn").onclick=restoreLayout;
 
-id("sgfFile").onchange=function(e){read(e.target.files&&e.target.files[0])};
-id("readAgainBtn").onclick=function(){read((id("sgfFile").files&&id("sgfFile").files[0])||currentFile)};
+id("chooseFileBtn").onclick=function(){id("sgfFile").value="";id("sgfFile").click()};
+id("sgfFile").onchange=function(e){var file=e.target.files&&e.target.files[0];if(file)read(file,"傳統 iPad 檔案選擇器")};
+id("modernPickerBtn").onclick=async function(){
+ try{await readViaModernPicker()}
+ catch(e){if(e&&e.name==="AbortError")return;status("⚠️ "+e.message+"\n已改用一般檔案選擇器。",true);id("sgfFile").value="";id("sgfFile").click()}
+};
+id("readAgainBtn").onclick=function(){var f=(id("sgfFile").files&&id("sgfFile").files[0])||currentFile;if(!f){status("尚未選擇棋譜。",true);return}read(f,"重新讀取目前棋譜")};
 id("sampleBtn").onclick=function(){if(userLocked&&!confirm("目前已載入使用者棋譜。確定切換到 10 手範例嗎？"))return;load(SAMPLE,"內建範例棋譜","sample")};
 id("loadTextBtn").onclick=function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF","user")}catch(e){status("載入失敗："+e.message,true)}};
 
@@ -558,9 +653,14 @@ id("jumpMove").onkeydown=function(e){if(e.key==="Enter")id("jumpBtn").click()};
 id("numberMode").onchange=function(){id("customNumberRow").style.display=this.value==="custom"?"flex":"none";render()};
 id("customNumberCount").oninput=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
 
+
+["dragenter","dragover"].forEach(function(evt){id("dropZone").addEventListener(evt,function(e){e.preventDefault();e.stopPropagation();this.classList.add("dragover")})});
+["dragleave","drop"].forEach(function(evt){id("dropZone").addEventListener(evt,function(e){e.preventDefault();e.stopPropagation();this.classList.remove("dragover")})});
+id("dropZone").addEventListener("drop",function(e){var file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(file)read(file,"拖放")});
+renderRecentList();
 new ResizeObserver(function(){board.queueResize()}).observe(id("boardStage"));
 var saved="teaching";try{saved=localStorage.getItem("goMode")||"teaching"}catch(e){};if(["minimal","teaching","professional"].indexOf(saved)<0)saved="teaching";
-setMode(saved);updateMeta();render();setTimeout(board.resize,80);
+setMode(saved);updateMeta();render();renderRecentList();updateFileDiagnostics(null,"—","尚未讀取");setTimeout(board.resize,80);
 })();
 </script>
 </body>
