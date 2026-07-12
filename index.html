@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b0806">
-<title>AlphaTraderAI Pro V5.0｜Build005 Fix1 Universal SGF Picker</title>
+<title>AlphaTraderAI Pro V5.0｜Build005 Fix2 Persistent Toolbar & iPad Picker</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#1a130e;--panel2:#241a12;--line:#f0c46a38;
@@ -132,11 +132,11 @@ body.drawer-open .drawerBackdrop{display:block}
 .metaGrid{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;font-size:14px}
 .metaGrid span:nth-child(odd){color:var(--muted)}
 #debugLog{white-space:pre-wrap;background:#080604;padding:10px;border-radius:10px;max-height:180px;overflow:auto;font:12px/1.45 ui-monospace,monospace}
-.mode-minimal .toolbar .gameTitle{display:none}
+.mode-minimal .toolbar .gameTitle{display:block}
 .mode-minimal .toolbar{grid-template-columns:auto;justify-content:center}
 .mode-minimal .toolButtons button[data-hide-minimal="1"]{display:none}
 .mode-teaching .advanced{display:none}
-.board-focus .toolbar{display:none}
+.board-focus .toolbar{display:grid}
 .board-focus .app{grid-template-rows:minmax(0,1fr) auto;padding-top:calc(var(--safe-top) + 3px)}
 .board-focus .boardPanel{border-radius:0}
 @media (orientation:landscape){
@@ -152,7 +152,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolButtons button{min-width:52px}
 }
 
-/* Build005 Fix1 Universal SGF Picker */
+/* Build005 Fix2 Persistent Toolbar & iPad Picker */
 .jumpBar{
   display:grid;
   grid-template-columns:auto minmax(90px,140px) auto;
@@ -195,7 +195,7 @@ body.drawer-open .drawerBackdrop{display:block}
 }
 
 
-/* Build005 Fix1 Universal SGF Picker */
+/* Build005 Fix2 Persistent Toolbar & iPad Picker */
 .fileActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .fileActions button{width:100%}
 .dropZone{border:2px dashed #ffffff24;border-radius:12px;padding:14px;text-align:center;color:var(--muted);background:#0d0906}
@@ -208,12 +208,103 @@ body.drawer-open .drawerBackdrop{display:block}
 .fileDiag{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:13px}
 .fileDiag span:nth-child(odd){color:var(--muted)}
 
-/* Build005 Fix1 Universal SGF Picker */
+/* Build005 Fix2 Persistent Toolbar & iPad Picker */
 #chooseFileBtn,#modernPickerBtn{min-height:46px}
 .universalHint{color:var(--ok)}
+
+/* Build005 Fix2 Persistent Toolbar & iPad Picker */
+.toolbar{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:relative!important;
+  z-index:100!important;
+}
+body.mode-minimal .toolbar{
+  display:grid!important;
+  grid-template-columns:minmax(160px,1fr) auto!important;
+}
+body.mode-minimal .toolbar .gameTitle{
+  display:block!important;
+}
+body.mode-minimal .toolButtons button[data-hide-minimal="1"]{
+  display:inline-flex!important;
+}
+.toolButtons{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  flex-wrap:nowrap!important;
+}
+.toolButtons button{
+  display:inline-flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.board-focus .toolbar{
+  display:grid!important;
+}
+.board-focus .app{
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  padding-top:calc(var(--safe-top) + 6px)!important;
+}
+.floatingMenuBtn{
+  position:fixed;
+  left:calc(var(--safe-left) + 10px);
+  top:calc(var(--safe-top) + 10px);
+  z-index:1000;
+  width:46px;height:46px;
+  border-radius:12px;
+  border:1px solid #ffffff22;
+  background:#17100bf2;
+  color:#fff;
+  font-size:24px;
+  box-shadow:0 8px 24px #0009;
+}
+.quickMenu{
+  position:fixed;
+  left:calc(var(--safe-left) + 10px);
+  top:calc(var(--safe-top) + 64px);
+  z-index:1001;
+  width:min(260px,82vw);
+  background:#17100bf5;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:8px;
+  box-shadow:0 16px 44px #000c;
+  display:none;
+}
+body.quick-menu-open .quickMenu{display:grid;gap:6px}
+.quickMenu button{
+  text-align:left;
+  border:1px solid #ffffff18;
+  background:#ffffff0b;
+  color:#fff;
+  border-radius:9px;
+  padding:10px;
+}
+@media (orientation:landscape){
+  .toolbar{min-height:44px!important;padding:4px 6px!important}
+  .toolButtons button{height:34px!important;min-width:48px!important;font-size:10px!important}
+  .toolButtons button span{font-size:14px!important}
+}
+
 </style>
 </head>
 <body class="mode-teaching">
+<button id="floatingMenuBtn" class="floatingMenuBtn" title="開啟主選單">☰</button>
+<div id="quickMenu" class="quickMenu">
+  <button data-action="info">☰ 資訊與載入 SGF</button>
+  <button data-action="minimal">◫ 極簡模式</button>
+  <button data-action="teaching">📖 教學模式</button>
+  <button data-action="professional">⚙ 專業模式</button>
+  <button data-action="focus">⛶ 全螢幕切換</button>
+  <button data-action="restore">↺ 還原版面</button>
+</div>
+
 <div class="app">
   <header class="toolbar">
     <div class="gameTitle">
@@ -261,14 +352,14 @@ body.drawer-open .drawerBackdrop{display:block}
     <input id="sgfFile" type="file" hidden>
     <div class="fileActions">
       <button class="action" id="chooseFileBtn">選擇 SGF 檔案</button>
-      <button class="action secondary" id="modernPickerBtn">通用 iPad 選檔</button>
+      <button class="action secondary" id="modernPickerBtn">iPad 檔案選擇器</button>
       <button class="action secondary" id="readAgainBtn">重新讀取目前棋譜</button>
       <button class="action secondary" id="sampleBtn">10 手範例</button>
     </div>
     <div id="dropZone" class="dropZone" style="margin-top:10px">可將 SGF 拖曳到這裡，或使用上方按鈕選檔。</div>
     <div id="selectedFile" class="status" style="margin-top:10px">尚未選擇檔案。</div>
     <div class="status" style="margin-top:8px;color:var(--muted)">
-      iPad 若把 .sgf 顯示成未知格式，本版仍可選取；系統會依檔案內容判斷是否為 SGF。
+      iPad 若把 .sgf 顯示成未知格式，本版仍可選取；系統會依檔案內容判斷是否為 SGF。 網頁版仍使用 Safari 提供的系統檔案視窗，無法直接呼叫 App 專用的 Document Browser。
     </div>
     <div class="fileDiag" style="margin-top:10px">
       <span>檔案名稱</span><span id="diagName">—</span>
@@ -378,7 +469,7 @@ body.drawer-open .drawerBackdrop{display:block}
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build005 Fix1 Universal SGF Picker 已啟動。</div>
+    <div id="debugLog">Build005 Fix2 Persistent Toolbar & iPad Picker 已啟動。</div>
   </section>
 </aside>
 
@@ -632,15 +723,54 @@ function read(file,method){
  fr.onabort=function(){status("已取消讀取。",true);updateFileDiagnostics(file,readMethod,"已取消")};
  fr.readAsArrayBuffer(file);
 }
+
+function ensureToolbarVisible(){
+ var t=document.querySelector(".toolbar");
+ if(t){
+   t.style.display="grid";
+   t.style.visibility="visible";
+   t.style.opacity="1";
+ }
+ var tools=document.querySelector(".toolButtons");
+ if(tools){
+   tools.style.display="flex";
+   tools.style.visibility="visible";
+   tools.style.opacity="1";
+ }
+}
+function toggleQuickMenu(force){
+ var open=typeof force==="boolean"?force:!document.body.classList.contains("quick-menu-open");
+ document.body.classList.toggle("quick-menu-open",open);
+}
+id("floatingMenuBtn").onclick=function(e){e.preventDefault();e.stopPropagation();toggleQuickMenu()};
+id("quickMenu").onclick=function(e){
+ var btn=e.target.closest("button[data-action]");if(!btn)return;
+ var action=btn.getAttribute("data-action");
+ toggleQuickMenu(false);
+ if(action==="info")openDrawer();
+ else if(action==="minimal")setMode("minimal");
+ else if(action==="teaching")setMode("teaching");
+ else if(action==="professional")setMode("professional");
+ else if(action==="focus"){document.body.classList.toggle("board-focus");setTimeout(function(){ensureToolbarVisible();board.resize()},60)}
+ else if(action==="restore")restoreLayout();
+};
+document.addEventListener("click",function(e){
+ if(document.body.classList.contains("quick-menu-open")&&!id("quickMenu").contains(e.target)&&e.target!==id("floatingMenuBtn"))toggleQuickMenu(false);
+});
+id("boardStage").addEventListener("dblclick",function(){ensureToolbarVisible()});
+var longPressTimer=null;
+id("boardStage").addEventListener("touchstart",function(){longPressTimer=setTimeout(ensureToolbarVisible,900)},{passive:true});
+["touchend","touchcancel","touchmove"].forEach(function(evt){id("boardStage").addEventListener(evt,function(){clearTimeout(longPressTimer)},{passive:true})});
+
 function setMode(mode){
  document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");
  document.body.classList.add("mode-"+mode);
  try{localStorage.setItem("goMode",mode)}catch(e){}
- setTimeout(board.resize,60);
+ setTimeout(function(){ensureToolbarVisible();board.resize()},60);
 }
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
-function restoreLayout(){closeDrawer();document.body.classList.remove("board-focus");setMode("teaching");stop();requestAnimationFrame(function(){board.resize();render()})}
+function restoreLayout(){closeDrawer();toggleQuickMenu(false);document.body.classList.remove("board-focus");setMode("teaching");stop();ensureToolbarVisible();requestAnimationFrame(function(){board.resize();render()})}
 
 id("infoBtn").onclick=openDrawer;id("drawerCloseBtn").onclick=closeDrawer;id("drawerBackdrop").onclick=closeDrawer;
 id("minimalBtn").onclick=function(){setMode("minimal")};
@@ -683,7 +813,8 @@ id("dropZone").addEventListener("drop",function(e){var file=e.dataTransfer&&e.da
 renderRecentList();
 new ResizeObserver(function(){board.queueResize()}).observe(id("boardStage"));
 var saved="teaching";try{saved=localStorage.getItem("goMode")||"teaching"}catch(e){};if(["minimal","teaching","professional"].indexOf(saved)<0)saved="teaching";
-setMode(saved);updateMeta();render();renderRecentList();updateFileDiagnostics(null,"—","尚未讀取");setTimeout(board.resize,80);
+setMode(saved);updateMeta();render();renderRecentList();updateFileDiagnostics(null,"—","尚未讀取");ensureToolbarVisible();setTimeout(function(){ensureToolbarVisible();board.resize()},80);
+setInterval(ensureToolbarVisible,1200);
 })();
 </script>
 </body>
