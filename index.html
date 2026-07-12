@@ -4,7 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b0806">
-<title>AlphaTraderAI Pro V5.0｜Build007 Fix1 Perfect iPad Layout</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="app-version" content="20260712-1315">
+<title>AlphaTraderAI Pro V5.0｜Build007 Fix2 Cache Killer</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -121,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build007 Fix1 Perfect iPad Layout */
+/* Build007 Fix2 Cache Killer */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -185,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build007 Fix1 Perfect iPad Layout */
+/* Build007 Fix2 Cache Killer */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -282,12 +286,34 @@ body.board-focus .studio{
   100%{filter:drop-shadow(0 4px 12px #0006)}
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
+
+/* Build007 Fix2 Cache Killer */
+.updateToast{
+  position:fixed;
+  left:50%;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 82px);
+  transform:translateX(-50%);
+  z-index:9999;
+  max-width:min(92vw,560px);
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid #f0c46a55;
+  background:#17100bf5;
+  color:#fff8e9;
+  box-shadow:0 12px 36px #000b;
+  font-size:13px;
+  display:none;
+}
+.updateToast.show{display:block}
+.updateToast strong{color:#efc66d}
+
 </style>
 </head>
 <body class="mode-teaching">
 <div class="studio">
   <header class="topbar" id="topbar">
     <div class="identity">
+      <div id="versionBadge" style="display:none">20260712-1315</div>
       <strong id="gameName">內建範例棋譜</strong>
       <span id="gameSummary">19 路｜0 / 10</span>
     </div>
@@ -322,6 +348,9 @@ body.board-focus .studio{
   </footer>
 </div>
 
+<div id="updateToast" class="updateToast">
+  <strong>已載入最新版</strong>｜版本 20260712-1315
+</div>
 <div id="drawerBackdrop" class="drawerBackdrop"></div>
 <aside id="drawer" class="drawer" aria-hidden="true">
   <button id="drawerCloseBtn" class="drawerClose">✕</button>
@@ -385,22 +414,90 @@ body.board-focus .studio{
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build007 Fix1 Perfect iPad Layout 已啟動。</div>
+    <div id="status" class="status">Build007 Fix2 Cache Killer 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build007 Fix1 Perfect iPad Layout 已啟動。</div>
+    <div id="debugLog">Build007 Fix2 Cache Killer 已啟動。</div>
   </section>
 </aside>
 
 <script>
 (function(){
 "use strict";
+
+var APP_VERSION="20260712-1315";
+var VERSION_KEY="alphaTraderGoAppVersion";
+var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
+
+function showUpdateToast(message){
+ var toast=document.getElementById("updateToast");
+ if(!toast)return;
+ toast.innerHTML=message;
+ toast.classList.add("show");
+ setTimeout(function(){toast.classList.remove("show")},2600);
+}
+
+async function clearBrowserCaches(){
+ try{
+  if("caches" in window){
+   var keys=await caches.keys();
+   await Promise.all(keys.map(function(k){return caches.delete(k)}));
+  }
+ }catch(e){}
+ try{
+  if("serviceWorker" in navigator){
+   var regs=await navigator.serviceWorker.getRegistrations();
+   await Promise.all(regs.map(function(r){return r.unregister()}));
+  }
+ }catch(e){}
+}
+
+async function enforceFreshVersion(){
+ var oldVersion="";
+ try{oldVersion=localStorage.getItem(VERSION_KEY)||""}catch(e){}
+ if(oldVersion!==APP_VERSION){
+  await clearBrowserCaches();
+  try{localStorage.setItem(VERSION_KEY,APP_VERSION)}catch(e){}
+  showUpdateToast("<strong>已更新至最新版</strong>｜版本 "+APP_VERSION);
+ }
+}
+
+function addVersionToCurrentURL(){
+ try{
+  var url=new URL(location.href);
+  if(url.searchParams.get("v")!==APP_VERSION){
+   url.searchParams.set("v",APP_VERSION);
+   history.replaceState(null,"",url.toString());
+  }
+ }catch(e){}
+}
+
+function forceFreshReload(){
+ var now=Date.now();
+ var last=0;
+ try{last=parseInt(sessionStorage.getItem(LAST_RELOAD_KEY)||"0",10)}catch(e){}
+ if(now-last<5000)return;
+ try{sessionStorage.setItem(LAST_RELOAD_KEY,String(now))}catch(e){}
+ var url=new URL(location.href);
+ url.searchParams.set("v",APP_VERSION);
+ url.searchParams.set("_refresh",String(now));
+ location.replace(url.toString());
+}
+
+addVersionToCurrentURL();
+enforceFreshVersion();
+if("serviceWorker" in navigator){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js?v=20260712-1315",{updateViaCache:"none"}).catch(function(){});
+  });
+}
+
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build007 Fix1 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build007 Fix2 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -566,6 +663,10 @@ function restoreLayout(){closeDrawer();stop();document.body.classList.remove("bo
 id("infoBtn").onclick=openDrawer;id("drawerCloseBtn").onclick=closeDrawer;id("drawerBackdrop").onclick=closeDrawer;
 id("minimalBtn").onclick=function(){preserveViewportAction(function(){setMode("minimal")})};id("teachingBtn").onclick=function(){preserveViewportAction(function(){setMode("teaching")})};id("professionalBtn").onclick=function(){preserveViewportAction(function(){setMode("professional")})};
 id("focusBtn").onclick=function(){preserveViewportAction(function(){document.body.classList.toggle("board-focus")})};id("restoreBtn").onclick=restoreLayout;
+var restoreHoldTimer=null;
+id("restoreBtn").addEventListener("touchstart",function(){restoreHoldTimer=setTimeout(forceFreshReload,1200)},{passive:true});
+["touchend","touchcancel","touchmove"].forEach(function(evt){id("restoreBtn").addEventListener(evt,function(){clearTimeout(restoreHoldTimer)},{passive:true})});
+id("restoreBtn").addEventListener("dblclick",forceFreshReload);
 id("chooseFileBtn").onclick=function(){id("sgfFile").value="";id("sgfFile").click()};
 id("sgfFile").onchange=function(e){var f=e.target.files&&e.target.files[0];if(f)read(f)};
 id("readAgainBtn").onclick=function(){if(currentFile)read(currentFile);else status("尚未選擇棋譜。",true)};
@@ -585,7 +686,22 @@ if(window.visualViewport){
 }
 setTimeout(measureLayout,60);
 setTimeout(measureLayout,260);
+
 setTimeout(measureLayout,700);
+
+async function probeNewestVersion(){
+ try{
+  var r=await fetch("index.html?_probe="+Date.now(),{cache:"no-store",headers:{"Cache-Control":"no-cache"}});
+  var text=await r.text();
+  var m=text.match(/<meta name="app-version" content="([^"]+)">/);
+  if(m&&m[1]&&m[1]!==APP_VERSION){
+   showUpdateToast("<strong>發現新版</strong>｜正在重新載入…");
+   setTimeout(forceFreshReload,900);
+  }
+ }catch(e){}
+}
+setInterval(probeNewestVersion,60000);
+setTimeout(probeNewestVersion,5000);
 })();
 </script>
 </body>
