@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b0806">
-<title>AlphaTraderAI Pro V5.0｜Build003 Ultimate Architecture</title>
+<title>AlphaTraderAI Pro V5.0｜Build004 Ultimate SGF Engine</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#1a130e;--panel2:#241a12;--line:#f0c46a38;
@@ -151,6 +151,49 @@ body.drawer-open .drawerBackdrop{display:block}
   .gameTitle{text-align:center}
   .toolButtons button{min-width:52px}
 }
+
+/* Build004 Ultimate SGF Engine */
+.jumpBar{
+  display:grid;
+  grid-template-columns:auto minmax(90px,140px) auto;
+  gap:8px;
+  align-items:center;
+}
+.jumpBar input{
+  width:100%;
+  background:#0e0a07;
+  border:1px solid #ffffff18;
+  border-radius:9px;
+  color:#fff;
+  padding:9px;
+}
+.compatList{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  font-size:13px;
+}
+.compatItem{
+  background:#0e0a07;
+  border:1px solid #ffffff10;
+  border-radius:9px;
+  padding:8px;
+  color:var(--muted);
+}
+.compatItem.ok{color:var(--ok)}
+.markLegend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  font-size:12px;
+}
+.markLegend span{
+  padding:5px 7px;
+  border-radius:8px;
+  background:#0e0a07;
+  border:1px solid #ffffff10;
+}
+
 </style>
 </head>
 <body class="mode-teaching">
@@ -243,7 +286,34 @@ body.drawer-open .drawerBackdrop{display:block}
     </div>
   </section>
 
+  
+  <section class="section">
+    <h3>快速跳到手數</h3>
+    <div class="jumpBar">
+      <label for="jumpMove">第</label>
+      <input id="jumpMove" type="number" min="0" value="0">
+      <button class="action" id="jumpBtn">前往</button>
+    </div>
+  </section>
+
   <section class="section advanced">
+    <h3>SGF 相容性</h3>
+    <div class="compatList">
+      <div class="compatItem ok">AB／AW／AE</div>
+      <div class="compatItem ok">C 註解</div>
+      <div class="compatItem ok">LB 標籤</div>
+      <div class="compatItem ok">TR／SQ／CR／MA</div>
+      <div class="compatItem ok">Pass</div>
+      <div class="compatItem ok">Handicap</div>
+      <div class="compatItem ok">主變化讀取</div>
+      <div class="compatItem ok">UTF-8／UTF-16</div>
+    </div>
+    <div class="markLegend" style="margin-top:9px">
+      <span>△ 三角</span><span>□ 方框</span><span>○ 圓圈</span><span>× 標記</span><span>A 標籤</span>
+    </div>
+  </section>
+
+<section class="section advanced">
     <h3>棋譜資訊</h3>
     <div class="metaGrid">
       <span>黑方</span><span id="pb">—</span>
@@ -254,6 +324,9 @@ body.drawer-open .drawerBackdrop{display:block}
       <span>貼目</span><span id="km">—</span>
       <span>讓子</span><span id="ha">0</span>
       <span>總手數</span><span id="totalMoves">10</span>
+      <span>變化數</span><span id="variationCount">0</span>
+      <span>Pass</span><span id="passCount">0</span>
+      <span>目前手數</span><span id="currentMoveMeta">0</span>
     </div>
   </section>
 
@@ -269,7 +342,7 @@ body.drawer-open .drawerBackdrop{display:block}
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build003 Ultimate Architecture 已啟動。</div>
+    <div id="debugLog">Build004 Ultimate SGF Engine 已啟動。</div>
   </section>
 </aside>
 
@@ -280,8 +353,17 @@ function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
 
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build003 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
-{c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},{c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},{c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},{c:1,x:16,y:5,comment:"黑棋右邊"},{c:-1,x:13,y:2,comment:"白棋右上方"},{c:1,x:14,y:2,comment:"黑棋接近"},{c:-1,x:13,y:3,comment:"白棋應對"}]};
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build004 範例棋譜",km:"6.5",ha:"0"},setup:[],erase:[],marks:[],variationCount:0,moves:[
+{c:1,x:15,y:3,comment:"黑棋右上角小目",marks:[{type:"TR",x:15,y:3}]},
+{c:-1,x:3,y:3,comment:"白棋左上角小目"},
+{c:1,x:16,y:15,comment:"黑棋右下角"},
+{c:-1,x:3,y:16,comment:"白棋左下角"},
+{c:1,x:5,y:2,comment:"黑棋拆邊"},
+{c:-1,x:2,y:5,comment:"白棋掛角"},
+{c:1,x:16,y:5,comment:"黑棋右邊"},
+{c:-1,x:13,y:2,comment:"白棋右上方"},
+{c:1,x:14,y:2,comment:"黑棋接近"},
+{c:-1,x:13,y:3,comment:"白棋應對",marks:[{type:"LB",x:13,y:3,label:"A"}]}]};
 
 function decode(buffer){
  var b=new Uint8Array(buffer);
@@ -325,16 +407,33 @@ function tree(text,i){
 }
 function first(p,k,d){return p[k]&&p[k].length?p[k][0]:d}
 function xy(v){return !v||v.length<2?{pass:true,x:-1,y:-1}:{pass:false,x:v.charCodeAt(0)-97,y:v.charCodeAt(1)-97}}
+function countVariations(t){var n=t.children.length;for(var i=0;i<t.children.length;i++)n+=countVariations(t.children[i]);return n}
 function mainline(t){var a=t.seq.slice(),c=t;while(c.children.length){c=c.children[0];a=a.concat(c.seq)}return a}
 function parseSGF(text){
  text=String(text||"").replace(/^\uFEFF/,"").trim();
  var start=text.indexOf("(");if(start<0||text.indexOf("(;",start)<0)throw Error("這不是有效的 SGF");
- var ns=mainline(tree(text,start).t);if(!ns.length)throw Error("找不到 SGF 節點");
+ var parsedTree=tree(text,start).t,ns=mainline(parsedTree);if(!ns.length)throw Error("找不到 SGF 節點");
  var root=ns[0],size=parseInt(first(root,"SZ","19"),10);if([9,13,19].indexOf(size)<0)throw Error("目前只支援 9、13、19 路");
- var g={size:size,meta:{pb:first(root,"PB","—"),pw:first(root,"PW","—"),re:first(root,"RE","—"),dt:first(root,"DT","—"),ev:first(root,"EV",first(root,"GN","—")),km:first(root,"KM","—"),ha:first(root,"HA","0")},setup:[],moves:[]};
- (root.AB||[]).forEach(function(v){var p=xy(v);g.setup.push({c:1,pass:p.pass,x:p.x,y:p.y})});
- (root.AW||[]).forEach(function(v){var p=xy(v);g.setup.push({c:-1,pass:p.pass,x:p.x,y:p.y})});
- ns.forEach(function(n){var m;if(n.B&&n.B.length){m=xy(n.B[0]);g.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}else if(n.W&&n.W.length){m=xy(n.W[0]);g.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C","")})}});
+ var g={size:size,meta:{pb:first(root,"PB","—"),pw:first(root,"PW","—"),re:first(root,"RE","—"),dt:first(root,"DT","—"),ev:first(root,"EV",first(root,"GN","—")),km:first(root,"KM","—"),ha:first(root,"HA","0")},setup:[],erase:[],marks:[],variationCount:countVariations(parsedTree),moves:[]};
+ function addPoints(arr,target,c){(arr||[]).forEach(function(v){var p=xy(v);if(!p.pass)target.push({c:c,x:p.x,y:p.y})})}
+ addPoints(root.AB,g.setup,1);addPoints(root.AW,g.setup,-1);
+ (root.AE||[]).forEach(function(v){var p=xy(v);if(!p.pass)g.erase.push({x:p.x,y:p.y})});
+ function readMarks(n){
+   var marks=[];
+   ["TR","SQ","CR","MA"].forEach(function(k){(n[k]||[]).forEach(function(v){var p=xy(v);if(!p.pass)marks.push({type:k,x:p.x,y:p.y})})});
+   (n.LB||[]).forEach(function(v){var parts=v.split(":");var p=xy(parts[0]);if(!p.pass)marks.push({type:"LB",x:p.x,y:p.y,label:parts.slice(1).join(":")||""})});
+   return marks;
+ }
+ g.marks=readMarks(root);
+ ns.forEach(function(n){
+   var m,marks=readMarks(n);
+   if(n.AB||n.AW||n.AE){
+     addPoints(n.AB,g.setup,1);addPoints(n.AW,g.setup,-1);
+     (n.AE||[]).forEach(function(v){var p=xy(v);if(!p.pass)g.erase.push({x:p.x,y:p.y})});
+   }
+   if(n.B&&n.B.length){m=xy(n.B[0]);g.moves.push({c:1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C",""),marks:marks})}
+   else if(n.W&&n.W.length){m=xy(n.W[0]);g.moves.push({c:-1,pass:m.pass,x:m.x,y:m.y,comment:first(n,"C",""),marks:marks})}
+ });
  return g;
 }
 
@@ -350,7 +449,13 @@ Board.prototype.inside=function(x,y){return x>=0&&y>=0&&x<this.size&&y<this.size
 Board.prototype.nei=function(x,y){var a=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],r=[];for(var i=0;i<a.length;i++)if(this.inside(a[i][0],a[i][1]))r.push(a[i]);return r};
 Board.prototype.group=function(x,y){var s=this.grid[y][x],st=[[x,y]],seen={},grp=[],lib={};while(st.length){var p=st.pop(),k=p[0]+","+p[1];if(seen[k])continue;seen[k]=1;grp.push(p);var n=this.nei(p[0],p[1]);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(!q)lib[n[i][0]+","+n[i][1]]=1;else if(q.c===s.c&&!seen[n[i][0]+","+n[i][1]])st.push(n[i])}}return{group:grp,lib:lib}};
 Board.prototype.apply=function(m,num){if(!m||m.pass||!this.inside(m.x,m.y)){this.last=null;return}this.grid[m.y][m.x]={c:m.c,n:num};var n=this.nei(m.x,m.y);for(var i=0;i<n.length;i++){var q=this.grid[n[i][1]][n[i][0]];if(q&&q.c===-m.c){var r=this.group(n[i][0],n[i][1]);if(!Object.keys(r.lib).length)for(var j=0;j<r.group.length;j++)this.grid[r.group[j][1]][r.group[j][0]]=null}}this.last={x:m.x,y:m.y}};
-Board.prototype.position=function(g,k){this.size=g.size;this.grid=this.empty(g.size);this.last=null;g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);for(var i=0;i<k;i++)this.apply(g.moves[i],i+1);this.draw()};
+Board.prototype.position=function(g,k){
+ this.size=g.size;this.grid=this.empty(g.size);this.last=null;this.marks=(g.marks||[]).slice();
+ g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);
+ (g.erase||[]).forEach(function(p){if(this.inside(p.x,p.y))this.grid[p.y][p.x]=null},this);
+ for(var i=0;i<k;i++){this.apply(g.moves[i],i+1);if(g.moves[i].marks&&g.moves[i].marks.length)this.marks=this.marks.concat(g.moves[i].marks)}
+ this.draw()
+};
 Board.prototype.queueResize=function(){clearTimeout(this._timer);this._timer=setTimeout(this.resize,100)};
 Board.prototype.resize=function(){
  var rect=id("boardStage").getBoundingClientRect();
@@ -372,24 +477,42 @@ Board.prototype.draw=function(){
  var scale=parseFloat(id("stoneScale").value||"0.42"),r=cell*scale;
  for(var y=0;y<this.size;y++)for(var x=0;x<this.size;x++){var s=this.grid[y]&&this.grid[y][x];if(!s)continue;var cx=snap(min+x*cell),cy=snap(min+y*cell),gr=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.05,cx,cy,r);c.save();c.shadowColor="#0007";c.shadowBlur=r*.3;c.shadowOffsetX=r*.12;c.shadowOffsetY=r*.15;if(s.c===1){gr.addColorStop(0,"#737373");gr.addColorStop(.25,"#242424");gr.addColorStop(.72,"#080808");gr.addColorStop(1,"#000")}else{gr.addColorStop(0,"#fff");gr.addColorStop(.48,"#f7f1e7");gr.addColorStop(.82,"#d7d0c5");gr.addColorStop(1,"#aaa297")}c.fillStyle=gr;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();c.restore();
   if(s.n!==null){var mode=id("numberMode").value,show=mode!=="none";if(show&&mode!=="all"){var count=mode==="custom"?parseInt(id("customNumberCount").value||"35",10):parseInt(mode,10);var cutoff=Math.max(1,index-count+1);show=s.n>=cutoff}if(show){c.fillStyle=s.c===1?"#fff":"#25180c";var digits=String(s.n).length,factor=digits>=3?.48:digits===2?.60:.72;c.font="800 "+Math.max(9,r*factor)+"px sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(String(s.n),cx,cy)}}}
+
+ if(this.marks&&this.marks.length){
+  c.save();c.lineWidth=Math.max(2,r*.11);c.strokeStyle="#d62828";c.fillStyle="#d62828";c.textAlign="center";c.textBaseline="middle";
+  for(var mi=0;mi<this.marks.length;mi++){
+   var mk=this.marks[mi],mx=snap(min+mk.x*cell),my=snap(min+mk.y*cell),mr=r*.58;
+   if(mk.type==="TR"){c.beginPath();c.moveTo(mx,my-mr);c.lineTo(mx-mr*.86,my+mr*.5);c.lineTo(mx+mr*.86,my+mr*.5);c.closePath();c.stroke()}
+   else if(mk.type==="SQ"){c.strokeRect(mx-mr*.68,my-mr*.68,mr*1.36,mr*1.36)}
+   else if(mk.type==="CR"){c.beginPath();c.arc(mx,my,mr*.72,0,Math.PI*2);c.stroke()}
+   else if(mk.type==="MA"){c.beginPath();c.moveTo(mx-mr*.7,my-mr*.7);c.lineTo(mx+mr*.7,my+mr*.7);c.moveTo(mx+mr*.7,my-mr*.7);c.lineTo(mx-mr*.7,my+mr*.7);c.stroke()}
+   else if(mk.type==="LB"){c.font="900 "+Math.max(10,r*.78)+"px sans-serif";c.fillText(mk.label||"",mx,my)}
+  }
+  c.restore();
+ }
  if(id("showLast").checked&&this.last){c.strokeStyle="#ff3b30";c.lineWidth=Math.max(2.5,r*.12);c.beginPath();c.arc(snap(min+this.last.x*cell),snap(min+this.last.y*cell),r*.76,0,Math.PI*2);c.stroke()}
 };
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,userLocked=false,currentGameName="內建範例棋譜";
 
-function updateMeta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
+function updateMeta(){
+ ["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});
+ id("totalMoves").textContent=game.moves.length;
+ id("variationCount").textContent=game.variationCount||0;
+ id("passCount").textContent=game.moves.filter(function(m){return !!m.pass}).length;
+}
 function render(){
  board.position(game,index);
  id("moveRange").max=game.moves.length;id("moveRange").value=index;
  id("counter").textContent=index+" / "+game.moves.length;
  id("gameName").textContent=currentGameName;
  id("gameSummary").textContent=game.size+" 路｜"+index+" / "+game.moves.length;
- id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
+ id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";id("currentMoveMeta").textContent=index;id("jumpMove").max=game.moves.length;id("jumpMove").value=index;
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
 function load(g,name,source){
  stop();game=g;index=0;currentGameName=name;userLocked=source==="user";
- updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手｜"+name);
+ updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length+"｜變化數："+(g.variationCount||0),false);log("解析成功："+g.moves.length+" 手｜"+name);
 }
 function read(file){
  if(!file){status("未取得檔案，請重新選擇。",true);return}
@@ -424,6 +547,14 @@ id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1
 id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
 id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
 id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};
+id("jumpBtn").onclick=function(){
+ stop();
+ var n=parseInt(id("jumpMove").value,10);
+ if(isNaN(n))n=0;
+ index=Math.max(0,Math.min(game.moves.length,n));
+ render();
+};
+id("jumpMove").onkeydown=function(e){if(e.key==="Enter")id("jumpBtn").click()};
 id("numberMode").onchange=function(){id("customNumberRow").style.display=this.value==="custom"?"flex":"none";render()};
 id("customNumberCount").oninput=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
 
