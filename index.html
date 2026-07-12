@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-2205">
-<title>AlphaTraderAI Pro V5.0｜Build013 Fix2 Portrait Toolbar Recovery</title>
+<meta name="app-version" content="20260712-2245">
+<title>AlphaTraderAI Pro V5.0｜Build014 Ultimate Go Studio</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build013 Fix2 Portrait Toolbar Recovery */
+/* Build014 Ultimate Go Studio */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build013 Fix2 Portrait Toolbar Recovery */
+/* Build014 Ultimate Go Studio */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build013 Fix2 Portrait Toolbar Recovery */
+/* Build014 Ultimate Go Studio */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build013 Fix2 Portrait Toolbar Recovery */
+/* Build014 Ultimate Go Studio */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -449,7 +449,7 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
 @media(max-width:900px){body.cloud-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}.cloudPanel{width:min(440px,96vw)}}
 
 
-/* Build013 Fix2 Portrait Toolbar Recovery */
+/* Build014 Ultimate Go Studio */
 .aiToolbarBtn{
   position:relative;
   overflow:hidden;
@@ -513,7 +513,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 }
 
 
-/* Build013 Fix2 Portrait Toolbar Recovery */
+/* Build014 Ultimate Go Studio */
 :root{
   --pro-left:178px;
   --pro-right:92px;
@@ -642,7 +642,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 .orientationRecoveryBtn span{font-size:26px;color:#efc66d}.orientationRecoveryBtn small{font-size:10px}
 @media (orientation:portrait),(max-width:899px){.orientationRecoveryBtn{display:grid!important}body .topbar{display:flex!important}body .proLeftRail,body .proRightRail{display:none!important}body .studio{grid-template-columns:1fr!important;grid-template-areas:"top" "main" "bottom"!important}}
 
-/* Build013 Fix2 Portrait Toolbar Recovery */
+/* Build014 Ultimate Go Studio */
 .portraitToolbar{
   position:fixed;
   z-index:9998;
@@ -692,6 +692,87 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
   }
   body .topbar{display:none!important}
   body .main{min-height:0!important}
+}
+
+
+/* Build014 Ultimate Go Studio */
+.screenRepairBtn{
+  position:fixed;
+  z-index:10000;
+  right:12px;
+  bottom:12px;
+  width:64px;
+  height:64px;
+  border-radius:18px;
+  border:1px solid #efc66d66;
+  background:linear-gradient(160deg,#2b1d13f7,#100b08f7);
+  color:#fff8e9;
+  box-shadow:0 10px 30px #000c,inset 0 1px 0 #ffffff14;
+  display:grid;
+  place-items:center;
+}
+.screenRepairBtn span{font-size:24px;line-height:22px}
+.screenRepairBtn small{font-size:10px}
+.screenRepairBtn:active{transform:scale(.95)}
+@media (orientation:portrait), (max-width:899px){
+  body .studio{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:76px minmax(0,1fr) 112px!important;
+    grid-template-areas:"portrait" "main" "bottom"!important;
+    min-height:100dvh!important;
+    height:100dvh!important;
+    overflow:hidden!important;
+    gap:6px!important;
+    padding:calc(env(safe-area-inset-top) + 6px) 6px calc(env(safe-area-inset-bottom) + 6px)!important;
+  }
+  body .portraitToolbar{
+    position:relative!important;
+    inset:auto!important;
+    grid-area:portrait!important;
+    display:grid!important;
+    height:70px!important;
+    min-height:70px!important;
+  }
+  body .topbar{display:none!important}
+  body .proLeftRail,body .proRightRail{display:none!important}
+  body .main{
+    grid-area:main!important;
+    display:block!important;
+    min-height:0!important;
+    height:auto!important;
+    overflow:hidden!important;
+  }
+  body .boardShell{
+    display:flex!important;
+    min-height:0!important;
+    height:100%!important;
+    width:100%!important;
+    overflow:hidden!important;
+  }
+  body .boardStage{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    padding:4px!important;
+  }
+  body #goBoard{
+    display:block!important;
+    max-width:100%!important;
+    max-height:100%!important;
+    width:auto!important;
+    height:auto!important;
+  }
+  body .bottom{
+    grid-area:bottom!important;
+    display:grid!important;
+    min-height:106px!important;
+    height:106px!important;
+  }
+  body .orientationRecoveryBtn{display:none!important}
 }
 
 </style>
@@ -1104,12 +1185,12 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build013 Fix2 Portrait Toolbar Recovery 已啟動。</div>
+    <div id="status" class="status">Build014 Ultimate Go Studio 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build013 Fix2 Portrait Toolbar Recovery 已啟動。</div>
+    <div id="debugLog">Build014 Ultimate Go Studio 已啟動。</div>
   </section>
 </aside>
 
@@ -1117,7 +1198,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-2205";
+var APP_VERSION="20260712-2245";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -1473,7 +1554,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build013 Fix2 Portrait Toolbar Recovery",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build014 Ultimate Go Studio",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
@@ -1568,7 +1649,48 @@ function setMode(mode){document.body.classList.remove("mode-minimal","mode-teach
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
 
-function forceOrientationRecovery(){
+
+function repairStudioScreen(){
+ try{
+  document.body.classList.remove(
+   "mode-professional","mode-teaching","focus-board","cloud-open",
+   "ai-open","drawer-open","play-open"
+  );
+  document.body.classList.add("mode-complete");
+  ["cloudPanel","aiPanel","drawer","playPanel"].forEach(function(k){
+   var el=id(k);
+   if(el)el.setAttribute("aria-hidden","true");
+  });
+  var main=document.querySelector(".main");
+  var shell=document.querySelector(".boardShell");
+  var stage=document.querySelector(".boardStage");
+  var canvas=id("goBoard");
+  if(main){main.style.display="block";main.style.visibility="visible";main.style.opacity="1";}
+  if(shell){shell.style.display="flex";shell.style.visibility="visible";shell.style.opacity="1";}
+  if(stage){stage.style.display="flex";stage.style.visibility="visible";stage.style.opacity="1";}
+  if(canvas){canvas.style.display="block";canvas.style.visibility="visible";canvas.style.opacity="1";}
+  try{localStorage.setItem("goMode","complete")}catch(e){}
+  requestAnimationFrame(function(){
+   try{measureLayout()}catch(e){}
+   try{board.resize()}catch(e){}
+   try{board.draw()}catch(e){}
+   setTimeout(function(){
+    try{board.resize()}catch(e){}
+    try{board.draw()}catch(e){}
+   },120);
+  });
+ }catch(e){
+  location.reload();
+ }
+}
+function boardHealthCheck(){
+ var canvas=id("goBoard");
+ var stage=document.querySelector(".boardStage");
+ var bad=!canvas||!stage||canvas.clientWidth<80||canvas.clientHeight<80||stage.clientHeight<120;
+ if(bad)repairStudioScreen();
+}
+
+function forceOrientationRecovery(){repairStudioScreen();
  try{
   if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen();
  }catch(e){}
@@ -1795,7 +1917,13 @@ id("portraitResetBtn").onclick=function(){
 window.addEventListener("orientationchange",function(){setTimeout(evaluateOrientationRecovery,250)});
 window.addEventListener("resize",function(){var pt=id("portraitToolbar");if(pt&&window.innerWidth<900)pt.style.display="grid";clearTimeout(window.__ort);window.__ort=setTimeout(evaluateOrientationRecovery,180)});
 document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(evaluateOrientationRecovery,120)});
+
 setTimeout(evaluateOrientationRecovery,120);
+id("screenRepairBtn").onclick=repairStudioScreen;
+setInterval(boardHealthCheck,1200);
+window.addEventListener("pageshow",function(){setTimeout(repairStudioScreen,160)});
+window.addEventListener("orientationchange",function(){setTimeout(repairStudioScreen,350)});
+
 })();
 </script>
 <button id="orientationRecoveryBtn" class="orientationRecoveryBtn" aria-label="還原正常版面"><span>↺</span><small>還原</small></button>
@@ -1808,6 +1936,11 @@ setTimeout(evaluateOrientationRecovery,120);
   <button data-fix2-proxy="focusBtn"><span>⛶</span><small>放大</small></button>
   <button id="portraitResetBtn"><span>↺</span><small>還原</small></button>
 </nav>
+
+
+<button id="screenRepairBtn" class="screenRepairBtn" aria-label="修復畫面" title="修復畫面">
+  <span>🛟</span><small>修復</small>
+</button>
 
 </body>
 </html>
