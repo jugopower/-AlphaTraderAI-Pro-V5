@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b0806">
-<title>AlphaTraderAI Pro V5.0｜Build006 Professional Go Studio</title>
+<title>AlphaTraderAI Pro V5.0｜Build007 Responsive Layout Engine</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -18,11 +18,19 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--bg);c
 button,input,select,textarea{font:inherit}
 button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .studio{
-  width:100%;height:100dvh;
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100dvh;
   display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-rows:var(--topbar-h,54px) minmax(0,1fr) var(--bottom-h,92px);
   gap:6px;
-  padding:calc(var(--safe-top) + 6px) calc(var(--safe-right) + 6px) calc(var(--safe-bottom) + 6px) calc(var(--safe-left) + 6px);
+  padding:
+    calc(var(--safe-top) + 6px)
+    calc(var(--safe-right) + 6px)
+    calc(var(--safe-bottom) + 6px)
+    calc(var(--safe-left) + 6px);
+  overflow:hidden;
 }
 .topbar{
   min-height:54px;
@@ -112,20 +120,84 @@ body.drawer-open .drawerBackdrop{display:block}
   .identity{text-align:center}
   .toolbar{justify-content:center}
 }
+
+/* Build007 Responsive Layout Engine */
+:root{
+  --topbar-h:54px;
+  --bottom-h:92px;
+  --board-size:600px;
+}
+.main,
+.boardShell,
+.boardStage{
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+}
+.boardShell{
+  overflow:hidden!important;
+}
+.boardStage{
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+}
+#goBoard{
+  width:var(--board-size)!important;
+  height:var(--board-size)!important;
+  max-width:none!important;
+  max-height:none!important;
+  flex:none!important;
+}
+.topbar,
+.bottom{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+.toolbar{
+  justify-content:center!important;
+}
+body.layout-compact .identity{display:none!important}
+body.layout-compact .topbar{grid-template-columns:1fr!important}
+body.layout-compact .toolbar{justify-content:center!important}
+body.layout-compact .toolbar button{
+  width:48px!important;
+  min-width:48px!important;
+  height:34px!important;
+}
+body.layout-compact .toolbar button span{font-size:14px!important}
+body.layout-compact .toolbar button small{font-size:9px!important}
+body.layout-tight .toolbar button[data-low-priority="1"]{display:none!important}
+body.layout-tight .topbar{grid-template-columns:1fr!important}
+body.layout-tight .identity{display:none!important}
+body.board-focus .studio{
+  grid-template-rows:minmax(0,1fr) var(--bottom-h,92px)!important;
+}
+body.board-focus .topbar{display:none!important}
+@media (orientation:landscape){
+  :root{--topbar-h:46px;--bottom-h:84px}
+}
+@media (orientation:portrait){
+  :root{--topbar-h:104px;--bottom-h:92px}
+}
+
 </style>
 </head>
 <body class="mode-teaching">
 <div class="studio">
-  <header class="topbar">
+  <header class="topbar" id="topbar">
     <div class="identity">
       <strong id="gameName">內建範例棋譜</strong>
       <span id="gameSummary">19 路｜0 / 10</span>
     </div>
     <nav class="toolbar">
       <button id="infoBtn"><span>☰</span><small>資訊</small></button>
-      <button id="minimalBtn"><span>◫</span><small>極簡</small></button>
+      <button id="minimalBtn" data-low-priority="1"><span>◫</span><small>極簡</small></button>
       <button id="teachingBtn"><span>📖</span><small>教學</small></button>
-      <button id="professionalBtn"><span>⚙</span><small>專業</small></button>
+      <button id="professionalBtn" data-low-priority="1"><span>⚙</span><small>專業</small></button>
       <button id="focusBtn"><span>⛶</span><small>全螢幕</small></button>
       <button id="restoreBtn"><span>↺</span><small>還原</small></button>
     </nav>
@@ -215,12 +287,12 @@ body.drawer-open .drawerBackdrop{display:block}
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build006 Professional Go Studio 已啟動。</div>
+    <div id="status" class="status">Build007 Responsive Layout Engine 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build006 Professional Go Studio 已啟動。</div>
+    <div id="debugLog">Build007 Responsive Layout Engine 已啟動。</div>
   </section>
 </aside>
 
@@ -230,7 +302,7 @@ body.drawer-open .drawerBackdrop{display:block}
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build006 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build007 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -305,11 +377,22 @@ Board.prototype.apply=function(m,num){if(!m||m.pass||!this.inside(m.x,m.y)){this
 Board.prototype.position=function(g,k){this.size=g.size;this.grid=this.empty(g.size);this.last=null;g.setup.forEach(function(s){if(!s.pass&&this.inside(s.x,s.y))this.grid[s.y][s.x]={c:s.c,n:null}},this);for(var i=0;i<k;i++)this.apply(g.moves[i],i+1);this.draw()};
 Board.prototype.queueResize=function(){clearTimeout(this._timer);this._timer=setTimeout(this.resize,100)};
 Board.prototype.resize=function(){
- var rect=id("boardStage").getBoundingClientRect();
- var w=Math.max(220,Math.floor(Math.min(rect.width,rect.height)*.99));
+ var stage=id("boardStage");
+ if(!stage)return;
+ var rect=stage.getBoundingClientRect();
+ var availableW=Math.max(220,Math.floor(rect.width));
+ var availableH=Math.max(220,Math.floor(rect.height));
+ var w=Math.max(220,Math.floor(Math.min(availableW,availableH)));
+ document.documentElement.style.setProperty("--board-size",w+"px");
  var d=Math.max(1,window.devicePixelRatio||1);
- this.canvas.style.width=w+"px";this.canvas.style.height=w+"px";this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(w*d);
- this.ctx.setTransform(d,0,0,d,0,0);this.dpr=d;this.width=w;this.draw();
+ this.canvas.style.width=w+"px";
+ this.canvas.style.height=w+"px";
+ this.canvas.width=Math.round(w*d);
+ this.canvas.height=Math.round(w*d);
+ this.ctx.setTransform(d,0,0,d,0,0);
+ this.dpr=d;
+ this.width=w;
+ this.draw();
 };
 Board.prototype.draw=function(){
  if(!this.width)return;var c=this.ctx,d=this.dpr||1,snap=function(v){return Math.round(v*d)/d};
@@ -340,24 +423,70 @@ function read(file){
  currentFile=file;id("selectedFile").textContent="已選擇："+file.name+"（"+file.size+" bytes）";
  var fr=new FileReader();fr.onload=function(){try{var decoded=decode(fr.result);if(!looksLikeSGF(decoded))throw Error("檔案內容不是可辨識的 SGF");load(parseSGF(decoded),file.name)}catch(e){status("載入失敗："+e.message,true);log("錯誤："+e.message)}};fr.onerror=function(){status("檔案讀取失敗。",true)};fr.readAsArrayBuffer(file);
 }
+
+var layoutRAF=0;
+function measureLayout(){
+ cancelAnimationFrame(layoutRAF);
+ layoutRAF=requestAnimationFrame(function(){
+   var vv=window.visualViewport;
+   var viewportW=Math.floor(vv?vv.width:window.innerWidth);
+   var viewportH=Math.floor(vv?vv.height:window.innerHeight);
+
+   document.body.classList.toggle("layout-compact",viewportW<980 || viewportH<760);
+   document.body.classList.toggle("layout-tight",viewportW<760);
+
+   var topbar=id("topbar")||document.querySelector(".topbar");
+   var bottom=document.querySelector(".bottom");
+   if(topbar){
+     var th=Math.ceil(topbar.getBoundingClientRect().height);
+     document.documentElement.style.setProperty("--topbar-h",th+"px");
+   }
+   if(bottom){
+     var bh=Math.ceil(bottom.getBoundingClientRect().height);
+     document.documentElement.style.setProperty("--bottom-h",bh+"px");
+   }
+
+   requestAnimationFrame(function(){
+     board.resize();
+   });
+ });
+}
+function preserveViewportAction(fn){
+ var sx=window.scrollX,sy=window.scrollY;
+ fn();
+ requestAnimationFrame(function(){
+   window.scrollTo(sx,sy);
+   measureLayout();
+ });
+}
+
 function setMode(mode){document.body.classList.remove("mode-minimal","mode-teaching","mode-professional");document.body.classList.add("mode-"+mode);try{localStorage.setItem("goMode",mode)}catch(e){};setTimeout(board.resize,60)}
 function openDrawer(){document.body.classList.add("drawer-open");id("drawer").setAttribute("aria-hidden","false")}
 function closeDrawer(){document.body.classList.remove("drawer-open");id("drawer").setAttribute("aria-hidden","true")}
-function restoreLayout(){closeDrawer();document.body.classList.remove("board-focus");setMode("teaching");stop();requestAnimationFrame(function(){board.resize();render()})}
+function restoreLayout(){closeDrawer();stop();document.body.classList.remove("board-focus");setMode("teaching");preserveViewportAction(function(){render()})}
 id("infoBtn").onclick=openDrawer;id("drawerCloseBtn").onclick=closeDrawer;id("drawerBackdrop").onclick=closeDrawer;
-id("minimalBtn").onclick=function(){setMode("minimal")};id("teachingBtn").onclick=function(){setMode("teaching")};id("professionalBtn").onclick=function(){setMode("professional")};
-id("focusBtn").onclick=function(){document.body.classList.toggle("board-focus");setTimeout(board.resize,60)};id("restoreBtn").onclick=restoreLayout;
+id("minimalBtn").onclick=function(){preserveViewportAction(function(){setMode("minimal")})};id("teachingBtn").onclick=function(){preserveViewportAction(function(){setMode("teaching")})};id("professionalBtn").onclick=function(){preserveViewportAction(function(){setMode("professional")})};
+id("focusBtn").onclick=function(){preserveViewportAction(function(){document.body.classList.toggle("board-focus")})};id("restoreBtn").onclick=restoreLayout;
 id("chooseFileBtn").onclick=function(){id("sgfFile").value="";id("sgfFile").click()};
 id("sgfFile").onchange=function(e){var f=e.target.files&&e.target.files[0];if(f)read(f)};
 id("readAgainBtn").onclick=function(){if(currentFile)read(currentFile);else status("尚未選擇棋譜。",true)};
 id("loadTextBtn").onclick=function(){try{load(parseSGF(id("sgfText").value),"貼上的 SGF")}catch(e){status("載入失敗："+e.message,true)}};
-id("firstBtn").onclick=function(){stop();index=0;render()};id("prevBtn").onclick=function(){stop();index=Math.max(0,index-1);render()};
-id("nextBtn").onclick=function(){stop();index=Math.min(game.moves.length,index+1);render()};id("lastBtn").onclick=function(){stop();index=game.moves.length;render()};
+id("firstBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=0;render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};id("prevBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=Math.max(0,index-1);render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};
+id("nextBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=Math.min(game.moves.length,index+1);render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};id("lastBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=game.moves.length;render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};
 id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
 id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("numberMode").onchange=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
-new ResizeObserver(function(){board.queueResize()}).observe(id("boardStage"));
+new ResizeObserver(measureLayout).observe(id("boardStage"));new ResizeObserver(measureLayout).observe(document.querySelector(".topbar"));new ResizeObserver(measureLayout).observe(document.querySelector(".bottom"));
 var saved="teaching";try{saved=localStorage.getItem("goMode")||"teaching"}catch(e){};if(["minimal","teaching","professional"].indexOf(saved)<0)saved="teaching";
-setMode(saved);updateMeta();render();setTimeout(board.resize,80);
+setMode(saved);updateMeta();render();
+window.addEventListener("resize",measureLayout);
+window.addEventListener("orientationchange",function(){setTimeout(measureLayout,120);setTimeout(measureLayout,420)});
+if(window.visualViewport){
+  window.visualViewport.addEventListener("resize",measureLayout);
+  window.visualViewport.addEventListener("scroll",measureLayout);
+}
+setTimeout(measureLayout,60);
+setTimeout(measureLayout,260);
+setTimeout(measureLayout,700);
 })();
 </script>
 </body>
