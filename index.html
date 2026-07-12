@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b0806">
-<title>AlphaTraderAI Pro V5.0｜Build007 Responsive Layout Engine</title>
+<title>AlphaTraderAI Pro V5.0｜Build007 Fix1 Perfect iPad Layout</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -121,7 +121,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build007 Responsive Layout Engine */
+/* Build007 Fix1 Perfect iPad Layout */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -184,6 +184,104 @@ body.board-focus .topbar{display:none!important}
   :root{--topbar-h:104px;--bottom-h:92px}
 }
 
+
+/* Build007 Fix1 Perfect iPad Layout */
+:root{
+  --topbar-h:44px;
+  --bottom-h:72px;
+}
+.studio{
+  gap:4px!important;
+  padding:
+    calc(var(--safe-top) + 4px)
+    calc(var(--safe-right) + 4px)
+    calc(var(--safe-bottom) + 4px)
+    calc(var(--safe-left) + 4px)!important;
+}
+.topbar{
+  min-height:40px!important;
+  padding:3px 6px!important;
+  border-radius:12px!important;
+}
+.identity strong{font-size:15px!important}
+.identity span{font-size:11px!important;margin-top:0!important}
+.toolbar{gap:3px!important}
+.toolbar button{
+  width:46px!important;
+  min-width:46px!important;
+  height:32px!important;
+  padding:2px!important;
+  border-radius:8px!important;
+}
+.toolbar button span{font-size:13px!important;line-height:13px!important}
+.toolbar button small{font-size:8px!important;line-height:9px!important}
+.boardShell{
+  border-radius:12px!important;
+}
+.boardStage{
+  padding:2px!important;
+}
+.bottom{
+  padding:3px!important;
+  gap:2px!important;
+  border-radius:12px!important;
+}
+.controls{
+  gap:3px!important;
+}
+.controls button{
+  height:34px!important;
+  border-radius:8px!important;
+  font-size:18px!important;
+}
+.timeline{
+  gap:6px!important;
+}
+#moveRange{
+  height:18px!important;
+}
+#moveRange::-webkit-slider-runnable-track{
+  height:6px;
+  border-radius:999px;
+}
+#moveRange::-webkit-slider-thumb{
+  width:26px;
+  height:26px;
+  margin-top:-10px;
+}
+#counter{
+  min-width:76px!important;
+  font-size:14px!important;
+}
+#goBoard{
+  filter:drop-shadow(0 4px 12px #0006);
+}
+body.board-focus .studio{
+  grid-template-rows:minmax(0,1fr) var(--bottom-h,72px)!important;
+}
+@media (orientation:landscape){
+  :root{
+    --topbar-h:40px;
+    --bottom-h:68px;
+  }
+  .studio{gap:3px!important}
+  .topbar{min-height:38px!important}
+  .controls button{height:32px!important}
+}
+@media (orientation:portrait){
+  :root{
+    --topbar-h:84px;
+    --bottom-h:72px;
+  }
+}
+
+
+@keyframes boardPulse{
+  0%{filter:drop-shadow(0 4px 12px #0006)}
+  45%{filter:drop-shadow(0 4px 18px #ff3b3040)}
+  100%{filter:drop-shadow(0 4px 12px #0006)}
+}
+#goBoard.pulse-last{animation:boardPulse .45s ease}
 </style>
 </head>
 <body class="mode-teaching">
@@ -287,12 +385,12 @@ body.board-focus .topbar{display:none!important}
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build007 Responsive Layout Engine 已啟動。</div>
+    <div id="status" class="status">Build007 Fix1 Perfect iPad Layout 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build007 Responsive Layout Engine 已啟動。</div>
+    <div id="debugLog">Build007 Fix1 Perfect iPad Layout 已啟動。</div>
   </section>
 </aside>
 
@@ -302,7 +400,7 @@ body.board-focus .topbar{display:none!important}
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build007 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build007 Fix1 範例棋譜",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -380,8 +478,8 @@ Board.prototype.resize=function(){
  var stage=id("boardStage");
  if(!stage)return;
  var rect=stage.getBoundingClientRect();
- var availableW=Math.max(220,Math.floor(rect.width));
- var availableH=Math.max(220,Math.floor(rect.height));
+ var availableW=Math.max(220,Math.floor(rect.width-2));
+ var availableH=Math.max(220,Math.floor(rect.height-2));
  var w=Math.max(220,Math.floor(Math.min(availableW,availableH)));
  document.documentElement.style.setProperty("--board-size",w+"px");
  var d=Math.max(1,window.devicePixelRatio||1);
@@ -411,10 +509,11 @@ Board.prototype.draw=function(){
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,currentGameName="內建範例棋譜";
 function updateMeta(){["pb","pw","re","dt","ev","km","ha"].forEach(function(k){id(k).textContent=game.meta[k]});id("totalMoves").textContent=game.moves.length}
 function render(){
+ id("goBoard").classList.remove("pulse-last");
  board.position(game,index);id("moveRange").max=game.moves.length;id("moveRange").value=index;
  id("counter").textContent=index+" / "+game.moves.length;id("gameName").textContent=currentGameName;
  id("gameSummary").textContent=game.size+" 路｜"+index+" / "+game.moves.length;
- id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";
+ id("comment").textContent=index?(game.moves[index-1].comment||"本手沒有註解。"):"棋譜起始位置。";if(index){requestAnimationFrame(function(){id("goBoard").classList.add("pulse-last")})}
 }
 function stop(){if(timer)clearInterval(timer);timer=null;id("playBtn").textContent="▶"}
 function load(g,name){stop();game=g;index=0;currentGameName=name;updateMeta();render();status("已載入："+name+"\n棋盤："+g.size+" 路｜總手數："+g.moves.length,false);log("解析成功："+g.moves.length+" 手｜"+name)}
@@ -474,7 +573,7 @@ id("loadTextBtn").onclick=function(){try{load(parseSGF(id("sgfText").value),"貼
 id("firstBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=0;render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};id("prevBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=Math.max(0,index-1);render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};
 id("nextBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=Math.min(game.moves.length,index+1);render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};id("lastBtn").onclick=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=game.moves.length;render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};
 id("playBtn").onclick=function(){if(timer){stop();return}if(index>=game.moves.length)index=0;id("playBtn").textContent="⏸";timer=setInterval(function(){if(index>=game.moves.length){stop();return}index++;render()},parseInt(id("speed").value,10))};
-id("moveRange").oninput=function(){stop();index=parseInt(this.value,10);render()};id("numberMode").onchange=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
+id("moveRange").oninput=function(){var sx=window.scrollX,sy=window.scrollY;stop();index=parseInt(this.value,10);render();requestAnimationFrame(function(){window.scrollTo(sx,sy)})};id("numberMode").onchange=render;id("showLast").onchange=render;id("stoneScale").onchange=render;
 new ResizeObserver(measureLayout).observe(id("boardStage"));new ResizeObserver(measureLayout).observe(document.querySelector(".topbar"));new ResizeObserver(measureLayout).observe(document.querySelector(".bottom"));
 var saved="teaching";try{saved=localStorage.getItem("goMode")||"teaching"}catch(e){};if(["minimal","teaching","professional"].indexOf(saved)<0)saved="teaching";
 setMode(saved);updateMeta();render();
