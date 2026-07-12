@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260712-2358">
-<title>AlphaTrader AI Pro V5｜Build015.1 SGF Engine Recovery</title>
+<meta name="app-version" content="20260713-0015">
+<title>AlphaTrader AI Pro V5｜Build016.0 Core</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -92,12 +92,14 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build015.1 SGF Engine Recovery</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.0 Core</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
       <div class="stat"><small>目前手數</small><b id="moveCount">0 / 0</b></div>
       <div class="stat"><small>最新落子</small><b id="lastCoord">—</b></div>
+      <div class="stat"><small>黑方提子</small><b id="blackCaptures">0</b></div>
+      <div class="stat"><small>白方提子</small><b id="whiteCaptures">0</b></div>
       <div class="stat"><small>棋盤</small><b id="boardSizeText">19路</b></div>
       <div class="stat"><small>狀態</small><b id="statusText">待命</b></div>
     </div>
@@ -123,7 +125,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260712-2358</p>
+  <p>版本：20260713-0015</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -167,12 +169,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260712-2358";
+const APP_VERSION="20260713-0015";
 
 const $=id=>document.getElementById(id);
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{}
+  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null
 };
 
 function toast(msg){
@@ -320,7 +322,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。提子引擎已啟用。結果：${g.result}`;
     syncUI(); resizeBoard(); drawBoard(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -341,15 +343,85 @@ function resizeBoard(){
   canvas.width=Math.floor(css*dpr);canvas.height=Math.floor(css*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
 }
+function emptyPosition(size){
+  return Array.from({length:size},()=>Array(size).fill(null));
+}
+function clonePosition(board){
+  return board.map(row=>row.slice());
+}
+function positionHash(board){
+  return board.map(row=>row.map(v=>v||".").join("")).join("/");
+}
+function neighbors(x,y,size){
+  const out=[];
+  if(x>0)out.push([x-1,y]);
+  if(x<size-1)out.push([x+1,y]);
+  if(y>0)out.push([x,y-1]);
+  if(y<size-1)out.push([x,y+1]);
+  return out;
+}
+function collectGroup(board,x,y){
+  const color=board[y]?.[x];
+  if(!color)return {stones:[],liberties:new Set()};
+  const stack=[[x,y]],seen=new Set(),stones=[],liberties=new Set();
+  while(stack.length){
+    const [cx,cy]=stack.pop(),key=cx+","+cy;
+    if(seen.has(key))continue;
+    seen.add(key);stones.push([cx,cy]);
+    for(const [nx,ny] of neighbors(cx,cy,board.length)){
+      const v=board[ny][nx];
+      if(!v)liberties.add(nx+","+ny);
+      else if(v===color&&!seen.has(nx+","+ny))stack.push([nx,ny]);
+    }
+  }
+  return {stones,liberties};
+}
+function removeGroup(board,stones){
+  stones.forEach(([x,y])=>{board[y][x]=null});
+}
+function playMoveOnPosition(board,move,options={}){
+  const {enforceSuicide=false,previousHash=null}=options;
+  if(!move||move.pass)return {ok:true,board:clonePosition(board),captured:0,hash:positionHash(board)};
+  if(move.x<0||move.y<0||move.x>=board.length||move.y>=board.length)return {ok:false,error:"落子超出棋盤"};
+  if(board[move.y][move.x])return {ok:false,error:"該位置已有棋子"};
+
+  const next=clonePosition(board);
+  next[move.y][move.x]=move.c;
+  let captured=0;
+  for(const [nx,ny] of neighbors(move.x,move.y,next.length)){
+    if(next[ny][nx] && next[ny][nx]!==move.c){
+      const enemy=collectGroup(next,nx,ny);
+      if(enemy.liberties.size===0){
+        captured+=enemy.stones.length;
+        removeGroup(next,enemy.stones);
+      }
+    }
+  }
+  const own=collectGroup(next,move.x,move.y);
+  if(own.liberties.size===0){
+    if(enforceSuicide)return {ok:false,error:"自殺禁手"};
+    removeGroup(next,own.stones);
+  }
+  const hash=positionHash(next);
+  if(previousHash && hash===previousHash)return {ok:false,error:"打劫：不可立即回提"};
+  return {ok:true,board:next,captured,hash};
+}
 function positionAtMove(n){
-  const board=Array.from({length:state.size},()=>Array(state.size).fill(null));
+  let board=emptyPosition(state.size);
   (state.setupB||[]).forEach(p=>{if(board[p.y])board[p.y][p.x]="B"});
   (state.setupW||[]).forEach(p=>{if(board[p.y])board[p.y][p.x]="W"});
+  let blackCaptures=0,whiteCaptures=0;
   for(let i=0;i<n;i++){
-    const mv=state.moves[i]; if(!mv||mv.pass)continue;
-    if(mv.x>=0&&mv.y>=0&&mv.x<state.size&&mv.y<state.size)board[mv.y][mv.x]=mv.c;
+    const mv=state.moves[i];
+    const r=playMoveOnPosition(board,mv,{enforceSuicide:false});
+    if(!r.ok)continue;
+    board=r.board;
+    if(mv && !mv.pass){
+      if(mv.c==="B")blackCaptures+=r.captured;
+      else whiteCaptures+=r.captured;
+    }
   }
-  return board;
+  return {board,blackCaptures,whiteCaptures};
 }
 function coordLabel(x,y){
   const letters="ABCDEFGHJKLMNOPQRST";
@@ -371,7 +443,7 @@ function drawBoard(){
   const stars=state.size===19?[3,9,15]:state.size===13?[3,6,9]:[2,4,6];
   ctx.fillStyle="#51351e";
   stars.forEach(y=>stars.forEach(x=>{ctx.beginPath();ctx.arc(pad+x*step,pad+y*step,Math.max(2,step*.07),0,Math.PI*2);ctx.fill()}));
-  const board=positionAtMove(state.index);
+  const pos=positionAtMove(state.index),board=pos.board;
   const start=Math.max(0,state.index-30);
   for(let y=0;y<state.size;y++)for(let x=0;x<state.size;x++){
     const c=board[y][x]; if(!c)continue;
@@ -380,7 +452,7 @@ function drawBoard(){
     if(c==="B"){g.addColorStop(0,"#4a4a4a");g.addColorStop(.35,"#161616");g.addColorStop(1,"#000")}
     else{g.addColorStop(0,"#fff");g.addColorStop(.55,"#eee");g.addColorStop(1,"#bbb")}
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
-    const idx=state.moves.findIndex((m,i)=>i<state.index&&!m.pass&&m.x===x&&m.y===y&&positionAtMove(i+1)[y][x]===c);
+    const idx=state.moves.findIndex((m,i)=>i<state.index&&!m.pass&&m.x===x&&m.y===y&&positionAtMove(i+1).board[y][x]===c);
     let latest=-1; for(let i=state.index-1;i>=0;i--){const m=state.moves[i];if(m&&!m.pass&&m.x===x&&m.y===y){latest=i;break}}
     if(latest>=start){
       ctx.fillStyle=c==="B"?"#fff":"#222";ctx.font=`${Math.max(10,step*.32)}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(latest+1),cx,cy);
@@ -402,6 +474,11 @@ function syncUI(){
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
   $("statusText").textContent=state.humanMode?"對弈中":"待命";
+  const pos=positionAtMove(state.index);
+  state.blackCaptures=pos.blackCaptures;
+  state.whiteCaptures=pos.whiteCaptures;
+  $("blackCaptures").textContent=state.blackCaptures;
+  $("whiteCaptures").textContent=state.whiteCaptures;
   drawBoard();
 }
 function goTo(n){state.index=Math.max(0,Math.min(state.moves.length,n));syncUI()}
@@ -454,7 +531,7 @@ $("loadPasteBtn").onclick=()=>{
   loadSGFText(text,"貼上的 SGF");
 };
 $("newGameBtn").onclick=()=>{
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
@@ -466,7 +543,7 @@ $("explainBtn").onclick=()=>{
   $("aiText").textContent=state.index?"朱老師 AI 建議：先處理弱棋，再考慮全局大場。":"請先載入棋譜或開始對局。";
 };
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
   state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   syncUI();closeModal("humanModal");toast("人機對弈已開始");
 };
@@ -475,15 +552,40 @@ canvas.addEventListener("click",e=>{
   const rect=canvas.getBoundingClientRect(),css=rect.width,pad=css*.055,step=(css-pad*2)/(state.size-1);
   const x=Math.round((e.clientX-rect.left-pad)/step),y=Math.round((e.clientY-rect.top-pad)/step);
   if(x<0||y<0||x>=state.size||y>=state.size)return;
-  if(positionAtMove(state.index)[y][x])return;
-  state.moves=state.moves.slice(0,state.index);state.moves.push({c:state.turn,x,y});state.index++;
-  state.turn=state.turn==="B"?"W":"B";syncUI();
-  if(state.sound){try{const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();o.frequency.value=260;g.gain.value=.08;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.05)}catch(_){}}
+
+  const current=positionAtMove(state.index).board;
+  const prev=state.index>0?positionAtMove(state.index-1).board:null;
+  const previousHash=prev?positionHash(prev):null;
+  const move={c:state.turn,x,y};
+  const result=playMoveOnPosition(current,move,{enforceSuicide:true,previousHash});
+  if(!result.ok){toast(result.error);return}
+
+  state.moves=state.moves.slice(0,state.index);
+  state.moves.push(move);state.index++;
+  state.turn=state.turn==="B"?"W":"B";
+  syncUI();
+  if(state.sound){
+    try{
+      const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();
+      o.frequency.value=result.captured?180:260;g.gain.value=.08;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.06)
+    }catch(_){}
+  }
+
   if(state.turn!==state.humanColor){
     setTimeout(()=>{
-      const board=positionAtMove(state.index);let pts=[];
-      for(let yy=0;yy<state.size;yy++)for(let xx=0;xx<state.size;xx++)if(!board[yy][xx])pts.push([xx,yy]);
-      if(pts.length){const [ax,ay]=pts[Math.floor(Math.random()*pts.length)];state.moves.push({c:state.turn,x:ax,y:ay});state.index++;state.turn=state.turn==="B"?"W":"B";syncUI()}
+      const aiCurrent=positionAtMove(state.index).board;
+      const aiPrev=state.index>0?positionAtMove(state.index-1).board:null;
+      const aiPreviousHash=aiPrev?positionHash(aiPrev):null;
+      const pts=[];
+      for(let yy=0;yy<state.size;yy++)for(let xx=0;xx<state.size;xx++){
+        if(aiCurrent[yy][xx])continue;
+        const test=playMoveOnPosition(aiCurrent,{c:state.turn,x:xx,y:yy},{enforceSuicide:true,previousHash:aiPreviousHash});
+        if(test.ok)pts.push([xx,yy]);
+      }
+      if(pts.length){
+        const [ax,ay]=pts[Math.floor(Math.random()*pts.length)];
+        state.moves.push({c:state.turn,x:ax,y:ay});state.index++;state.turn=state.turn==="B"?"W":"B";syncUI();
+      }
     },350);
   }
 });
