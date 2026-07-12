@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="20260712-1815">
-<title>AlphaTraderAI Pro V5.0｜Build012 Ultimate Professional UI</title>
+<meta name="app-version" content="20260712-1930">
+<title>AlphaTraderAI Pro V5.0｜Build013 Ultimate Go Studio RC1</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#17100b;--panel2:#22170f;--line:#f0c46a3d;
@@ -125,7 +125,7 @@ body.drawer-open .drawerBackdrop{display:block}
   .toolbar{justify-content:center}
 }
 
-/* Build012 Ultimate Professional UI */
+/* Build013 Ultimate Go Studio RC1 */
 :root{
   --topbar-h:54px;
   --bottom-h:92px;
@@ -189,7 +189,7 @@ body.board-focus .topbar{display:none!important}
 }
 
 
-/* Build012 Ultimate Professional UI */
+/* Build013 Ultimate Go Studio RC1 */
 :root{
   --topbar-h:44px;
   --bottom-h:72px;
@@ -287,7 +287,7 @@ body.board-focus .studio{
 }
 #goBoard.pulse-last{animation:boardPulse .45s ease}
 
-/* Build012 Ultimate Professional UI */
+/* Build013 Ultimate Go Studio RC1 */
 .updateToast{
   position:fixed;
   left:50%;
@@ -308,7 +308,7 @@ body.board-focus .studio{
 .updateToast strong{color:#efc66d}
 
 
-/* Build012 Ultimate Professional UI */
+/* Build013 Ultimate Go Studio RC1 */
 .aiPanel{
   position:fixed;
   z-index:70;
@@ -449,7 +449,7 @@ body.cloud-open .studio{padding-right:min(418px,40vw)}
 @media(max-width:900px){body.cloud-open .studio{padding-right:calc(var(--safe-right) + 4px)!important}.cloudPanel{width:min(440px,96vw)}}
 
 
-/* Build012 Ultimate Professional UI */
+/* Build013 Ultimate Go Studio RC1 */
 .aiToolbarBtn{
   position:relative;
   overflow:hidden;
@@ -513,7 +513,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 }
 
 
-/* Build012 Ultimate Professional UI */
+/* Build013 Ultimate Go Studio RC1 */
 :root{
   --pro-left:178px;
   --pro-right:92px;
@@ -624,6 +624,18 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 @media (orientation:portrait), (max-width:899px){
   .proLeftRail,.proRightRail{display:none!important}
 }
+
+
+/* Build013 RC1 */
+.rc1Panel{margin-top:10px;padding:10px;border-radius:12px;background:#150f0bb8;border:1px solid #ffffff10}
+.rc1Panel h4{margin:0 0 9px;color:#f1d59b}
+.rc1Clocks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.rc1Clocks>div{padding:10px;border-radius:12px;background:#0b0705;text-align:center;border:1px solid #ffffff12}
+.rc1Clocks small,.rc1Clocks span{display:block;color:var(--muted)}
+.rc1Clocks strong{display:block;font-size:24px;margin:4px 0;font-variant-numeric:tabular-nums}
+.rc1Checks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:9px;color:var(--muted);font-size:12px}
+.coachActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.coachActions button{border:1px solid #ffffff18;border-radius:9px;background:#ffffff0c;color:#fff;padding:9px 6px;font-weight:800}
 
 </style>
 </head>
@@ -851,7 +863,55 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
     <label>AI 強度<select id="aiStrength"><option value="beginner">入門</option><option value="kyu">級位</option><option value="dan" selected>初段</option><option value="highdan">高段</option><option value="pro">職業級示範</option></select></label>
     <label>貼目<input id="playKomi" type="number" step="0.5" value="6.5"></label>
     <label>讓子<select id="handicap"><option value="0">不讓子</option><option value="2">2 子</option><option value="3">3 子</option><option value="4">4 子</option><option value="5">5 子</option><option value="6">6 子</option><option value="7">7 子</option><option value="8">8 子</option><option value="9">9 子</option></select></label>
-  </div><button id="startGameBtn" class="playPrimary">開始新對局</button></section>
+  </div>
+<div class="rc1Panel">
+  <h4>⏱ 專業計時</h4>
+  <div class="playGrid">
+    <label>模式
+      <select id="timePreset">
+        <option value="teaching">教學不限時</option>
+        <option value="blitz">閃電 1分＋10秒×3</option>
+        <option value="rapid">快棋 10分＋30秒×3</option>
+        <option value="standard" selected>一般 30分＋30秒×3</option>
+        <option value="tournament">比賽 60分＋60秒×5</option>
+        <option value="custom">自訂</option>
+      </select>
+    </label>
+    <label>基本時間（分鐘）<input id="mainTimeMinutes" type="number" min="0" max="180" value="30"></label>
+    <label>讀秒（秒）<input id="byoSeconds" type="number" min="0" max="120" value="30"></label>
+    <label>讀秒次數<input id="byoPeriods" type="number" min="0" max="10" value="3"></label>
+  </div>
+  <div class="rc1Clocks">
+    <div><small>黑方</small><strong id="blackClock">30:00</strong><span id="blackByo">30秒 × 3</span></div>
+    <div><small>白方</small><strong id="whiteClock">30:00</strong><span id="whiteByo">30秒 × 3</span></div>
+  </div>
+  <div class="playActions">
+    <button id="pauseClockBtn">暫停計時</button>
+    <button id="resumeClockBtn">繼續計時</button>
+  </div>
+</div>
+
+<div class="rc1Panel">
+  <h4>🔊 音效</h4>
+  <div class="playGrid">
+    <label>音效主題
+      <select id="soundTheme">
+        <option value="wood" selected>榧木</option>
+        <option value="shell">雲子</option>
+        <option value="mute">靜音</option>
+      </select>
+    </label>
+    <label>音量<input id="soundVolume" type="range" min="0" max="100" value="75"></label>
+  </div>
+  <div class="rc1Checks">
+    <label><input id="stoneSoundEnabled" type="checkbox" checked> 落子音</label>
+    <label><input id="captureSoundEnabled" type="checkbox" checked> 提子音</label>
+    <label><input id="countdownSoundEnabled" type="checkbox" checked> 讀秒音</label>
+    <label><input id="timeupSoundEnabled" type="checkbox" checked> 時間到</label>
+  </div>
+</div>
+
+<button id="startGameBtn" class="playPrimary">開始新對局</button></section>
   <section class="playCard"><h3>對局控制</h3><div class="playActions"><button id="undoBtn">悔棋</button><button id="passBtn">停一手</button><button id="hintBtn">AI 提示</button><button id="resignBtn">認輸</button><button id="restartGameBtn">重新開始</button><button id="saveGameBtn">儲存 SGF</button></div></section>
   <section class="playCard"><h3>即時資訊</h3><div class="playStats"><div><span>目前手數</span><strong id="playMoveCount">0</strong></div><div><span>輪到</span><strong id="turnLabel">黑方</strong></div><div><span>提子</span><strong id="captureLabel">黑 0｜白 0</strong></div></div><div id="playMessage" class="playMessage">請先開始新對局。</div></section>
   <section class="playCard"><h3>說明</h3><div class="playNote">目前 AI 使用內建離線示範對弈器，不是真正 KataGo。正式高段與職業級需在 Build010 串接 KataGo。</div></section>
@@ -899,7 +959,18 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
     <div class="chartLegend"><span>黑方勝率</span><span id="chartMoveLabel">第 0 手</span></div>
   </section>
 
-  <section class="aiCard">
+  
+<section class="aiCard">
+  <h3>朱老師 AI 教練</h3>
+  <div class="coachActions">
+    <button id="coachBestBtn">💡 最佳手</button>
+    <button id="coachExplainBtn">📖 AI 解說</button>
+    <button id="coachPVBtn">▶ 播放主變化</button>
+  </div>
+  <div id="coachText" class="aiComment">按下 AI 解說後，會整理本手重點。</div>
+</section>
+
+<section class="aiCard">
     <h3>分析控制</h3>
     <div class="aiActions">
       <button id="analyzeCurrentBtn">分析目前手</button>
@@ -976,12 +1047,12 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 
   <section class="section advanced">
     <h3>系統訊息</h3>
-    <div id="status" class="status">Build012 Ultimate Professional UI 已啟動。</div>
+    <div id="status" class="status">Build013 Ultimate Go Studio RC1 已啟動。</div>
   </section>
 
   <section class="section advanced">
     <h3>讀檔紀錄</h3>
-    <div id="debugLog">Build012 Ultimate Professional UI 已啟動。</div>
+    <div id="debugLog">Build013 Ultimate Go Studio RC1 已啟動。</div>
   </section>
 </aside>
 
@@ -989,7 +1060,7 @@ body.layout-compact .aiToolbarBtn .aiIcon svg{
 (function(){
 "use strict";
 
-var APP_VERSION="20260712-1815";
+var APP_VERSION="20260712-1930";
 var VERSION_KEY="alphaTraderGoAppVersion";
 var LAST_RELOAD_KEY="alphaTraderGoLastForcedReload";
 
@@ -1059,7 +1130,7 @@ if("serviceWorker" in navigator){
 function id(n){return document.getElementById(n)}
 function log(s){var e=id("debugLog");e.textContent+=(e.textContent?"\n":"")+s;e.scrollTop=e.scrollHeight}
 function status(s,bad){id("status").style.color=bad?"var(--danger)":"var(--gold)";id("status").textContent=s}
-var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build012 Professional Studio 範例",km:"6.5",ha:"0"},setup:[],moves:[
+var SAMPLE={size:19,meta:{pb:"朱老師",pw:"AI 示範棋手",re:"B+R",dt:"2026-07-12",ev:"Build013 RC1 範例",km:"6.5",ha:"0"},setup:[],moves:[
 {c:1,x:15,y:3,comment:"黑棋右上角小目"},{c:-1,x:3,y:3,comment:"白棋左上角小目"},
 {c:1,x:16,y:15,comment:"黑棋右下角"},{c:-1,x:3,y:16,comment:"白棋左下角"},
 {c:1,x:5,y:2,comment:"黑棋拆邊"},{c:-1,x:2,y:5,comment:"白棋掛角"},
@@ -1185,6 +1256,21 @@ Board.prototype.draw=function(){
 
 var board=new Board(id("goBoard")),game=SAMPLE,index=0,timer=null,currentFile=null,currentGameName="內建範例棋譜";
 var aiAnalysis=[],showAISuggestions=false,aiCurrentSuggestions=[];
+
+
+var rc1Clock={blackMs:1800000,whiteMs:1800000,byoSeconds:30,blackPeriods:3,whitePeriods:3,paused:true,lastTick:0,timer:null,expired:false};
+var rc1Audio=null;
+function rc1Ctx(){if(!rc1Audio)rc1Audio=new (window.AudioContext||window.webkitAudioContext)();if(rc1Audio.state==="suspended")rc1Audio.resume();return rc1Audio}
+function rc1Tone(freq,dur,level,type){if(id("soundTheme").value==="mute")return;try{var c=rc1Ctx(),o=c.createOscillator(),g=c.createGain();o.type=type||"sine";o.frequency.value=freq;g.gain.setValueAtTime(Math.max(.001,level),c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+dur)}catch(e){}}
+function rc1Vol(){return parseInt(id("soundVolume").value||"75",10)/100}
+function rc1StoneSound(){if(!id("stoneSoundEnabled").checked)return;var v=rc1Vol();if(id("soundTheme").value==="shell")rc1Tone(720,.055,v*.24,"triangle");else{rc1Tone(300,.04,v*.34,"square");setTimeout(function(){rc1Tone(150,.07,v*.18)},20)}}
+function rc1CaptureSound(n){if(!n||!id("captureSoundEnabled").checked)return;rc1Tone(170,.10,rc1Vol()*.20,"triangle")}
+function rc1Fmt(ms){var t=Math.max(0,Math.floor(ms/1000)),m=Math.floor(t/60),s=t%60;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+function rc1ClockUI(){id("blackClock").textContent=rc1Fmt(rc1Clock.blackMs);id("whiteClock").textContent=rc1Fmt(rc1Clock.whiteMs);id("blackByo").textContent=rc1Clock.byoSeconds+"秒 × "+rc1Clock.blackPeriods;id("whiteByo").textContent=rc1Clock.byoSeconds+"秒 × "+rc1Clock.whitePeriods}
+function rc1Preset(){var map={teaching:[0,0,0],blitz:[1,10,3],rapid:[10,30,3],standard:[30,30,3],tournament:[60,60,5]},p=id("timePreset").value;if(map[p]){id("mainTimeMinutes").value=map[p][0];id("byoSeconds").value=map[p][1];id("byoPeriods").value=map[p][2]}rc1Reset()}
+function rc1Reset(){var m=parseInt(id("mainTimeMinutes").value||"0",10),s=parseInt(id("byoSeconds").value||"0",10),p=parseInt(id("byoPeriods").value||"0",10);rc1Clock.blackMs=m*60000;rc1Clock.whiteMs=m*60000;rc1Clock.byoSeconds=s;rc1Clock.blackPeriods=p;rc1Clock.whitePeriods=p;rc1Clock.paused=(m===0&&s===0);rc1Clock.expired=false;rc1Clock.lastTick=performance.now();rc1ClockUI()}
+function rc1Tick(){if(!playState.active||rc1Clock.paused||rc1Clock.expired)return;var n=performance.now(),dt=n-rc1Clock.lastTick;rc1Clock.lastTick=n,k=playState.turn===1?"blackMs":"whiteMs";rc1Clock[k]-=dt;if(rc1Clock[k]<=0){var pk=playState.turn===1?"blackPeriods":"whitePeriods";if(rc1Clock[pk]>0&&rc1Clock.byoSeconds>0){rc1Clock[pk]--;rc1Clock[k]=rc1Clock.byoSeconds*1000}else{rc1Clock[k]=0;rc1Clock.expired=true;playState.active=false;if(id("timeupSoundEnabled").checked)rc1Tone(170,.4,rc1Vol()*.24,"square");id("playMessage").textContent=(playState.turn===1?"黑方":"白方")+"時間到，判負。"}}rc1ClockUI()}
+function rc1Start(){if(rc1Clock.timer)clearInterval(rc1Clock.timer);rc1Clock.lastTick=performance.now();rc1Clock.timer=setInterval(rc1Tick,250)}
 
 var playState={active:false,mode:"human-ai",size:19,humanColor:1,aiColor:-1,turn:1,board:[],history:[],captures:{black:0,white:0},passes:0,resigned:false,aiThinking:false};
 function newEmptyBoard(size){var b=[];for(var y=0;y<size;y++)b.push(new Array(size).fill(0));return b}
@@ -1330,7 +1416,7 @@ function drawWinChart(){
  ctx.fillStyle="#ff3b30";ctx.beginPath();ctx.arc(currentX,currentY,4,0,Math.PI*2);ctx.fill();
 }
 function exportAnalysis(){
- var payload={build:"Build012 Ultimate Professional UI",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
+ var payload={build:"Build013 Ultimate Go Studio RC1",version:APP_VERSION,game:currentGameName,boardSize:game.size,moves:game.moves.length,analysis:aiAnalysis};
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(currentGameName||"analysis").replace(/\.[^.]+$/,"")+"-analysis.json";
@@ -1543,6 +1629,16 @@ id("cloudMoveBtn").onclick=requestCloudMove;
 function openPlayPanel(){document.body.classList.add("play-open");id("playPanel").setAttribute("aria-hidden","false");measureLayout()}
 function closePlayPanel(){document.body.classList.remove("play-open");id("playPanel").setAttribute("aria-hidden","true");measureLayout()}
 id("playModeBtn").onclick=openPlayPanel;id("playCloseBtn").onclick=closePlayPanel;id("startGameBtn").onclick=startNewGame;id("restartGameBtn").onclick=startNewGame;id("undoBtn").onclick=undoPlay;id("passBtn").onclick=function(){playPass(false)};id("resignBtn").onclick=resignPlay;id("hintBtn").onclick=hintPlay;id("saveGameBtn").onclick=savePlaySGF;
+
+id("timePreset").onchange=rc1Preset;
+["mainTimeMinutes","byoSeconds","byoPeriods"].forEach(function(k){id(k).oninput=function(){id("timePreset").value="custom";rc1Reset()}});
+id("pauseClockBtn").onclick=function(){rc1Clock.paused=true;id("playMessage").textContent="計時已暫停。"};
+id("resumeClockBtn").onclick=function(){rc1Clock.paused=false;rc1Clock.lastTick=performance.now();id("playMessage").textContent="計時已繼續。"};
+if(id("coachBestBtn"))id("coachBestBtn").onclick=function(){openAI();showAISuggestions=true;updateAI(index);board.draw();id("coachText").textContent="已顯示目前局面的推薦點。"};
+if(id("coachExplainBtn"))id("coachExplainBtn").onclick=function(){var a=aiAnalysis[index]||analyzeAt(index);id("coachText").textContent="朱老師 AI 建議："+(a.score>=0?"黑方稍優。":"白方稍優。")+"先處理弱棋與角部安定，再考慮全局大場。";};
+if(id("coachPVBtn"))id("coachPVBtn").onclick=function(){openCloudPanel();};
+rc1Reset();
+
 
 id("aiBtn").onclick=openAI;
 id("aiCloseBtn").onclick=closeAI;
