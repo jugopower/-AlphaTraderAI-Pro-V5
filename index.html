@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-0200">
-<title>AlphaTrader AI Pro V5｜Build016.4 Snapshot Renderer Engine</title>
+<meta name="app-version" content="20260713-1030">
+<title>AlphaTrader AI Pro V5｜Build016.4.1 Stable Slider Layout</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -27,7 +27,31 @@ button{touch-action:manipulation}
 .right{grid-column:3;grid-row:1 / span 2;padding:8px;display:flex;flex-direction:column;gap:8px;overflow:auto}
 .board-wrap{grid-column:2;grid-row:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .player{grid-column:2;grid-row:2;padding:10px;display:grid;grid-template-rows:58px 1fr;gap:8px}
-#board{display:block;max-width:100%;max-height:100%;width:auto;height:auto;touch-action:none}
+#board{
+  display:block;
+  width:var(--board-size,720px);
+  height:var(--board-size,720px);
+  max-width:100%;
+  max-height:100%;
+  flex:0 0 auto;
+  touch-action:none;
+  contain:strict;
+}
+.board-wrap{
+  contain:layout paint size;
+  overscroll-behavior:none;
+}
+.player{
+  contain:layout paint;
+}
+.range-row{
+  min-height:38px;
+}
+#moveSlider{
+  touch-action:pan-x;
+  -webkit-user-select:none;
+  user-select:none;
+}
 .brand{font-weight:900;font-size:18px;margin-bottom:12px;color:var(--gold)}
 .card{background:#0d0907;border:1px solid #ffffff10;border-radius:14px;padding:12px;margin-bottom:10px}
 .player-name{display:flex;justify-content:space-between;align-items:center;font-size:20px;font-weight:800}
@@ -82,7 +106,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .topbar .tool{min-height:60px;font-size:11px}
   .topbar .tool span{font-size:18px}
   .left,.right{display:none}
-  .board-wrap{grid-column:1;grid-row:2}
+  .board-wrap{
+    grid-column:1;grid-row:2;
+    min-height:520px;
+    height:calc(100dvh - 210px);
+    max-height:calc(100dvh - 210px);
+  }
   .player{grid-column:1;grid-row:3}
 }
 </style>
@@ -92,7 +121,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.4 Snapshot Renderer Engine</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.4.1 Stable Slider Layout</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -101,7 +130,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <div class="stat"><small>黑方提子</small><b id="blackCaptures">0</b></div>
       <div class="stat"><small>白方提子</small><b id="whiteCaptures">0</b></div>
       <div class="stat"><small>棋盤</small><b id="boardSizeText">19路</b></div>
-      <div class="stat"><small>狀態</small><b id="statusText">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div><div class="stat"><small>Renderer</small><b id="rendererText">待命</b></div><div class="stat"><small>局面雜湊</small><b id="renderHashText">—</b></div>
+      <div class="stat"><small>狀態</small><b id="statusText">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div><div class="stat"><small>Renderer</small><b id="rendererText">待命</b></div><div class="stat"><small>局面雜湊</small><b id="renderHashText">—</b></div><div class="stat"><small>版面鎖定</small><b id="layoutText">待命</b></div>
     </div>
   </aside>
 
@@ -125,7 +154,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-0200</p>
+  <p>版本：20260713-1030</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -174,7 +203,7 @@ const APP_VERSION="20260713-0200";
 const $=id=>document.getElementById(id);
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false
+  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false
 };
 
 function toast(msg){
@@ -209,7 +238,7 @@ function toggleFullscreen(){
 }
 function resetView(){
   document.querySelectorAll(".modal-backdrop.open").forEach(x=>x.classList.remove("open"));
-  resizeBoard(); drawBoard(); toast("已還原正常版面");
+  resizeBoard(true); syncUI(); toast("已還原正常版面");
 }
 
 function sgfUnescape(value){
@@ -334,8 +363,8 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Snapshot Renderer Engine 已啟用；畫面只讀取目前手數的不可變快照。結果：${g.result}`;
-    syncUI(); resizeBoard(); drawBoard(); toast("棋譜完整載入");
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Stable Slider Layout 已啟用；拖曳時只更新棋局，不重新計算棋盤尺寸。結果：${g.result}`;
+    resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
     console.error(err);
@@ -347,13 +376,28 @@ function loadSGFText(text,name){
 }
 
 const canvas=$("board"),ctx=canvas.getContext("2d");
-function resizeBoard(){
-  const parent=canvas.parentElement.getBoundingClientRect();
-  const css=Math.max(280,Math.floor(Math.min(parent.width-16,parent.height-16)));
+function resizeBoard(force=false){
+  const wrap=canvas.parentElement;
+  const parent=wrap.getBoundingClientRect();
+  const availableW=Math.max(280,Math.floor(parent.width-16));
+  const availableH=Math.max(280,Math.floor(parent.height-16));
+  const css=Math.max(280,Math.floor(Math.min(availableW,availableH)));
+  if(!force && Math.abs(css-state.boardCssSize)<2)return false;
+
+  state.boardCssSize=css;
+  wrap.style.setProperty("--board-size",css+"px");
+  canvas.style.setProperty("--board-size",css+"px");
+
   const dpr=Math.min(window.devicePixelRatio||1,2);
-  canvas.style.width=css+"px";canvas.style.height=css+"px";
-  canvas.width=Math.floor(css*dpr);canvas.height=Math.floor(css*dpr);
+  const px=Math.floor(css*dpr);
+  if(canvas.width!==px||canvas.height!==px){
+    canvas.width=px;
+    canvas.height=px;
+  }
+  canvas._cssSize=css;
+  canvas._dpr=dpr;
   ctx.setTransform(dpr,0,0,dpr,0,0);
+  return true;
 }
 function emptyPosition(size){
   return Array.from({length:size},()=>Array(size).fill(null));
@@ -557,8 +601,10 @@ function coordLabel(x,y){
   return (letters[x]||"?")+(state.size-y);
 }
 function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)){
-  const css=canvas.getBoundingClientRect().width;
+  const css=canvas._cssSize||state.boardCssSize;
   if(!css)return;
+  const dpr=canvas._dpr||Math.min(window.devicePixelRatio||1,2);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   const pad=css*0.055,boardPx=css-pad*2,step=boardPx/(state.size-1);
   const grad=ctx.createLinearGradient(0,0,css,css);
   grad.addColorStop(0,"#f2c46d");grad.addColorStop(1,"#c98231");
@@ -629,6 +675,7 @@ function syncUI(){
   drawBoard(snapshot);
   $("rendererText").textContent=state.rendererVerified?"快照同步":"同步異常";
   $("renderHashText").textContent=(state.renderedHash||"—").slice(0,8);
+  $("layoutText").textContent=state.boardCssSize?"已鎖定":"待命";
 }
 function goTo(n){state.index=Math.max(0,Math.min(state.moves.length,n));syncUI()}
 function togglePlay(){
@@ -642,7 +689,28 @@ $("prevBtn").onclick=()=>goTo(state.index-1);
 $("playBtn").onclick=togglePlay;
 $("nextBtn").onclick=()=>goTo(state.index+1);
 $("lastBtn").onclick=()=>goTo(state.moves.length);
-$("moveSlider").oninput=e=>goTo(Number(e.target.value));
+const moveSlider=$("moveSlider");
+function sliderGoTo(value){
+  cancelAnimationFrame(state.sliderRAF);
+  const target=Number(value);
+  state.sliderRAF=requestAnimationFrame(()=>{
+    const sx=window.scrollX,sy=window.scrollY;
+    goTo(target);
+    if(window.scrollX!==sx||window.scrollY!==sy)window.scrollTo(sx,sy);
+  });
+}
+moveSlider.addEventListener("input",e=>sliderGoTo(e.target.value),{passive:true});
+moveSlider.addEventListener("pointerdown",()=>{
+  state.isSliderDragging=true;
+  document.documentElement.style.scrollBehavior="auto";
+},{passive:true});
+function endSliderDrag(){
+  state.isSliderDragging=false;
+  moveSlider.blur();
+}
+moveSlider.addEventListener("pointerup",endSliderDrag,{passive:true});
+moveSlider.addEventListener("pointercancel",endSliderDrag,{passive:true});
+moveSlider.addEventListener("change",endSliderDrag,{passive:true});
 
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
 document.querySelectorAll(".modal-backdrop").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)closeModal(m.id)}));
@@ -745,8 +813,21 @@ $("testApiBtn").onclick=()=>{$("cloudStatus").textContent=$("apiUrl").value?"已
 $("apiUrl").value=localStorage.getItem("katagoApiUrl")||"";
 $("apiKey").value=localStorage.getItem("katagoApiKey")||"";
 
-window.addEventListener("resize",()=>{clearTimeout(window._rz);window._rz=setTimeout(()=>{resizeBoard();drawBoard()},120)});
-window.addEventListener("orientationchange",()=>setTimeout(()=>{resizeBoard();drawBoard()},250));
+let layoutTimer=0;
+function scheduleLayoutRefresh(delay=160){
+  clearTimeout(layoutTimer);
+  layoutTimer=setTimeout(()=>{
+    if(state.isSliderDragging)return;
+    const changed=resizeBoard(false);
+    if(changed)drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+  },delay);
+}
+window.addEventListener("resize",()=>scheduleLayoutRefresh(180),{passive:true});
+window.addEventListener("orientationchange",()=>scheduleLayoutRefresh(320),{passive:true});
+if(window.ResizeObserver){
+  const boardObserver=new ResizeObserver(()=>scheduleLayoutRefresh(120));
+  boardObserver.observe(canvas.parentElement);
+}
 
 
 
@@ -757,12 +838,12 @@ function verifySnapshotRenderer(){
   return state.renderedHash===snap.hash;
 }
 state.engineVerified=verifyRulesEngine();
-resizeBoard();syncUI();
+resizeBoard(true);syncUI();
 state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build016.4 快照與 Renderer 測試通過");
+  toast("Build016.4.1 棋盤版面已鎖定");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
