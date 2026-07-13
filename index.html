@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-1230">
-<title>AlphaTrader AI Pro V5｜Build016.6 Ultra Landscape UI</title>
+<meta name="app-version" content="20260713-1330">
+<title>AlphaTrader AI Pro V5｜Build017.0 Professional Foundation</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build016.6 Ultra Landscape UI */
+/* Build017.0 Professional Foundation */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -165,6 +165,98 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .left{opacity:0;pointer-events:none;overflow:hidden;padding:0;border-width:0}
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
+
+/* Build017.0 Professional Foundation */
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0;
+}
+.dashboard-card{
+  background:linear-gradient(160deg,#120c08,#0a0705);
+  border:1px solid #6c4b2c;
+  border-radius:14px;
+  padding:12px;
+  min-height:88px;
+}
+.dashboard-card small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+.dashboard-card strong{
+  display:block;
+  font-size:24px;
+  color:var(--gold);
+}
+.dashboard-card span{
+  display:block;
+  margin-top:4px;
+  color:var(--text);
+  font-size:13px;
+}
+.recommend-list{
+  display:grid;
+  gap:8px;
+  margin:10px 0;
+}
+.recommend-item{
+  display:grid;
+  grid-template-columns:36px 1fr auto;
+  align-items:center;
+  gap:8px;
+  background:#0b0705;
+  border:1px solid #ffffff12;
+  border-radius:12px;
+  padding:9px;
+}
+.recommend-rank{
+  width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#2a1a0f;color:var(--gold);font-weight:900;
+}
+.ai-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid #efc45f55;
+  border-radius:999px;
+  padding:5px 9px;
+  color:var(--gold);
+  background:#25170f;
+  font-size:12px;
+  font-weight:800;
+}
+.dashboard-actions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.bookmark-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 9px;
+  margin:3px;
+  border:1px solid #6c4b2c;
+  border-radius:999px;
+  background:#18100b;
+  color:var(--text);
+  cursor:pointer;
+}
+.analysis-note{
+  border-left:4px solid var(--gold);
+  background:#0c0806;
+  border-radius:10px;
+  padding:11px 12px;
+  line-height:1.6;
+}
+@media (max-width:700px){
+  .dashboard-grid{grid-template-columns:1fr}
+  .dashboard-actions{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -173,7 +265,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.6 Ultra Landscape UI</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build017.0 Professional Foundation</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -207,7 +299,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-1230</p>
+  <p>版本：20260713-1330</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -221,9 +313,52 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </div></div>
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
-  <button class="close" data-close="aiModal">✕</button><h2>AI 分析</h2>
-  <div class="card"><b>示範分析</b><p id="aiText">載入棋譜後可查看目前局面的示範評語。</p></div>
-  <div class="grid2"><button class="action" id="bestMoveBtn">顯示最佳手</button><button class="secondary" id="explainBtn">AI 解說</button></div>
+  <button class="close" data-close="aiModal">✕</button>
+  <h2>Professional AI Dashboard</h2>
+  <span class="ai-badge" id="aiEngineBadge">● 示範分析模式</span>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <small>黑方勝率</small>
+      <strong id="dashBlackWin">50.0%</strong>
+      <span id="dashWhiteWin">白方 50.0%</span>
+    </div>
+    <div class="dashboard-card">
+      <small>預估目差</small>
+      <strong id="dashScoreLead">±0.0</strong>
+      <span id="dashSituation">局勢均衡</span>
+    </div>
+    <div class="dashboard-card">
+      <small>目前手數</small>
+      <strong id="dashMove">0 / 0</strong>
+      <span id="dashLastMove">最新落子：—</span>
+    </div>
+    <div class="dashboard-card">
+      <small>分析狀態</small>
+      <strong id="dashStatus">Ready</strong>
+      <span id="dashSource">本機示範估算</span>
+    </div>
+  </div>
+
+  <h3>AI 推薦 Top 3</h3>
+  <div class="recommend-list" id="recommendList"></div>
+
+  <h3>朱老師 AI 解說</h3>
+  <div class="analysis-note" id="teacherAnalysis">
+    請先載入棋譜，再按「更新分析」查看目前局面的教學提示。
+  </div>
+
+  <h3>收藏局面</h3>
+  <div id="bookmarkList"><span style="color:var(--muted)">尚未收藏局面。</span></div>
+
+  <div class="dashboard-actions" style="margin-top:14px">
+    <button class="action" id="refreshAnalysisBtn">更新分析</button>
+    <button class="secondary" id="bookmarkBtn">收藏目前手數</button>
+    <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
+  </div>
+  <p style="color:var(--muted);margin-top:12px">
+    Build017.0 先提供 Dashboard 與資料架構；目前數值為本機示範估算。連接 KataGo Cloud 後才會顯示真正勝率、目差、Policy 與主變化。
+  </p>
 </div></div>
 
 <div id="humanModal" class="modal-backdrop"><div class="modal">
@@ -251,20 +386,9 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260713-1230";
+const APP_VERSION="20260713-1330";
 
 const $=id=>document.getElementById(id);
-
-const redrawBtn=document.getElementById("redrawBtn");
-if(redrawBtn){
-  redrawBtn.addEventListener("click",()=>{
-    const keepMove=state.currentMove;
-    resizeBoard(true);
-    state.currentMove=keepMove;
-    render();
-    syncUI();
-  });
-}
 
 
 const infoCollapseBtn=document.getElementById("infoCollapseBtn");
@@ -281,8 +405,152 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false
+  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null
 };
+
+const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
+
+function boardStoneCounts(snapshot){
+  let black=0,white=0;
+  for(const row of snapshot.board){
+    for(const v of row){
+      if(v==="B")black++;
+      else if(v==="W")white++;
+    }
+  }
+  return {black,white};
+}
+
+function localDemoAnalysis(){
+  const snap=activateSnapshot(state.index);
+  const counts=boardStoneCounts(snap);
+  const total=Math.max(1,counts.black+counts.white);
+  const captureDelta=(snap.blackCaptures||0)-(snap.whiteCaptures||0);
+  const stoneDelta=counts.black-counts.white;
+  const phase=state.moves.length?state.index/state.moves.length:0;
+
+  let blackWin=50 + stoneDelta*0.22 + captureDelta*1.4;
+  blackWin += Math.sin((state.index+1)*0.37)*2.2;
+  blackWin=Math.max(8,Math.min(92,blackWin));
+  const scoreLead=(blackWin-50)*0.24;
+
+  const empties=[];
+  for(let y=0;y<state.size;y++){
+    for(let x=0;x<state.size;x++){
+      if(!snap.board[y][x])empties.push({x,y});
+    }
+  }
+  const strategic=[
+    {x:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.75))),y:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.25)))},
+    {x:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.25))),y:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.75)))},
+    {x:Math.floor(state.size/2),y:Math.floor(state.size/2)}
+  ];
+  const picks=[];
+  for(const p of strategic.concat(empties)){
+    if(picks.length>=3)break;
+    if(snap.board[p.y]?.[p.x])continue;
+    if(!picks.some(q=>q.x===p.x&&q.y===p.y))picks.push(p);
+  }
+
+  const coord=p=>(coordLetters[p.x]||"?")+(state.size-p.y);
+  const recommendations=picks.map((p,i)=>({
+    ...p,
+    coord:coord(p),
+    confidence:Math.max(42,Math.round(72-i*11+Math.sin(state.index+i)*4))
+  }));
+
+  let situation="局勢均衡";
+  if(blackWin>=62)situation="黑方明顯優勢";
+  else if(blackWin>=54)situation="黑方稍優";
+  else if(blackWin<=38)situation="白方明顯優勢";
+  else if(blackWin<=46)situation="白方稍優";
+
+  let teaching;
+  if(state.index===0){
+    teaching="目前是空棋盤。可先選擇棋譜，或在人機模式建立新對局。";
+  }else if(phase<0.3){
+    teaching="布局階段應優先兼顧角、邊與全局效率。不要只追求局部吃子，先確認每一手是否兼具發展性。";
+  }else if(phase<0.75){
+    teaching="中盤重點是弱棋管理。先判斷雙方最弱的一塊棋，再決定攻擊、補強或轉身搶大場。";
+  }else{
+    teaching="進入收束階段，應比較每個官子的目數與先後手價值。先下大官子，再處理逆收與小官子。";
+  }
+  if(snap.lastCapture>0){
+    teaching+=` 本手發生提子 ${snap.lastCapture} 顆，建議再檢查提子後的先手價值與劫材。`;
+  }
+
+  return {
+    blackWin,
+    whiteWin:100-blackWin,
+    scoreLead,
+    situation,
+    recommendations,
+    teaching,
+    source:"local-demo"
+  };
+}
+
+function updateProfessionalDashboard(){
+  state.analysis=localDemoAnalysis();
+  const a=state.analysis;
+  $("dashBlackWin").textContent=a.blackWin.toFixed(1)+"%";
+  $("dashWhiteWin").textContent="白方 "+a.whiteWin.toFixed(1)+"%";
+  $("dashScoreLead").textContent=(a.scoreLead>=0?"黑 +":"白 +")+Math.abs(a.scoreLead).toFixed(1);
+  $("dashSituation").textContent=a.situation;
+  $("dashMove").textContent=`${state.index} / ${state.moves.length}`;
+  const mv=state.moves[state.index-1];
+  $("dashLastMove").textContent="最新落子："+(mv&&!mv.pass?coordLabel(mv.x,mv.y):"—");
+  $("dashStatus").textContent=state.moves.length?"Analyzed":"Ready";
+  $("dashSource").textContent="本機示範估算（非 KataGo）";
+  $("aiEngineBadge").textContent="● 示範分析模式";
+  $("teacherAnalysis").textContent=a.teaching;
+
+  const list=$("recommendList");
+  list.innerHTML="";
+  a.recommendations.forEach((r,i)=>{
+    const row=document.createElement("div");
+    row.className="recommend-item";
+    row.innerHTML=`<span class="recommend-rank">${i+1}</span>
+      <strong>${r.coord}</strong><span>${r.confidence}%</span>`;
+    row.addEventListener("click",()=>{
+      state.bestPoint={x:r.x,y:r.y};
+      drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+      toast("已標示推薦點 "+r.coord);
+    });
+    list.appendChild(row);
+  });
+}
+
+function loadBookmarks(){
+  try{
+    state.bookmarks=JSON.parse(localStorage.getItem("at-build017-bookmarks")||"[]");
+  }catch(_){state.bookmarks=[]}
+}
+function saveBookmarks(){
+  localStorage.setItem("at-build017-bookmarks",JSON.stringify(state.bookmarks));
+}
+function renderBookmarks(){
+  const box=$("bookmarkList");
+  if(!box)return;
+  box.innerHTML="";
+  if(!state.bookmarks.length){
+    box.innerHTML='<span style="color:var(--muted)">尚未收藏局面。</span>';
+    return;
+  }
+  state.bookmarks.forEach((b,i)=>{
+    const chip=document.createElement("button");
+    chip.className="bookmark-chip";
+    chip.textContent=`★ 第 ${b.move} 手`;
+    chip.addEventListener("click",()=>{
+      goTo(b.move);
+      updateProfessionalDashboard();
+      toast("已跳到第 "+b.move+" 手");
+    });
+    box.appendChild(chip);
+  });
+}
+loadBookmarks();
+
 
 function toast(msg){
   const el=$("toast"); el.textContent=msg; el.classList.add("show");
@@ -294,7 +562,7 @@ function closeModal(id){$(id).classList.remove("open")}
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
   ["teachBtn","▣","教學",()=>toast("教學模式已啟動")],
-  ["aiBtn","AI","AI分析",()=>openModal("aiModal")],
+  ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn","♟","人機",()=>openModal("humanModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
   ["zoomBtn","⛶","放大",()=>toggleFullscreen()],
@@ -441,7 +709,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Ultra Landscape UI 已啟用；左右欄與播放器再精簡，棋盤獲得最大空間。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build017 Professional Foundation 已啟用；新增分析總覽、Top 3 推薦與收藏局面。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -754,9 +1022,13 @@ function syncUI(){
   $("rendererText").textContent=state.rendererVerified?"快照同步":"同步異常";
   $("renderHashText").textContent=(state.renderedHash||"—").slice(0,8);
   $("layoutText").textContent=state.boardCssSize?"已鎖定":"待命";
-  $("layoutModeText").textContent=window.matchMedia("(orientation: landscape)").matches?(document.body.classList.contains("info-collapsed")?"全棋盤":"Ultra Landscape"):"Portrait";
+  $("layoutModeText").textContent=window.matchMedia("(orientation: landscape)").matches?(document.body.classList.contains("info-collapsed")?"全棋盤":"Professional"):"Portrait";
 }
-function goTo(n){state.index=Math.max(0,Math.min(state.moves.length,n));syncUI()}
+function goTo(n){
+  state.index=Math.max(0,Math.min(state.moves.length,n));
+  syncUI();
+  if($("aiModal").classList.contains("open"))updateProfessionalDashboard();
+}
 function togglePlay(){
   state.playing=!state.playing;$("playBtn").textContent=state.playing?"⏸":"▶";
   clearInterval(state.timer);
@@ -831,13 +1103,8 @@ $("newGameBtn").onclick=()=>{
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
-$("bestMoveBtn").onclick=()=>{
-  state.bestPoint={x:Math.floor(state.size/2),y:Math.floor(state.size/2)};
-  drawBoard();toast("已顯示示範推薦點");
-};
-$("explainBtn").onclick=()=>{
-  $("aiText").textContent=state.index?"朱老師 AI 建議：先處理弱棋，再考慮全局大場。":"請先載入棋譜或開始對局。";
-};
+
+
 $("startHumanBtn").onclick=()=>{
   state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
   state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
@@ -916,13 +1183,43 @@ function verifySnapshotRenderer(){
   drawBoard(snap);
   return state.renderedHash===snap.hash;
 }
+
+$("refreshAnalysisBtn").addEventListener("click",()=>{
+  updateProfessionalDashboard();
+  toast("分析總覽已更新");
+});
+$("bookmarkBtn").addEventListener("click",()=>{
+  if(state.bookmarks.some(b=>b.move===state.index)){
+    toast("此手數已收藏");
+    return;
+  }
+  state.bookmarks.push({move:state.index,createdAt:Date.now()});
+  state.bookmarks.sort((a,b)=>a.move-b.move);
+  saveBookmarks();renderBookmarks();
+  toast("已收藏第 "+state.index+" 手");
+});
+$("clearBookmarksBtn").addEventListener("click",()=>{
+  state.bookmarks=[];saveBookmarks();renderBookmarks();
+  toast("收藏已清除");
+});
+renderBookmarks();
+
+const redrawBtn=document.getElementById("redrawBtn");
+if(redrawBtn){
+  redrawBtn.addEventListener("click",()=>{
+    resizeBoard(true);
+    syncUI();
+    toast("棋盤已重新繪製");
+  });
+}
+
 state.engineVerified=verifyRulesEngine();
 resizeBoard(true);syncUI();
 state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build016.6 Ultra Landscape UI 已啟動");
+  toast("Build017.0 Professional Foundation 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
