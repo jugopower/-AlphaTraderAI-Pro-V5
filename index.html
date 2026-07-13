@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-1405">
-<title>AlphaTrader AI Pro V5｜Build017.1 Professional AI Dashboard</title>
+<meta name="app-version" content="20260713-1435">
+<title>AlphaTrader AI Pro V5｜Build017.2 KataGo Connector</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build017.1 Professional AI Dashboard */
+/* Build017.2 KataGo Connector */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +166,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build017.1 Professional AI Dashboard */
+/* Build017.2 KataGo Connector */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -258,7 +258,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build017.1 Professional AI Dashboard */
+/* Build017.2 KataGo Connector */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -327,6 +327,64 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .policy-row .score-col{display:none}
 }
 
+
+/* Build017.2 KataGo Connector */
+.connector-status{
+  border:1px solid #6c4b2c;
+  border-radius:12px;
+  padding:11px 12px;
+  background:#0a0705;
+  margin-top:12px;
+  line-height:1.55;
+}
+.connector-status.ok{border-color:#4d9b65;color:#bde8c8}
+.connector-status.warn{border-color:#b68834;color:#f3d391}
+.connector-status.bad{border-color:#a64a3e;color:#f1b2aa}
+.connector-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.connector-meta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:10px 0;
+}
+.connector-meta > div{
+  background:#090604;
+  border:1px solid #ffffff10;
+  border-radius:10px;
+  padding:9px;
+}
+.connector-meta small{display:block;color:var(--muted)}
+.connector-meta strong{display:block;color:var(--gold);margin-top:3px}
+.schema-box{
+  background:#070504;
+  border:1px solid #ffffff12;
+  border-radius:10px;
+  padding:10px;
+  color:#d9c8b3;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:11px;
+  white-space:pre-wrap;
+  overflow:auto;
+  max-height:180px;
+}
+.loading-dot::after{
+  content:"";
+  display:inline-block;
+  width:8px;height:8px;
+  border-radius:50%;
+  margin-left:8px;
+  background:var(--gold);
+  animation:connectorBlink .8s infinite alternate;
+}
+@keyframes connectorBlink{to{opacity:.25}}
+@media(max-width:700px){
+  .connector-grid,.connector-meta{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -335,7 +393,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build017.1 Professional AI Dashboard</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build017.2 KataGo Connector</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -369,7 +427,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-1405</p>
+  <p>版本：20260713-1435</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -384,7 +442,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build017.1 Professional AI Dashboard</h2>
+  <h2>Build017.2 KataGo Connector</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -426,9 +484,9 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · Professional Dashboard · Build017.1</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build017.2</div>
   <p style="color:var(--muted);font-size:11px">
-    本版完成專業分析介面。勝率、目差、Policy 與失誤資料目前仍為本機示範估算；串接 KataGo Cloud 後才會顯示真實數值。
+    已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
 </div></div>
 
@@ -446,18 +504,93 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </div></div>
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
-  <button class="close" data-close="cloudModal">✕</button><h2>KataGo Cloud</h2>
-  <label>API 網址<input id="apiUrl" placeholder="https://你的-katago-server.example.com"></label>
-  <label>API 金鑰<input id="apiKey" placeholder="API_KEY"></label>
-  <div class="grid2" style="margin-top:12px"><button class="action" id="saveApiBtn">儲存設定</button><button class="secondary" id="testApiBtn">測試連線</button></div>
-  <p id="cloudStatus">尚未連線。</p>
+  <button class="close" data-close="cloudModal">✕</button>
+  <h2>Build017.2 KataGo Connector</h2>
+
+  <label>分析 API 網址
+    <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
+  </label>
+
+  <div class="connector-grid">
+    <label>API 金鑰
+      <input id="apiKey" type="password" placeholder="可留空">
+    </label>
+    <label>授權方式
+      <select id="apiAuthMode">
+        <option value="bearer">Bearer Token</option>
+        <option value="x-api-key">X-API-Key</option>
+        <option value="none">不使用金鑰</option>
+      </select>
+    </label>
+    <label>分析 Visits
+      <input id="apiVisits" type="number" min="1" max="100000" value="500">
+    </label>
+    <label>規則
+      <select id="apiRules">
+        <option value="japanese">Japanese</option>
+        <option value="chinese">Chinese</option>
+        <option value="tromp-taylor">Tromp-Taylor</option>
+      </select>
+    </label>
+    <label>貼目
+      <input id="apiKomi" type="number" step="0.5" value="6.5">
+    </label>
+    <label>逾時秒數
+      <input id="apiTimeout" type="number" min="3" max="120" value="30">
+    </label>
+  </div>
+
+  <div class="grid2" style="margin-top:12px">
+    <button class="action" id="saveApiBtn">儲存設定</button>
+    <button class="secondary" id="testApiBtn">測試分析</button>
+  </div>
+  <button class="action" id="analyzeCloudBtn" style="width:100%;margin-top:10px">以 KataGo 分析目前局面</button>
+
+  <div id="cloudStatus" class="connector-status warn">尚未連線。未設定 API 時，分析總覽會自動使用本機示範資料。</div>
+
+  <div class="connector-meta">
+    <div><small>連線狀態</small><strong id="connectorState">Offline</strong></div>
+    <div><small>最後耗時</small><strong id="connectorLatency">—</strong></div>
+    <div><small>分析來源</small><strong id="connectorSource">Demo</strong></div>
+  </div>
+
+  <details style="margin-top:10px">
+    <summary>後端 JSON 規格</summary>
+    <div class="schema-box">POST JSON:
+{
+  "boardSize": 19,
+  "moves": [["B","Q16"],["W","D4"]],
+  "initialStones": [["B","D16"]],
+  "komi": 6.5,
+  "rules": "japanese",
+  "maxVisits": 500,
+  "includePolicy": true,
+  "includeOwnership": true
+}
+
+回傳 JSON（可位於根層或 data/result 內）:
+{
+  "blackWinrate": 0.623,
+  "scoreLead": 4.8,
+  "visits": 500,
+  "moveInfos": [
+    {"move":"Q16","winrate":0.623,"scoreLead":4.8,"policy":0.31,
+     "pv":["Q16","D4","R14"]}
+  ],
+  "ownership": [ ... ]
+}</div>
+  </details>
+
+  <p style="color:var(--muted);font-size:11px;margin-top:10px">
+    GitHub Pages 不能直接執行 KataGo 引擎；必須連接允許 CORS 的 HTTPS 後端分析服務。
+  </p>
 </div></div>
 
 <div id="toast" class="toast"></div>
 
 <script>
 "use strict";
-const APP_VERSION="20260713-1405";
+const APP_VERSION="20260713-1435";
 
 const $=id=>document.getElementById(id);
 
@@ -476,7 +609,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"}
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -492,6 +625,245 @@ function boardStoneCounts(snapshot){
   return {black,white};
 }
 
+
+function getApiSettings(){
+  return {
+    url:(localStorage.getItem("katagoApiUrl")||"").trim(),
+    key:localStorage.getItem("katagoApiKey")||"",
+    authMode:localStorage.getItem("katagoAuthMode")||"bearer",
+    visits:Number(localStorage.getItem("katagoVisits")||500),
+    rules:localStorage.getItem("katagoRules")||"japanese",
+    komi:Number(localStorage.getItem("katagoKomi")||6.5),
+    timeout:Number(localStorage.getItem("katagoTimeout")||30)
+  };
+}
+
+function saveApiSettings(){
+  localStorage.setItem("katagoApiUrl",$("apiUrl").value.trim());
+  localStorage.setItem("katagoApiKey",$("apiKey").value);
+  localStorage.setItem("katagoAuthMode",$("apiAuthMode").value);
+  localStorage.setItem("katagoVisits",$("apiVisits").value);
+  localStorage.setItem("katagoRules",$("apiRules").value);
+  localStorage.setItem("katagoKomi",$("apiKomi").value);
+  localStorage.setItem("katagoTimeout",$("apiTimeout").value);
+}
+
+function loadApiSettings(){
+  const s=getApiSettings();
+  $("apiUrl").value=s.url;
+  $("apiKey").value=s.key;
+  $("apiAuthMode").value=s.authMode;
+  $("apiVisits").value=s.visits;
+  $("apiRules").value=s.rules;
+  $("apiKomi").value=s.komi;
+  $("apiTimeout").value=s.timeout;
+}
+loadApiSettings();
+
+function setConnectorStatus(type,text){
+  const el=$("cloudStatus");
+  el.className="connector-status "+type;
+  el.textContent=text;
+  $("connectorState").textContent=state.connector.online?"Online":"Offline";
+  $("connectorLatency").textContent=state.connector.lastLatency==null?"—":state.connector.lastLatency+" ms";
+  $("connectorSource").textContent=state.connector.source==="katago"?"KataGo":"Demo";
+}
+
+function moveToGtp(move){
+  if(!move || move.pass)return "pass";
+  return (coordLetters[move.x]||"?")+(state.size-move.y);
+}
+
+function currentPositionPayload(){
+  const played=state.moves.slice(0,state.index).map(m=>[m.c,moveToGtp(m)]);
+  const initial=[
+    ...state.setupB.map(p=>["B",moveToGtp(p)]),
+    ...state.setupW.map(p=>["W",moveToGtp(p)])
+  ];
+  const s=getApiSettings();
+  return {
+    boardSize:state.size,
+    moves:played,
+    initialStones:initial,
+    komi:s.komi,
+    rules:s.rules,
+    maxVisits:s.visits,
+    includePolicy:true,
+    includeOwnership:true,
+    moveNumber:state.index,
+    appVersion:APP_VERSION
+  };
+}
+
+function unwrapAnalysisResponse(json){
+  if(json && typeof json==="object"){
+    if(json.data && typeof json.data==="object") return json.data;
+    if(json.result && typeof json.result==="object") return json.result;
+  }
+  return json;
+}
+
+function normalizeRate(v){
+  const n=Number(v);
+  if(!Number.isFinite(n))return null;
+  return n<=1?n*100:n;
+}
+
+function gtpToPoint(gtp){
+  if(!gtp || String(gtp).toLowerCase()==="pass")return {pass:true,x:-1,y:-1};
+  const s=String(gtp).toUpperCase();
+  const letter=s[0];
+  const x=coordLetters.indexOf(letter);
+  const row=Number(s.slice(1));
+  const y=state.size-row;
+  if(x<0 || !Number.isFinite(row) || y<0 || y>=state.size)return null;
+  return {x,y,pass:false};
+}
+
+function parseCloudAnalysis(raw){
+  const data=unwrapAnalysisResponse(raw)||{};
+  const root=data.rootInfo||data.root||data;
+  let blackWin=normalizeRate(
+    data.blackWinrate ?? data.blackWinRate ?? root.blackWinrate ?? root.blackWinRate
+  );
+  if(blackWin==null){
+    const sideRate=normalizeRate(root.winrate ?? data.winrate);
+    const nextColor=state.index<state.moves.length?state.moves[state.index]?.c:(state.index%2===0?"B":"W");
+    if(sideRate!=null)blackWin=nextColor==="B"?sideRate:100-sideRate;
+  }
+  if(blackWin==null)throw new Error("回傳缺少 blackWinrate 或 winrate");
+
+  let scoreLead=Number(data.scoreLead ?? root.scoreLead ?? 0);
+  if(!Number.isFinite(scoreLead))scoreLead=0;
+
+  const infos=data.moveInfos||data.moves||data.candidates||[];
+  const recommendations=(Array.isArray(infos)?infos:[]).slice(0,5).map((m,i)=>{
+    const gtp=m.move||m.vertex||m.coord||m.gtp;
+    const p=gtpToPoint(gtp);
+    if(!p || p.pass)return null;
+    const policyRate=normalizeRate(m.policy ?? m.prior ?? m.policyProb);
+    const win=normalizeRate(m.blackWinrate ?? m.winrate);
+    const gain=win==null?0:win-blackWin;
+    return {
+      x:p.x,y:p.y,coord:String(gtp).toUpperCase(),
+      policy:Math.max(0,Math.min(100,policyRate==null?0:policyRate)),
+      winGain:gain,
+      scoreGain:Number(m.scoreLead ?? scoreLead),
+      pv:Array.isArray(m.pv)?m.pv:[]
+    };
+  }).filter(Boolean);
+
+  const history=Array.isArray(data.history)
+    ? data.history.map(normalizeRate).filter(Number.isFinite)
+    : buildDemoHistory().map((v,i)=>i===state.index?blackWin:v);
+
+  const mistakes=[];
+  for(let i=1;i<history.length;i++){
+    const loss=Math.max(0,history[i-1]-history[i]);
+    if(loss>1.2)mistakes.push({move:i,loss});
+  }
+  mistakes.sort((a,b)=>b.loss-a.loss);
+
+  let situation="局勢均衡";
+  if(blackWin>=62)situation="黑方明顯優勢";
+  else if(blackWin>=54)situation="黑方稍優";
+  else if(blackWin<=38)situation="白方明顯優勢";
+  else if(blackWin<=46)situation="白方稍優";
+
+  const best=recommendations[0];
+  const teaching=best
+    ? `KataGo 建議優先考慮 ${best.coord}。目前黑勝率 ${blackWin.toFixed(1)}%，預估目差 ${scoreLead>=0?"黑":"白"}領先 ${Math.abs(scoreLead).toFixed(1)} 目。`
+    : `KataGo 已完成目前局面分析。黑勝率 ${blackWin.toFixed(1)}%，預估目差 ${scoreLead>=0?"黑":"白"}領先 ${Math.abs(scoreLead).toFixed(1)} 目。`;
+
+  return {
+    blackWin,
+    whiteWin:100-blackWin,
+    scoreLead,
+    situation,
+    recommendations,
+    teaching,
+    history,
+    mistakes:mistakes.slice(0,5),
+    source:"katago",
+    visits:Number(root.visits ?? data.visits ?? 0),
+    ownership:Array.isArray(data.ownership)?data.ownership:null,
+    raw:data
+  };
+}
+
+async function requestCloudAnalysis(){
+  const s=getApiSettings();
+  if(!s.url)throw new Error("請先填入分析 API 網址");
+  let parsed;
+  try{parsed=new URL(s.url)}catch(_){throw new Error("API 網址格式不正確")}
+  if(parsed.protocol!=="https:" && parsed.hostname!=="localhost"){
+    throw new Error("iPad 網頁請使用 HTTPS API");
+  }
+
+  const headers={"Content-Type":"application/json","Accept":"application/json"};
+  if(s.key && s.authMode==="bearer")headers.Authorization="Bearer "+s.key;
+  if(s.key && s.authMode==="x-api-key")headers["X-API-Key"]=s.key;
+
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),Math.max(3,s.timeout)*1000);
+  const t0=performance.now();
+  try{
+    const response=await fetch(s.url,{
+      method:"POST",
+      headers,
+      body:JSON.stringify(currentPositionPayload()),
+      signal:controller.signal,
+      cache:"no-store"
+    });
+    const text=await response.text();
+    if(!response.ok)throw new Error(`HTTP ${response.status}：${text.slice(0,120)}`);
+    let json;
+    try{json=JSON.parse(text)}catch(_){throw new Error("後端回傳不是 JSON")}
+    const analysis=parseCloudAnalysis(json);
+    state.connector.online=true;
+    state.connector.lastLatency=Math.round(performance.now()-t0);
+    state.connector.lastError="";
+    state.connector.source="katago";
+    analysis.moveNumber=state.index;
+    return analysis;
+  }catch(err){
+    state.connector.online=false;
+    state.connector.lastLatency=Math.round(performance.now()-t0);
+    state.connector.lastError=err.name==="AbortError"?"連線逾時":err.message;
+    state.connector.source="demo";
+    throw new Error(state.connector.lastError);
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+async function runCloudAnalysis({openDashboard=true}={}){
+  const btn=$("analyzeCloudBtn");
+  const old=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="分析中…";
+  btn.classList.add("loading-dot");
+  setConnectorStatus("warn","正在傳送目前局面到 KataGo 後端…");
+  try{
+    state.analysis=await requestCloudAnalysis();
+    setConnectorStatus("ok",`KataGo 分析成功，耗時 ${state.connector.lastLatency} ms。`);
+    renderProfessionalDashboard(state.analysis);
+    if(openDashboard){
+      closeModal("cloudModal");
+      openModal("aiModal");
+    }
+    toast("KataGo 分析完成");
+    return true;
+  }catch(err){
+    setConnectorStatus("bad","連線失敗："+err.message+"。分析總覽將繼續使用示範資料。");
+    toast("KataGo 連線失敗");
+    return false;
+  }finally{
+    btn.disabled=false;
+    btn.textContent=old;
+    btn.classList.remove("loading-dot");
+  }
+}
 function buildDemoHistory(){
   const len=Math.max(1,state.moves.length);
   const arr=[];
@@ -605,9 +977,8 @@ function renderMistakes(){
   });
 }
 
-function updateProfessionalDashboard(){
-  state.analysis=localDemoAnalysis();
-  const a=state.analysis;
+function renderProfessionalDashboard(a){
+  state.analysis=a;
   $("dashBlackWin").textContent=a.blackWin.toFixed(1)+"%";
   $("dashWhiteWinValue").textContent=a.whiteWin.toFixed(1)+"%";
   $("dashBlackTrend").textContent=a.blackWin>=50?"黑方領先":"黑方落後";
@@ -617,19 +988,24 @@ function updateProfessionalDashboard(){
   $("dashMove").textContent=`${state.index} / ${state.moves.length}`;
   const mv=state.moves[state.index-1];
   $("dashLastMove").textContent="最新落子："+(mv&&!mv.pass?coordLabel(mv.x,mv.y):"—");
-  $("aiEngineBadge").textContent="● 本機示範分析（非 KataGo）";
+  $("aiEngineBadge").textContent=a.source==="katago"
+    ? `● KataGo Cloud${a.visits?` · ${a.visits} visits`:""}`
+    : "● 本機示範分析（非 KataGo）";
   $("teacherAnalysis").textContent=a.teaching;
 
   const list=$("recommendList");
   list.innerHTML="";
+  if(!a.recommendations.length){
+    list.innerHTML='<span style="color:var(--muted)">後端未提供推薦著手。</span>';
+  }
   a.recommendations.forEach((r,i)=>{
     const row=document.createElement("div");
     row.className="policy-row";
     row.innerHTML=`<span class="rank-dot">${i+1}</span>
       <strong>${r.coord}</strong>
-      <span class="policy-bar"><i style="width:${r.policy}%"></i></span>
-      <span>${r.policy}%</span>
-      <span class="score-col">+${r.scoreGain.toFixed(1)}目</span>`;
+      <span class="policy-bar"><i style="width:${Math.max(2,r.policy)}%"></i></span>
+      <span>${r.policy.toFixed(0)}%</span>
+      <span class="score-col">${r.scoreGain>=0?"+":""}${r.scoreGain.toFixed(1)}目</span>`;
     row.addEventListener("click",()=>{
       state.bestPoint={x:r.x,y:r.y};
       drawBoard(state.currentSnapshot||activateSnapshot(state.index));
@@ -639,6 +1015,17 @@ function updateProfessionalDashboard(){
   });
   renderMistakes();
   requestAnimationFrame(drawWinRateChart);
+}
+
+function updateProfessionalDashboard(){
+  const settings=getApiSettings();
+  if(state.analysis?.source==="katago" && state.analysis.moveNumber===state.index){
+    renderProfessionalDashboard(state.analysis);
+    return;
+  }
+  const demo=localDemoAnalysis();
+  demo.moveNumber=state.index;
+  renderProfessionalDashboard(demo);
 }
 function loadBookmarks(){
   try{
@@ -828,7 +1215,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build017 Professional Foundation 已啟用；新增勝率總覽、Top 5 Policy、勝率曲線、失誤排行與收藏局面。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build017.2 KataGo Connector 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1272,11 +1659,20 @@ canvas.addEventListener("click",e=>{
   }
 });
 $("saveApiBtn").onclick=()=>{
-  localStorage.setItem("katagoApiUrl",$("apiUrl").value);localStorage.setItem("katagoApiKey",$("apiKey").value);toast("KataGo 設定已儲存");
+  saveApiSettings();
+  state.analysis=null;
+  setConnectorStatus("warn","設定已儲存。按「測試分析」確認後端格式與 CORS。");
+  toast("KataGo 設定已儲存");
 };
-$("testApiBtn").onclick=()=>{$("cloudStatus").textContent=$("apiUrl").value?"已儲存網址；需部署後端才能真正連線。":"請先填入 API 網址。"};
-$("apiUrl").value=localStorage.getItem("katagoApiUrl")||"";
-$("apiKey").value=localStorage.getItem("katagoApiKey")||"";
+$("testApiBtn").onclick=async()=>{
+  saveApiSettings();
+  await runCloudAnalysis({openDashboard:false});
+};
+$("analyzeCloudBtn").onclick=async()=>{
+  saveApiSettings();
+  await runCloudAnalysis({openDashboard:true});
+};
+setConnectorStatus("warn",getApiSettings().url?"已載入 API 設定，尚未測試。":"尚未設定 API；目前使用示範分析。");
 
 let layoutTimer=0;
 function scheduleLayoutRefresh(delay=160){
@@ -1303,9 +1699,13 @@ function verifySnapshotRenderer(){
   return state.renderedHash===snap.hash;
 }
 
-$("refreshAnalysisBtn").addEventListener("click",()=>{
+$("refreshAnalysisBtn").addEventListener("click",async()=>{
+  if(getApiSettings().url){
+    const ok=await runCloudAnalysis({openDashboard:false});
+    if(ok){renderProfessionalDashboard(state.analysis);return}
+  }
   updateProfessionalDashboard();
-  toast("分析總覽已更新");
+  toast("已更新本機示範分析");
 });
 $("bookmarkBtn").addEventListener("click",()=>{
   if(state.bookmarks.some(b=>b.move===state.index)){
@@ -1349,7 +1749,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build017.1 Professional AI Dashboard 已啟動");
+  toast("Build017.2 KataGo Connector 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
