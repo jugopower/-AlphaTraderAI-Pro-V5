@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-0145">
-<title>AlphaTrader AI Pro V5｜Build016.3 Capture Verification Engine</title>
+<meta name="app-version" content="20260713-0200">
+<title>AlphaTrader AI Pro V5｜Build016.4 Snapshot Renderer Engine</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -92,7 +92,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.3 Capture Verification Engine</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.4 Snapshot Renderer Engine</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -101,7 +101,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <div class="stat"><small>黑方提子</small><b id="blackCaptures">0</b></div>
       <div class="stat"><small>白方提子</small><b id="whiteCaptures">0</b></div>
       <div class="stat"><small>棋盤</small><b id="boardSizeText">19路</b></div>
-      <div class="stat"><small>狀態</small><b id="statusText">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div>
+      <div class="stat"><small>狀態</small><b id="statusText">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div><div class="stat"><small>Renderer</small><b id="rendererText">待命</b></div><div class="stat"><small>局面雜湊</small><b id="renderHashText">—</b></div>
     </div>
   </aside>
 
@@ -125,7 +125,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-0145</p>
+  <p>版本：20260713-0200</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -169,12 +169,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260713-0145";
+const APP_VERSION="20260713-0200";
 
 const $=id=>document.getElementById(id);
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[]
+  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false
 };
 
 function toast(msg){
@@ -334,7 +334,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Capture Verification Engine 已啟用；提子座標與每手快照可直接檢查。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Snapshot Renderer Engine 已啟用；畫面只讀取目前手數的不可變快照。結果：${g.result}`;
     syncUI(); resizeBoard(); drawBoard(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -513,17 +513,26 @@ function buildReplayCache(){
   state.illegalCount=illegal;
   state.captureEvents=events;
 }
-function positionAtMove(n){
+function getSnapshot(n){
   if(!state.replayCache||state.replayCache.length!==state.moves.length+1)buildReplayCache();
   const idx=Math.max(0,Math.min(state.moves.length,Number(n)||0));
   const snap=state.replayCache[idx]||state.replayCache[state.replayCache.length-1];
   return {
+    index:idx,
     board:clonePosition(snap.board),
     provenance:clonePosition(snap.provenance),
     blackCaptures:snap.blackCaptures,
     whiteCaptures:snap.whiteCaptures,
-    lastCapture:snap.lastCapture
+    lastCapture:snap.lastCapture,
+    hash:snap.hash||positionHash(snap.board)
   };
+}
+function positionAtMove(n){
+  return getSnapshot(n);
+}
+function activateSnapshot(n){
+  state.currentSnapshot=getSnapshot(n);
+  return state.currentSnapshot;
 }
 function verifyRulesEngine(){
   let b=emptyPosition(5),p=emptyProvenance(5);
@@ -547,10 +556,10 @@ function coordLabel(x,y){
   const letters="ABCDEFGHJKLMNOPQRST";
   return (letters[x]||"?")+(state.size-y);
 }
-function drawBoard(){
+function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)){
   const css=canvas.getBoundingClientRect().width;
   if(!css)return;
-  const pad=css*0.055, boardPx=css-pad*2, step=boardPx/(state.size-1);
+  const pad=css*0.055,boardPx=css-pad*2,step=boardPx/(state.size-1);
   const grad=ctx.createLinearGradient(0,0,css,css);
   grad.addColorStop(0,"#f2c46d");grad.addColorStop(1,"#c98231");
   ctx.clearRect(0,0,css,css);ctx.fillStyle=grad;ctx.fillRect(0,0,css,css);
@@ -563,10 +572,11 @@ function drawBoard(){
   const stars=state.size===19?[3,9,15]:state.size===13?[3,6,9]:[2,4,6];
   ctx.fillStyle="#51351e";
   stars.forEach(y=>stars.forEach(x=>{ctx.beginPath();ctx.arc(pad+x*step,pad+y*step,Math.max(2,step*.07),0,Math.PI*2);ctx.fill()}));
-  const pos=positionAtMove(state.index),board=pos.board,provenance=pos.provenance;
-  const start=Math.max(0,state.index-30);
+
+  const board=snapshot.board,provenance=snapshot.provenance;
+  const start=Math.max(0,snapshot.index-30);
   for(let y=0;y<state.size;y++)for(let x=0;x<state.size;x++){
-    const c=board[y][x]; if(!c)continue;
+    const c=board[y][x];if(!c)continue;
     const cx=pad+x*step,cy=pad+y*step,r=step*.43;
     const g=ctx.createRadialGradient(cx-r*.25,cy-r*.3,r*.08,cx,cy,r);
     if(c==="B"){g.addColorStop(0,"#4a4a4a");g.addColorStop(.35,"#161616");g.addColorStop(1,"#000")}
@@ -574,18 +584,26 @@ function drawBoard(){
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
     const moveNumber=provenance[y][x]||0;
     if(moveNumber>start){
-      ctx.fillStyle=c==="B"?"#fff":"#222";ctx.font=`${Math.max(10,step*.32)}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(moveNumber),cx,cy);
+      ctx.fillStyle=c==="B"?"#fff":"#222";
+      ctx.font=`${Math.max(10,step*.32)}px sans-serif`;
+      ctx.textAlign="center";ctx.textBaseline="middle";
+      ctx.fillText(String(moveNumber),cx,cy);
     }
-    if(moveNumber===state.index){
-      ctx.strokeStyle="#ff5148";ctx.lineWidth=Math.max(2,step*.07);ctx.beginPath();ctx.arc(cx,cy,r*.78,0,Math.PI*2);ctx.stroke();
+    if(moveNumber===snapshot.index){
+      ctx.strokeStyle="#ff5148";ctx.lineWidth=Math.max(2,step*.07);
+      ctx.beginPath();ctx.arc(cx,cy,r*.78,0,Math.PI*2);ctx.stroke();
     }
   }
   if(state.bestPoint){
     const cx=pad+state.bestPoint.x*step,cy=pad+state.bestPoint.y*step;
-    ctx.strokeStyle="#38ff85";ctx.lineWidth=4;ctx.beginPath();ctx.arc(cx,cy,step*.34,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle="#38ff85";ctx.lineWidth=4;
+    ctx.beginPath();ctx.arc(cx,cy,step*.34,0,Math.PI*2);ctx.stroke();
   }
+  state.renderedHash=positionHash(board);
+  state.rendererVerified=state.renderedHash===snapshot.hash;
 }
 function syncUI(){
+  const snapshot=activateSnapshot(state.index);
   $("moveSlider").max=state.moves.length;$("moveSlider").value=state.index;
   $("sliderText").textContent=`${state.index} / ${state.moves.length}`;
   $("moveCount").textContent=`${state.index} / ${state.moves.length}`;
@@ -593,7 +611,7 @@ function syncUI(){
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
   $("statusText").textContent=state.humanMode?"對弈中":"待命";
-  const pos=positionAtMove(state.index);
+  const pos=snapshot;
   state.blackCaptures=pos.blackCaptures;
   state.whiteCaptures=pos.whiteCaptures;
   $("blackCaptures").textContent=state.blackCaptures;
@@ -608,7 +626,9 @@ function syncUI(){
     ? events.slice(-8).map(e=>`第${e.move}手 ${e.color==="B"?"黑":"白"}提${e.count}子：${e.stones.join("、")}`).join("｜")
     : "目前手數以前尚無提子。";
   $("engineText").textContent=state.engineVerified?"規則正常":"待驗證";
-  drawBoard();
+  drawBoard(snapshot);
+  $("rendererText").textContent=state.rendererVerified?"快照同步":"同步異常";
+  $("renderHashText").textContent=(state.renderedHash||"—").slice(0,8);
 }
 function goTo(n){state.index=Math.max(0,Math.min(state.moves.length,n));syncUI()}
 function togglePlay(){
@@ -660,7 +680,7 @@ $("loadPasteBtn").onclick=()=>{
   loadSGFText(text,"貼上的 SGF");
 };
 $("newGameBtn").onclick=()=>{
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
@@ -672,7 +692,7 @@ $("explainBtn").onclick=()=>{
   $("aiText").textContent=state.index?"朱老師 AI 建議：先處理弱棋，再考慮全局大場。":"請先載入棋譜或開始對局。";
 };
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
   state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   syncUI();closeModal("humanModal");toast("人機對弈已開始");
 };
@@ -731,13 +751,20 @@ window.addEventListener("orientationchange",()=>setTimeout(()=>{resizeBoard();dr
 
 
 
+function verifySnapshotRenderer(){
+  const snap=activateSnapshot(state.index);
+  drawBoard(snap);
+  return state.renderedHash===snap.hash;
+}
 state.engineVerified=verifyRulesEngine();
 resizeBoard();syncUI();
-if(state.engineVerified){
+state.rendererVerified=verifySnapshotRenderer();
+syncUI();
+if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build016.3 提子驗證引擎測試通過");
+  toast("Build016.4 快照與 Renderer 測試通過");
 }else{
-  $("engineText").textContent="引擎異常";
+  $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
 }
 
