@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-1100">
-<title>AlphaTrader AI Pro V5｜Build016.4.2 Landscape Professional Edition</title>
+<meta name="app-version" content="20260713-1200">
+<title>AlphaTrader AI Pro V5｜Build016.5 Ultimate Landscape</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -18,19 +18,19 @@ button{touch-action:manipulation}
 .app{
   height:100dvh;
   display:grid;
-  grid-template-columns:minmax(168px,18vw) minmax(0,1fr) minmax(92px,10vw);
-  grid-template-rows:minmax(0,1fr) 104px;
-  gap:6px;
-  padding:6px;
+  grid-template-columns:minmax(136px,14vw) minmax(0,1fr) minmax(82px,9vw);
+  grid-template-rows:minmax(0,1fr) 88px;
+  gap:4px;
+  padding:4px;
 }
 .left,.right,.toolbar,.player,.board-wrap{
   background:linear-gradient(180deg,#1c120c,#100b08);
   border:1px solid #6c4b2c;border-radius:18px;box-shadow:inset 0 1px #ffffff10;
 }
-.left{grid-column:1;grid-row:1 / span 2;padding:9px;overflow:auto}
-.right{grid-column:3;grid-row:1 / span 2;padding:6px;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.left{grid-column:1;grid-row:1 / span 2;padding:6px;overflow:auto}
+.right{grid-column:3;grid-row:1 / span 2;padding:4px;display:flex;flex-direction:column;gap:4px;overflow:auto}
 .board-wrap{grid-column:2;grid-row:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.player{grid-column:2;grid-row:2;padding:8px;display:grid;grid-template-rows:54px 1fr;gap:6px}
+.player{grid-column:2;grid-row:2;padding:5px;display:grid;grid-template-rows:46px 1fr;gap:4px}
 #board{
   display:block;
   width:var(--board-size,720px);
@@ -48,38 +48,37 @@ button{touch-action:manipulation}
 .player{
   contain:layout paint;
 }
-.range-row{
-  min-height:38px;
-}
+.range-row{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
 #moveSlider{
   touch-action:pan-x;
   -webkit-user-select:none;
   user-select:none;
 }
-.brand{font-weight:900;font-size:15px;line-height:1.2;margin-bottom:8px;color:var(--gold)}
-.card{background:#0d0907;border:1px solid #ffffff10;border-radius:12px;padding:8px;margin-bottom:7px}
-.player-name{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:800;gap:6px}
-.stone-dot{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 2px 5px #ffffff30,0 3px 8px #0008}
+.brand{font-weight:900;font-size:13px;line-height:1.15;margin-bottom:6px;color:var(--gold)}
+.card{background:#0d0907;border:1px solid #ffffff10;border-radius:10px;padding:6px;margin-bottom:5px}
+.player-name{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800;gap:4px}
+.stone-dot{width:18px;height:18px;border-radius:50%;box-shadow:inset 0 2px 5px #ffffff30,0 3px 8px #0008}
 .black{background:#111}.white{background:#eee}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-.stat{background:#090604;border-radius:10px;padding:7px 5px;text-align:center;min-width:0}
-.stat small{display:block;color:var(--muted);margin-bottom:2px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stat b{font-size:14px;white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.stat{background:#090604;border-radius:8px;padding:5px 3px;text-align:center;min-width:0}
+.stat small{display:block;color:var(--muted);margin-bottom:1px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stat b{font-size:12px;white-space:nowrap}
 .tool{
-  min-height:64px;
+  min-height:55px;
   border:1px solid #6c4b2c;
-  border-radius:12px;
+  border-radius:10px;
   background:#17100c;
   color:var(--text);
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:3px;
-  padding:4px 2px;
+  gap:2px;
+  padding:3px 1px;
   font-weight:800;
+  font-size:11px;
 }
-.tool span{font-size:20px;color:var(--gold)}
-.controls{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tool span{font-size:18px;color:var(--gold)}
+.controls{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
 .controls button{
   border:1px solid #6c4b2c;border-radius:14px;background:#17100c;color:white;font-size:26px;font-weight:900
 }
@@ -129,30 +128,52 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build016.4.2 Landscape Professional Edition */
+/* Build016.5 Ultimate Landscape */
 @media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(136px,14vw) minmax(0,1fr) minmax(82px,9vw);
+    grid-template-rows:minmax(0,1fr) 88px;
+  }
   .board-wrap{
     padding:0!important;
-    border-radius:16px;
+    border-radius:12px;
     align-items:center!important;
     justify-content:center!important;
   }
-  .left{min-width:168px;max-width:210px}
-  .right{min-width:92px;max-width:116px}
-  .player{min-height:98px}
-  .controls button{font-size:24px}
-  .range-row{min-height:32px}
+  .left{min-width:136px;max-width:166px}
+  .right{min-width:82px;max-width:98px}
+  .player{min-height:82px}
+  .controls button{min-height:43px!important;font-size:22px;border-radius:10px!important}
+  .range-row{min-height:25px}
   #board{max-width:100%!important;max-height:100%!important}
+}
+@media (orientation:landscape) and (min-width:1100px){
+  .app{grid-template-columns:minmax(142px,13.5vw) minmax(0,1fr) minmax(84px,8.5vw)}
+  .left{max-width:176px}
+  .right{max-width:104px}
+}
+.info-collapse{
+  position:fixed;left:calc(min(14vw,166px) - 15px);top:50%;
+  transform:translateY(-50%);width:30px;height:58px;z-index:30;
+  border-radius:0 12px 12px 0;border:1px solid #6c4b2c;
+  background:#21150e;color:var(--gold);font-size:28px;font-weight:900;display:none
+}
+@media (orientation:landscape) and (min-width:901px){
+  .info-collapse{display:block}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) minmax(82px,9vw)}
+  body.info-collapsed .left{opacity:0;pointer-events:none;overflow:hidden;padding:0;border-width:0}
+  body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
 </style>
 </head>
 <body>
 <div class="app">
+<button id="infoCollapseBtn" class="info-collapse" type="button" aria-label="收合資訊欄">‹</button>
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.4.2 Landscape Professional Edition</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build016.5 Ultimate Landscape</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -185,7 +206,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-1100</p>
+  <p>版本：20260713-1200</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -229,9 +250,22 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260713-1100";
+const APP_VERSION="20260713-1200";
 
 const $=id=>document.getElementById(id);
+
+const infoCollapseBtn=document.getElementById("infoCollapseBtn");
+function setInfoCollapsed(collapsed){
+  document.body.classList.toggle("info-collapsed",collapsed);
+  localStorage.setItem("at-info-collapsed",collapsed?"1":"0");
+  infoCollapseBtn.setAttribute("aria-label",collapsed?"展開資訊欄":"收合資訊欄");
+  setTimeout(()=>{resizeBoard(true);syncUI()},80);
+}
+infoCollapseBtn.addEventListener("click",()=>setInfoCollapsed(!document.body.classList.contains("info-collapsed")));
+if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orientation: landscape)").matches){
+  document.body.classList.add("info-collapsed");
+}
+
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
   humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false
@@ -394,7 +428,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Landscape Professional Edition 已啟用；橫式優先、資訊欄精簡、棋盤放大。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Ultimate Landscape 已啟用；資訊欄更窄、棋盤最大化並支援一鍵收合。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -707,7 +741,7 @@ function syncUI(){
   $("rendererText").textContent=state.rendererVerified?"快照同步":"同步異常";
   $("renderHashText").textContent=(state.renderedHash||"—").slice(0,8);
   $("layoutText").textContent=state.boardCssSize?"已鎖定":"待命";
-  $("layoutModeText").textContent=window.matchMedia("(orientation: landscape)").matches?"Landscape Pro":"Portrait";
+  $("layoutModeText").textContent=window.matchMedia("(orientation: landscape)").matches?(document.body.classList.contains("info-collapsed")?"全棋盤":"Ultimate Landscape"):"Portrait";
 }
 function goTo(n){state.index=Math.max(0,Math.min(state.moves.length,n));syncUI()}
 function togglePlay(){
@@ -875,7 +909,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build016.4.2 橫式專業版面已啟動");
+  toast("Build016.5 Ultimate Landscape 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
