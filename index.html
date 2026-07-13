@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-1330">
-<title>AlphaTrader AI Pro V5｜Build017.0 Professional Foundation</title>
+<meta name="app-version" content="20260713-1405">
+<title>AlphaTrader AI Pro V5｜Build017.1 Professional AI Dashboard</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build017.0 Professional Foundation */
+/* Build017.1 Professional AI Dashboard */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +166,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build017.0 Professional Foundation */
+/* Build017.1 Professional AI Dashboard */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -257,6 +257,76 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .dashboard-actions{grid-template-columns:1fr}
 }
 
+
+/* Build017.1 Professional AI Dashboard */
+.ai-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin:12px 0;
+}
+.ai-summary-card{
+  background:#0a0705;
+  border:1px solid #6c4b2c;
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+.ai-summary-card small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.ai-summary-card strong{display:block;color:var(--gold);font-size:21px}
+.ai-summary-card span{display:block;color:var(--text);font-size:11px;margin-top:3px}
+.pro-section{
+  background:#0c0806;
+  border:1px solid #ffffff10;
+  border-radius:14px;
+  padding:12px;
+  margin:10px 0;
+}
+.pro-section h3{margin:0 0 10px}
+.policy-row{
+  display:grid;
+  grid-template-columns:34px 55px 1fr 62px 62px;
+  gap:7px;
+  align-items:center;
+  padding:8px;
+  background:#080504;
+  border-radius:10px;
+  margin:6px 0;
+  cursor:pointer;
+}
+.policy-bar{
+  height:8px;border-radius:999px;background:#21150e;overflow:hidden;
+}
+.policy-bar i{display:block;height:100%;background:linear-gradient(90deg,#8c5b18,#f0c45d);border-radius:999px}
+.rank-dot{
+  width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+  color:var(--gold);background:#2b190c;font-weight:900;
+}
+.chart-wrap{
+  background:#080504;border:1px solid #ffffff10;border-radius:12px;padding:8px;
+}
+#winRateCanvas{width:100%;height:180px;display:block;touch-action:none}
+.mistake-row{
+  display:grid;grid-template-columns:70px 1fr 70px;gap:8px;align-items:center;
+  background:#080504;border-radius:10px;padding:9px;margin:6px 0;cursor:pointer;
+}
+.loss-meter{height:8px;background:#21150e;border-radius:99px;overflow:hidden}
+.loss-meter i{display:block;height:100%;background:linear-gradient(90deg,#b84b2a,#f0c45d)}
+.best-star{
+  position:absolute;pointer-events:none;z-index:9;
+  color:#ffd75f;font-size:34px;filter:drop-shadow(0 0 8px #ffcf4d);
+  animation:bestPulse 1.4s ease-in-out infinite;
+}
+@keyframes bestPulse{0%,100%{transform:translate(-50%,-50%) scale(.85);opacity:.65}50%{transform:translate(-50%,-50%) scale(1.18);opacity:1}}
+.pro-footer{
+  text-align:center;color:var(--muted);font-size:11px;padding:8px 0 2px;
+}
+@media(max-width:760px){
+  .ai-summary-grid{grid-template-columns:repeat(2,1fr)}
+  .policy-row{grid-template-columns:30px 48px 1fr 54px}
+  .policy-row .score-col{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -265,7 +335,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build017.0 Professional Foundation</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build017.1 Professional AI Dashboard</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -299,7 +369,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-1330</p>
+  <p>版本：20260713-1405</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -314,50 +384,51 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Professional AI Dashboard</h2>
-  <span class="ai-badge" id="aiEngineBadge">● 示範分析模式</span>
+  <h2>Build017.1 Professional AI Dashboard</h2>
+  <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
-  <div class="dashboard-grid">
-    <div class="dashboard-card">
-      <small>黑方勝率</small>
-      <strong id="dashBlackWin">50.0%</strong>
-      <span id="dashWhiteWin">白方 50.0%</span>
-    </div>
-    <div class="dashboard-card">
-      <small>預估目差</small>
-      <strong id="dashScoreLead">±0.0</strong>
-      <span id="dashSituation">局勢均衡</span>
-    </div>
-    <div class="dashboard-card">
-      <small>目前手數</small>
-      <strong id="dashMove">0 / 0</strong>
-      <span id="dashLastMove">最新落子：—</span>
-    </div>
-    <div class="dashboard-card">
-      <small>分析狀態</small>
-      <strong id="dashStatus">Ready</strong>
-      <span id="dashSource">本機示範估算</span>
-    </div>
+  <div class="ai-summary-grid">
+    <div class="ai-summary-card"><small>黑勝率</small><strong id="dashBlackWin">50.0%</strong><span id="dashBlackTrend">—</span></div>
+    <div class="ai-summary-card"><small>白勝率</small><strong id="dashWhiteWinValue">50.0%</strong><span id="dashWhiteTrend">—</span></div>
+    <div class="ai-summary-card"><small>預估目差</small><strong id="dashScoreLead">±0.0</strong><span id="dashSituation">局勢均衡</span></div>
+    <div class="ai-summary-card"><small>目前手數</small><strong id="dashMove">0 / 0</strong><span id="dashLastMove">最新落子：—</span></div>
   </div>
 
-  <h3>AI 推薦 Top 3</h3>
-  <div class="recommend-list" id="recommendList"></div>
-
-  <h3>朱老師 AI 解說</h3>
-  <div class="analysis-note" id="teacherAnalysis">
-    請先載入棋譜，再按「更新分析」查看目前局面的教學提示。
+  <div class="pro-section">
+    <h3>AI 推薦 Top 5</h3>
+    <div id="recommendList"></div>
   </div>
 
-  <h3>收藏局面</h3>
-  <div id="bookmarkList"><span style="color:var(--muted)">尚未收藏局面。</span></div>
+  <div class="pro-section">
+    <h3>勝率曲線</h3>
+    <div class="chart-wrap"><canvas id="winRateCanvas"></canvas></div>
+    <div style="color:var(--muted);font-size:11px;margin-top:6px">點選曲線可跳到對應手數。</div>
+  </div>
 
-  <div class="dashboard-actions" style="margin-top:14px">
+  <div class="pro-section">
+    <h3>失誤排行榜</h3>
+    <div id="mistakeList"></div>
+  </div>
+
+  <div class="pro-section">
+    <h3>朱老師 AI 解說</h3>
+    <div class="analysis-note" id="teacherAnalysis">請先載入棋譜，再按「更新分析」。</div>
+  </div>
+
+  <div class="pro-section">
+    <h3>收藏局面</h3>
+    <div id="bookmarkList"><span style="color:var(--muted)">尚未收藏局面。</span></div>
+  </div>
+
+  <div class="dashboard-actions">
     <button class="action" id="refreshAnalysisBtn">更新分析</button>
     <button class="secondary" id="bookmarkBtn">收藏目前手數</button>
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
-  <p style="color:var(--muted);margin-top:12px">
-    Build017.0 先提供 Dashboard 與資料架構；目前數值為本機示範估算。連接 KataGo Cloud 後才會顯示真正勝率、目差、Policy 與主變化。
+
+  <div class="pro-footer">AlphaTrader AI Pro V5 · Professional Dashboard · Build017.1</div>
+  <p style="color:var(--muted);font-size:11px">
+    本版完成專業分析介面。勝率、目差、Policy 與失誤資料目前仍為本機示範估算；串接 KataGo Cloud 後才會顯示真實數值。
   </p>
 </div></div>
 
@@ -386,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260713-1330";
+const APP_VERSION="20260713-1405";
 
 const $=id=>document.getElementById(id);
 
@@ -421,19 +492,24 @@ function boardStoneCounts(snapshot){
   return {black,white};
 }
 
+function buildDemoHistory(){
+  const len=Math.max(1,state.moves.length);
+  const arr=[];
+  let value=50;
+  for(let i=0;i<=len;i++){
+    value += Math.sin(i*.31)*1.05 + Math.cos(i*.13)*.55;
+    value += ((i%17===0)?(Math.sin(i)*4.2):0);
+    value=Math.max(8,Math.min(92,value));
+    arr.push(value);
+  }
+  return arr;
+}
+
 function localDemoAnalysis(){
   const snap=activateSnapshot(state.index);
-  const counts=boardStoneCounts(snap);
-  const total=Math.max(1,counts.black+counts.white);
-  const captureDelta=(snap.blackCaptures||0)-(snap.whiteCaptures||0);
-  const stoneDelta=counts.black-counts.white;
-  const phase=state.moves.length?state.index/state.moves.length:0;
-
-  let blackWin=50 + stoneDelta*0.22 + captureDelta*1.4;
-  blackWin += Math.sin((state.index+1)*0.37)*2.2;
-  blackWin=Math.max(8,Math.min(92,blackWin));
-  const scoreLead=(blackWin-50)*0.24;
-
+  const history=buildDemoHistory();
+  const blackWin=history[Math.min(state.index,history.length-1)];
+  const scoreLead=(blackWin-50)*0.23;
   const empties=[];
   for(let y=0;y<state.size;y++){
     for(let x=0;x<state.size;x++){
@@ -441,22 +517,27 @@ function localDemoAnalysis(){
     }
   }
   const strategic=[
-    {x:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.75))),y:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.25)))},
-    {x:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.25))),y:Math.max(0,Math.min(state.size-1,Math.floor(state.size*0.75)))},
-    {x:Math.floor(state.size/2),y:Math.floor(state.size/2)}
+    {x:Math.floor(state.size*.75),y:Math.floor(state.size*.25)},
+    {x:Math.floor(state.size*.25),y:Math.floor(state.size*.75)},
+    {x:Math.floor(state.size/2),y:Math.floor(state.size/2)},
+    {x:Math.floor(state.size*.72),y:Math.floor(state.size*.72)},
+    {x:Math.floor(state.size*.28),y:Math.floor(state.size*.28)}
   ];
   const picks=[];
   for(const p of strategic.concat(empties)){
-    if(picks.length>=3)break;
-    if(snap.board[p.y]?.[p.x])continue;
-    if(!picks.some(q=>q.x===p.x&&q.y===p.y))picks.push(p);
+    if(picks.length>=5)break;
+    const x=Math.max(0,Math.min(state.size-1,p.x));
+    const y=Math.max(0,Math.min(state.size-1,p.y));
+    if(snap.board[y]?.[x])continue;
+    if(!picks.some(q=>q.x===x&&q.y===y))picks.push({x,y});
   }
-
   const coord=p=>(coordLetters[p.x]||"?")+(state.size-p.y);
   const recommendations=picks.map((p,i)=>({
     ...p,
     coord:coord(p),
-    confidence:Math.max(42,Math.round(72-i*11+Math.sin(state.index+i)*4))
+    policy:Math.max(8,Math.round(78-i*13+Math.sin(state.index+i)*4)),
+    winGain:Math.max(.2,3.8-i*.7+Math.sin(i+state.index)*.4),
+    scoreGain:Math.max(.1,4.6-i*.8+Math.cos(i+state.index)*.5)
   }));
 
   let situation="局勢均衡";
@@ -465,53 +546,90 @@ function localDemoAnalysis(){
   else if(blackWin<=38)situation="白方明顯優勢";
   else if(blackWin<=46)situation="白方稍優";
 
-  let teaching;
-  if(state.index===0){
-    teaching="目前是空棋盤。可先選擇棋譜，或在人機模式建立新對局。";
-  }else if(phase<0.3){
-    teaching="布局階段應優先兼顧角、邊與全局效率。不要只追求局部吃子，先確認每一手是否兼具發展性。";
-  }else if(phase<0.75){
-    teaching="中盤重點是弱棋管理。先判斷雙方最弱的一塊棋，再決定攻擊、補強或轉身搶大場。";
-  }else{
-    teaching="進入收束階段，應比較每個官子的目數與先後手價值。先下大官子，再處理逆收與小官子。";
+  const phase=state.moves.length?state.index/state.moves.length:0;
+  let teaching="目前是空棋盤。可先載入棋譜，或在人機模式建立新對局。";
+  if(state.index>0 && phase<.3) teaching="布局階段應優先兼顧角、邊與全局效率。先確認每一手是否兼具發展性，不要只追求局部吃子。";
+  else if(state.index>0 && phase<.75) teaching="中盤重點是弱棋管理。先找雙方最弱的一塊棋，再決定攻擊、補強或轉身搶大場。";
+  else if(state.index>0) teaching="進入收束階段，應比較每個官子的目數與先後手價值。先下大官子，再處理逆收與小官子。";
+
+  const mistakes=[];
+  for(let i=2;i<history.length;i++){
+    const loss=Math.max(0,history[i-1]-history[i]);
+    if(loss>1.2)mistakes.push({move:i,loss});
   }
-  if(snap.lastCapture>0){
-    teaching+=` 本手發生提子 ${snap.lastCapture} 顆，建議再檢查提子後的先手價值與劫材。`;
-  }
+  mistakes.sort((a,b)=>b.loss-a.loss);
 
   return {
-    blackWin,
-    whiteWin:100-blackWin,
-    scoreLead,
-    situation,
-    recommendations,
-    teaching,
+    blackWin, whiteWin:100-blackWin, scoreLead, situation,
+    recommendations, teaching, history, mistakes:mistakes.slice(0,5),
     source:"local-demo"
   };
+}
+
+function drawWinRateChart(){
+  const canvas=$("winRateCanvas");
+  if(!canvas || !state.analysis)return;
+  const rect=canvas.getBoundingClientRect();
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  canvas.width=Math.max(300,Math.floor(rect.width*dpr));
+  canvas.height=Math.floor(180*dpr);
+  const ctx=canvas.getContext("2d");
+  ctx.scale(dpr,dpr);
+  const w=canvas.width/dpr,h=canvas.height/dpr;
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle="#5f4329";ctx.lineWidth=1;
+  for(let y=20;y<h;y+=35){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+  const data=state.analysis.history;
+  ctx.strokeStyle="#efc45f";ctx.lineWidth=2.5;ctx.beginPath();
+  data.forEach((v,i)=>{
+    const x=data.length<=1?0:(i/(data.length-1))*w;
+    const y=h-(v/100)*h;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  const mx=data.length<=1?0:(state.index/(data.length-1))*w;
+  ctx.strokeStyle="#ff6655";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(mx,0);ctx.lineTo(mx,h);ctx.stroke();
+}
+
+function renderMistakes(){
+  const box=$("mistakeList"); if(!box)return;
+  box.innerHTML="";
+  const rows=state.analysis?.mistakes||[];
+  if(!rows.length){box.innerHTML='<span style="color:var(--muted)">尚未偵測到明顯失誤。</span>';return}
+  rows.forEach((m,i)=>{
+    const row=document.createElement("div");
+    row.className="mistake-row";
+    row.innerHTML=`<strong>第 ${m.move} 手</strong><span class="loss-meter"><i style="width:${Math.min(100,m.loss*10)}%"></i></span><span>-${m.loss.toFixed(1)}%</span>`;
+    row.addEventListener("click",()=>{goTo(m.move);updateProfessionalDashboard();toast("已跳到第 "+m.move+" 手")});
+    box.appendChild(row);
+  });
 }
 
 function updateProfessionalDashboard(){
   state.analysis=localDemoAnalysis();
   const a=state.analysis;
   $("dashBlackWin").textContent=a.blackWin.toFixed(1)+"%";
-  $("dashWhiteWin").textContent="白方 "+a.whiteWin.toFixed(1)+"%";
+  $("dashWhiteWinValue").textContent=a.whiteWin.toFixed(1)+"%";
+  $("dashBlackTrend").textContent=a.blackWin>=50?"黑方領先":"黑方落後";
+  $("dashWhiteTrend").textContent=a.whiteWin>=50?"白方領先":"白方落後";
   $("dashScoreLead").textContent=(a.scoreLead>=0?"黑 +":"白 +")+Math.abs(a.scoreLead).toFixed(1);
   $("dashSituation").textContent=a.situation;
   $("dashMove").textContent=`${state.index} / ${state.moves.length}`;
   const mv=state.moves[state.index-1];
   $("dashLastMove").textContent="最新落子："+(mv&&!mv.pass?coordLabel(mv.x,mv.y):"—");
-  $("dashStatus").textContent=state.moves.length?"Analyzed":"Ready";
-  $("dashSource").textContent="本機示範估算（非 KataGo）";
-  $("aiEngineBadge").textContent="● 示範分析模式";
+  $("aiEngineBadge").textContent="● 本機示範分析（非 KataGo）";
   $("teacherAnalysis").textContent=a.teaching;
 
   const list=$("recommendList");
   list.innerHTML="";
   a.recommendations.forEach((r,i)=>{
     const row=document.createElement("div");
-    row.className="recommend-item";
-    row.innerHTML=`<span class="recommend-rank">${i+1}</span>
-      <strong>${r.coord}</strong><span>${r.confidence}%</span>`;
+    row.className="policy-row";
+    row.innerHTML=`<span class="rank-dot">${i+1}</span>
+      <strong>${r.coord}</strong>
+      <span class="policy-bar"><i style="width:${r.policy}%"></i></span>
+      <span>${r.policy}%</span>
+      <span class="score-col">+${r.scoreGain.toFixed(1)}目</span>`;
     row.addEventListener("click",()=>{
       state.bestPoint={x:r.x,y:r.y};
       drawBoard(state.currentSnapshot||activateSnapshot(state.index));
@@ -519,8 +637,9 @@ function updateProfessionalDashboard(){
     });
     list.appendChild(row);
   });
+  renderMistakes();
+  requestAnimationFrame(drawWinRateChart);
 }
-
 function loadBookmarks(){
   try{
     state.bookmarks=JSON.parse(localStorage.getItem("at-build017-bookmarks")||"[]");
@@ -709,7 +828,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build017 Professional Foundation 已啟用；新增分析總覽、Top 3 推薦與收藏局面。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build017 Professional Foundation 已啟用；新增勝率總覽、Top 5 Policy、勝率曲線、失誤排行與收藏局面。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1213,13 +1332,24 @@ if(redrawBtn){
   });
 }
 
+
+const winCanvas=$("winRateCanvas");
+if(winCanvas){
+  winCanvas.addEventListener("click",e=>{
+    if(!state.analysis)return;
+    const r=winCanvas.getBoundingClientRect();
+    const ratio=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    goTo(Math.round(ratio*state.moves.length));
+    updateProfessionalDashboard();
+  });
+}
 state.engineVerified=verifyRulesEngine();
 resizeBoard(true);syncUI();
 state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build017.0 Professional Foundation 已啟動");
+  toast("Build017.1 Professional AI Dashboard 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
