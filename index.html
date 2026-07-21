@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260721-1500">
-<title>AlphaTrader AI Pro V5｜Build020.0 KataGo Real Analysis</title>
+<title>AlphaTrader AI Pro V5｜Build020.1 Human vs AI</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build020.0 KataGo Real Analysis */
+/* Build020.1 Human vs AI */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +166,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build020.0 KataGo Real Analysis */
+/* Build020.1 Human vs AI */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -258,7 +258,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.0 KataGo Real Analysis */
+/* Build020.1 Human vs AI */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -328,7 +328,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.0 KataGo Real Analysis */
+/* Build020.1 Human vs AI */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -393,7 +393,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.0 KataGo Real Analysis</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.1 Human vs AI</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -442,7 +442,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build020.0 KataGo Real Analysis</h2>
+  <h2>Build020.1 Human vs AI</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -484,7 +484,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build020.0</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build020.1</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -505,7 +505,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build020.0 KataGo Real Analysis</h2>
+  <h2>Build020.1 Human vs AI</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -609,7 +609,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"}
+  humanMode:false,humanColor:"B",turn:"B",sound:true,aiThinking:false,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"}
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1213,7 +1213,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.0 KataGo Real Analysis 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.1 Human vs AI 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1609,52 +1609,72 @@ $("newGameBtn").onclick=()=>{
 };
 
 
-$("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";
-  state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
-  syncUI();closeModal("humanModal");toast("人機對弈已開始");
-};
-canvas.addEventListener("click",e=>{
-  if(!state.humanMode)return;
-  const rect=canvas.getBoundingClientRect(),css=rect.width,pad=css*.055,step=(css-pad*2)/(state.size-1);
-  const x=Math.round((e.clientX-rect.left-pad)/step),y=Math.round((e.clientY-rect.top-pad)/step);
-  if(x<0||y<0||x>=state.size||y>=state.size)return;
+function playStoneSound(captured=0){
+  if(!state.sound)return;
+  try{
+    const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();
+    o.frequency.value=captured?180:260;g.gain.value=.08;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.06);
+  }catch(_){}
+}
 
+function appendLegalMove(move){
   const current=positionAtMove(state.index).board;
   const prev=state.index>0?positionAtMove(state.index-1).board:null;
   const previousHash=prev?positionHash(prev):null;
-  const move={c:state.turn,x,y};
   const result=executeMove(current,emptyProvenance(state.size),move,state.index+1,{rejectSuicide:true,koHash:previousHash});
-  if(!result.ok){toast(result.error);return}
-
+  if(!result.ok)return result;
   state.moves=state.moves.slice(0,state.index);state.actions=[];state.replayCache=[];
-  state.moves.push(move);state.index++;
-  state.turn=state.turn==="B"?"W":"B";
-  syncUI();
-  if(state.sound){
-    try{
-      const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();
-      o.frequency.value=result.captured?180:260;g.gain.value=.08;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.06)
-    }catch(_){}
-  }
+  state.moves.push(move);state.index++;state.turn=state.turn==="B"?"W":"B";
+  state.analysis=null;state.bestPoint=null;
+  syncUI();playStoneSound(result.captured);
+  return result;
+}
 
-  if(state.turn!==state.humanColor){
-    setTimeout(()=>{
-      const aiCurrent=positionAtMove(state.index).board;
-      const aiPrev=state.index>0?positionAtMove(state.index-1).board:null;
-      const aiPreviousHash=aiPrev?positionHash(aiPrev):null;
-      const pts=[];
-      for(let yy=0;yy<state.size;yy++)for(let xx=0;xx<state.size;xx++){
-        if(aiCurrent[yy][xx])continue;
-        const test=executeMove(aiCurrent,emptyProvenance(state.size),{c:state.turn,x:xx,y:yy},state.index+1,{rejectSuicide:true,koHash:aiPreviousHash});
-        if(test.ok)pts.push([xx,yy]);
-      }
-      if(pts.length){
-        const [ax,ay]=pts[Math.floor(Math.random()*pts.length)];
-        state.moves.push({c:state.turn,x:ax,y:ay});state.actions=[];state.replayCache=[];state.index++;state.turn=state.turn==="B"?"W":"B";syncUI();
-      }
-    },350);
+async function playAiTurn(){
+  if(!state.humanMode || state.turn===state.humanColor || state.aiThinking)return;
+  state.aiThinking=true;
+  const aiColor=state.turn;
+  $("statusText").textContent="AI 思考中…";
+  toast("KataGo 思考中…");
+  try{
+    const analysis=await requestCloudAnalysis();
+    state.analysis=analysis;
+    const candidates=analysis.recommendations||[];
+    let played=false;
+    for(const r of candidates){
+      const result=appendLegalMove({c:aiColor,x:r.x,y:r.y});
+      if(result.ok){played=true;toast("AI 落子："+r.coord);break;}
+    }
+    if(!played){
+      state.moves.push({c:aiColor,pass:true,x:-1,y:-1});
+      state.actions=[];state.replayCache=[];state.index++;state.turn=state.turn==="B"?"W":"B";
+      syncUI();toast("AI 選擇停一手");
+    }
+  }catch(err){
+    toast("AI 連線失敗："+err.message);
+    setConnectorStatus("bad","人機對弈 AI 連線失敗："+err.message);
+  }finally{
+    state.aiThinking=false;
+    $("statusText").textContent=state.turn===state.humanColor?"輪到您落子":"待命";
   }
+}
+
+$("startHumanBtn").onclick=()=>{
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";state.aiThinking=false;state.analysis=null;
+  state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
+  syncUI();closeModal("humanModal");toast("人機對弈已開始");
+  if(state.humanColor==="W")setTimeout(playAiTurn,300);
+};
+canvas.addEventListener("click",e=>{
+  if(!state.humanMode)return;
+  if(state.aiThinking){toast("AI 正在思考中");return;}
+  if(state.turn!==state.humanColor){toast("目前輪到 AI");return;}
+  const rect=canvas.getBoundingClientRect(),css=rect.width,pad=css*.055,step=(css-pad*2)/(state.size-1);
+  const x=Math.round((e.clientX-rect.left-pad)/step),y=Math.round((e.clientY-rect.top-pad)/step);
+  if(x<0||y<0||x>=state.size||y>=state.size)return;
+  const result=appendLegalMove({c:state.turn,x,y});
+  if(!result.ok){toast(result.error);return;}
+  if(state.turn!==state.humanColor)setTimeout(playAiTurn,250);
 });
 $("saveApiBtn").onclick=()=>{
   saveApiSettings();
@@ -1747,7 +1767,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build020.0 KataGo Real Analysis 已啟動");
+  toast("Build020.1 Human vs AI 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
