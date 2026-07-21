@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260713-1435">
-<title>AlphaTrader AI Pro V5｜Build017.2 KataGo Connector</title>
+<meta name="app-version" content="20260721-1500">
+<title>AlphaTrader AI Pro V5｜Build020.0 KataGo Real Analysis</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build017.2 KataGo Connector */
+/* Build020.0 KataGo Real Analysis */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +166,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build017.2 KataGo Connector */
+/* Build020.0 KataGo Real Analysis */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -258,7 +258,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build017.2 KataGo Connector */
+/* Build020.0 KataGo Real Analysis */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -328,7 +328,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build017.2 KataGo Connector */
+/* Build020.0 KataGo Real Analysis */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -393,7 +393,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build017.2 KataGo Connector</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.0 KataGo Real Analysis</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -427,7 +427,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260713-1435</p>
+  <p>版本：20260721-1500</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -442,7 +442,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build017.2 KataGo Connector</h2>
+  <h2>Build020.0 KataGo Real Analysis</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -484,7 +484,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build017.2</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build020.0</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -505,10 +505,10 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build017.2 KataGo Connector</h2>
+  <h2>Build020.0 KataGo Real Analysis</h2>
 
   <label>分析 API 網址
-    <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
+    <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
   </label>
 
   <div class="connector-grid">
@@ -533,7 +533,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       </select>
     </label>
     <label>貼目
-      <input id="apiKomi" type="number" step="0.5" value="6.5">
+      <input id="apiKomi" type="number" step="0.5" value="7.5">
     </label>
     <label>逾時秒數
       <input id="apiTimeout" type="number" min="3" max="120" value="30">
@@ -590,7 +590,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260713-1435";
+const APP_VERSION="20260721-1500";
 
 const $=id=>document.getElementById(id);
 
@@ -628,12 +628,12 @@ function boardStoneCounts(snapshot){
 
 function getApiSettings(){
   return {
-    url:(localStorage.getItem("katagoApiUrl")||"").trim(),
+    url:(localStorage.getItem("katagoApiUrl")||"https://alphatrader-katago-server-v2.onrender.com/analyze").trim(),
     key:localStorage.getItem("katagoApiKey")||"",
     authMode:localStorage.getItem("katagoAuthMode")||"bearer",
-    visits:Number(localStorage.getItem("katagoVisits")||500),
+    visits:Number(localStorage.getItem("katagoVisits")||30),
     rules:localStorage.getItem("katagoRules")||"japanese",
-    komi:Number(localStorage.getItem("katagoKomi")||6.5),
+    komi:Number(localStorage.getItem("katagoKomi")||7.5),
     timeout:Number(localStorage.getItem("katagoTimeout")||30)
   };
 }
@@ -675,23 +675,16 @@ function moveToGtp(move){
 }
 
 function currentPositionPayload(){
-  const played=state.moves.slice(0,state.index).map(m=>[m.c,moveToGtp(m)]);
-  const initial=[
-    ...state.setupB.map(p=>["B",moveToGtp(p)]),
-    ...state.setupW.map(p=>["W",moveToGtp(p)])
-  ];
+  const played=state.moves.slice(0,state.index).map(moveToGtp);
   const s=getApiSettings();
+  const nextPlayer=state.index<state.moves.length
+    ? (state.moves[state.index]?.c||"B")
+    : (state.index%2===0?"B":"W");
   return {
-    boardSize:state.size,
+    board_size:state.size,
     moves:played,
-    initialStones:initial,
-    komi:s.komi,
-    rules:s.rules,
-    maxVisits:s.visits,
-    includePolicy:true,
-    includeOwnership:true,
-    moveNumber:state.index,
-    appVersion:APP_VERSION
+    next_player:nextPlayer,
+    komi:s.komi
   };
 }
 
@@ -733,22 +726,27 @@ function parseCloudAnalysis(raw){
   }
   if(blackWin==null)throw new Error("回傳缺少 blackWinrate 或 winrate");
 
-  let scoreLead=Number(data.scoreLead ?? root.scoreLead ?? 0);
+  let scoreLead=Number(data.score_lead ?? data.scoreLead ?? root.score_lead ?? root.scoreLead ?? 0);
   if(!Number.isFinite(scoreLead))scoreLead=0;
 
-  const infos=data.moveInfos||data.moves||data.candidates||[];
+  const infos=data.move_infos||data.moveInfos||data.moves||data.candidates||[];
   const recommendations=(Array.isArray(infos)?infos:[]).slice(0,5).map((m,i)=>{
     const gtp=m.move||m.vertex||m.coord||m.gtp;
     const p=gtpToPoint(gtp);
     if(!p || p.pass)return null;
-    const policyRate=normalizeRate(m.policy ?? m.prior ?? m.policyProb);
-    const win=normalizeRate(m.blackWinrate ?? m.winrate);
+    let policyRate=normalizeRate(m.policy ?? m.prior ?? m.policyProb);
+    if(policyRate==null){
+      const edgeVisits=Number(m.edgeVisits ?? m.edge_visits ?? m.visits ?? 0);
+      const totalVisits=Number(data.visits ?? root.visits ?? 0);
+      policyRate=totalVisits>0?edgeVisits/totalVisits*100:Math.max(10,100-i*15);
+    }
+    const win=normalizeRate(m.blackWinrate ?? m.black_winrate ?? m.winrate);
     const gain=win==null?0:win-blackWin;
     return {
       x:p.x,y:p.y,coord:String(gtp).toUpperCase(),
-      policy:Math.max(0,Math.min(100,policyRate==null?0:policyRate)),
+      policy:Math.max(0,Math.min(100,policyRate)),
       winGain:gain,
-      scoreGain:Number(m.scoreLead ?? scoreLead),
+      scoreGain:Number(m.score_lead ?? m.scoreLead ?? scoreLead),
       pv:Array.isArray(m.pv)?m.pv:[]
     };
   }).filter(Boolean);
@@ -773,7 +771,7 @@ function parseCloudAnalysis(raw){
   const best=recommendations[0];
   const teaching=best
     ? `KataGo 建議優先考慮 ${best.coord}。目前黑勝率 ${blackWin.toFixed(1)}%，預估目差 ${scoreLead>=0?"黑":"白"}領先 ${Math.abs(scoreLead).toFixed(1)} 目。`
-    : `KataGo 已完成目前局面分析。黑勝率 ${blackWin.toFixed(1)}%，預估目差 ${scoreLead>=0?"黑":"白"}領先 ${Math.abs(scoreLead).toFixed(1)} 目。`;
+    : `KataGo 已完成目前局面分析，但後端沒有提供候選著手。黑勝率 ${blackWin.toFixed(1)}%，預估目差 ${scoreLead>=0?"黑":"白"}領先 ${Math.abs(scoreLead).toFixed(1)} 目。`;
 
   return {
     blackWin,
@@ -785,7 +783,7 @@ function parseCloudAnalysis(raw){
     history,
     mistakes:mistakes.slice(0,5),
     source:"katago",
-    visits:Number(root.visits ?? data.visits ?? 0),
+    visits:Number(data.visits ?? root.visits ?? 0),
     ownership:Array.isArray(data.ownership)?data.ownership:null,
     raw:data
   };
@@ -1215,7 +1213,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build017.2 KataGo Connector 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.0 KataGo Real Analysis 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1749,7 +1747,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build017.2 KataGo Connector 已啟動");
+  toast("Build020.0 KataGo Real Analysis 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
