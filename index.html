@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260721-2004">
-<title>AlphaTrader AI Pro V5｜Build020.5 前後端讓子對弈版</title>
+<title>AlphaTrader AI Pro V5｜Build020.6 讓子棋盤修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build020.5 前後端讓子對弈版 */
+/* Build020.6 讓子棋盤修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +166,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build020.5 前後端讓子對弈版 */
+/* Build020.6 讓子棋盤修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -258,7 +258,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.5 前後端讓子對弈版 */
+/* Build020.6 讓子棋盤修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -328,7 +328,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.5 前後端讓子對弈版 */
+/* Build020.6 讓子棋盤修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -470,7 +470,7 @@ body.human-active .player{display:none!important}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.5 前後端讓子對弈版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.6 讓子棋盤修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -527,7 +527,7 @@ body.human-active .player{display:none!important}
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260721-2005</p>
+  <p>版本：20260722-0006</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -542,7 +542,7 @@ body.human-active .player{display:none!important}
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build020.5 前後端讓子對弈版</h2>
+  <h2>Build020.6 讓子棋盤修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -609,7 +609,7 @@ body.human-active .player{display:none!important}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build020.5 前後端讓子對弈版</h2>
+  <h2>Build020.6 讓子棋盤修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1327,7 +1327,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.5 前後端讓子對弈版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.6 讓子棋盤修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); closeModal("infoModal");
     toast("棋譜已載入，可使用前後鍵、播放鍵與進度條操作");
     return true;
@@ -1467,6 +1467,14 @@ function normalizedActions(){
 }
 function buildReplayCache(){
   let board=emptyPosition(state.size),provenance=emptyProvenance(state.size);
+  // 讓子與 SGF 設定子必須在第 0 手就顯示於棋盤。
+  if((state.setupB&&state.setupB.length)||(state.setupW&&state.setupW.length)){
+    const initialSetup=applySetup(board,provenance,{
+      addB:state.setupB||[],addW:state.setupW||[],remove:[]
+    });
+    board=initialSetup.board;
+    provenance=initialSetup.provenance;
+  }
   let blackCaptures=0,whiteCaptures=0,illegal=0,moveNo=0;
   let hashTwoPliesAgo=null;
   const cache=[{
@@ -1804,7 +1812,7 @@ function syncHandicapSettings(){
     $("humanColor").value="B";
     $("humanColor").disabled=true;
     $("humanKomi").value="0.5";
-    $("handicapHint").textContent=`讓${handicap}子：人類固定執黑，AI 執白先下，貼目 0.5。`;
+    $("handicapHint").textContent=`讓${handicap}子：人類固定執黑，先擺好黑棋讓子，之後由 AI 白棋下第一手，貼目 0.5。`;
   }else{
     $("humanColor").disabled=false;
     $("humanKomi").value=String(getApiSettings().komi);
@@ -1834,7 +1842,7 @@ $("startHumanBtn").onclick=()=>{
   state.gameInfo={handicap:String(handicap||""),komi:String(state.komi)};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=handicap?"B":$("humanColor").value;state.turn=handicap?"W":"B";state.aiThinking=false;state.aiPaused=false;state.gameOver=false;state.consecutivePasses=0;state.analysis=null;
   $("proScoreResult").classList.remove("show");$("proScoreResult").innerHTML="";
   state.sound=$("soundOn").value==="1";localStorage.setItem("katagoVisits",$("humanStrength").value);$("proStrength").value=$("humanStrength").value;document.body.classList.add("human-active");$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
-  syncUI();closeModal("humanModal");toast(handicap?`讓${handicap}子對局已開始，輪到 AI 白棋`:`人機對弈已開始`);
+  syncUI();closeModal("humanModal");toast(handicap?`讓${handicap}子對局已開始，黑棋讓子已擺好，輪到 AI 白棋`:`人機對弈已開始`);
   if(state.turn!==state.humanColor)setTimeout(playAiTurn,300);
 };
 canvas.addEventListener("click",e=>{
@@ -2047,7 +2055,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build020.5 前後端讓子對弈版 已啟動");
+  toast("Build020.6 讓子棋盤修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
