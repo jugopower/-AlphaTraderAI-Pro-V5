@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260721-2002">
-<title>AlphaTrader AI Pro V5｜Build020.2 Human vs AI 專業對弈版</title>
+<meta name="app-version" content="20260721-2003">
+<title>AlphaTrader AI Pro V5｜Build020.3 對弈版面修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build020.2 Human vs AI 專業對弈版 */
+/* Build020.3 對弈版面修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +166,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build020.2 Human vs AI 專業對弈版 */
+/* Build020.3 對弈版面修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -258,7 +258,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.2 Human vs AI 專業對弈版 */
+/* Build020.3 對弈版面修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -328,7 +328,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.2 Human vs AI 專業對弈版 */
+/* Build020.3 對弈版面修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -417,6 +417,51 @@ body.human-active .human-dock{display:grid}
 }
 .coord-label{pointer-events:none}
 
+
+
+/* Build020.3：勝負試算與控制列防重疊 */
+.score-result{
+  grid-column:1/-1;
+  display:none;
+  background:#090604;
+  border:1px solid #7b5732;
+  border-radius:12px;
+  padding:10px;
+  line-height:1.55;
+  color:#f6e4c5;
+}
+.score-result.show{display:block}
+.score-result strong{color:var(--gold);font-size:16px}
+body.human-active .player{display:none!important}
+@media (orientation:landscape) and (min-width:901px){
+  body.human-active .board-wrap{grid-row:1 / span 2}
+  body.human-active .human-dock{
+    right:8px;top:82px;width:148px;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    max-height:calc(100dvh - 92px);
+  }
+  body.human-active .human-dock button,
+  body.human-active .human-dock select{min-height:40px;font-size:12px;padding:6px 4px}
+  body.human-active .human-status,
+  body.human-active .score-result{grid-column:1/-1}
+}
+@media (orientation:portrait), (max-width:900px){
+  body.human-active .app{
+    grid-template-rows:76px minmax(520px,calc(100dvh - 92px));
+    padding-bottom:0;
+  }
+  body.human-active .board-wrap{grid-row:2;height:calc(100dvh - 92px);max-height:calc(100dvh - 92px)}
+  body.human-active .human-dock{
+    position:relative;
+    left:auto;right:auto;bottom:auto;
+    margin:8px;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    max-height:none;
+    overflow:visible;
+  }
+  body.human-active .score-result{grid-column:1/-1}
+}
+
 </style>
 </head>
 <body>
@@ -425,7 +470,7 @@ body.human-active .human-dock{display:grid}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.2 Human vs AI 專業對弈版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.3 對弈版面修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -469,16 +514,18 @@ body.human-active .human-dock{display:grid}
   <button id="proCoordsBtn">座標：關</button>
   <button id="proSoundBtn" class="active">音效：開</button>
   <button id="proAnalyzeBtn">AI 分析</button>
+  <button id="proScoreBtn">勝負試算</button>
   <button id="proSaveBtn">儲存 SGF</button>
   <button id="proLoadBtn">讀取 SGF</button>
   <button id="proFullBtn">全螢幕</button>
+  <div id="proScoreResult" class="score-result" aria-live="polite"></div>
 </section>
 
 <input id="sgfFile" type="file" accept=".sgf,.SGF,application/x-go-sgf,application/octet-stream,text/plain" hidden>
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260721-2002</p>
+  <p>版本：20260721-2003</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -493,7 +540,7 @@ body.human-active .human-dock{display:grid}
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build020.2 Human vs AI 專業對弈版</h2>
+  <h2>Build020.3 對弈版面修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -557,7 +604,7 @@ body.human-active .human-dock{display:grid}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build020.2 Human vs AI 專業對弈版</h2>
+  <h2>Build020.3 對弈版面修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -642,7 +689,7 @@ body.human-active .human-dock{display:grid}
 
 <script>
 "use strict";
-const APP_VERSION="20260721-2002";
+const APP_VERSION="20260721-2003";
 
 const $=id=>document.getElementById(id);
 
@@ -1265,7 +1312,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.2 Human vs AI 專業對弈版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.3 對弈版面修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1722,6 +1769,7 @@ async function playAiTurn(){
 
 $("startHumanBtn").onclick=()=>{
   state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";state.aiThinking=false;state.aiPaused=false;state.gameOver=false;state.consecutivePasses=0;state.analysis=null;
+  $("proScoreResult").classList.remove("show");$("proScoreResult").innerHTML="";
   state.sound=$("soundOn").value==="1";localStorage.setItem("katagoVisits",$("humanStrength").value);$("proStrength").value=$("humanStrength").value;document.body.classList.add("human-active");$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   syncUI();closeModal("humanModal");toast("人機對弈已開始");
   if(state.humanColor==="W")setTimeout(playAiTurn,300);
@@ -1743,7 +1791,7 @@ function appendPassMove(color){
   state.moves=state.moves.slice(0,state.index);state.actions=[];state.replayCache=[];
   state.moves.push({c:color,pass:true,x:-1,y:-1});state.index++;state.turn=state.turn==="B"?"W":"B";
   state.consecutivePasses=(state.consecutivePasses||0)+1;state.analysis=null;state.bestPoint=null;
-  if(state.consecutivePasses>=2){state.gameOver=true;toast("雙方連續 Pass，對局結束");}
+  if(state.consecutivePasses>=2){state.gameOver=true;renderScoreEstimate(true);toast("雙方連續 Pass，已完成勝負試算");}
   syncUI();
 }
 function undoHumanPair(){
@@ -1752,12 +1800,62 @@ function undoHumanPair(){
   let remove=Math.min(2,state.moves.length);
   state.moves.splice(state.moves.length-remove,remove);state.index=state.moves.length;
   state.turn=state.index%2===0?"B":"W";state.actions=[];state.replayCache=[];state.analysis=null;state.bestPoint=null;
-  state.gameOver=false;state.consecutivePasses=0;syncUI();toast("已退回上一回合");
+  state.gameOver=false;state.consecutivePasses=0;$("proScoreResult").classList.remove("show");syncUI();toast("已退回上一回合");
 }
+
+function estimateBoardScore(){
+  const pos=positionAtMove(state.index);
+  const board=pos.board;
+  const size=state.size;
+  const seen=Array.from({length:size},()=>Array(size).fill(false));
+  let blackStones=0,whiteStones=0,blackTerritory=0,whiteTerritory=0,neutral=0;
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+    if(board[y][x]==="B")blackStones++;
+    else if(board[y][x]==="W")whiteStones++;
+  }
+  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+    if(board[y][x]||seen[y][x])continue;
+    const queue=[[x,y]],region=[];seen[y][x]=true;const borders=new Set();
+    while(queue.length){
+      const [cx,cy]=queue.pop();region.push([cx,cy]);
+      for(const [dx,dy] of dirs){
+        const nx=cx+dx,ny=cy+dy;
+        if(nx<0||ny<0||nx>=size||ny>=size)continue;
+        const v=board[ny][nx];
+        if(v)borders.add(v);
+        else if(!seen[ny][nx]){seen[ny][nx]=true;queue.push([nx,ny]);}
+      }
+    }
+    if(borders.size===1){
+      if(borders.has("B"))blackTerritory+=region.length;
+      else whiteTerritory+=region.length;
+    }else neutral+=region.length;
+  }
+  const komi=Number(getApiSettings().komi)||7.5;
+  const blackCaptures=Number(pos.blackCaptures||0);
+  const whiteCaptures=Number(pos.whiteCaptures||0);
+  const black=blackTerritory+blackCaptures;
+  const white=whiteTerritory+whiteCaptures+komi;
+  const diff=black-white;
+  return {black,white,diff,blackTerritory,whiteTerritory,blackCaptures,whiteCaptures,blackStones,whiteStones,neutral,komi};
+}
+function renderScoreEstimate(auto=false){
+  const r=estimateBoardScore();
+  const winner=Math.abs(r.diff)<0.05?"盤面接近和棋":`${r.diff>0?"黑":"白"}方約領先 ${Math.abs(r.diff).toFixed(1)} 目`;
+  const box=$("proScoreResult");
+  box.innerHTML=`<strong>${winner}</strong><br>`+
+    `黑：地 ${r.blackTerritory}＋提子 ${r.blackCaptures}＝${r.black.toFixed(1)}<br>`+
+    `白：地 ${r.whiteTerritory}＋提子 ${r.whiteCaptures}＋貼目 ${r.komi}＝${r.white.toFixed(1)}<br>`+
+    `<small>此為盤面試算，尚未自動判定死棋；正式終局前可作參考。</small>`;
+  box.classList.add("show");
+  if(!auto)toast("勝負試算完成");
+}
+
 function createSgfText(){
   const komi=getApiSettings().komi;
   const toSgf=m=>m.pass?"":String.fromCharCode(97+m.x)+String.fromCharCode(97+m.y);
-  return `(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro-V5:Build020.2]SZ[${state.size}]KM[${komi}]`+
+  return `(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro-V5:Build020.3]SZ[${state.size}]KM[${komi}]`+
     state.moves.map(m=>`;${m.c}[${toSgf(m)}]`).join("")+")";
 }
 function downloadSgf(){
@@ -1777,6 +1875,7 @@ $("proNumbersBtn").onclick=()=>{state.showNumbers=!state.showNumbers;$("proNumbe
 $("proCoordsBtn").onclick=()=>{state.showCoords=!state.showCoords;$("proCoordsBtn").textContent=`座標：${state.showCoords?"開":"關"}`;$("proCoordsBtn").classList.toggle("active",state.showCoords);syncUI();};
 $("proSoundBtn").onclick=()=>{state.sound=!state.sound;$("proSoundBtn").textContent=`音效：${state.sound?"開":"關"}`;$("proSoundBtn").classList.toggle("active",state.sound);};
 $("proAnalyzeBtn").onclick=()=>{updateProfessionalDashboard();openModal("aiModal")};
+$("proScoreBtn").onclick=()=>renderScoreEstimate(false);
 $("proSaveBtn").onclick=downloadSgf;
 $("proLoadBtn").onclick=()=>$("sgfFile").click();
 $("proFullBtn").onclick=toggleFullscreen;
@@ -1873,7 +1972,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build020.2 Human vs AI 專業對弈版 已啟動");
+  toast("Build020.3 對弈版面修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
