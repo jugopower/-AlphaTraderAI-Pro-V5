@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260721-2004">
-<title>AlphaTrader AI Pro V5｜Build020.6 讓子棋盤修正版</title>
+<meta name="app-version" content="20260722-0207">
+<title>AlphaTrader AI Pro V5｜Build020.7 棋譜載入與功能鍵修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,33 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build020.6 讓子棋盤修正版 */
+/* Build020.7：直式棋譜控制列固定可見 */
+@media (orientation:portrait),(max-width:900px){
+  body:not(.human-active) .app{
+    padding-bottom:132px;
+    grid-template-rows:76px minmax(520px,calc(100dvh - 96px));
+  }
+  body:not(.human-active) .player{
+    position:fixed;
+    left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));
+    z-index:38;
+    height:118px;
+    display:grid!important;
+    grid-template-rows:58px 1fr;
+    padding:6px;
+    border-radius:16px;
+    box-shadow:0 -8px 28px #000b;
+  }
+  body:not(.human-active) .controls button{min-height:54px;font-size:24px}
+  body:not(.human-active) .board-wrap{
+    grid-row:2;
+    height:calc(100dvh - 96px);
+    max-height:calc(100dvh - 96px);
+    padding-bottom:124px;
+  }
+}
+
+/* Build020.7 棋譜載入與功能鍵修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +192,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build020.6 讓子棋盤修正版 */
+/* Build020.7 棋譜載入與功能鍵修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -258,7 +284,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.6 讓子棋盤修正版 */
+/* Build020.7 棋譜載入與功能鍵修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -328,7 +354,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.6 讓子棋盤修正版 */
+/* Build020.7 棋譜載入與功能鍵修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -470,7 +496,7 @@ body.human-active .player{display:none!important}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.6 讓子棋盤修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.7 棋譜載入與功能鍵修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -542,7 +568,7 @@ body.human-active .player{display:none!important}
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build020.6 讓子棋盤修正版</h2>
+  <h2>Build020.7 棋譜載入與功能鍵修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -584,7 +610,7 @@ body.human-active .player{display:none!important}
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build020.5</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build020.7</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -609,7 +635,7 @@ body.human-active .player{display:none!important}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build020.6 讓子棋盤修正版</h2>
+  <h2>Build020.7 棋譜載入與功能鍵修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1322,14 +1348,17 @@ function loadSGFText(text,name){
     state.humanMode=false; state.aiThinking=false; state.aiPaused=false; state.gameOver=false; state.bestPoint=null;
     state.turn=state.index%2===0?"B":"W";
     document.body.classList.remove("human-active");
+    document.querySelectorAll(".modal-backdrop.open").forEach(m=>m.classList.remove("open"));
+    window.scrollTo({top:0,left:0,behavior:"auto"});
     $("proScoreResult").classList.remove("show");
     $("proScoreResult").innerHTML="";
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.6 讓子棋盤修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
-    resizeBoard(true); syncUI(); closeModal("infoModal");
-    toast("棋譜已載入，可使用前後鍵、播放鍵與進度條操作");
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.7 棋譜載入與功能鍵修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    resizeBoard(true); syncUI();
+    requestAnimationFrame(()=>{ resizeBoard(true); window.scrollTo(0,0); });
+    toast(`棋譜已載入：目前第 0 手／共 ${g.moves.length} 手，播放控制列已恢復`);
     return true;
   }catch(err){
     console.error(err);
@@ -1927,7 +1956,7 @@ function createSgfText(){
   const komi=Number.isFinite(state.komi)?state.komi:getApiSettings().komi;
   const toSgf=m=>m.pass?"":String.fromCharCode(97+m.x)+String.fromCharCode(97+m.y);
   const setup=state.setupB.length?`HA[${state.handicap||state.setupB.length}]AB${state.setupB.map(p=>`[${toSgf(p)}]`).join("")}`:"";
-  return `(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro-V5:Build020.5]SZ[${state.size}]KM[${komi}]${setup}`+
+  return `(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro-V5:Build020.7]SZ[${state.size}]KM[${komi}]${setup}`+
     state.moves.map(m=>`;${m.c}[${toSgf(m)}]`).join("")+")";
 }
 function downloadSgf(){
@@ -2055,7 +2084,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build020.6 讓子棋盤修正版 已啟動");
+  toast("Build020.7 棋譜載入與功能鍵修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
