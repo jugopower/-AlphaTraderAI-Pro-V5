@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260721-1500">
-<title>AlphaTrader AI Pro V5｜Build020.1 Human vs AI</title>
+<meta name="app-version" content="20260721-2002">
+<title>AlphaTrader AI Pro V5｜Build020.2 Human vs AI 專業對弈版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -128,7 +128,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build020.1 Human vs AI */
+/* Build020.2 Human vs AI 專業對弈版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -166,7 +166,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build020.1 Human vs AI */
+/* Build020.2 Human vs AI 專業對弈版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -258,7 +258,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.1 Human vs AI */
+/* Build020.2 Human vs AI 專業對弈版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -328,7 +328,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.1 Human vs AI */
+/* Build020.2 Human vs AI 專業對弈版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -385,6 +385,38 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .connector-grid,.connector-meta{grid-template-columns:1fr}
 }
 
+
+/* Build020.2 專業對弈控制台 */
+.human-dock{
+  display:none; position:fixed; z-index:45; gap:8px;
+  background:linear-gradient(180deg,#1c120cf2,#0e0907f2);
+  border:1px solid #7b5732; border-radius:16px; padding:9px;
+  box-shadow:0 10px 35px #0009; backdrop-filter:blur(10px);
+}
+body.human-active .human-dock{display:grid}
+.human-dock button,.human-dock select{
+  min-height:44px;border-radius:10px;border:1px solid #6c4b2c;
+  background:#24170f;color:#f6e4c5;font-weight:800;font-size:14px;padding:7px 9px;
+}
+.human-dock button.primary{background:linear-gradient(180deg,#b07a27,#744815);color:#fff8df}
+.human-dock button.danger{border-color:#a34f44;background:#4b201b;color:#ffd9d4}
+.human-dock button.active{outline:2px solid #efc45f;color:#ffe59a}
+.human-status{
+  grid-column:1/-1;display:flex;justify-content:space-between;gap:10px;align-items:center;
+  padding:8px 10px;border-radius:10px;background:#090604;border:1px solid #ffffff12;
+  color:#f1d9b1;font-weight:800;min-height:38px
+}
+.human-status small{color:#b9a184;font-weight:600}
+@media (orientation:landscape) and (min-width:901px){
+  .human-dock{right:10px;top:92px;width:132px;grid-template-columns:1fr;max-height:calc(100dvh - 110px);overflow:auto}
+  .human-status{display:block;text-align:center}.human-status small{display:block;margin-top:3px}
+}
+@media (orientation:portrait), (max-width:900px){
+  .human-dock{left:8px;right:8px;bottom:8px;grid-template-columns:repeat(4,minmax(0,1fr));max-height:42dvh;overflow:auto}
+  .human-dock button,.human-dock select{font-size:12px;padding:6px 4px}
+}
+.coord-label{pointer-events:none}
+
 </style>
 </head>
 <body>
@@ -393,7 +425,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.1 Human vs AI</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.2 Human vs AI 專業對弈版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -423,11 +455,30 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   </section>
 </div>
 
+<section id="humanDock" class="human-dock" aria-label="Human vs AI 專業對弈控制台">
+  <div class="human-status"><span id="humanTurnStatus">尚未開始</span><small id="humanMoveStatus">0 手</small></div>
+  <button id="proNewBtn" class="primary">＋ 新局</button>
+  <button id="proUndoBtn">↶ 悔棋</button>
+  <button id="proPassBtn">Pass</button>
+  <button id="proResignBtn" class="danger">認輸</button>
+  <select id="proStrength" aria-label="AI 強度">
+    <option value="15">入門</option><option value="30" selected>級位</option><option value="80">初段</option><option value="160">高段</option><option value="300">最強</option>
+  </select>
+  <button id="proPauseBtn">⏸ 暫停 AI</button>
+  <button id="proNumbersBtn" class="active">手順：開</button>
+  <button id="proCoordsBtn">座標：關</button>
+  <button id="proSoundBtn" class="active">音效：開</button>
+  <button id="proAnalyzeBtn">AI 分析</button>
+  <button id="proSaveBtn">儲存 SGF</button>
+  <button id="proLoadBtn">讀取 SGF</button>
+  <button id="proFullBtn">全螢幕</button>
+</section>
+
 <input id="sgfFile" type="file" accept=".sgf,.SGF,application/x-go-sgf,application/octet-stream,text/plain" hidden>
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260721-1500</p>
+  <p>版本：20260721-2002</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -442,7 +493,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build020.1 Human vs AI</h2>
+  <h2>Build020.2 Human vs AI 專業對弈版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -499,13 +550,14 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <label>讀秒（秒）<input id="byoTime" type="number" min="0" value="30"></label>
     <label>讀秒次數<input id="byoCount" type="number" min="0" value="3"></label>
     <label>落子音<select id="soundOn"><option value="1">開</option><option value="0">關</option></select></label>
+    <label>AI 強度<select id="humanStrength"><option value="15">入門</option><option value="30" selected>級位</option><option value="80">初段</option><option value="160">高段</option><option value="300">最強</option></select></label>
   </div>
   <button class="action" id="startHumanBtn" style="width:100%;margin-top:12px">開始新對局</button>
 </div></div>
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build020.1 Human vs AI</h2>
+  <h2>Build020.2 Human vs AI 專業對弈版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -590,7 +642,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260721-1500";
+const APP_VERSION="20260721-2002";
 
 const $=id=>document.getElementById(id);
 
@@ -609,7 +661,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,aiThinking:false,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"}
+  humanMode:false,humanColor:"B",turn:"B",sound:true,aiThinking:false,aiPaused:false,gameOver:false,showNumbers:true,showCoords:false,consecutivePasses:0,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"}
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1213,7 +1265,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.1 Human vs AI 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.2 Human vs AI 專業對弈版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1468,6 +1520,14 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
   const stars=state.size===19?[3,9,15]:state.size===13?[3,6,9]:[2,4,6];
   ctx.fillStyle="#51351e";
   stars.forEach(y=>stars.forEach(x=>{ctx.beginPath();ctx.arc(pad+x*step,pad+y*step,Math.max(2,step*.07),0,Math.PI*2);ctx.fill()}));
+  if(state.showCoords){
+    ctx.fillStyle="#3d2817";ctx.font=`${Math.max(9,step*.24)}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
+    for(let i=0;i<state.size;i++){
+      const q=pad+i*step;
+      ctx.fillText(coordLetters[i]||"?",q,pad-step*.48);
+      ctx.fillText(String(state.size-i),pad-step*.48,q);
+    }
+  }
 
   const board=snapshot.board,provenance=snapshot.provenance;
   const start=Math.max(0,snapshot.index-30);
@@ -1479,7 +1539,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     else{g.addColorStop(0,"#fff");g.addColorStop(.55,"#eee");g.addColorStop(1,"#bbb")}
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
     const moveNumber=provenance[y][x]||0;
-    if(moveNumber>start){
+    if(state.showNumbers && moveNumber>start){
       ctx.fillStyle=c==="B"?"#fff":"#222";
       ctx.font=`${Math.max(10,step*.32)}px sans-serif`;
       ctx.textAlign="center";ctx.textBaseline="middle";
@@ -1506,7 +1566,11 @@ function syncUI(){
   $("boardSizeText").textContent=`${state.size}路`;
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
-  $("statusText").textContent=state.humanMode?"對弈中":"待命";
+  $("statusText").textContent=state.gameOver?"對局結束":state.aiThinking?"AI 思考中":state.humanMode?(state.aiPaused?"AI 已暫停":(state.turn===state.humanColor?"輪到您下棋":"輪到 AI")):"待命";
+  if($("humanTurnStatus")){
+    $("humanTurnStatus").textContent=$("statusText").textContent;
+    $("humanMoveStatus").textContent=`${state.index} 手 · ${state.turn==="B"?"黑":"白"}方`;
+  }
   const pos=snapshot;
   state.blackCaptures=pos.blackCaptures;
   state.whiteCaptures=pos.whiteCaptures;
@@ -1603,7 +1667,7 @@ $("loadPasteBtn").onclick=()=>{
   loadSGFText(text,"貼上的 SGF");
 };
 $("newGameBtn").onclick=()=>{
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;document.body.classList.remove("human-active");state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
@@ -1624,14 +1688,14 @@ function appendLegalMove(move){
   const result=executeMove(current,emptyProvenance(state.size),move,state.index+1,{rejectSuicide:true,koHash:previousHash});
   if(!result.ok)return result;
   state.moves=state.moves.slice(0,state.index);state.actions=[];state.replayCache=[];
-  state.moves.push(move);state.index++;state.turn=state.turn==="B"?"W":"B";
+  state.moves.push(move);state.index++;state.turn=state.turn==="B"?"W":"B";state.consecutivePasses=0;
   state.analysis=null;state.bestPoint=null;
   syncUI();playStoneSound(result.captured);
   return result;
 }
 
 async function playAiTurn(){
-  if(!state.humanMode || state.turn===state.humanColor || state.aiThinking)return;
+  if(!state.humanMode || state.gameOver || state.aiPaused || state.turn===state.humanColor || state.aiThinking)return;
   state.aiThinking=true;
   const aiColor=state.turn;
   $("statusText").textContent="AI 思考中…";
@@ -1646,27 +1710,25 @@ async function playAiTurn(){
       if(result.ok){played=true;toast("AI 落子："+r.coord);break;}
     }
     if(!played){
-      state.moves.push({c:aiColor,pass:true,x:-1,y:-1});
-      state.actions=[];state.replayCache=[];state.index++;state.turn=state.turn==="B"?"W":"B";
-      syncUI();toast("AI 選擇停一手");
+      appendPassMove(aiColor);toast("AI 選擇停一手");
     }
   }catch(err){
     toast("AI 連線失敗："+err.message);
     setConnectorStatus("bad","人機對弈 AI 連線失敗："+err.message);
   }finally{
-    state.aiThinking=false;
-    $("statusText").textContent=state.turn===state.humanColor?"輪到您落子":"待命";
+    state.aiThinking=false;syncUI();
   }
 }
 
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";state.aiThinking=false;state.analysis=null;
-  state.sound=$("soundOn").value==="1";$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=$("humanColor").value;state.turn="B";state.aiThinking=false;state.aiPaused=false;state.gameOver=false;state.consecutivePasses=0;state.analysis=null;
+  state.sound=$("soundOn").value==="1";localStorage.setItem("katagoVisits",$("humanStrength").value);$("proStrength").value=$("humanStrength").value;document.body.classList.add("human-active");$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   syncUI();closeModal("humanModal");toast("人機對弈已開始");
   if(state.humanColor==="W")setTimeout(playAiTurn,300);
 };
 canvas.addEventListener("click",e=>{
   if(!state.humanMode)return;
+  if(state.gameOver){toast("對局已結束，請開始新局");return;}
   if(state.aiThinking){toast("AI 正在思考中");return;}
   if(state.turn!==state.humanColor){toast("目前輪到 AI");return;}
   const rect=canvas.getBoundingClientRect(),css=rect.width,pad=css*.055,step=(css-pad*2)/(state.size-1);
@@ -1676,6 +1738,50 @@ canvas.addEventListener("click",e=>{
   if(!result.ok){toast(result.error);return;}
   if(state.turn!==state.humanColor)setTimeout(playAiTurn,250);
 });
+
+function appendPassMove(color){
+  state.moves=state.moves.slice(0,state.index);state.actions=[];state.replayCache=[];
+  state.moves.push({c:color,pass:true,x:-1,y:-1});state.index++;state.turn=state.turn==="B"?"W":"B";
+  state.consecutivePasses=(state.consecutivePasses||0)+1;state.analysis=null;state.bestPoint=null;
+  if(state.consecutivePasses>=2){state.gameOver=true;toast("雙方連續 Pass，對局結束");}
+  syncUI();
+}
+function undoHumanPair(){
+  if(state.aiThinking){toast("請等 AI 思考完成");return}
+  if(!state.humanMode||state.moves.length===0){toast("目前沒有可悔的棋");return}
+  let remove=Math.min(2,state.moves.length);
+  state.moves.splice(state.moves.length-remove,remove);state.index=state.moves.length;
+  state.turn=state.index%2===0?"B":"W";state.actions=[];state.replayCache=[];state.analysis=null;state.bestPoint=null;
+  state.gameOver=false;state.consecutivePasses=0;syncUI();toast("已退回上一回合");
+}
+function createSgfText(){
+  const komi=getApiSettings().komi;
+  const toSgf=m=>m.pass?"":String.fromCharCode(97+m.x)+String.fromCharCode(97+m.y);
+  return `(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro-V5:Build020.2]SZ[${state.size}]KM[${komi}]`+
+    state.moves.map(m=>`;${m.c}[${toSgf(m)}]`).join("")+")";
+}
+function downloadSgf(){
+  const blob=new Blob([createSgfText()],{type:"application/x-go-sgf;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`AlphaTrader-Human-vs-AI-${Date.now()}.sgf`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("SGF 已儲存");
+}
+$("proNewBtn").onclick=()=>openModal("humanModal");
+$("proUndoBtn").onclick=undoHumanPair;
+$("proPassBtn").onclick=()=>{
+  if(!state.humanMode||state.gameOver||state.aiThinking||state.turn!==state.humanColor){toast("現在不能 Pass");return}
+  appendPassMove(state.humanColor);if(!state.gameOver)setTimeout(playAiTurn,220);
+};
+$("proResignBtn").onclick=()=>{if(!state.humanMode)return;state.gameOver=true;state.aiPaused=true;syncUI();toast("您已認輸，對局結束");};
+$("proPauseBtn").onclick=()=>{state.aiPaused=!state.aiPaused;$("proPauseBtn").textContent=state.aiPaused?"▶ 繼續 AI":"⏸ 暫停 AI";$("proPauseBtn").classList.toggle("active",state.aiPaused);syncUI();if(!state.aiPaused)setTimeout(playAiTurn,100);};
+$("proNumbersBtn").onclick=()=>{state.showNumbers=!state.showNumbers;$("proNumbersBtn").textContent=`手順：${state.showNumbers?"開":"關"}`;$("proNumbersBtn").classList.toggle("active",state.showNumbers);syncUI();};
+$("proCoordsBtn").onclick=()=>{state.showCoords=!state.showCoords;$("proCoordsBtn").textContent=`座標：${state.showCoords?"開":"關"}`;$("proCoordsBtn").classList.toggle("active",state.showCoords);syncUI();};
+$("proSoundBtn").onclick=()=>{state.sound=!state.sound;$("proSoundBtn").textContent=`音效：${state.sound?"開":"關"}`;$("proSoundBtn").classList.toggle("active",state.sound);};
+$("proAnalyzeBtn").onclick=()=>{updateProfessionalDashboard();openModal("aiModal")};
+$("proSaveBtn").onclick=downloadSgf;
+$("proLoadBtn").onclick=()=>$("sgfFile").click();
+$("proFullBtn").onclick=toggleFullscreen;
+$("proStrength").onchange=e=>{localStorage.setItem("katagoVisits",e.target.value);$("humanStrength").value=e.target.value;toast("AI 強度已更新，下回合生效");};
+
 $("saveApiBtn").onclick=()=>{
   saveApiSettings();
   state.analysis=null;
@@ -1767,7 +1873,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build020.1 Human vs AI 已啟動");
+  toast("Build020.2 Human vs AI 專業對弈版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");

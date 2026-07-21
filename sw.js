@@ -1,4 +1,4 @@
-const CACHE="build0200-20260721-1500";
+const CACHE="build0202-20260721-2002";
 const ASSETS=["./","./index.html"];
 self.addEventListener("install",e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
