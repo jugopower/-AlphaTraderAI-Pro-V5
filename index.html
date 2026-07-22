@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260722-0207">
-<title>AlphaTrader AI Pro V5｜Build020.7 棋譜載入與功能鍵修正版</title>
+<meta name="app-version" content="20260722-0208">
+<title>AlphaTrader AI Pro V5｜Build020.9 模式重置修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -154,7 +154,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 
-/* Build020.7 棋譜載入與功能鍵修正版 */
+/* Build020.9 模式重置修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -192,7 +192,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build020.7 棋譜載入與功能鍵修正版 */
+/* Build020.9 模式重置修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -284,7 +284,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.7 棋譜載入與功能鍵修正版 */
+/* Build020.9 模式重置修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -354,7 +354,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build020.7 棋譜載入與功能鍵修正版 */
+/* Build020.9 模式重置修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -496,7 +496,7 @@ body.human-active .player{display:none!important}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.7 棋譜載入與功能鍵修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build020.9 模式重置修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -568,7 +568,7 @@ body.human-active .player{display:none!important}
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build020.7 棋譜載入與功能鍵修正版</h2>
+  <h2>Build020.9 模式重置修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -635,7 +635,7 @@ body.human-active .player{display:none!important}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build020.7 棋譜載入與功能鍵修正版</h2>
+  <h2>Build020.9 模式重置修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1340,25 +1340,47 @@ function parseSGF(text){
   }
   return {size,...info,moves,setupB,setupW,actions,nodes:nodes.length};
 }
+function resetBoardViewport(){
+  state.boardCssSize=0;
+  const wrap=canvas.parentElement;
+  wrap.style.removeProperty("--board-size");
+  canvas.style.removeProperty("--board-size");
+  canvas.style.removeProperty("width");
+  canvas.style.removeProperty("height");
+}
+function setAppMode(mode){
+  document.body.classList.toggle("human-active",mode==="human");
+  document.body.classList.toggle("sgf-active",mode==="sgf");
+  if(mode!=="human") document.body.classList.remove("info-collapsed");
+}
+function redrawAfterLayout(scrollTop=true){
+  resetBoardViewport();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    resizeBoard(true);
+    syncUI();
+    drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+    if(scrollTop) window.scrollTo({top:0,left:0,behavior:"auto"});
+  }));
+}
 function loadSGFText(text,name){
   try{
     const g=parseSGF(text);
+    if(state.playing) stop();
+    state.aiSessionId=(state.aiSessionId||0)+1;
     state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
     state.setupB=g.setupB; state.setupW=g.setupW; state.handicap=Number(g.handicap||g.setupB.length||0); state.komi=Number(g.komi||getApiSettings().komi); state.actions=g.actions||[]; state.gameInfo=g; state.replayCache=[]; state.illegalCount=0;
-    state.humanMode=false; state.aiThinking=false; state.aiPaused=false; state.gameOver=false; state.bestPoint=null;
-    state.turn=state.index%2===0?"B":"W";
-    document.body.classList.remove("human-active");
-    document.querySelectorAll(".modal-backdrop.open").forEach(m=>m.classList.remove("open"));
-    window.scrollTo({top:0,left:0,behavior:"auto"});
+    state.humanMode=false; state.aiThinking=false; state.aiPaused=false; state.gameOver=false; state.bestPoint=null; state.analysis=null;
+    state.turn="B"; state.currentSnapshot=null; state.renderedHash="";
+    setAppMode("sgf");
+    document.querySelectorAll(".modal-backdrop.open,.modal.open").forEach(m=>m.classList.remove("open"));
     $("proScoreResult").classList.remove("show");
     $("proScoreResult").innerHTML="";
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.7 棋譜載入與功能鍵修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
-    resizeBoard(true); syncUI();
-    requestAnimationFrame(()=>{ resizeBoard(true); window.scrollTo(0,0); });
-    toast(`棋譜已載入：目前第 0 手／共 ${g.moves.length} 手，播放控制列已恢復`);
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build020.9 模式重置修正版 已啟用；目前為棋譜檢討模式。結果：${g.result}`;
+    redrawAfterLayout(true);
+    toast(`棋譜已載入：目前第 0 手／共 ${g.moves.length} 手`);
     return true;
   }catch(err){
     console.error(err);
@@ -1796,12 +1818,14 @@ function appendLegalMove(move){
 
 async function playAiTurn(){
   if(!state.humanMode || state.gameOver || state.aiPaused || state.turn===state.humanColor || state.aiThinking)return;
+  const sessionId=state.aiSessionId||0;
   state.aiThinking=true;
   const aiColor=state.turn;
   $("statusText").textContent="AI 思考中…";
   toast("KataGo 思考中…");
   try{
     const analysis=await requestCloudAnalysis();
+    if(!state.humanMode || sessionId!==(state.aiSessionId||0))return;
     state.analysis=analysis;
     const candidates=analysis.recommendations||[];
     let played=false;
@@ -1816,7 +1840,10 @@ async function playAiTurn(){
     toast("AI 連線失敗："+err.message);
     setConnectorStatus("bad","人機對弈 AI 連線失敗："+err.message);
   }finally{
-    state.aiThinking=false;syncUI();
+    if(sessionId===(state.aiSessionId||0)){
+      state.aiThinking=false;
+      syncUI();
+    }
   }
 }
 
@@ -1852,25 +1879,37 @@ $("handicapCount").onchange=syncHandicapSettings;
 $("gameSize").onchange=syncHandicapSettings;
 syncHandicapSettings();
 
-function leaveHumanMode({save=false}={}){
-  if(save && state.moves.length)downloadSgf();
-  state.humanMode=false;state.aiThinking=false;state.aiPaused=false;state.gameOver=false;
-  document.body.classList.remove("human-active");
+function leaveHumanMode(){
+  // Build020.9：完整重置人機、棋譜、縮放與非同步 AI 狀態。
+  state.aiSessionId=(state.aiSessionId||0)+1;
+  if(state.playing) stop();
+  clearInterval(state.timer);
+  Object.assign(state,{
+    humanMode:false,aiThinking:false,aiPaused:false,gameOver:false,analysis:null,bestPoint:null,
+    consecutivePasses:0,turn:"B",handicap:0,setupB:[],setupW:[],moves:[],index:0,size:19,
+    blackCaptures:0,whiteCaptures:0,actions:[],replayCache:[],currentSnapshot:null,renderedHash:"",
+    fileName:"",gameInfo:{},illegalCount:0,lastCapture:0,captureEvents:[],koHash:null,playing:false
+  });
+  setAppMode("home");
+  document.querySelectorAll(".modal-backdrop.open,.modal.open").forEach(m=>m.classList.remove("open"));
   $("proScoreResult").classList.remove("show");
+  $("proScoreResult").innerHTML="";
   $("proPauseBtn").textContent="⏸ 暫停 AI";
   $("proPauseBtn").classList.remove("active");
-  syncUI();resizeBoard(true);toast("已返回主畫面");
+  $("playBtn").textContent="▶";
+  redrawAfterLayout(true);
+  toast("已返回主畫面");
 }
 
 $("startHumanBtn").onclick=()=>{
   const handicapRaw=Number($("handicapCount").value||0);
   const handicap=handicapRaw>=2?handicapRaw:0;
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;
+  state.aiSessionId=(state.aiSessionId||0)+1;state.size=Number($("gameSize").value);state.moves=[];state.index=0;
   state.handicap=handicap;state.setupB=handicapPoints(state.size,handicap);state.setupW=[];
   state.komi=handicap?0.5:Number($("humanKomi").value||getApiSettings().komi);
   state.gameInfo={handicap:String(handicap||""),komi:String(state.komi)};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;state.humanColor=handicap?"B":$("humanColor").value;state.turn=handicap?"W":"B";state.aiThinking=false;state.aiPaused=false;state.gameOver=false;state.consecutivePasses=0;state.analysis=null;
   $("proScoreResult").classList.remove("show");$("proScoreResult").innerHTML="";
-  state.sound=$("soundOn").value==="1";localStorage.setItem("katagoVisits",$("humanStrength").value);$("proStrength").value=$("humanStrength").value;document.body.classList.add("human-active");$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
+  state.sound=$("soundOn").value==="1";localStorage.setItem("katagoVisits",$("humanStrength").value);$("proStrength").value=$("humanStrength").value;setAppMode("human");$("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   syncUI();closeModal("humanModal");toast(handicap?`讓${handicap}子對局已開始，黑棋讓子已擺好，輪到 AI 白棋`:`人機對弈已開始`);
   if(state.turn!==state.humanColor)setTimeout(playAiTurn,300);
 };
@@ -1956,7 +1995,7 @@ function createSgfText(){
   const komi=Number.isFinite(state.komi)?state.komi:getApiSettings().komi;
   const toSgf=m=>m.pass?"":String.fromCharCode(97+m.x)+String.fromCharCode(97+m.y);
   const setup=state.setupB.length?`HA[${state.handicap||state.setupB.length}]AB${state.setupB.map(p=>`[${toSgf(p)}]`).join("")}`:"";
-  return `(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro-V5:Build020.7]SZ[${state.size}]KM[${komi}]${setup}`+
+  return `(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro-V5:Build020.8]SZ[${state.size}]KM[${komi}]${setup}`+
     state.moves.map(m=>`;${m.c}[${toSgf(m)}]`).join("")+")";
 }
 function downloadSgf(){
@@ -1985,11 +2024,9 @@ $("proEndBtn").onclick=()=>{
   state.gameOver=true;state.aiPaused=true;renderScoreEstimate(false);syncUI();toast("對局已結束，可查看勝負試算或返回主畫面");
 };
 $("proHomeBtn").onclick=()=>{
-  if(!state.humanMode){leaveHumanMode();return;}
-  if(state.moves.length){
-    const save=window.confirm("是否先儲存 SGF 再返回主畫面？\n確定：儲存後離開\n取消：直接離開");
-    leaveHumanMode({save});
-  }else leaveHumanMode();
+  // 為避免 iPad Safari 同時觸發下載與版面切換造成卡住，返回鍵只負責離開。
+  // 需要保存時，請先按「儲存 SGF」。
+  leaveHumanMode();
 };
 $("proStrength").onchange=e=>{localStorage.setItem("katagoVisits",e.target.value);$("humanStrength").value=e.target.value;toast("AI 強度已更新，下回合生效");};
 
@@ -2084,7 +2121,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build020.7 棋譜載入與功能鍵修正版 已啟動");
+  toast("Build020.9 模式重置修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
