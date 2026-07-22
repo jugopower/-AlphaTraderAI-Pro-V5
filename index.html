@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.3 讓子顯示與棋力對應修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.4 讓子顯示與棋力對應修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.3 讓子顯示與棋力對應修正版 */
+/* Build021.4 讓子顯示與棋力對應修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.3 讓子顯示與棋力對應修正版 */
+/* Build021.4 讓子顯示與棋力對應修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.3 讓子顯示與棋力對應修正版 */
+/* Build021.4 讓子顯示與棋力對應修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.3 讓子顯示與棋力對應修正版 */
+/* Build021.4 讓子顯示與棋力對應修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -413,6 +413,48 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
  .move-tools .compact-label:last-child{grid-column:1 / -1!important}
 }
 </style>
+
+<style id="build0214-fix">
+/* Build021.4：棋盤固定正方形，棋子固定圓形 */
+#board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+  aspect-ratio: 1 / 1 !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+.stone, .go-stone, .black-stone, .white-stone, [class*="stone"] {
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 50% !important;
+}
+@media (orientation: landscape) {
+  #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+    width: min(72vh, 74vw) !important;
+    max-width: 100% !important;
+  }
+}
+@media (orientation: portrait) {
+  #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+    width: min(96vw, 82vh) !important;
+    max-width: 100% !important;
+  }
+}
+</style>
+<script id="build0214-orientation">
+(function(){
+  let t;
+  function refresh(){
+    clearTimeout(t);
+    t=setTimeout(function(){
+      window.dispatchEvent(new Event("resize"));
+      ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(n){
+        try { if(typeof window[n]==="function") window[n](); } catch(e){}
+      });
+    },180);
+  }
+  window.addEventListener("orientationchange",refresh);
+  window.addEventListener("resize",refresh);
+})();
+</script>
+
 </head>
 <body>
 <div class="app">
@@ -420,7 +462,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.3 讓子顯示與棋力對應修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.4 讓子顯示與棋力對應修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -483,7 +525,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.3 讓子顯示與棋力對應修正版</h2>
+  <h2>Build021.4 讓子顯示與棋力對應修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -525,7 +567,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.3</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.4</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -559,7 +601,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.3 讓子顯示與棋力對應修正版</h2>
+  <h2>Build021.4 讓子顯示與棋力對應修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
@@ -1268,7 +1310,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.3 讓子顯示與棋力對應修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.4 讓子顯示與棋力對應修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1913,7 +1955,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.3 讓子顯示與棋力對應修正版 已啟動");
+  toast("Build021.4 讓子顯示與棋力對應修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
