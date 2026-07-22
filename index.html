@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.12 教學邊線落子與工具列修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.13 真人機 KataGo 強制連線版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.12 教學邊線落子與工具列修正版 */
+/* Build021.13 真人機 KataGo 強制連線版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.12 教學邊線落子與工具列修正版 */
+/* Build021.13 真人機 KataGo 強制連線版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.12 教學邊線落子與工具列修正版 */
+/* Build021.13 真人機 KataGo 強制連線版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.12 教學邊線落子與工具列修正版 */
+/* Build021.13 真人機 KataGo 強制連線版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -415,7 +415,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build0214-fix">
-/* Build021.12：棋盤固定正方形，棋子固定圓形 */
+/* Build021.13：棋盤固定正方形，棋子固定圓形 */
 #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
@@ -457,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0215-layout-fix">
-/* Build021.12：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
+/* Build021.13：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
 @media (orientation: landscape) and (min-width: 900px){
   .app{
     grid-template-columns:0 minmax(0,1fr) 112px !important;
@@ -640,7 +640,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0218-final-layout">
-/* Build021.12：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
+/* Build021.13：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
 .player{
   overflow:visible!important;
 }
@@ -893,6 +893,29 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 </style>
 
+
+<style id="build02113-katago">
+.ai-thinking-overlay{
+  position:fixed;inset:0;z-index:400;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.58);backdrop-filter:blur(2px);
+}
+.ai-thinking-overlay[hidden]{display:none!important}
+.ai-thinking-card{
+  width:min(82vw,340px);padding:24px 22px;border-radius:20px;
+  border:1px solid #a77735;background:#1b100a;color:#f7e8c7;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+.ai-thinking-spinner{
+  width:46px;height:46px;margin:0 auto 14px;border-radius:50%;
+  border:5px solid rgba(245,196,76,.22);border-top-color:#f5c44c;
+  animation:katagoSpin .9s linear infinite;
+}
+.ai-thinking-title{font-size:24px;font-weight:900}
+.ai-thinking-sub{margin-top:8px;font-size:14px;opacity:.78}
+@keyframes katagoSpin{to{transform:rotate(360deg)}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -900,7 +923,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.12 教學邊線落子與工具列修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.13 真人機 KataGo 強制連線版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -969,7 +992,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.12 教學邊線落子與工具列修正版</h2>
+  <h2>Build021.13 真人機 KataGo 強制連線版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1011,7 +1034,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.12</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.13</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -1046,10 +1069,10 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.12 教學邊線落子與工具列修正版</h2>
+  <h2>Build021.13 真人機 KataGo 強制連線版</h2>
 
   <label>分析 API 網址
-    <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
+    <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
   </label>
 
   <div class="connector-grid">
@@ -1225,19 +1248,22 @@ function boardStoneCounts(snapshot){
 
 
 function getApiSettings(){
+  const saved=(localStorage.getItem("katagoApiUrl")||"").trim();
+  const url=(!saved || saved.includes("your-server.example.com"))?"https://alphatrader-katago-server-v2.onrender.com/analyze":saved;
+  if(url!==saved)localStorage.setItem("katagoApiUrl",url);
   return {
-    url:(localStorage.getItem("katagoApiUrl")||"").trim(),
+    url,
     key:localStorage.getItem("katagoApiKey")||"",
     authMode:localStorage.getItem("katagoAuthMode")||"bearer",
     visits:Number(localStorage.getItem("katagoVisits")||500),
     rules:localStorage.getItem("katagoRules")||"japanese",
     komi:Number(localStorage.getItem("katagoKomi")||6.5),
-    timeout:Number(localStorage.getItem("katagoTimeout")||30)
+    timeout:Number(localStorage.getItem("katagoTimeout")||45)
   };
 }
 
 function saveApiSettings(){
-  localStorage.setItem("katagoApiUrl",$("apiUrl").value.trim());
+  localStorage.setItem("katagoApiUrl",($("apiUrl").value.trim()||"https://alphatrader-katago-server-v2.onrender.com/analyze"));
   localStorage.setItem("katagoApiKey",$("apiKey").value);
   localStorage.setItem("katagoAuthMode",$("apiAuthMode").value);
   localStorage.setItem("katagoVisits",$("apiVisits").value);
@@ -1453,7 +1479,7 @@ async function runCloudAnalysis({openDashboard=true}={}){
     toast("KataGo 分析完成");
     return true;
   }catch(err){
-    setConnectorStatus("bad","連線失敗："+err.message+"。分析總覽將繼續使用示範資料。");
+    setConnectorStatus("bad","連線失敗："+err.message+"。請確認 Render 後端後再試。");
     toast("KataGo 連線失敗");
     return false;
   }finally{
@@ -1833,7 +1859,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.12]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.13]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -1992,7 +2018,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.12 教學邊線落子與工具列修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.13 真人機 KataGo 強制連線版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2283,7 +2309,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     ctx.beginPath();ctx.arc(cx,cy,step*.34,0,Math.PI*2);ctx.stroke();
   }
 
-  // Build021.12 教學標記：專業低調風格
+  // Build021.13 教學標記：專業低調風格
   for(const mark of (state.teachingMarks||[])){
     if(mark.x<0||mark.y<0||mark.x>=state.size||mark.y>=state.size)continue;
     const cx=pad+mark.x*step,cy=pad+mark.y*step;
@@ -2462,7 +2488,7 @@ $("newGameBtn").onclick=()=>{
 };
 
 
-const AI_LEVEL_VISITS={entry:15,beginner:50,advanced:150,dan13:500,highdan:1200,pro:2000};
+const AI_LEVEL_VISITS={entry:20,beginner:60,advanced:200,dan13:600,highdan:1500,pro:3000};
 function handicapPoints(size,count){
   if(count<2)return [];
   const low=size===19?3:size===13?3:2;
@@ -2489,6 +2515,12 @@ $("handicapCount").onchange=syncHumanSettings;
 $("humanAiLevel").onchange=syncHumanSettings;
 $("gameSize").onchange=syncHumanSettings;
 syncHumanSettings();
+
+function setAiThinking(show){
+  const el=$("aiThinkingOverlay");
+  if(el)el.hidden=!show;
+}
+
 function chooseLocalAiPoint(){
   const aiCurrent=positionAtMove(state.index).board;
   const aiPrev=state.index>0?positionAtMove(state.index-1).board:null;
@@ -2538,30 +2570,50 @@ function chooseKataGoMoveByLevel(recommendations,level){
 function scheduleLocalAiMove(delay=350){
   if(!state.humanMode || state.turn===state.humanColor)return;
   const expectedIndex=state.index;
+
   setTimeout(async()=>{
     if(!state.humanMode || state.turn===state.humanColor || state.index!==expectedIndex)return;
-    let point=null;
+
+    setAiThinking(true);
     try{
       const api=getApiSettings();
-      if(api.url){
-        if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
-        if($("apiKomi"))$("apiKomi").value=String(state.komi);
-        const waitSeconds=state.aiLevel==="pro"?90:(state.aiLevel==="highdan"?60:35);
-        const analysis=await requestCloudAnalysis({timeoutSeconds:waitSeconds});
-        const best=chooseKataGoMoveByLevel(analysis.recommendations,state.aiLevel);
-        if(best)point=[best.x,best.y];
-        state.connector.online=true;state.connector.source="katago";
-      }
-    }catch(err){
-      console.warn("KataGo 對弈落子失敗：",err);
-      if(state.aiLevel==="pro" || state.aiLevel==="highdan"){
-        toast("KataGo 連線逾時，未改用弱棋備援，請再試一次");
+      if(!api.url)throw new Error("尚未設定 KataGo API");
+
+      if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
+      if($("apiKomi"))$("apiKomi").value=String(state.komi);
+
+      const analysis=await requestCloudAnalysis({timeoutSeconds:45});
+      const best=(analysis.recommendations||[])[0];
+
+      if(!best)throw new Error("KataGo 未回傳推薦落點");
+      if(best.pass){
+        state.moves.push({c:state.turn,pass:true,x:-1,y:-1});
+        state.actions=[];state.replayCache=[];state.index++;
+        state.turn=state.turn==="B"?"W":"B";
+        syncUI();
+        toast("KataGo Pass");
         return;
       }
+
+      const x=Number(best.x),y=Number(best.y);
+      if(!Number.isInteger(x)||!Number.isInteger(y))throw new Error("KataGo 推薦座標格式錯誤");
+
+      if(!state.humanMode || state.turn===state.humanColor || state.index!==expectedIndex)return;
+      if(!commitAiMove(x,y))throw new Error("KataGo 落子失敗");
+
+      state.connector.online=true;
+      state.connector.source="katago";
+      toast("KataGo 已落子");
+    }catch(err){
+      console.error("KataGo 對弈落子失敗：",err);
+      state.connector.online=false;
+      state.connector.source="demo";
+      state.connector.lastError=err?.message||String(err);
+      toast("KataGo 連線失敗，AI 未落子");
+      alert("KataGo 連線失敗：\n"+(err?.message||err)+"\n\n已停止 AI 落子，不會改用示範棋力。");
+    }finally{
+      setAiThinking(false);
     }
-    if(!state.humanMode || state.turn===state.humanColor || state.index!==expectedIndex)return;
-    if(!point)point=chooseLocalAiPoint();
-    if(point)commitAiMove(point[0],point[1]);
   },delay);
 }
 
@@ -2625,7 +2677,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.12]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.13]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -2815,12 +2867,21 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.12 教學邊線落子與工具列修正版 已啟動");
+  toast("Build021.13 真人機 KataGo 強制連線版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
 }
 
 </script>
+
+<div id="aiThinkingOverlay" class="ai-thinking-overlay" hidden>
+  <div class="ai-thinking-card">
+    <div class="ai-thinking-spinner"></div>
+    <div class="ai-thinking-title">KataGo 思考中</div>
+    <div class="ai-thinking-sub">請稍候，最長約 45 秒</div>
+  </div>
+</div>
+
 </body>
 </html>
