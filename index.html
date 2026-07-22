@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260722-0211">
-<title>AlphaTrader AI Pro V5｜Build021.1 對弈設定與手數控制修正版</title>
+<meta name="app-version" content="20260722-0212">
+<title>AlphaTrader AI Pro V5｜Build021.2 KataGo JSON 與控制列修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.1 對弈設定與手數控制修正版 */
+/* Build021.2 KataGo JSON 與控制列修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.1 對弈設定與手數控制修正版 */
+/* Build021.2 KataGo JSON 與控制列修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.1 對弈設定與手數控制修正版 */
+/* Build021.2 KataGo JSON 與控制列修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.1 對弈設定與手數控制修正版 */
+/* Build021.2 KataGo JSON 與控制列修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -393,6 +393,25 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .connector-grid,.connector-meta{grid-template-columns:1fr}
 }
 
+
+/* Build021.2 control layout fix */
+.player{grid-template-rows:auto auto auto!important;min-height:132px!important;overflow:hidden!important}
+.move-tools{margin-top:0!important;grid-template-columns:minmax(150px,1fr) auto minmax(170px,1fr)!important}
+.move-tools label{display:grid!important;grid-template-rows:auto 38px!important}
+.move-tools input,.move-tools select,.move-tools button{height:38px!important;padding:6px 10px!important}
+.controls{min-height:42px}
+.range-row{min-height:26px}
+@media (orientation:landscape) and (min-width:901px){
+ .app{grid-template-rows:minmax(0,1fr) 138px!important}
+ .player{padding:6px!important;gap:5px!important}
+}
+@media (orientation:portrait),(max-width:900px){
+ .app{grid-template-rows:76px minmax(480px,calc(100dvh - 300px)) 205px!important}
+ .board-wrap{height:calc(100dvh - 300px)!important;max-height:calc(100dvh - 300px)!important;min-height:480px!important}
+ .player{min-height:205px!important}
+ .move-tools{grid-template-columns:minmax(0,1fr) auto!important}
+ .move-tools .compact-label:last-child{grid-column:1 / -1!important}
+}
 </style>
 </head>
 <body>
@@ -401,7 +420,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.1 對弈設定與手數控制修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.2 KataGo JSON 與控制列修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -446,7 +465,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260722-0211</p>
+  <p>版本：20260722-0212</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -461,7 +480,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.1 對弈設定與手數控制修正版</h2>
+  <h2>Build021.2 KataGo JSON 與控制列修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -537,7 +556,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.1 對弈設定與手數控制修正版</h2>
+  <h2>Build021.2 KataGo JSON 與控制列修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
@@ -622,7 +641,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260722-0211";
+const APP_VERSION="20260722-0212";
 
 const $=id=>document.getElementById(id);
 
@@ -707,23 +726,22 @@ function moveToGtp(move){
 }
 
 function currentPositionPayload(){
-  const played=state.moves.slice(0,state.index).map(m=>[m.c,moveToGtp(m)]);
+  const playedMoves=state.moves.slice(0,state.index);
+  const played=playedMoves.map(m=>({color:m.c,coordinate:moveToGtp(m)}));
   const initial=[
-    ...state.setupB.map(p=>["B",moveToGtp(p)]),
-    ...state.setupW.map(p=>["W",moveToGtp(p)])
+    ...state.setupB.map(p=>({color:"B",coordinate:moveToGtp(p)})),
+    ...state.setupW.map(p=>({color:"W",coordinate:moveToGtp(p)}))
   ];
-  const s=getApiSettings();
+  const last=playedMoves[playedMoves.length-1];
+  const nextPlayer=last ? (last.c==="B"?"W":"B") : (state.setupB.length>0?"W":"B");
+  const settings=getApiSettings();
   return {
-    boardSize:state.size,
+    board_size:state.size,
     moves:played,
-    initialStones:initial,
-    komi:s.komi,
-    rules:s.rules,
-    maxVisits:s.visits,
-    includePolicy:true,
-    includeOwnership:true,
-    moveNumber:state.index,
-    appVersion:APP_VERSION
+    initial_stones:initial,
+    next_player:nextPlayer,
+    komi:Number(settings.komi),
+    max_visits:Number(settings.visits)
   };
 }
 
@@ -1247,7 +1265,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.1 對弈設定與手數控制修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.2 KataGo JSON 與控制列修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1852,7 +1870,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.1 對弈設定與手數控制修正版 已啟動");
+  toast("Build021.2 KataGo JSON 與控制列修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
