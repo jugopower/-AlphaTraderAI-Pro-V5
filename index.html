@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.9 教學模式強化版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版 */
+/* Build021.9 教學模式強化版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版 */
+/* Build021.9 教學模式強化版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版 */
+/* Build021.9 教學模式強化版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版 */
+/* Build021.9 教學模式強化版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -415,7 +415,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build0214-fix">
-/* Build021.8：棋盤固定正方形，棋子固定圓形 */
+/* Build021.9：棋盤固定正方形，棋子固定圓形 */
 #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
@@ -457,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0215-layout-fix">
-/* Build021.8：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
+/* Build021.9：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
 @media (orientation: landscape) and (min-width: 900px){
   .app{
     grid-template-columns:0 minmax(0,1fr) 112px !important;
@@ -640,7 +640,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0218-final-layout">
-/* Build021.8：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
+/* Build021.9：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
 .player{
   overflow:visible!important;
 }
@@ -734,6 +734,40 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 </style>
 
+
+<style id="build0219-teaching-style">
+.teaching-modal{max-width:720px!important}
+.teach-hint{color:var(--muted);font-size:13px}
+.teach-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:7px;
+  margin-top:10px;
+}
+.teach-choice{
+  min-height:42px;
+  padding:6px 5px;
+  border-radius:10px;
+  border:1px solid #6d563a;
+  background:#21170f;
+  color:#f8e9cc;
+  font-weight:800;
+}
+.teach-choice.active{
+  background:linear-gradient(135deg,#ffd76c,#d99a19);
+  color:#1c1208;
+  border-color:#ffe59a;
+}
+#teachBtn_rightTools.active-mode,
+#teachBtn_topbar.active-mode{
+  outline:3px solid #ffe16a;
+  background:#3a2b12!important;
+}
+@media(max-width:700px){
+  .teach-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -741,7 +775,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.9 教學模式強化版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -810,7 +844,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版</h2>
+  <h2>Build021.9 教學模式強化版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -852,7 +886,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.8</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.9</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -887,7 +921,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版</h2>
+  <h2>Build021.9 教學模式強化版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
@@ -968,6 +1002,46 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   </p>
 </div></div>
 
+
+<div id="teachModal" class="modal-backdrop"><div class="modal teaching-modal">
+  <button class="close" data-close="teachModal">✕</button>
+  <h2>教學模式</h2>
+  <p class="teach-hint">選擇工具後，直接點棋盤交叉點。教學擺棋不受黑白輪流限制。</p>
+
+  <div class="teach-grid">
+    <button class="teach-choice active" data-teach-tool="alternate">黑白交替</button>
+    <button class="teach-choice" data-teach-tool="black">擺黑棋</button>
+    <button class="teach-choice" data-teach-tool="white">擺白棋</button>
+    <button class="teach-choice" data-teach-tool="erase">刪除棋子</button>
+    <button class="teach-choice" data-teach-tool="A">標記 A</button>
+    <button class="teach-choice" data-teach-tool="B">標記 B</button>
+    <button class="teach-choice" data-teach-tool="C">標記 C</button>
+    <button class="teach-choice" data-teach-tool="triangle">△</button>
+    <button class="teach-choice" data-teach-tool="circle">○</button>
+    <button class="teach-choice" data-teach-tool="cross">×</button>
+  </div>
+
+  <label style="margin-top:12px">朱老師評語
+    <textarea id="teachComment" rows="4" placeholder="輸入本局教學重點、棋形說明或作業內容"></textarea>
+  </label>
+
+  <div class="grid2" style="margin-top:10px">
+    <button class="action" id="saveTeachCommentBtn">儲存評語</button>
+    <button class="secondary" id="clearTeachMarksBtn">清除標記</button>
+    <button class="secondary" id="startVariationBtn">建立變化圖</button>
+    <button class="secondary" id="returnMainBtn">返回主棋譜</button>
+  </div>
+
+  <div class="grid2" style="margin-top:10px">
+    <button class="action" id="exportTeachSgfBtn">匯出教學 SGF</button>
+    <button class="secondary" id="exitTeachBtn">離開教學模式</button>
+  </div>
+
+  <div id="teachStatus" class="connector-status ok" style="margin-top:12px">
+    目前工具：黑白交替
+  </div>
+</div></div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -991,7 +1065,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"}
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1449,7 +1523,7 @@ function closeModal(id){$(id).classList.remove("open")}
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
-  ["teachBtn","▣","教學",()=>toast("教學模式已啟動")],
+  ["teachBtn","▣","教學",()=>{state.teachingMode=true;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn","♟","人機",()=>openModal("humanModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
@@ -1474,6 +1548,118 @@ function resetView(){
   document.querySelectorAll(".modal-backdrop.open").forEach(x=>x.classList.remove("open"));
   resizeBoard(true); syncUI(); toast("已還原正常版面");
 }
+
+
+function updateTeachingUI(){
+  const labels={
+    alternate:"黑白交替",black:"擺黑棋",white:"擺白棋",erase:"刪除棋子",
+    A:"標記 A",B:"標記 B",C:"標記 C",triangle:"△",circle:"○",cross:"×"
+  };
+  document.querySelectorAll(".teach-choice").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.teachTool===state.teachingTool);
+  });
+  const status=$("teachStatus");
+  if(status)status.textContent="目前工具："+(labels[state.teachingTool]||state.teachingTool)+(state.teachingTool==="alternate"?"｜下一顆："+(state.teachingNext==="B"?"黑棋":"白棋"):"");
+  ["teachBtn_rightTools","teachBtn_topbar"].forEach(id=>$(id)?.classList.toggle("active-mode",state.teachingMode));
+  if($("teachComment"))$("teachComment").value=state.teachingComment||"";
+}
+function teachSnapshotToSetup(){
+  const snap=getSnapshot(state.index);
+  const b=[],w=[];
+  for(let y=0;y<state.size;y++)for(let x=0;x<state.size;x++){
+    if(snap.board[y][x]==="B")b.push({x,y});
+    if(snap.board[y][x]==="W")w.push({x,y});
+  }
+  state.setupB=b;state.setupW=w;state.moves=[];state.actions=[];state.index=0;state.replayCache=[];
+}
+function teachingPlaceAt(x,y){
+  if(!state.teachingMode)return false;
+  const tool=state.teachingTool;
+  if(["A","B","C","triangle","circle","cross"].includes(tool)){
+    state.teachingMarks=state.teachingMarks.filter(m=>!(m.x===x&&m.y===y));
+    state.teachingMarks.push({x,y,type:tool});
+    syncUI();return true;
+  }
+  teachSnapshotToSetup();
+  const removeAt=(arr)=>arr.filter(p=>!(p.x===x&&p.y===y));
+  state.setupB=removeAt(state.setupB);
+  state.setupW=removeAt(state.setupW);
+  if(tool==="erase"){
+    state.teachingMarks=state.teachingMarks.filter(m=>!(m.x===x&&m.y===y));
+  }else{
+    let color=tool==="black"?"B":tool==="white"?"W":state.teachingNext;
+    (color==="B"?state.setupB:state.setupW).push({x,y});
+    if(tool==="alternate")state.teachingNext=color==="B"?"W":"B";
+  }
+  state.replayCache=[];syncUI();updateTeachingUI();return true;
+}
+function cloneTeachingState(){
+  return {
+    size:state.size,moves:JSON.parse(JSON.stringify(state.moves)),index:state.index,
+    setupB:JSON.parse(JSON.stringify(state.setupB)),setupW:JSON.parse(JSON.stringify(state.setupW)),
+    actions:JSON.parse(JSON.stringify(state.actions||[])),marks:JSON.parse(JSON.stringify(state.teachingMarks||[])),
+    comment:state.teachingComment||""
+  };
+}
+function restoreTeachingState(s){
+  if(!s)return;
+  state.size=s.size;state.moves=s.moves;state.index=s.index;state.setupB=s.setupB;state.setupW=s.setupW;
+  state.actions=s.actions;state.teachingMarks=s.marks;state.teachingComment=s.comment;state.replayCache=[];
+  syncUI();updateTeachingUI();
+}
+document.querySelectorAll(".teach-choice").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    state.teachingTool=btn.dataset.teachTool;
+    updateTeachingUI();
+  });
+});
+$("saveTeachCommentBtn").onclick=()=>{
+  state.teachingComment=$("teachComment").value.trim();
+  toast("教學評語已儲存");
+};
+$("clearTeachMarksBtn").onclick=()=>{
+  state.teachingMarks=[];syncUI();toast("教學標記已清除");
+};
+$("startVariationBtn").onclick=()=>{
+  if(!state.variationBackup)state.variationBackup=cloneTeachingState();
+  state.teachingMode=true;state.teachingTool="alternate";
+  toast("變化圖已建立，可直接在棋盤落子");
+  closeModal("teachModal");updateTeachingUI();
+};
+$("returnMainBtn").onclick=()=>{
+  if(!state.variationBackup){toast("目前沒有變化圖");return;}
+  restoreTeachingState(state.variationBackup);state.variationBackup=null;
+  toast("已返回主棋譜");
+};
+$("exitTeachBtn").onclick=()=>{
+  state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
+};
+function buildTeachingSgf(){
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.9]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
+  if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
+  const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
+  for(const m of state.teachingMarks||[]){ if(markGroups[m.type])markGroups[m.type].push(pointToSgf(m.x,m.y)); }
+  if(markGroups.A.length)sgf+="LB"+markGroups.A.map(p=>"["+p+":A]").join("");
+  if(markGroups.B.length)sgf+="LB"+markGroups.B.map(p=>"["+p+":B]").join("");
+  if(markGroups.C.length)sgf+="LB"+markGroups.C.map(p=>"["+p+":C]").join("");
+  if(markGroups.triangle.length)sgf+="TR"+markGroups.triangle.map(p=>"["+p+"]").join("");
+  if(markGroups.circle.length)sgf+="CR"+markGroups.circle.map(p=>"["+p+"]").join("");
+  if(markGroups.cross.length)sgf+="MA"+markGroups.cross.map(p=>"["+p+"]").join("");
+  if(state.teachingComment)sgf+="C["+sgfEscapeText(state.teachingComment)+"]";
+  for(const m of state.moves.slice(0,state.index)){
+    sgf+=";"+m.c+"["+(m.pass?"":pointToSgf(m.x,m.y))+"]";
+  }
+  return sgf+")";
+}
+$("exportTeachSgfBtn").onclick=()=>{
+  state.teachingComment=$("teachComment").value.trim();
+  const blob=new Blob([buildTeachingSgf()],{type:"application/x-go-sgf;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="Teaching-Go-"+state.size+"x"+state.size+".sgf";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  toast("教學 SGF 已匯出");
+};
 
 function sgfUnescape(value){
   return value.replace(/\\\r?\n/g,"").replace(/\\(.)/g,"$1");
@@ -1593,11 +1779,11 @@ function loadSGFText(text,name){
     const g=parseSGF(text);
     state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
     state.setupB=g.setupB; state.setupW=g.setupW; state.actions=g.actions||[]; state.gameInfo=g; state.replayCache=[]; state.illegalCount=0;
-    state.humanMode=false; state.bestPoint=null;
+    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.variationBackup=null;
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.9 教學模式強化版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -1887,6 +2073,33 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     ctx.strokeStyle="#38ff85";ctx.lineWidth=4;
     ctx.beginPath();ctx.arc(cx,cy,step*.34,0,Math.PI*2);ctx.stroke();
   }
+
+  // Build021.9 教學標記
+  for(const mark of (state.teachingMarks||[])){
+    if(mark.x<0||mark.y<0||mark.x>=state.size||mark.y>=state.size)continue;
+    const cx=pad+mark.x*step,cy=pad+mark.y*step;
+    ctx.save();
+    ctx.strokeStyle="#ff3b30";
+    ctx.fillStyle="#ff3b30";
+    ctx.lineWidth=Math.max(2,step*.08);
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.font=`bold ${Math.max(13,step*.48)}px sans-serif`;
+    if(["A","B","C"].includes(mark.type)){
+      ctx.beginPath();ctx.arc(cx,cy,step*.28,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#fff";ctx.fillText(mark.type,cx,cy+1);
+    }else if(mark.type==="triangle"){
+      const r=step*.31;
+      ctx.beginPath();ctx.moveTo(cx,cy-r);ctx.lineTo(cx-r*.88,cy+r*.68);ctx.lineTo(cx+r*.88,cy+r*.68);ctx.closePath();ctx.stroke();
+    }else if(mark.type==="circle"){
+      ctx.beginPath();ctx.arc(cx,cy,step*.27,0,Math.PI*2);ctx.stroke();
+    }else if(mark.type==="cross"){
+      const r=step*.24;
+      ctx.beginPath();ctx.moveTo(cx-r,cy-r);ctx.lineTo(cx+r,cy+r);ctx.moveTo(cx+r,cy-r);ctx.lineTo(cx-r,cy+r);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   state.renderedHash=positionHash(board);
   state.rendererVerified=state.renderedHash===snapshot.hash;
 }
@@ -1900,8 +2113,8 @@ function syncUI(){
   $("boardSizeText").textContent=`${state.size}路`;
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
-  $("statusText").textContent=state.humanMode?"對弈中":"待命";
-  const levelNames={beginner:"初級",kyu:"級位",dan:"初段",highdan:"高段",pro:"職業"};
+  $("statusText").textContent=state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命");
+  const levelNames={entry:"入門",beginner:"初級",advanced:"高級",dan13:"1-3段",highdan:"高段",pro:"職業"};
   if($("handicapText"))$("handicapText").textContent=state.handicap>0?`讓${state.handicap}子`:"分先";
   if($("aiLevelText"))$("aiLevelText").textContent=levelNames[state.aiLevel]||"初段";
   if($("aiVisitsText"))$("aiVisitsText").textContent=String(state.aiVisits||300);
@@ -2193,7 +2406,8 @@ function pointToSgf(x,y){
   return letters[x]+letters[y];
 }
 function buildCurrentSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.8]";
+  if(state.teachingMode)return buildTeachingSgf();
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.9]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -2238,7 +2452,7 @@ $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
 
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true;
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
   state.komi=Number($("gameKomi").value||0);
@@ -2256,10 +2470,14 @@ $("startHumanBtn").onclick=()=>{
   scheduleLocalAiMove(450);
 };
 canvas.addEventListener("click",e=>{
-  if(!state.humanMode)return;
+  if(!state.humanMode && !state.teachingMode)return;
   const rect=canvas.getBoundingClientRect(),css=rect.width,pad=css*.055,step=(css-pad*2)/(state.size-1);
   const x=Math.round((e.clientX-rect.left-pad)/step),y=Math.round((e.clientY-rect.top-pad)/step);
   if(x<0||y<0||x>=state.size||y>=state.size)return;
+  if(state.teachingMode){
+    teachingPlaceAt(x,y);
+    return;
+  }
 
   const current=positionAtMove(state.index).board;
   const prev=state.index>0?positionAtMove(state.index-1).board:null;
@@ -2372,7 +2590,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.8 精簡控制列、SGF存檔與KataGo職業棋力修正版 已啟動");
+  toast("Build021.9 教學模式強化版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
