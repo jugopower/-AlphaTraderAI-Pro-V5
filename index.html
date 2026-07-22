@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.5 19路大棋盤與真實棋力分級修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.6 19路大棋盤與對局功能鍵恢復版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.5 19路大棋盤與真實棋力分級修正版 */
+/* Build021.6 19路大棋盤與對局功能鍵恢復版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.5 19路大棋盤與真實棋力分級修正版 */
+/* Build021.6 19路大棋盤與對局功能鍵恢復版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.5 19路大棋盤與真實棋力分級修正版 */
+/* Build021.6 19路大棋盤與對局功能鍵恢復版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.5 19路大棋盤與真實棋力分級修正版 */
+/* Build021.6 19路大棋盤與對局功能鍵恢復版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -415,7 +415,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build0214-fix">
-/* Build021.5：棋盤固定正方形，棋子固定圓形 */
+/* Build021.6：棋盤固定正方形，棋子固定圓形 */
 #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
@@ -457,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0215-layout-fix">
-/* Build021.5：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
+/* Build021.6：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
 @media (orientation: landscape) and (min-width: 900px){
   .app{
     grid-template-columns:0 minmax(0,1fr) 112px !important;
@@ -468,15 +468,15 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .board-wrap{
     grid-column:2!important;
     grid-row:1!important;
-    height:calc(100dvh - 116px)!important;
-    max-height:calc(100dvh - 116px)!important;
+    height:calc(100dvh - 134px)!important;
+    max-height:calc(100dvh - 134px)!important;
     min-height:0!important;
     padding:2px!important;
   }
   #board{
-    width:min(calc(100dvh - 124px),calc(100vw - 126px))!important;
+    width:min(calc(100dvh - 142px),calc(100vw - 126px))!important;
     max-width:none!important;
-    max-height:calc(100dvh - 124px)!important;
+    max-height:calc(100dvh - 142px)!important;
   }
   .right{
     grid-column:3!important;
@@ -496,11 +496,11 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{
     grid-column:2!important;
     grid-row:2!important;
-    min-height:98px!important;
-    height:98px!important;
+    min-height:116px!important;
+    height:116px!important;
     padding:4px 6px!important;
     gap:3px!important;
-    grid-template-rows:38px 46px!important;
+    grid-template-rows:34px 40px 34px!important;
     overflow:hidden!important;
   }
   .move-tools{
@@ -534,8 +534,55 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     height:40px!important;
     font-size:19px!important;
   }
-  .range-row{display:none!important}
+  
+  .range-row{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    min-height:34px!important;
+    height:34px!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+  .range-row button{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-width:72px!important;
+    width:auto!important;
+    height:32px!important;
+    min-height:32px!important;
+    padding:3px 10px!important;
+    border-radius:9px!important;
+    font-size:13px!important;
+    white-space:nowrap!important;
+  }
+
   .info-collapse{display:none!important}
+}
+</style>
+
+
+<style id="build0216-game-controls">
+@media (orientation: landscape) and (min-width:900px){
+  button[id*="pass" i],
+  button[class*="pass" i],
+  button[id*="score" i],
+  button[class*="score" i],
+  button[id*="pause" i],
+  button[class*="pause" i]{
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-width:72px!important;
+    height:32px!important;
+    padding:3px 10px!important;
+    font-size:13px!important;
+  }
 }
 </style>
 
@@ -546,7 +593,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.5 19路大棋盤與真實棋力分級修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.6 19路大棋盤與對局功能鍵恢復版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -609,7 +656,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.5 19路大棋盤與真實棋力分級修正版</h2>
+  <h2>Build021.6 19路大棋盤與對局功能鍵恢復版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -651,7 +698,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.5</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.6</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -686,7 +733,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.5 19路大棋盤與真實棋力分級修正版</h2>
+  <h2>Build021.6 19路大棋盤與對局功能鍵恢復版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
@@ -1395,7 +1442,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.5 19路大棋盤與真實棋力分級修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.6 19路大棋盤與對局功能鍵恢復版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2061,7 +2108,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.5 19路大棋盤與真實棋力分級修正版 已啟動");
+  toast("Build021.6 19路大棋盤與對局功能鍵恢復版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
