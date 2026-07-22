@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.10 教學落點與標記美化修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.11 教學工具列自動收合版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.10 教學落點與標記美化修正版 */
+/* Build021.11 教學工具列自動收合版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.10 教學落點與標記美化修正版 */
+/* Build021.11 教學工具列自動收合版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.10 教學落點與標記美化修正版 */
+/* Build021.11 教學工具列自動收合版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.10 教學落點與標記美化修正版 */
+/* Build021.11 教學工具列自動收合版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -415,7 +415,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build0214-fix">
-/* Build021.10：棋盤固定正方形，棋子固定圓形 */
+/* Build021.11：棋盤固定正方形，棋子固定圓形 */
 #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
@@ -457,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0215-layout-fix">
-/* Build021.10：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
+/* Build021.11：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
 @media (orientation: landscape) and (min-width: 900px){
   .app{
     grid-template-columns:0 minmax(0,1fr) 112px !important;
@@ -640,7 +640,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0218-final-layout">
-/* Build021.10：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
+/* Build021.11：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
 .player{
   overflow:visible!important;
 }
@@ -815,6 +815,45 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 </style>
 
+
+<style id="build02111-teachbar">
+.teach-bar-toggle{
+  position:fixed;
+  right:14px;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  z-index:91;
+  min-width:92px;
+  height:40px;
+  border-radius:12px;
+  border:1px solid #9b7341;
+  background:linear-gradient(135deg,#f0c95e,#c98c1e);
+  color:#211408;
+  font-weight:900;
+  box-shadow:0 6px 20px rgba(0,0,0,.35);
+}
+.teach-bar-toggle[hidden]{display:none!important}
+.teach-quick-bar{transition:opacity .18s ease,transform .18s ease}
+.teach-quick-bar.is-collapsed{
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%,14px);
+}
+@media (orientation:landscape){
+  .teach-quick-bar{
+    grid-template-columns:repeat(12,minmax(0,1fr))!important;
+    width:min(96vw,1080px)!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  }
+}
+@media (orientation:portrait){
+  .teach-quick-bar{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    width:min(96vw,720px)!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -822,7 +861,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.10 教學落點與標記美化修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.11 教學工具列自動收合版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -891,7 +930,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.10 教學落點與標記美化修正版</h2>
+  <h2>Build021.11 教學工具列自動收合版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -933,7 +972,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.10</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.11</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -968,7 +1007,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.10 教學落點與標記美化修正版</h2>
+  <h2>Build021.11 教學工具列自動收合版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://your-server.example.com/analyze">
@@ -1090,6 +1129,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </div></div>
 
 
+<button id="teachBarToggle" class="teach-bar-toggle" hidden>教學工具</button>
 <div id="teachQuickBar" class="teach-quick-bar" hidden>
   <button data-qtool="alternate">交替</button>
   <button data-qtool="black">黑</button>
@@ -1128,7 +1168,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1581,12 +1621,12 @@ function toast(msg){
   const el=$("toast"); el.textContent=msg; el.classList.add("show");
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),1500);
 }
-function openModal(id){$(id).classList.add("open")}
-function closeModal(id){$(id).classList.remove("open")}
+function openModal(id){$(id).classList.add("open");if(id!=="teachModal")setTeachingBarSuppressed(true)}
+function closeModal(id){$(id).classList.remove("open");if(id!=="teachModal")setTeachingBarSuppressed(false)}
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
-  ["teachBtn","▣","教學",()=>{state.teachingMode=true;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動")}],
+  ["teachBtn","▣","教學",()=>{state.teachingMode=true;state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn","♟","人機",()=>openModal("humanModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
@@ -1616,11 +1656,17 @@ function resetView(){
 
 function syncTeachQuickBar(){
   const bar=$("teachQuickBar");
-  if(!bar)return;
-  bar.hidden=!state.teachingMode;
+  const toggle=$("teachBarToggle");
+  if(!bar||!toggle)return;
+  const active=!!state.teachingMode;
+  const suppressed=!!state.teachingBarSuppressed;
+  bar.hidden=!active;
+  toggle.hidden=!active || suppressed;
+  bar.classList.toggle("is-collapsed",state.teachingBarCollapsed || suppressed);
   bar.querySelectorAll("[data-qtool]").forEach(btn=>{
     btn.classList.toggle("active",btn.dataset.qtool===state.teachingTool);
   });
+  toggle.textContent=state.teachingBarCollapsed?"展開教學工具":"收合教學工具";
 }
 document.querySelectorAll("[data-qtool]").forEach(btn=>{
   btn.addEventListener("click",()=>{
@@ -1632,7 +1678,18 @@ $("teachQuickClear").onclick=()=>{
   state.teachingMarks=[];syncUI();updateTeachingUI();toast("教學標記已清除");
 };
 $("teachQuickClose").onclick=()=>{
-  state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("教學編輯完成");
+  state.teachingMode=false;state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;closeModal("teachModal");updateTeachingUI();toast("教學編輯完成");
+};
+
+
+function setTeachingBarSuppressed(value){
+  state.teachingBarSuppressed=!!value;
+  document.body.classList.toggle("teaching-active",!!state.teachingMode);
+  syncTeachQuickBar();
+}
+$("teachBarToggle").onclick=()=>{
+  state.teachingBarCollapsed=!state.teachingBarCollapsed;
+  syncTeachQuickBar();
 };
 
 function updateTeachingUI(){
@@ -1734,7 +1791,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.10]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.11]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -1759,6 +1816,17 @@ $("exportTeachSgfBtn").onclick=()=>{
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   toast("教學 SGF 已匯出");
 };
+
+
+["infoBtn_rightTools","infoBtn_topbar","aiBtn_rightTools","aiBtn_topbar",
+ "humanBtn_rightTools","humanBtn_topbar","katagoBtn_rightTools","katagoBtn_topbar"]
+.forEach(id=>{
+  const el=$(id);
+  if(el)el.addEventListener("click",()=>setTeachingBarSuppressed(true),{capture:true});
+});
+document.querySelectorAll(".modal-backdrop .close,[data-close]").forEach(el=>{
+  el.addEventListener("click",()=>setTimeout(()=>setTeachingBarSuppressed(false),0));
+});
 
 function sgfUnescape(value){
   return value.replace(/\\\r?\n/g,"").replace(/\\(.)/g,"$1");
@@ -1882,7 +1950,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.10 教學落點與標記美化修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.11 教學工具列自動收合版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2173,7 +2241,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     ctx.beginPath();ctx.arc(cx,cy,step*.34,0,Math.PI*2);ctx.stroke();
   }
 
-  // Build021.10 教學標記：專業低調風格
+  // Build021.11 教學標記：專業低調風格
   for(const mark of (state.teachingMarks||[])){
     if(mark.x<0||mark.y<0||mark.x>=state.size||mark.y>=state.size)continue;
     const cx=pad+mark.x*step,cy=pad+mark.y*step;
@@ -2515,7 +2583,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.10]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.11]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -2702,7 +2770,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.10 教學落點與標記美化修正版 已啟動");
+  toast("Build021.11 教學工具列自動收合版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
