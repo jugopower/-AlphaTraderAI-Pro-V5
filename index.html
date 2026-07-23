@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.22 題目與解答手順分離修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.23 教學解答提子修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.22 題目與解答手順分離修正版 */
+/* Build021.23 教學解答提子修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.22 題目與解答手順分離修正版 */
+/* Build021.23 教學解答提子修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.22 題目與解答手順分離修正版 */
+/* Build021.23 教學解答提子修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.22 題目與解答手順分離修正版 */
+/* Build021.23 教學解答提子修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -1123,7 +1123,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.22 題目與解答手順分離修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.23 教學解答提子修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1193,7 +1193,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.22 題目與解答手順分離修正版</h2>
+  <h2>Build021.23 教學解答提子修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1270,7 +1270,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.22 題目與解答手順分離修正版</h2>
+  <h2>Build021.23 教學解答提子修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2066,13 +2066,38 @@ function teachingPlaceAt(x,y){
     syncUI();updateTeachingUI();return true;
   }
 
-  if(state.moves.length>0 || state.index>0)teachSnapshotToSetup();
-
   const removeAt=arr=>arr.filter(p=>!(p.x===x&&p.y===y));
+
+  // 解答階段使用正式落子規則：會計算氣、提子、自殺與簡單劫。
+  if(state.teachingAnswerMode && tool!=="erase"){
+    const color=tool==="black"?"B":tool==="white"?"W":state.teachingNext;
+    const current=getSnapshot(state.moves.length);
+    const koHash=state.moves.length>0?getSnapshot(state.moves.length-1).hash:null;
+    const move={c:color,x,y};
+    const result=executeMove(current.board,current.provenance,move,state.moves.length+1,{rejectSuicide:true,koHash});
+    if(!result.ok){toast(result.error);return true;}
+
+    state.moves.push(move);
+    state.actions=[];
+    state.index=state.moves.length;
+    state.replayCache=[];
+    state.teachingSequence.push({x,y,color,n:state.teachingSequence.length+1});
+    if(tool==="alternate")state.teachingNext=color==="B"?"W":"B";
+    syncUI();updateTeachingUI();
+    if(result.captured)toast(`解答第 ${state.teachingSequence.length} 手，提掉 ${result.captured} 顆棋`);
+    return true;
+  }
+
+  // 題目擺棋階段只編輯 AB/AW，不自動提子，也不顯示數字。
+  if(state.moves.length>0 || state.index>0)teachSnapshotToSetup();
   const hasB=state.setupB.some(p=>p.x===x&&p.y===y);
   const hasW=state.setupW.some(p=>p.x===x&&p.y===y);
 
   if(tool==="erase"){
+    if(state.teachingAnswerMode && state.moves.length){
+      toast("解答中請使用「悔棋」撤回手順");
+      return true;
+    }
     state.setupB=removeAt(state.setupB);
     state.setupW=removeAt(state.setupW);
     state.teachingMarks=state.teachingMarks.filter(m=>!(m.x===x&&m.y===y));
@@ -2089,11 +2114,6 @@ function teachingPlaceAt(x,y){
     state.setupW=removeAt(state.setupW);
     removeTeachingSequenceAt(x,y);
     (color==="B"?state.setupB:state.setupW).push({x,y});
-    // 題目擺棋階段：棋子不編號；開始解答後才記錄第1手起的手順。
-    if(state.teachingAnswerMode){
-      state.teachingSequence.push({x,y,color,n:state.teachingSequence.length+1});
-    }
-
     if(tool==="alternate")state.teachingNext=color==="B"?"W":"B";
   }
 
@@ -2164,7 +2184,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.22]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.23]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -2355,7 +2375,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.22 題目與解答手順分離修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.23 教學解答提子修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -3066,7 +3086,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.22]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.23]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -3131,6 +3151,12 @@ function undoGameMove(){
 
   state.moves.splice(Math.max(0,state.index-removeCount),removeCount);
   state.index=Math.max(0,state.index-removeCount);
+  if(state.teachingMode && state.teachingAnswerMode){
+    state.teachingSequence.splice(Math.max(0,state.teachingSequence.length-removeCount),removeCount);
+    renumberTeachingSequence();
+    const last=state.moves[state.moves.length-1];
+    state.teachingNext=last?(last.c==="B"?"W":"B"):"B";
+  }
   state.actions=[];
   state.replayCache=[];
   state.turn=state.index%2===0?"B":"W";
@@ -3291,7 +3317,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.22 題目與解答手順分離修正版 已啟動");
+  toast("Build021.23 教學解答提子修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
