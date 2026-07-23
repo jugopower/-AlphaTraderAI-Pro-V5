@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.21 直式完整畫面修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.22 題目與解答手順分離修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.21 直式完整畫面修正版 */
+/* Build021.22 題目與解答手順分離修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.21 直式完整畫面修正版 */
+/* Build021.22 題目與解答手順分離修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.21 直式完整畫面修正版 */
+/* Build021.22 題目與解答手順分離修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.21 直式完整畫面修正版 */
+/* Build021.22 題目與解答手順分離修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -1123,7 +1123,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.21 直式完整畫面修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.22 題目與解答手順分離修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1193,7 +1193,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.21 直式完整畫面修正版</h2>
+  <h2>Build021.22 題目與解答手順分離修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1270,7 +1270,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.21 直式完整畫面修正版</h2>
+  <h2>Build021.22 題目與解答手順分離修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1436,7 +1436,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,katagoRetryCount:0
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -2026,11 +2026,15 @@ function updateTeachingUI(){
     btn.classList.toggle("active",btn.dataset.teachTool===state.teachingTool);
   });
   const status=$("teachStatus");
-  if(status)status.textContent="目前工具："+(labels[state.teachingTool]||state.teachingTool)+(state.teachingTool==="alternate"?"｜下一顆："+(state.teachingNext==="B"?"黑棋":"白棋"):"")+"｜手順："+(state.teachingShowNumbers?"顯示":"隱藏");
+  if(status)status.textContent="目前工具："+(labels[state.teachingTool]||state.teachingTool)+(state.teachingTool==="alternate"?"｜下一顆："+(state.teachingNext==="B"?"黑棋":"白棋"):"")+"｜階段："+(state.teachingAnswerMode?"解答手順":"題目擺棋")+"｜手順："+(state.teachingShowNumbers?"顯示":"隱藏");
   const numBtn=$("teachNumberToggle");
-  if(numBtn){numBtn.textContent="手順顯示："+(state.teachingShowNumbers?"開":"關");numBtn.classList.toggle("active",state.teachingShowNumbers);}
+  if(numBtn){numBtn.textContent="解答手順顯示："+(state.teachingShowNumbers?"開":"關");numBtn.classList.toggle("active",state.teachingShowNumbers);}
   const quickNum=$("teachQuickNumber");
   if(quickNum){quickNum.textContent="手順："+(state.teachingShowNumbers?"開":"關");quickNum.classList.toggle("active",state.teachingShowNumbers);}
+  const startBtn=$("teachStartAnswer");
+  if(startBtn){startBtn.textContent=state.teachingAnswerMode?"解答手順進行中":"開始解答手順";startBtn.classList.toggle("active",state.teachingAnswerMode);}
+  const quickAnswer=$("teachQuickAnswer");
+  if(quickAnswer){quickAnswer.textContent=state.teachingAnswerMode?"解答中":"開始解答";quickAnswer.classList.toggle("active",state.teachingAnswerMode);}
   ["teachBtn_rightTools","teachBtn_topbar"].forEach(id=>$(id)?.classList.toggle("active-mode",state.teachingMode));
   if($("teachComment"))$("teachComment").value=state.teachingComment||"";
   syncTeachQuickBar();
@@ -2085,7 +2089,10 @@ function teachingPlaceAt(x,y){
     state.setupW=removeAt(state.setupW);
     removeTeachingSequenceAt(x,y);
     (color==="B"?state.setupB:state.setupW).push({x,y});
-    state.teachingSequence.push({x,y,color,n:state.teachingSequence.length+1});
+    // 題目擺棋階段：棋子不編號；開始解答後才記錄第1手起的手順。
+    if(state.teachingAnswerMode){
+      state.teachingSequence.push({x,y,color,n:state.teachingSequence.length+1});
+    }
 
     if(tool==="alternate")state.teachingNext=color==="B"?"W":"B";
   }
@@ -2094,8 +2101,9 @@ function teachingPlaceAt(x,y){
   syncUI();updateTeachingUI();return true;
 }
 function startTeachingAnswerSequence(){
-  // 保留目前題目圖形，但從下一顆棋開始重新編解答手順。
+  // 保留目前題目圖形，之後新增的棋才從解答第 1 手開始編號。
   state.teachingSequence=[];
+  state.teachingAnswerMode=true;
   state.teachingShowNumbers=true;
   state.teachingTool="alternate";
   state.teachingNext="B";
@@ -2107,13 +2115,13 @@ function cloneTeachingState(){
     size:state.size,moves:JSON.parse(JSON.stringify(state.moves)),index:state.index,
     setupB:JSON.parse(JSON.stringify(state.setupB)),setupW:JSON.parse(JSON.stringify(state.setupW)),
     actions:JSON.parse(JSON.stringify(state.actions||[])),marks:JSON.parse(JSON.stringify(state.teachingMarks||[])),
-    comment:state.teachingComment||"",sequence:JSON.parse(JSON.stringify(state.teachingSequence||[])),showNumbers:!!state.teachingShowNumbers
+    comment:state.teachingComment||"",sequence:JSON.parse(JSON.stringify(state.teachingSequence||[])),showNumbers:!!state.teachingShowNumbers,answerMode:!!state.teachingAnswerMode
   };
 }
 function restoreTeachingState(s){
   if(!s)return;
   state.size=s.size;state.moves=s.moves;state.index=s.index;state.setupB=s.setupB;state.setupW=s.setupW;
-  state.actions=s.actions;state.teachingMarks=s.marks;state.teachingComment=s.comment;state.teachingSequence=s.sequence||[];state.teachingShowNumbers=!!s.showNumbers;state.replayCache=[];
+  state.actions=s.actions;state.teachingMarks=s.marks;state.teachingComment=s.comment;state.teachingSequence=s.sequence||[];state.teachingShowNumbers=!!s.showNumbers;state.teachingAnswerMode=!!s.answerMode;state.replayCache=[];
   syncUI();updateTeachingUI();
 }
 document.querySelectorAll(".teach-choice").forEach(btn=>{
@@ -2156,7 +2164,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.20]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.22]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -2343,11 +2351,11 @@ function loadSGFText(text,name){
     const g=parseSGF(text);
     state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
     state.setupB=g.setupB; state.setupW=g.setupW; state.actions=g.actions||[]; state.gameInfo=g; state.replayCache=[]; state.illegalCount=0;
-    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.variationBackup=null;
+    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.21 直式完整畫面修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.22 題目與解答手順分離修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -3058,7 +3066,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.20]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.22]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -3138,7 +3146,7 @@ $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
 
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.variationBackup=null;
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
   state.komi=Number($("gameKomi").value||0);
@@ -3283,7 +3291,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.21 直式完整畫面修正版 已啟動");
+  toast("Build021.22 題目與解答手順分離修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
