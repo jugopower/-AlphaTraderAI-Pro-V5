@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.18 教學手順開關版</title>
+<title>AlphaTrader AI Pro V5｜Build021.19 題目與解答手順分離版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.18 教學手順開關版 */
+/* Build021.19 題目與解答手順分離版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.18 教學手順開關版 */
+/* Build021.19 題目與解答手順分離版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.18 教學手順開關版 */
+/* Build021.19 題目與解答手順分離版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.18 教學手順開關版 */
+/* Build021.19 題目與解答手順分離版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -415,7 +415,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build0214-fix">
-/* Build021.18：棋盤固定正方形，棋子固定圓形 */
+/* Build021.19：棋盤固定正方形，棋子固定圓形 */
 #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
@@ -457,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0215-layout-fix">
-/* Build021.18：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
+/* Build021.19：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
 @media (orientation: landscape) and (min-width: 900px){
   .app{
     grid-template-columns:0 minmax(0,1fr) 112px !important;
@@ -640,7 +640,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0218-final-layout">
-/* Build021.18：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
+/* Build021.19：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
 .player{
   overflow:visible!important;
 }
@@ -923,7 +923,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.18 教學手順開關版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.19 題目與解答手順分離版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -992,7 +992,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.18 教學手順開關版</h2>
+  <h2>Build021.19 題目與解答手順分離版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1034,7 +1034,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.18</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.19</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -1069,7 +1069,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.18 教學手順開關版</h2>
+  <h2>Build021.19 題目與解答手順分離版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1155,13 +1155,14 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 <div id="teachModal" class="modal-backdrop"><div class="modal teaching-modal">
   <button class="close" data-close="teachModal">✕</button>
   <h2>教學模式</h2>
-  <p class="teach-hint">選擇工具後關閉視窗，使用底部教學工具列直接點棋盤。交替模式會依黑、白、黑、白順序落子。</p>
+  <p class="teach-hint">先用擺黑、擺白完成題目圖形，題目棋子不必顯示數字。完成後按「開始解答手順」，下一顆棋會從第 1 手開始編號。</p>
 
   <div class="teach-grid">
     <button class="teach-choice active" data-teach-tool="alternate">黑白交替</button>
     <button class="teach-choice" data-teach-tool="black">擺黑棋</button>
     <button class="teach-choice" data-teach-tool="white">擺白棋</button>
     <button class="teach-choice" id="teachNumberToggle" type="button">手順顯示：關</button>
+    <button class="teach-choice" id="teachStartAnswer" type="button">開始解答手順</button>
     <button class="teach-choice" data-teach-tool="erase">刪除棋子</button>
     <button class="teach-choice" data-teach-tool="A">標記 A</button>
     <button class="teach-choice" data-teach-tool="B">標記 B</button>
@@ -1199,6 +1200,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <button data-qtool="black">擺黑</button>
   <button data-qtool="white">擺白</button>
   <button id="teachQuickNumber" type="button">手順：關</button>
+  <button id="teachQuickAnswer" type="button">開始解答</button>
   <button data-qtool="erase">刪棋</button>
   <button data-qtool="A">A</button>
   <button data-qtool="B">B</button>
@@ -1890,6 +1892,15 @@ function teachingPlaceAt(x,y){
   state.moves=[];state.actions=[];state.index=0;state.replayCache=[];
   syncUI();updateTeachingUI();return true;
 }
+function startTeachingAnswerSequence(){
+  // 保留目前題目圖形，但從下一顆棋開始重新編解答手順。
+  state.teachingSequence=[];
+  state.teachingShowNumbers=true;
+  state.teachingTool="alternate";
+  state.teachingNext="B";
+  syncUI();updateTeachingUI();
+  toast("題目圖形已固定；下一顆棋從解答第 1 手開始");
+}
 function cloneTeachingState(){
   return {
     size:state.size,moves:JSON.parse(JSON.stringify(state.moves)),index:state.index,
@@ -1920,6 +1931,8 @@ $("teachQuickNumber").onclick=()=>{
   syncUI();updateTeachingUI();
   toast(state.teachingShowNumbers?"已顯示教學手順":"已隱藏教學手順");
 };
+$("teachStartAnswer").onclick=startTeachingAnswerSequence;
+$("teachQuickAnswer").onclick=startTeachingAnswerSequence;
 $("saveTeachCommentBtn").onclick=()=>{
   state.teachingComment=$("teachComment").value.trim();
   toast("教學評語已儲存");
@@ -1942,7 +1955,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.18]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.19]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -2133,7 +2146,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.18 教學手順開關版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.19 題目與解答手順分離版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2425,7 +2438,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
   }
 
 
-  // Build021.18 教學擺棋手順顯示
+  // Build021.19 教學擺棋手順顯示
   if(state.teachingMode && state.teachingShowNumbers){
     for(const s of (state.teachingSequence||[])){
       if(s.x<0||s.y<0||s.x>=state.size||s.y>=state.size)continue;
@@ -2445,7 +2458,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     }
   }
 
-  // Build021.18 教學標記：專業低調風格
+  // Build021.19 教學標記：專業低調風格
   for(const mark of (state.teachingMarks||[])){
     if(mark.x<0||mark.y<0||mark.x>=state.size||mark.y>=state.size)continue;
     const cx=pad+mark.x*step,cy=pad+mark.y*step;
@@ -2844,7 +2857,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.18]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.19]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -3034,7 +3047,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.18 教學手順開關版 已啟動");
+  toast("Build021.19 題目與解答手順分離版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
