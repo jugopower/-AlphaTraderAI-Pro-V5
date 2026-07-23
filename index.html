@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.20 直式控制列與悔棋修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.21 直式完整畫面修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.20 直式控制列與悔棋修正版 */
+/* Build021.21 直式完整畫面修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.20 直式控制列與悔棋修正版 */
+/* Build021.21 直式完整畫面修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.20 直式控制列與悔棋修正版 */
+/* Build021.21 直式完整畫面修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.20 直式控制列與悔棋修正版 */
+/* Build021.21 直式完整畫面修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -918,7 +918,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build02120-portrait-controls">
-/* Build021.20：直式時棋盤縮小，底部按鈕完整顯示 */
+/* Build021.21：直式完整棋盤與緊湊控制列 */
 @media (orientation:portrait), (max-width:900px){
   html,body{
     overflow:auto!important;
@@ -1031,6 +1031,91 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 </style>
 
+
+<style id="build02121-portrait-complete">
+/* Build021.21：iPad 直式完整棋盤、緊湊控制列，不遮住底部功能 */
+@media (orientation:portrait), (max-width:900px){
+  html,body{overflow-y:auto!important;overflow-x:hidden!important;height:auto!important;min-height:100dvh!important}
+  .app{
+    height:auto!important;min-height:100dvh!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:68px auto auto!important;
+    gap:6px!important;padding:6px!important;
+    padding-bottom:calc(8px + env(safe-area-inset-bottom))!important;
+    overflow:visible!important;
+  }
+  .topbar{grid-column:1!important;grid-row:1!important;height:68px!important;min-height:68px!important;overflow-x:auto!important}
+  .left,.right,.info-collapse{display:none!important}
+  .board-wrap{
+    grid-column:1!important;grid-row:2!important;
+    width:100%!important;
+    height:min(88vw,68dvh)!important;
+    min-height:min(88vw,68dvh)!important;
+    max-height:min(88vw,68dvh)!important;
+    padding:3px!important;margin:0!important;
+    overflow:hidden!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+  }
+  #board{
+    display:block!important;
+    width:min(88vw,68dvh)!important;
+    height:min(88vw,68dvh)!important;
+    min-width:0!important;min-height:0!important;
+    max-width:100%!important;max-height:100%!important;
+    aspect-ratio:1/1!important;object-fit:contain!important;margin:0 auto!important;
+  }
+  .player{
+    grid-column:1!important;grid-row:3!important;
+    position:relative!important;
+    width:100%!important;height:auto!important;min-height:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:38px 40px 38px 24px!important;
+    gap:5px!important;padding:6px!important;
+    padding-bottom:calc(8px + env(safe-area-inset-bottom))!important;
+    overflow:visible!important;
+  }
+  .move-tools{
+    grid-row:1!important;display:grid!important;
+    grid-template-columns:minmax(112px,.8fr) 58px minmax(150px,1.2fr)!important;
+    gap:5px!important;margin:0!important;align-items:end!important;
+  }
+  .move-tools .compact-label:last-child{grid-column:auto!important}
+  .move-tools label{display:flex!important;align-items:center!important;gap:4px!important;font-size:11px!important;white-space:nowrap!important}
+  .move-tools input,.move-tools select,.move-tools button{
+    height:34px!important;min-height:34px!important;font-size:12px!important;
+    padding:3px 6px!important;border-radius:8px!important;
+  }
+  .controls{grid-row:2!important;height:40px!important;min-height:40px!important;gap:5px!important;margin:0!important}
+  .controls button{height:38px!important;min-height:38px!important;font-size:17px!important;padding:2px 4px!important}
+  .game-action-row{
+    grid-row:3!important;display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    width:100%!important;height:38px!important;min-height:38px!important;
+    gap:5px!important;margin:0!important;
+  }
+  .game-action-row button,#saveSgfBtn{
+    grid-column:auto!important;width:100%!important;min-width:0!important;
+    height:36px!important;min-height:36px!important;
+    padding:2px 3px!important;font-size:12px!important;border-radius:8px!important;
+  }
+  .range-row{
+    grid-row:4!important;display:grid!important;grid-template-columns:1fr auto!important;
+    align-items:center!important;gap:6px!important;height:24px!important;min-height:24px!important;
+    margin:0!important;padding:0 2px!important;
+  }
+  .range-row input{height:18px!important;margin:0!important}
+  .range-row span{font-size:12px!important;white-space:nowrap!important}
+  .teach-quick-bar{bottom:calc(190px + env(safe-area-inset-bottom))!important}
+  .teach-bar-toggle{bottom:calc(12px + env(safe-area-inset-bottom))!important}
+}
+@media (orientation:portrait) and (max-height:1100px){
+  .board-wrap{height:min(82vw,58dvh)!important;min-height:min(82vw,58dvh)!important;max-height:min(82vw,58dvh)!important}
+  #board{width:min(82vw,58dvh)!important;height:min(82vw,58dvh)!important}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -1038,7 +1123,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.20 直式控制列與悔棋修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.21 直式完整畫面修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1108,7 +1193,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.20 直式控制列與悔棋修正版</h2>
+  <h2>Build021.21 直式完整畫面修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1185,7 +1270,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.20 直式控制列與悔棋修正版</h2>
+  <h2>Build021.21 直式完整畫面修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2262,7 +2347,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.20 直式控制列與悔棋修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.21 直式完整畫面修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -3198,7 +3283,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.20 直式控制列與悔棋修正版 已啟動");
+  toast("Build021.21 直式完整畫面修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
