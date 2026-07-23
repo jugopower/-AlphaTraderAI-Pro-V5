@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.15 KataGo move_infos 修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.16 教學手順與 KataGo 自動重連版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.15 KataGo move_infos 修正版 */
+/* Build021.16 教學手順與 KataGo 自動重連版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.15 KataGo move_infos 修正版 */
+/* Build021.16 教學手順與 KataGo 自動重連版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.15 KataGo move_infos 修正版 */
+/* Build021.16 教學手順與 KataGo 自動重連版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.15 KataGo move_infos 修正版 */
+/* Build021.16 教學手順與 KataGo 自動重連版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -415,7 +415,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build0214-fix">
-/* Build021.15：棋盤固定正方形，棋子固定圓形 */
+/* Build021.16：棋盤固定正方形，棋子固定圓形 */
 #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
@@ -457,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0215-layout-fix">
-/* Build021.15：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
+/* Build021.16：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
 @media (orientation: landscape) and (min-width: 900px){
   .app{
     grid-template-columns:0 minmax(0,1fr) 112px !important;
@@ -640,7 +640,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0218-final-layout">
-/* Build021.15：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
+/* Build021.16：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
 .player{
   overflow:visible!important;
 }
@@ -923,7 +923,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.15 KataGo move_infos 修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.16 教學手順與 KataGo 自動重連版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -992,7 +992,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.15 KataGo move_infos 修正版</h2>
+  <h2>Build021.16 教學手順與 KataGo 自動重連版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1034,7 +1034,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.15</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.16</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -1069,7 +1069,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.15 KataGo move_infos 修正版</h2>
+  <h2>Build021.16 教學手順與 KataGo 自動重連版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1107,6 +1107,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <div class="grid2" style="margin-top:12px">
     <button class="action" id="saveApiBtn">儲存設定</button>
     <button class="secondary" id="testApiBtn">測試分析</button>
+<button class="secondary" id="katagoReconnectBtn">重新連線</button>
   </div>
   <button class="action" id="analyzeCloudBtn" style="width:100%;margin-top:10px">以 KataGo 分析目前局面</button>
 
@@ -1230,7 +1231,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],katagoRetryCount:0
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1834,6 +1835,13 @@ function teachSnapshotToSetup(){
   }
   state.setupB=b;state.setupW=w;state.moves=[];state.actions=[];state.index=0;state.replayCache=[];
 }
+function renumberTeachingSequence(){
+  state.teachingSequence=(state.teachingSequence||[]).map((s,i)=>({...s,n:i+1}));
+}
+function removeTeachingSequenceAt(x,y){
+  state.teachingSequence=(state.teachingSequence||[]).filter(s=>!(s.x===x&&s.y===y));
+  renumberTeachingSequence();
+}
 function teachingPlaceAt(x,y){
   if(!state.teachingMode)return false;
   const tool=state.teachingTool;
@@ -1855,15 +1863,21 @@ function teachingPlaceAt(x,y){
     state.setupB=removeAt(state.setupB);
     state.setupW=removeAt(state.setupW);
     state.teachingMarks=state.teachingMarks.filter(m=>!(m.x===x&&m.y===y));
+    removeTeachingSequenceAt(x,y);
   }else{
     const color=tool==="black"?"B":tool==="white"?"W":state.teachingNext;
+
     if((color==="B"&&hasB)||(color==="W"&&hasW)){
       toast(color==="B"?"此處已有黑棋":"此處已有白棋");
       return true;
     }
+
     state.setupB=removeAt(state.setupB);
     state.setupW=removeAt(state.setupW);
+    removeTeachingSequenceAt(x,y);
     (color==="B"?state.setupB:state.setupW).push({x,y});
+    state.teachingSequence.push({x,y,color,n:state.teachingSequence.length+1});
+
     if(tool==="alternate")state.teachingNext=color==="B"?"W":"B";
   }
 
@@ -1875,13 +1889,13 @@ function cloneTeachingState(){
     size:state.size,moves:JSON.parse(JSON.stringify(state.moves)),index:state.index,
     setupB:JSON.parse(JSON.stringify(state.setupB)),setupW:JSON.parse(JSON.stringify(state.setupW)),
     actions:JSON.parse(JSON.stringify(state.actions||[])),marks:JSON.parse(JSON.stringify(state.teachingMarks||[])),
-    comment:state.teachingComment||""
+    comment:state.teachingComment||"",sequence:JSON.parse(JSON.stringify(state.teachingSequence||[]))
   };
 }
 function restoreTeachingState(s){
   if(!s)return;
   state.size=s.size;state.moves=s.moves;state.index=s.index;state.setupB=s.setupB;state.setupW=s.setupW;
-  state.actions=s.actions;state.teachingMarks=s.marks;state.teachingComment=s.comment;state.replayCache=[];
+  state.actions=s.actions;state.teachingMarks=s.marks;state.teachingComment=s.comment;state.teachingSequence=s.sequence||[];state.replayCache=[];
   syncUI();updateTeachingUI();
 }
 document.querySelectorAll(".teach-choice").forEach(btn=>{
@@ -1912,7 +1926,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.15]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.16]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -1923,6 +1937,9 @@ function buildTeachingSgf(){
   if(markGroups.triangle.length)sgf+="TR"+markGroups.triangle.map(p=>"["+p+"]").join("");
   if(markGroups.circle.length)sgf+="CR"+markGroups.circle.map(p=>"["+p+"]").join("");
   if(markGroups.cross.length)sgf+="MA"+markGroups.cross.map(p=>"["+p+"]").join("");
+  if((state.teachingSequence||[]).length){
+    sgf+="LB"+state.teachingSequence.map(s=>"["+pointToSgf(s.x,s.y)+":"+s.n+"]").join("");
+  }
   if(state.teachingComment)sgf+="C["+sgfEscapeText(state.teachingComment)+"]";
   for(const m of state.moves.slice(0,state.index)){
     sgf+=";"+m.c+"["+(m.pass?"":pointToSgf(m.x,m.y))+"]";
@@ -1948,6 +1965,35 @@ $("exportTeachSgfBtn").onclick=()=>{
 document.querySelectorAll(".modal-backdrop .close,[data-close]").forEach(el=>{
   el.addEventListener("click",()=>setTimeout(()=>setTeachingBarSuppressed(false),0));
 });
+
+
+if($("katagoReconnectBtn")){
+  $("katagoReconnectBtn").onclick=async()=>{
+    const btn=$("katagoReconnectBtn");
+    btn.disabled=true;
+    btn.textContent="重新連線中…";
+    setAiThinking(true);
+    try{
+      const result=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
+      state.connector.online=true;
+      state.connector.source="katago";
+      state.connector.lastError="";
+      toast("KataGo 已重新連線");
+      if(state.humanMode && state.turn!==state.humanColor){
+        scheduleLocalAiMove(100);
+      }
+    }catch(err){
+      state.connector.online=false;
+      state.connector.lastError=err?.message||String(err);
+      alert("KataGo 重新連線失敗：\n"+state.connector.lastError);
+    }finally{
+      setAiThinking(false);
+      btn.disabled=false;
+      btn.textContent="重新連線";
+      syncUI();
+    }
+  };
+}
 
 function sgfUnescape(value){
   return value.replace(/\\\r?\n/g,"").replace(/\\(.)/g,"$1");
@@ -2067,11 +2113,11 @@ function loadSGFText(text,name){
     const g=parseSGF(text);
     state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
     state.setupB=g.setupB; state.setupW=g.setupW; state.actions=g.actions||[]; state.gameInfo=g; state.replayCache=[]; state.illegalCount=0;
-    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.variationBackup=null;
+    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.variationBackup=null;
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.15 KataGo move_infos 修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.16 教學手順與 KataGo 自動重連版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2362,7 +2408,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     ctx.beginPath();ctx.arc(cx,cy,step*.34,0,Math.PI*2);ctx.stroke();
   }
 
-  // Build021.15 教學標記：專業低調風格
+  // Build021.16 教學標記：專業低調風格
   for(const mark of (state.teachingMarks||[])){
     if(mark.x<0||mark.y<0||mark.x>=state.size||mark.y>=state.size)continue;
     const cx=pad+mark.x*step,cy=pad+mark.y*step;
@@ -2569,6 +2615,32 @@ $("humanAiLevel").onchange=syncHumanSettings;
 $("gameSize").onchange=syncHumanSettings;
 syncHumanSettings();
 
+
+async function requestCloudAnalysisWithRetry(options={}){
+  const maxRetries=3;
+  let lastErr=null;
+  for(let attempt=1;attempt<=maxRetries;attempt++){
+    try{
+      state.katagoRetryCount=attempt-1;
+      if(attempt>1){
+        toast(`KataGo 重新連線中（${attempt-1}/${maxRetries-1}）`);
+        await new Promise(r=>setTimeout(r,attempt===2?3500:5000));
+      }
+      const result=await requestCloudAnalysis({
+        ...options,
+        timeoutSeconds:Math.max(Number(options.timeoutSeconds||0),attempt===1?45:70)
+      });
+      state.katagoRetryCount=0;
+      return result;
+    }catch(err){
+      lastErr=err;
+      console.warn(`KataGo 第 ${attempt} 次連線失敗`,err);
+    }
+  }
+  state.katagoRetryCount=0;
+  throw lastErr||new Error("KataGo 連線失敗");
+}
+
 function setAiThinking(show){
   const el=$("aiThinkingOverlay");
   if(el)el.hidden=!show;
@@ -2635,7 +2707,7 @@ function scheduleLocalAiMove(delay=350){
       if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
       if($("apiKomi"))$("apiKomi").value=String(state.komi);
 
-      const analysis=await requestCloudAnalysis({timeoutSeconds:45});
+      const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
       const best=(analysis.recommendations||[])[0];
 
       if(!best){
@@ -2735,7 +2807,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.15]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.16]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -2780,7 +2852,7 @@ $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
 
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.variationBackup=null;
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
   state.komi=Number($("gameKomi").value||0);
@@ -2925,7 +2997,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.15 KataGo move_infos 修正版 已啟動");
+  toast("Build021.16 教學手順與 KataGo 自動重連版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
@@ -2937,7 +3009,7 @@ if(state.engineVerified&&state.rendererVerified){
   <div class="ai-thinking-card">
     <div class="ai-thinking-spinner"></div>
     <div class="ai-thinking-title">KataGo 思考中</div>
-    <div class="ai-thinking-sub">請稍候，最長約 45 秒</div>
+    <div class="ai-thinking-sub">伺服器休眠時會自動重試，請稍候</div>
   </div>
 </div>
 
