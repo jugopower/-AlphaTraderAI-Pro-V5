@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.19 題目與解答手順分離版</title>
+<title>AlphaTrader AI Pro V5｜Build021.20 直式控制列與悔棋修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.19 題目與解答手順分離版 */
+/* Build021.20 直式控制列與悔棋修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.19 題目與解答手順分離版 */
+/* Build021.20 直式控制列與悔棋修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.19 題目與解答手順分離版 */
+/* Build021.20 直式控制列與悔棋修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.19 題目與解答手順分離版 */
+/* Build021.20 直式控制列與悔棋修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -415,7 +415,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build0214-fix">
-/* Build021.19：棋盤固定正方形，棋子固定圓形 */
+/* Build021.20：棋盤固定正方形，棋子固定圓形 */
 #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
@@ -457,7 +457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0215-layout-fix">
-/* Build021.19：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
+/* Build021.20：19路棋盤優先，右側按鈕加大，下方控制列縮小 */
 @media (orientation: landscape) and (min-width: 900px){
   .app{
     grid-template-columns:0 minmax(0,1fr) 112px !important;
@@ -640,7 +640,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build0218-final-layout">
-/* Build021.19：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
+/* Build021.20：控制列緊湊、按鈕整齊、底部不被 Safari 遮住 */
 .player{
   overflow:visible!important;
 }
@@ -916,6 +916,121 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 @keyframes katagoSpin{to{transform:rotate(360deg)}}
 </style>
 
+
+<style id="build02120-portrait-controls">
+/* Build021.20：直式時棋盤縮小，底部按鈕完整顯示 */
+@media (orientation:portrait), (max-width:900px){
+  html,body{
+    overflow:auto!important;
+    min-height:100dvh!important;
+  }
+  .app{
+    height:auto!important;
+    min-height:100dvh!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:70px auto auto!important;
+    gap:6px!important;
+    padding:6px!important;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  }
+  .topbar{
+    grid-row:1!important;
+    min-height:66px!important;
+  }
+  .board-wrap{
+    grid-row:2!important;
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    padding:3px!important;
+    overflow:hidden!important;
+  }
+  #board{
+    width:min(96vw,calc(100dvh - 330px))!important;
+    height:auto!important;
+    max-width:96vw!important;
+    max-height:calc(100dvh - 330px)!important;
+    margin:auto!important;
+  }
+  .player{
+    grid-row:3!important;
+    position:relative!important;
+    min-height:188px!important;
+    height:auto!important;
+    overflow:visible!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto auto auto!important;
+    gap:6px!important;
+    padding:7px!important;
+    padding-bottom:calc(12px + env(safe-area-inset-bottom))!important;
+  }
+  .move-tools{
+    grid-template-columns:minmax(112px,1fr) 58px minmax(150px,1.2fr)!important;
+    gap:5px!important;
+  }
+  .move-tools input,.move-tools select,.move-tools button{
+    height:36px!important;
+    min-height:36px!important;
+    font-size:13px!important;
+    padding:4px 6px!important;
+  }
+  .controls{
+    height:40px!important;
+    min-height:40px!important;
+    gap:5px!important;
+  }
+  .controls button{
+    height:38px!important;
+    min-height:38px!important;
+    font-size:18px!important;
+  }
+  .game-action-row{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    height:auto!important;
+    min-height:76px!important;
+    gap:6px!important;
+    margin:0!important;
+  }
+  .game-action-row button{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    min-height:36px!important;
+    font-size:13px!important;
+    padding:3px 5px!important;
+  }
+  #saveSgfBtn{
+    grid-column:span 2!important;
+  }
+  .range-row{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    min-height:26px!important;
+    height:26px!important;
+  }
+  .teach-quick-bar{
+    bottom:calc(205px + env(safe-area-inset-bottom))!important;
+  }
+  .teach-bar-toggle{
+    bottom:calc(18px + env(safe-area-inset-bottom))!important;
+  }
+}
+@media (orientation:portrait) and (max-height:760px){
+  #board{
+    width:min(92vw,calc(100dvh - 300px))!important;
+    max-height:calc(100dvh - 300px)!important;
+  }
+  .player{min-height:180px!important}
+}
+#undoGameBtn{
+  border-color:#8a6a39!important;
+  background:#2a1d12!important;
+  color:#ffe3a2!important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -923,7 +1038,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.19 題目與解答手順分離版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.20 直式控制列與悔棋修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -964,6 +1079,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <button id="lastBtn">⏭</button>
     </div>
     <div class="game-action-row" id="gameActionRow">
+      <button id="undoGameBtn">悔棋</button>
       <button id="scoreGameBtn">計算勝負</button>
       <button id="passGameBtn">Pass</button>
       <button id="resignGameBtn">投降</button>
@@ -992,7 +1108,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.19 題目與解答手順分離版</h2>
+  <h2>Build021.20 直式控制列與悔棋修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1034,7 +1150,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.19</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.20</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -1069,7 +1185,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.19 題目與解答手順分離版</h2>
+  <h2>Build021.20 直式控制列與悔棋修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1955,7 +2071,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.19]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.20]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -2146,7 +2262,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.19 題目與解答手順分離版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.20 直式控制列與悔棋修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2438,7 +2554,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
   }
 
 
-  // Build021.19 教學擺棋手順顯示
+  // Build021.20 教學擺棋手順顯示
   if(state.teachingMode && state.teachingShowNumbers){
     for(const s of (state.teachingSequence||[])){
       if(s.x<0||s.y<0||s.x>=state.size||s.y>=state.size)continue;
@@ -2458,7 +2574,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     }
   }
 
-  // Build021.19 教學標記：專業低調風格
+  // Build021.20 教學標記：專業低調風格
   for(const mark of (state.teachingMarks||[])){
     if(mark.x<0||mark.y<0||mark.x>=state.size||mark.y>=state.size)continue;
     const cx=pad+mark.x*step,cy=pad+mark.y*step;
@@ -2857,7 +2973,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.19]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.20]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -2896,6 +3012,41 @@ function saveCurrentSgf(){
   toast("SGF 棋譜已存檔");
 }
 $("saveSgfBtn").onclick=saveCurrentSgf;
+
+
+function undoGameMove(){
+  if(state.aiThinking){
+    toast("KataGo 思考中，暫時不能悔棋");
+    return;
+  }
+  if(!state.moves.length || state.index<=0){
+    toast("目前沒有可悔的棋");
+    return;
+  }
+
+  let removeCount=1;
+  if(state.humanMode){
+    const visible=state.moves.slice(0,state.index);
+    const last=visible[visible.length-1];
+    const prev=visible[visible.length-2];
+
+    // 若最後一手是 AI，連同人類上一手一起撤回。
+    if(last && last.c!==state.humanColor && prev && prev.c===state.humanColor){
+      removeCount=2;
+    }
+  }
+
+  state.moves.splice(Math.max(0,state.index-removeCount),removeCount);
+  state.index=Math.max(0,state.index-removeCount);
+  state.actions=[];
+  state.replayCache=[];
+  state.turn=state.index%2===0?"B":"W";
+  state.bestPoint=null;
+  state.analysis=null;
+  syncUI();
+  toast(removeCount===2?"已悔棋一回合":"已悔棋一手");
+}
+$("undoGameBtn").onclick=undoGameMove;
 
 $("scoreGameBtn").onclick=calculateGameResult;
 $("passGameBtn").onclick=humanGamePass;
@@ -3047,7 +3198,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.19 題目與解答手順分離版 已啟動");
+  toast("Build021.20 直式控制列與悔棋修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
