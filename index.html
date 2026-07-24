@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.24 教學解答提子修正版</title>
+<title>AlphaTrader AI Pro V5｜Build021.23 教學解答提子修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.24 教學解答提子修正版 */
+/* Build021.23 教學解答提子修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.24 教學解答提子修正版 */
+/* Build021.23 教學解答提子修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.24 教學解答提子修正版 */
+/* Build021.23 教學解答提子修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.24 教學解答提子修正版 */
+/* Build021.23 教學解答提子修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -1123,7 +1123,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.24 教學解答提子修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.23 教學解答提子修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1193,7 +1193,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.24 教學解答提子修正版</h2>
+  <h2>Build021.23 教學解答提子修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1235,7 +1235,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.24</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.20</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -1270,7 +1270,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.24 教學解答提子修正版</h2>
+  <h2>Build021.23 教學解答提子修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1417,7 +1417,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260722-0212";
+const APP_VERSION="20260724-02126";
 
 const $=id=>document.getElementById(id);
 
@@ -1436,7 +1436,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,gameOver:false,endReason:"",lastGameResult:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,gameEnded:false,aiThinking:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1618,7 +1618,7 @@ function parseCloudAnalysis(raw){
     };
   }).filter(Boolean);
 
-  const directBest=data.bestMove ?? data.best_move ?? data.recommendedMove ?? data.recommended_move ?? data.move ?? data.nextMove ?? data.next_move ?? (data.pass===true?"pass":null);
+  const directBest=data.bestMove ?? data.best_move ?? data.recommendedMove ?? data.recommended_move;
   if(recommendations.length===0 && directBest!=null){
     let p=null;
     if(typeof directBest==="object" && Number.isInteger(directBest.x) && Number.isInteger(directBest.y)){
@@ -2177,14 +2177,14 @@ $("startVariationBtn").onclick=()=>{
 };
 $("returnMainBtn").onclick=()=>{
   if(!state.variationBackup){toast("目前沒有變化圖");return;}
-  restoreTeachingState(state.variationBackup);state.variationBackup=null; state.gameOver=false; state.endReason=""; state.lastGameResult=null;
+  restoreTeachingState(state.variationBackup);state.variationBackup=null;
   toast("已返回主棋譜");
 };
 $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.24]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.26]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -2375,7 +2375,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.24 教學解答提子修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.23 教學解答提子修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2735,7 +2735,7 @@ function syncUI(){
   $("boardSizeText").textContent=`${state.size}路`;
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
-  $("statusText").textContent=state.gameOver?"對局結束":(state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命"));
+  $("statusText").textContent=state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命");
   const levelNames={entry:"入門",beginner:"初級",advanced:"高級",dan13:"1-3段",highdan:"高段",pro:"職業"};
   if($("handicapText"))$("handicapText").textContent=state.handicap>0?`讓${state.handicap}子`:"分先";
   if($("aiLevelText"))$("aiLevelText").textContent=levelNames[state.aiLevel]||"初段";
@@ -2860,7 +2860,7 @@ $("loadPasteBtn").onclick=()=>{
   loadSGFText(text,"貼上的 SGF");
 };
 $("newGameBtn").onclick=()=>{
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.gameOver=false;state.endReason="";state.lastGameResult=null;
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
@@ -2971,34 +2971,12 @@ function chooseKataGoMoveByLevel(recommendations,level){
   return r[Math.min(index,r.length-1)];
 }
 
-function trailingPassCount(){
-  let count=0;
-  for(let i=state.index-1;i>=0;i--){
-    const m=state.moves[i];
-    if(m&&m.pass)count++;else break;
-  }
-  return count;
-}
-function reopenGameAfterUndo(){
-  state.gameOver=false;
-  state.endReason="";
-  state.lastGameResult=null;
-}
-async function finishGameAfterTwoPasses(){
-  if(trailingPassCount()<2)return false;
-  state.gameOver=true;
-  state.endReason="雙方連續 Pass";
-  syncUI();
-  toast("雙方連續 Pass，對局結束");
-  await calculateGameResult({final:true});
-  return true;
-}
 function scheduleLocalAiMove(delay=350){
-  if(!state.humanMode || state.gameOver || state.turn===state.humanColor)return;
+  if(state.gameEnded || !state.humanMode || state.turn===state.humanColor)return;
   const expectedIndex=state.index;
 
   setTimeout(async()=>{
-    if(!state.humanMode || state.gameOver || state.turn===state.humanColor || state.index!==expectedIndex)return;
+    if(!state.humanMode || state.turn===state.humanColor || state.index!==expectedIndex)return;
 
     setAiThinking(true);
     try{
@@ -3018,20 +2996,18 @@ function scheduleLocalAiMove(delay=350){
         throw new Error("KataGo 未回傳可辨識的推薦落點（欄位："+keys+"）");
       }
       if(best.pass){
-        state.moves=state.moves.slice(0,state.index);
         state.moves.push({c:state.turn,pass:true,x:-1,y:-1});
         state.actions=[];state.replayCache=[];state.index++;
         state.turn=state.turn==="B"?"W":"B";
         syncUI();
         toast("KataGo Pass");
-        await finishGameAfterTwoPasses();
         return;
       }
 
       const x=Number(best.x),y=Number(best.y);
       if(!Number.isInteger(x)||!Number.isInteger(y))throw new Error("KataGo 推薦座標格式錯誤");
 
-      if(!state.humanMode || state.gameOver || state.turn===state.humanColor || state.index!==expectedIndex)return;
+      if(!state.humanMode || state.turn===state.humanColor || state.index!==expectedIndex)return;
       if(!commitAiMove(x,y))throw new Error("KataGo 落子失敗");
 
       state.connector.online=true;
@@ -3051,16 +3027,14 @@ function scheduleLocalAiMove(delay=350){
 }
 
 function humanGamePass(){
+  if(state.gameEnded){openModal("humanModal");toast("請開始新對局");return;}
   if(!state.humanMode){toast("請先開啟人機對弈");return;}
-  if(state.gameOver){toast("對局已結束；請先悔棋或重新開始");return;}
   if(state.turn!==state.humanColor){toast("目前輪到 AI");return;}
-  state.moves=state.moves.slice(0,state.index);
   state.moves.push({c:state.turn,pass:true,x:-1,y:-1});
   state.actions=[];state.replayCache=[];state.index++;
   state.turn=state.turn==="B"?"W":"B";
   syncUI();
-  toast("您已 Pass，KataGo 思考中");
-  if(trailingPassCount()>=2){finishGameAfterTwoPasses();return;}
+  toast("已 Pass");
   scheduleLocalAiMove(200);
 }
 
@@ -3075,57 +3049,52 @@ function humanGameResign(){
   alert(humanName+"投降，"+aiName+"（AI）勝。");
 }
 
-function localAreaEstimate(){
+function localStoneEstimate(){
   const snap=currentSnapshot();
-  const board=snap.board;
-  const n=state.size;
-  let black=0,white=Number(state.komi||0);
-  const seen=Array.from({length:n},()=>Array(n).fill(false));
-  for(let y=0;y<n;y++)for(let x=0;x<n;x++){
-    if(board[y][x]==="B"){black++;continue;}
-    if(board[y][x]==="W"){white++;continue;}
-    if(seen[y][x])continue;
-    const q=[[x,y]], region=[]; seen[y][x]=true; const borders=new Set();
-    while(q.length){
-      const [cx,cy]=q.pop();region.push([cx,cy]);
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-        const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=n||ny>=n)continue;
-        const c=board[ny][nx];
-        if(c)borders.add(c);else if(!seen[ny][nx]){seen[ny][nx]=true;q.push([nx,ny]);}
-      }
-    }
-    if(borders.size===1){if(borders.has("B"))black+=region.length;else white+=region.length;}
-  }
-  return {diff:black-white,black,white};
+  const counts=boardStoneCounts(snap);
+  const black=counts.black+(snap.blackCaptures||0);
+  const white=counts.white+(snap.whiteCaptures||0)+Number(state.komi||0);
+  const diff=black-white;
+  return {diff,black,white};
 }
 
-async function calculateGameResult(options={}){
-  const final=!!options.final;
+function finishGameAndOfferRestart(message){
+  state.gameEnded=true;
+  state.playing=false;
+  state.aiThinking=false;
+  if(state.timer){clearInterval(state.timer);state.timer=null;}
+  setAiThinking(false);
+  syncUI();
+  alert(message);
+  setTimeout(()=>openModal("humanModal"),80);
+}
+
+async function calculateGameResult(){
+  if(state.aiThinking){toast("KataGo 思考中，請稍候");return;}
   try{
     const api=getApiSettings();
     if(api.url){
-      if($("apiVisits"))$("apiVisits").value=String(Math.max(state.aiVisits||0,final?3000:1600));
-      if($("apiKomi"))$("apiKomi").value=String(state.komi);
-      const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:final?90:60});
-      let lead=Number(analysis.scoreLead||0);
-      if(!Number.isFinite(lead))throw new Error("KataGo 未回傳目差");
-      const winner=lead>0?"黑":lead<0?"白":"和棋";
-      const result={source:"KataGo",lead,winner,blackWin:Number(analysis.blackWin||0),whiteWin:Number(analysis.whiteWin||0)};
-      state.lastGameResult=result;
-      const title=final?"終局判定":"KataGo 形勢判定";
-      const scoreText=winner==="和棋"?"盤面接近和棋":winner+"勝約 "+Math.abs(lead).toFixed(1)+" 目";
-      alert(title+"（"+state.size+"路，貼目 "+Number(state.komi||0)+"）：\n"+scoreText+"\n黑勝率 "+result.blackWin.toFixed(1)+"%\n白勝率 "+result.whiteWin.toFixed(1)+"%"+(final?"\n\n已由雙方連續 Pass 結束。":""));
-      return result;
+      if($("apiVisits"))$("apiVisits").value=String(Math.max(state.aiVisits||0,1600));
+      const analysis=await requestCloudAnalysis();
+      const lead=Number(analysis.scoreLead||0);
+      const winner=lead>=0?"黑":"白";
+      finishGameAndOfferRestart(`KataGo 形勢判定（${state.size}路，貼目 ${Number(state.komi||0)}）：
+${winner}勝約 ${Math.abs(lead).toFixed(1)} 目
+黑勝率 ${Number(analysis.blackWin||0).toFixed(1)}%
+白勝率 ${Number(analysis.whiteWin||0).toFixed(1)}%
+
+關閉後可設定並開始新對局。`);
+      return;
     }
   }catch(err){
-    console.warn("KataGo 計算勝負失敗，改用中國規則面積估算",err);
+    console.warn("KataGo 計算勝負失敗，改用簡易估算",err);
   }
-  const a=localAreaEstimate();
-  const winner=a.diff>0?"黑":a.diff<0?"白":"和棋";
-  const result={source:"本機面積估算",lead:a.diff,winner};
-  state.lastGameResult=result;
-  alert("本機面積估算（"+state.size+"路，已含貼目 "+Number(state.komi||0)+"）：\n"+(winner==="和棋"?"和棋":winner+"勝約 "+Math.abs(a.diff).toFixed(1)+" 目")+"\n\n注意：未手動標記死棋時，複雜終局仍以 KataGo 判定較準確。");
-  return result;
+  const estimate=localStoneEstimate();
+  const winner=estimate.diff>=0?"黑":"白";
+  finishGameAndOfferRestart(`簡易盤面估算（非正式數子）：
+${winner}勝約 ${Math.abs(estimate.diff).toFixed(1)} 目
+
+關閉後可設定並開始新對局。`);
 }
 
 
@@ -3138,7 +3107,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.24]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.26]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -3203,7 +3172,6 @@ function undoGameMove(){
 
   state.moves.splice(Math.max(0,state.index-removeCount),removeCount);
   state.index=Math.max(0,state.index-removeCount);
-  reopenGameAfterUndo();
   if(state.teachingMode && state.teachingAnswerMode){
     state.teachingSequence.splice(Math.max(0,state.teachingSequence.length-removeCount),removeCount);
     renumberTeachingSequence();
@@ -3212,7 +3180,7 @@ function undoGameMove(){
   }
   state.actions=[];
   state.replayCache=[];
-  { const last=state.moves[state.index-1]; state.turn=last?(last.c==="B"?"W":"B"):(state.handicap>0?"W":"B"); }
+  state.turn=state.index%2===0?"B":"W";
   state.bestPoint=null;
   state.analysis=null;
   syncUI();
@@ -3225,6 +3193,10 @@ $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
 
 $("startHumanBtn").onclick=()=>{
+  state.gameEnded=false;
+  state.aiThinking=false;
+  setAiThinking(false);
+  if(state.timer){clearInterval(state.timer);state.timer=null;}
   state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
@@ -3243,9 +3215,8 @@ $("startHumanBtn").onclick=()=>{
   scheduleLocalAiMove(450);
 };
 canvas.addEventListener("click",e=>{
+  if(state.gameEnded){toast("對局已結束，請開始新對局");openModal("humanModal");return;}
   if(!state.humanMode && !state.teachingMode)return;
-  if(state.humanMode && state.gameOver){toast("對局已結束；請先悔棋或重新開始");return;}
-  if(state.humanMode && state.turn!==state.humanColor){toast("目前輪到 AI");return;}
   const rect=canvas.getBoundingClientRect();
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
   const localX=(e.clientX-rect.left)*(css/rect.width);
@@ -3372,7 +3343,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.24 教學解答提子修正版 已啟動");
+  toast("Build021.23 教學解答提子修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
