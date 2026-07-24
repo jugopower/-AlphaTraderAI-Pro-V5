@@ -1255,6 +1255,26 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 </style>
+
+<style id="build02130-professional-ui">
+/* Build021.30 Professional UI RC：控制區分層、座標、AI推薦資訊 */
+.move-tools{grid-template-columns:minmax(110px,.8fr) 62px minmax(145px,1.1fr) 92px!important;}
+#coordToggleBtn{height:36px!important;white-space:nowrap!important;border-color:#d8a943!important;background:#2b2115!important;color:#ffe09a!important;}
+.ai-hint-panel{margin:8px 5px;padding:9px 7px;border:1px solid #7b5727;border-radius:12px;background:rgba(29,20,12,.92);font-size:12px;line-height:1.55;color:#f8dfaa;text-align:left;}
+.ai-hint-panel strong{display:block;color:#ffd267;font-size:13px;margin-bottom:3px}.ai-hint-panel small{color:#bda985}.ai-hint-panel div{white-space:nowrap}
+.player{box-sizing:border-box!important;overflow-y:auto!important;scrollbar-width:thin!important;}
+.game-action-row{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:42px!important;min-height:91px!important;margin-bottom:8px!important;}
+.range-row{margin-top:2px!important;padding-top:7px!important;border-top:1px solid rgba(215,161,70,.26)!important;}
+@media (orientation:landscape) and (min-width:900px){
+ .app{grid-template-rows:minmax(0,1fr) 184px!important;}
+ .player{height:180px!important;min-height:180px!important;grid-template-columns:minmax(310px,1fr) minmax(360px,1.25fr)!important;grid-template-rows:38px 44px 92px!important;gap:4px 7px!important;}
+ .move-tools{grid-column:1!important;grid-row:1!important}.controls{grid-column:2!important;grid-row:1!important}.game-action-row{grid-column:1 / span 2!important;grid-row:2 / span 2!important;padding-top:2px!important;}
+ .range-row{grid-column:1 / span 2!important;grid-row:4!important;}
+ .board-wrap{height:calc(100dvh - 194px)!important;max-height:calc(100dvh - 194px)!important;}
+ #board{width:min(calc(100dvh - 202px),calc(100vw - 126px))!important;height:min(calc(100dvh - 202px),calc(100vw - 126px))!important;}
+}
+@media (orientation:portrait){.move-tools{grid-template-columns:minmax(105px,1fr) 58px minmax(128px,1.2fr) 86px!important}.ai-hint-panel{display:none}.player{padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1281,6 +1301,11 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <main class="board-wrap"><canvas id="board"></canvas></main>
 
   <aside class="right" id="rightTools"><button class="tool" id="redrawBtn" type="button"><span>↻</span>重繪</button>
+    <section class="ai-hint-panel" id="aiHintPanel" aria-live="polite">
+      <strong>AI 推薦</strong>
+      <div id="aiHintLine1">① —</div><div id="aiHintLine2">② —</div><div id="aiHintLine3">③ —</div>
+      <small id="aiHintStatus">提示關閉</small>
+    </section>
 </aside>
 
   <section class="player">
@@ -1294,6 +1319,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
         <option value="recent10" selected>最近10手</option>
         <option value="all">全部</option>
       </select></label>
+      <button id="coordToggleBtn" type="button" aria-pressed="true">座標：開</button>
     </div>
     <div class="controls">
       <button id="firstBtn">⏮</button>
@@ -1577,7 +1603,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -2764,7 +2790,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
   if(!css)return;
   const dpr=canvas._dpr||Math.min(window.devicePixelRatio||1,2);
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  const pad=css*0.055,boardPx=css-pad*2,step=boardPx/(state.size-1);
+  const pad=css*(state.showCoords?0.085:0.055),boardPx=css-pad*2,step=boardPx/(state.size-1);
   const grad=ctx.createLinearGradient(0,0,css,css);
   grad.addColorStop(0,"#f2c46d");grad.addColorStop(1,"#c98231");
   ctx.clearRect(0,0,css,css);ctx.fillStyle=grad;ctx.fillRect(0,0,css,css);
@@ -2773,6 +2799,17 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     const p=pad+i*step;
     ctx.beginPath();ctx.moveTo(pad,p);ctx.lineTo(css-pad,p);ctx.stroke();
     ctx.beginPath();ctx.moveTo(p,pad);ctx.lineTo(p,css-pad);ctx.stroke();
+  }
+  if(state.showCoords){
+    ctx.save();
+    ctx.fillStyle="#3b2718";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.font=`700 ${Math.max(10,Math.min(15,step*.27))}px -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif`;
+    for(let i=0;i<state.size;i++){
+      const p=pad+i*step,label=coordLetters[i]||"?",num=String(state.size-i);
+      ctx.fillText(label,p,pad*.42);ctx.fillText(label,p,css-pad*.42);
+      ctx.fillText(num,pad*.42,p);ctx.fillText(num,css-pad*.42,p);
+    }
+    ctx.restore();
   }
   const stars=state.size===19?[3,9,15]:state.size===13?[3,6,9]:[2,4,6];
   ctx.fillStyle="#51351e";
@@ -2924,6 +2961,10 @@ function syncUI(){
   $("renderHashText").textContent=(state.renderedHash||"—").slice(0,8);
   $("layoutText").textContent=state.boardCssSize?"已鎖定":"待命";
   $("layoutModeText").textContent=window.matchMedia("(orientation: landscape)").matches?(document.body.classList.contains("info-collapsed")?"全棋盤":"Professional"):"Portrait";
+  const cb=$("coordToggleBtn");if(cb){cb.textContent=state.showCoords?"座標：開":"座標：關";cb.setAttribute("aria-pressed",state.showCoords?"true":"false");}
+  const hp=state.hintPoints||[];
+  [1,2,3].forEach((n,i)=>{const el=$("aiHintLine"+n);if(el){const pt=hp[i];el.textContent=`${["①","②","③"][i]} ${pt&&!pt.pass?coordLabel(pt.x,pt.y):"—"}`;}});
+  if($("aiHintStatus"))$("aiHintStatus").textContent=!state.hintEnabled?"提示關閉":state.hintLoading?"分析中…":(hp.length?"KataGo 即時推薦":"等待推薦");
 }
 function goTo(n){
   state.index=Math.max(0,Math.min(state.moves.length,n));
@@ -3119,6 +3160,12 @@ async function evaluateHumanMoveForHint(move,beforeBlackWin){
       if(loss>=5)toast(`此手勝率下降約 ${loss.toFixed(1)}%，標示紅點`);
     }
   }catch(err){console.warn("惡手判定失敗",err);}
+}
+
+function setCoordsEnabled(on){
+  state.showCoords=!!on;
+  syncUI();
+  toast(state.showCoords?"棋盤座標已開啟":"棋盤座標已關閉");
 }
 
 function setHintEnabled(on){
@@ -3333,6 +3380,7 @@ function saveCurrentSgf(){
 }
 $("saveSgfBtn").onclick=saveCurrentSgf;
 $("hintToggleBtn").onclick=()=>{if(!state.humanMode){toast("請先開始人機對弈");return;}setHintEnabled(!state.hintEnabled);};
+$("coordToggleBtn").onclick=()=>setCoordsEnabled(!state.showCoords);
 
 
 function undoGameMove(){
