@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.28 AI 提示 UI 優化版</title>
+<title>AlphaTrader AI Pro V5｜Build021.31 KataGo 速度與棋力模式</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.28 AI 提示 UI 優化版 */
+/* Build021.31 KataGo 速度與棋力模式 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.28 AI 提示 UI 優化版 */
+/* Build021.31 KataGo 速度與棋力模式 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.28 AI 提示 UI 優化版 */
+/* Build021.31 KataGo 速度與棋力模式 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.28 AI 提示 UI 優化版 */
+/* Build021.31 KataGo 速度與棋力模式 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -1282,7 +1282,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.28 AI 提示 UI 優化版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.31 KataGo 速度與棋力模式</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1294,7 +1294,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <div class="stat"><small>狀態</small><b id="statusText">待命</b></div>
       <div class="stat"><small>讓子</small><b id="handicapText">分先</b></div>
       <div class="stat"><small>AI 棋力</small><b id="aiLevelText">初段</b></div>
-      <div class="stat"><small>Visits</small><b id="aiVisitsText">300</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div><div class="stat"><small>Renderer</small><b id="rendererText">待命</b></div><div class="stat"><small>局面雜湊</small><b id="renderHashText">—</b></div><div class="stat"><small>版面鎖定</small><b id="layoutText">待命</b></div><div class="stat"><small>版面模式</small><b id="layoutModeText">橫式優先</b></div>
+      <div class="stat"><small>Visits</small><b id="aiVisitsText">300</b></div><div class="stat"><small>分析耗時</small><b id="aiTimeText">—</b></div><div class="stat"><small>AI 狀態</small><b id="aiRunStatus">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div><div class="stat"><small>Renderer</small><b id="rendererText">待命</b></div><div class="stat"><small>局面雜湊</small><b id="renderHashText">—</b></div><div class="stat"><small>版面鎖定</small><b id="layoutText">待命</b></div><div class="stat"><small>版面模式</small><b id="layoutModeText">橫式優先</b></div>
     </div>
   </aside>
 
@@ -1359,7 +1359,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.28 AI 提示 UI 優化版</h2>
+  <h2>Build021.31 KataGo 速度與棋力模式</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1401,7 +1401,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.27</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.31</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -1416,15 +1416,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <option value="0">分先（0子）</option><option value="2">讓2子</option><option value="3">讓3子</option><option value="4">讓4子</option><option value="5">讓5子</option><option value="6">讓6子</option><option value="7">讓7子</option><option value="8">讓8子</option><option value="9">讓9子</option>
     </select></label>
     <label>本局貼目<input id="gameKomi" type="number" step="0.5" value="7.5"></label>
-    <label>AI 強度<select id="humanAiLevel">
-      <option value="entry">入門</option>
-      <option value="beginner">初級</option>
-      <option value="advanced">高級</option>
-      <option value="dan13" selected>1-3段</option>
-      <option value="highdan">高段</option>
-      <option value="pro">職業</option>
+    <label>AI 棋力模式<select id="humanAiLevel">
+      <option value="seven" selected>七段模式（快速）</option>
+      <option value="pro">職業模式（較慢）</option>
+      <option value="deep">深度分析（復盤）</option>
     </select></label>
-    <label>分析 Visits<input id="humanAiVisits" type="number" min="10" max="10000" value="300"></label>
+    <label>分析 Visits<input id="humanAiVisits" type="number" min="10" max="10000" value="300" readonly></label>
     <label>基本時間（分鐘）<input id="mainTime" type="number" min="0" value="30"></label>
     <label>讀秒（秒）<input id="byoTime" type="number" min="0" value="30"></label>
     <label>讀秒次數<input id="byoCount" type="number" min="0" value="3"></label>
@@ -1437,7 +1434,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.28 AI 提示 UI 優化版</h2>
+  <h2>Build021.31 KataGo 速度與棋力模式</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1584,7 +1581,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260722-0212";
+const APP_VERSION="20260725-02131";
 
 const $=id=>document.getElementById(id);
 
@@ -1603,7 +1600,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"seven",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,aiRunStatus:"待命"
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1875,12 +1872,14 @@ async function requestCloudAnalysis(options={}){
     state.connector.lastError="";
     state.connector.source="katago";
     analysis.moveNumber=state.index;
+    state.aiRunStatus="完成";
     return analysis;
   }catch(err){
     state.connector.online=false;
     state.connector.lastLatency=Math.round(performance.now()-t0);
     state.connector.lastError=err.name==="AbortError"?"連線逾時":err.message;
     state.connector.source="demo";
+    state.aiRunStatus="連線失敗";
     throw new Error(state.connector.lastError);
   }finally{
     clearTimeout(timer);
@@ -2399,7 +2398,7 @@ if($("katagoReconnectBtn")){
     btn.textContent="重新連線中…";
     setAiThinking(true);
     try{
-      const result=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
+      const result=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
       state.connector.online=true;
       state.connector.source="katago";
       state.connector.lastError="";
@@ -2542,7 +2541,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.28 AI 提示 UI 優化版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.31 KataGo 速度與棋力模式 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2937,10 +2936,12 @@ function syncUI(){
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
   $("statusText").textContent=state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命");
-  const levelNames={entry:"入門",beginner:"初級",advanced:"高級",dan13:"1-3段",highdan:"高段",pro:"職業"};
+  const levelNames=AI_LEVEL_NAMES;
   if($("handicapText"))$("handicapText").textContent=state.handicap>0?`讓${state.handicap}子`:"分先";
   if($("aiLevelText"))$("aiLevelText").textContent=levelNames[state.aiLevel]||"初段";
   if($("aiVisitsText"))$("aiVisitsText").textContent=String(state.aiVisits||300);
+  if($("aiTimeText"))$("aiTimeText").textContent=state.connector.lastLatency==null?"—":(state.connector.lastLatency/1000).toFixed(1)+"秒";
+  if($("aiRunStatus"))$("aiRunStatus").textContent=state.aiRunStatus||"待命";
   const pos=snapshot;
   state.blackCaptures=pos.blackCaptures;
   state.whiteCaptures=pos.whiteCaptures;
@@ -3071,7 +3072,9 @@ $("newGameBtn").onclick=()=>{
 };
 
 
-const AI_LEVEL_VISITS={entry:20,beginner:60,advanced:200,dan13:600,highdan:1500,pro:3000};
+const AI_LEVEL_VISITS={seven:300,pro:2000,deep:5000};
+const AI_LEVEL_NAMES={seven:"七段",pro:"職業",deep:"深度分析"};
+function aiTimeoutSeconds(){return state.aiLevel==="deep"?110:(state.aiLevel==="pro"?80:50);}
 function handicapPoints(size,count){
   if(count<2)return [];
   const low=size===19?3:size===13?3:2;
@@ -3091,8 +3094,9 @@ function syncHumanSettings(){
     $("humanGameHint").textContent=`讓${h}子：人類固定執黑，AI 執白先下，貼目 0.5。`;
   }else{
     $("humanColor").disabled=false;$("gameKomi").value="7.5";
-    $("humanGameHint").textContent="分先：貼目 7.5。可選擇人類執黑或執白。";
   }
+  const names={seven:"七段模式：速度優先，適合日常對弈。",pro:"職業模式：棋力優先，每手等待較久。",deep:"深度分析：適合復盤，不建議快速對局。"};
+  $("humanGameHint").textContent=(h>0?`讓${h}子：人類固定執黑，AI 執白先下，貼目 0.5。 `:"分先：貼目 7.5。可選擇人類執黑或執白。 ")+(names[level]||"");
 }
 $("handicapCount").onchange=syncHumanSettings;
 $("humanAiLevel").onchange=syncHumanSettings;
@@ -3125,9 +3129,22 @@ async function requestCloudAnalysisWithRetry(options={}){
   throw lastErr||new Error("KataGo 連線失敗");
 }
 
+let aiWakeTimer=null;
 function setAiThinking(show){
   const el=$("aiThinkingOverlay");
+  const sub=$("aiThinkingSub");
+  clearTimeout(aiWakeTimer);
   if(el)el.hidden=!show;
+  state.aiRunStatus=show?"思考中":"待命";
+  if(sub)sub.textContent=`${AI_LEVEL_NAMES[state.aiLevel]||"KataGo"}模式 · ${state.aiVisits} visits`;
+  if(show){
+    aiWakeTimer=setTimeout(()=>{
+      state.aiRunStatus="喚醒伺服器";
+      if(sub)sub.textContent="伺服器可能正在喚醒，第一次分析會較久";
+      syncUI();
+    },8000);
+  }
+  syncUI();
 }
 
 async function refreshGameHints(){
@@ -3135,7 +3152,7 @@ async function refreshGameHints(){
   if(state.hintLoading)return;
   state.hintLoading=true;
   try{
-    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
     if(!state.humanMode || !state.hintEnabled || state.turn!==state.humanColor)return;
     state.hintPoints=(analysis.recommendations||[]).filter(p=>p&&!p.pass).slice(0,3);
     state.hintBaseBlackWin=Number(analysis.blackWin);
@@ -3150,7 +3167,7 @@ async function evaluateHumanMoveForHint(move,beforeBlackWin){
   if(!state.humanMode || !state.hintEnabled)return;
   state.hintPoints=[];
   try{
-    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
     const afterBlackWin=Number(analysis.blackWin);
     if(Number.isFinite(beforeBlackWin)&&Number.isFinite(afterBlackWin)){
       const before=state.humanColor==="B"?beforeBlackWin:100-beforeBlackWin;
@@ -3239,7 +3256,7 @@ function scheduleLocalAiMove(delay=350){
       if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
       if($("apiKomi"))$("apiKomi").value=String(state.komi);
 
-      const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
+      const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
       const best=(analysis.recommendations||[])[0];
 
       if(!best){
@@ -3439,13 +3456,13 @@ $("startHumanBtn").onclick=()=>{
   state.setupB=handicapPoints(state.size,state.handicap);state.setupW=[];
   state.turn=state.handicap>0?"W":"B";
   state.sound=$("soundOn").value==="1";
-  state.hintEnabled=$("gameHintOn")?.value==="1";state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;
+  state.hintEnabled=$("gameHintOn")?.value==="1";state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;state.aiRunStatus="待命";
   $("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
   if($("apiKomi"))$("apiKomi").value=String(state.komi);
   syncUI();closeModal("humanModal");
   if($("hintToggleBtn"))$("hintToggleBtn").textContent=state.hintEnabled?"關閉提示":"開啟提示";
-  const levelName={entry:"入門",beginner:"初級",advanced:"高級",dan13:"1-3段",highdan:"高段",pro:"職業"}[state.aiLevel]||state.aiLevel;
+  const levelName=AI_LEVEL_NAMES[state.aiLevel]||state.aiLevel;
   toast(`人機對弈已開始 · ${state.handicap>0?`讓${state.handicap}子`:"分先"} · ${levelName} · ${state.aiVisits} visits`);
   scheduleLocalAiMove(450);
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,200);
@@ -3582,7 +3599,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.29 拉桿版面修正版 已啟動");
+  toast("Build021.31 KataGo 棋力模式 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
@@ -3594,7 +3611,7 @@ if(state.engineVerified&&state.rendererVerified){
   <div class="ai-thinking-card">
     <div class="ai-thinking-spinner"></div>
     <div class="ai-thinking-title">KataGo 思考中</div>
-    <div class="ai-thinking-sub">伺服器休眠時會自動重試，請稍候</div>
+    <div class="ai-thinking-sub" id="aiThinkingSub">七段模式 · 300 visits</div>
   </div>
 </div>
 
