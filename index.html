@@ -1168,6 +1168,93 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .game-action-row{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:40px!important;min-height:134px!important}
 }
 </style>
+
+<style id="build02129-slider-layout-fix">
+/* Build021.29：手數拉桿獨立置於操作鍵下方，避免遮住按鍵 */
+.player{
+  overflow:visible!important;
+}
+.game-action-row{
+  position:relative!important;
+  z-index:3!important;
+  margin-bottom:10px!important;
+}
+.range-row{
+  position:relative!important;
+  z-index:1!important;
+  clear:both!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  column-gap:10px!important;
+  width:100%!important;
+  height:34px!important;
+  min-height:34px!important;
+  margin:0!important;
+  padding:6px 4px 2px!important;
+  box-sizing:border-box!important;
+}
+.range-row input[type="range"]{
+  position:static!important;
+  display:block!important;
+  width:100%!important;
+  height:22px!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+}
+.range-row span{
+  position:static!important;
+  min-width:54px!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+  font-size:13px!important;
+  line-height:22px!important;
+}
+@media (orientation:landscape){
+  .player{
+    grid-template-rows:auto auto auto 34px!important;
+    row-gap:7px!important;
+    padding-bottom:8px!important;
+  }
+  .game-action-row{
+    grid-row:3!important;
+    margin-bottom:0!important;
+  }
+  .range-row{
+    grid-row:4!important;
+  }
+}
+@media (orientation:portrait), (max-width:900px){
+  .player{
+    grid-template-rows:38px 40px auto 34px!important;
+    gap:6px!important;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  }
+  .game-action-row{
+    grid-row:3!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-auto-rows:38px!important;
+    min-height:82px!important;
+    height:auto!important;
+    margin:0!important;
+  }
+  .game-action-row button,#saveSgfBtn{
+    grid-column:auto!important;
+    height:38px!important;
+    min-height:38px!important;
+  }
+  .range-row{
+    grid-row:4!important;
+    height:34px!important;
+    min-height:34px!important;
+    padding:6px 3px 2px!important;
+  }
+  .teach-bar-toggle{
+    bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -3447,7 +3534,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.28 AI 提示 UI 優化版 已啟動");
+  toast("Build021.29 拉桿版面修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
