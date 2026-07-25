@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260725-0221F">
-<title>AlphaTrader AI Pro V5｜Build022.1 時鐘顯示修正版</title>
+<meta name="app-version" content="20260725-0222">
+<title>AlphaTrader AI Pro V5｜Build022.2 時鐘永久顯示版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2140,6 +2140,32 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 </style>
+
+<style id="build0222-clock-final">
+/* Build022.2 最終覆寫：所有棋盤尺寸時鐘永久顯示於右側，絕不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 178px!important;}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 178px!important;}
+  .right{display:flex!important;min-width:178px!important;max-width:178px!important;padding:7px!important;gap:7px!important;overflow-y:auto!important;}
+  .right .game-clock-panel{display:flex!important;visibility:visible!important;opacity:1!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;min-width:0!important;padding:8px!important;gap:7px!important;flex:0 0 auto!important;pointer-events:none!important;}
+  .right .clock-side{display:grid!important;grid-template-columns:28px 1fr!important;padding:8px 6px!important;column-gap:8px!important;}
+  .right .clock-stone{width:27px!important;height:27px!important;}
+  .right .clock-time{font-size:29px!important;}
+  .right .clock-name{font-size:12px!important;}
+  .right .clock-byo{font-size:9px!important;}
+  .right .tool{min-height:56px!important;flex:0 0 auto!important;}
+}
+@media (orientation:portrait),(max-width:900px){
+  .app{grid-template-rows:76px minmax(450px,calc(100dvh - 320px)) 108px 118px!important;}
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important;}
+  .right > .tool,.right > .ai-hint-panel{display:none!important;}
+  .right .game-clock-panel{display:grid!important;visibility:visible!important;opacity:1!important;grid-template-columns:1fr auto 1fr!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;}
+  .right .clock-side{grid-template-columns:24px 1fr!important;padding:6px!important;}
+  .right .clock-time{font-size:23px!important;}
+  .right .clock-byo{font-size:8px!important;}
+  .player{grid-row:4!important;}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2147,7 +2173,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.1 時鐘顯示修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.2 時鐘永久顯示版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -3002,7 +3028,10 @@ const tools=[
   ["resetBtn","↺","還原",()=>resetView()]
 ];
 function buildTools(container){
+  // Build022.2：右側工具列重建時保留時鐘，避免 innerHTML 清空後時鐘消失
+  const clock = container.id === "rightTools" ? document.getElementById("gameClockPanel") : null;
   container.innerHTML="";
+  if(clock) container.appendChild(clock);
   tools.forEach(([id,icon,label,fn])=>{
     const b=document.createElement("button"); b.id=id+"_"+container.id; b.className="tool";
     b.innerHTML=`<span>${icon}</span><small>${label}</small>`;
