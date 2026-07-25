@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260725-0221F">
-<title>AlphaTrader AI Pro V5｜Build022.1 修正版</title>
+<title>AlphaTrader AI Pro V5｜Build022.1 時鐘顯示修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build022.1 修正版 */
+/* Build022.1 時鐘顯示修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build022.1 修正版 */
+/* Build022.1 時鐘顯示修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build022.1 修正版 */
+/* Build022.1 時鐘顯示修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build022.1 修正版 */
+/* Build022.1 時鐘顯示修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -413,13 +413,24 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
  .move-tools .compact-label:last-child{grid-column:1 / -1!important}
 }
 
-/* Build022.1 修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
-  .app{grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important}
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
   body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
-  .right{min-width:154px!important;max-width:154px!important;padding:6px!important;gap:6px!important;overflow-y:auto!important}
-  .right .game-clock-panel{position:static!important;transform:none!important;inset:auto!important;width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important}
-  .right .clock-side{grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
   .right .clock-stone{width:23px!important;height:23px!important}
   .right .clock-name{font-size:11px!important}
   .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
@@ -436,10 +447,15 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .right .clock-stone{width:27px!important;height:27px!important}
   .right .clock-byo{font-size:9px!important}
 }
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
 @media (orientation:portrait),(max-width:900px){
   .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
   .right > .tool,.right > .ai-hint-panel{display:none!important}
-  .right .game-clock-panel{display:grid!important;grid-template-columns:1fr auto 1fr!important;position:static!important;transform:none!important;width:100%!important;min-width:0!important;padding:6px!important;gap:5px!important;pointer-events:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
   .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
   .right .clock-time{font-size:20px!important}
   .right .clock-byo{font-size:8px!important}
@@ -473,6 +489,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     max-width: 100% !important;
   }
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 <script id="build0214-orientation">
 (function(){
@@ -598,6 +666,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
   .info-collapse{display:none!important}
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -620,6 +740,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     font-size:13px!important;
   }
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -672,6 +844,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     height:22px!important;
   }
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -768,6 +992,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     margin-bottom:4px!important;
   }
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -802,6 +1078,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 @media(max-width:700px){
   .teach-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -849,6 +1177,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
   .teach-quick-bar button{height:36px;font-size:11px}
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -888,6 +1268,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     bottom:calc(8px + env(safe-area-inset-bottom))!important;
   }
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -927,6 +1359,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .teach-choice.active{
   box-shadow:0 0 0 3px rgba(255,224,112,.75) inset,0 0 0 2px #f7cc56!important;
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -950,6 +1434,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .ai-thinking-title{font-size:24px;font-weight:900}
 .ai-thinking-sub{margin-top:8px;font-size:14px;opacity:.78}
 @keyframes katagoSpin{to{transform:rotate(360deg)}}
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -1065,6 +1601,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   background:#2a1d12!important;
   color:#ffe3a2!important;
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -1150,6 +1738,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .board-wrap{height:min(82vw,58dvh)!important;min-height:min(82vw,58dvh)!important;max-height:min(82vw,58dvh)!important}
   #board{width:min(82vw,58dvh)!important;height:min(82vw,58dvh)!important}
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 
@@ -1203,6 +1843,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 @media (max-width:520px){
   .game-action-row{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:40px!important;min-height:134px!important}
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 <style id="build02129-slider-layout-fix">
@@ -1290,6 +1982,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     bottom:calc(10px + env(safe-area-inset-bottom))!important;
   }
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 
 <style id="build02130-professional-ui">
@@ -1343,6 +2087,58 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .game-clock-panel{top:8px;right:6px;transform:none;width:112px;min-width:112px}
   .clock-time{font-size:19px}
 }
+
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+@media (orientation:landscape) and (min-width:901px){
+  .app{
+    grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
+  }
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 154px!important}
+  .right{
+    min-width:154px!important;max-width:154px!important;
+    padding:6px!important;gap:6px!important;overflow-y:auto!important;
+  }
+  .right .game-clock-panel{
+    position:static!important;transform:none!important;inset:auto!important;
+    width:100%!important;min-width:0!important;padding:7px!important;gap:6px!important;
+    flex:0 0 auto!important;pointer-events:none!important;border-radius:13px!important;
+  }
+  .right .clock-side{
+    grid-template-columns:25px 1fr!important;padding:7px 6px!important;column-gap:7px!important;
+  }
+  .right .clock-stone{width:23px!important;height:23px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:24px!important;letter-spacing:.2px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:4px!important}
+  .right .clock-sound{height:13px!important;line-height:13px!important;font-size:12px!important}
+  .right .tool{min-height:54px!important;flex:0 0 auto!important}
+  .board-wrap{overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 174px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 174px!important}
+  .right{min-width:174px!important;max-width:174px!important}
+  .right .clock-time{font-size:28px!important}
+  .right .clock-stone{width:27px!important;height:27px!important}
+  .right .clock-byo{font-size:9px!important}
+}
+/* 直式或較窄畫面：時鐘改為棋盤下方橫列，避免覆蓋棋盤 */
+@media (orientation:portrait),(max-width:900px){
+  .right{display:flex!important;grid-column:1!important;grid-row:3!important;background:transparent!important;border:0!important;padding:0!important;overflow:visible!important}
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:1fr auto 1fr!important;
+    position:static!important;transform:none!important;width:100%!important;min-width:0!important;
+    padding:6px!important;gap:5px!important;pointer-events:none!important;
+  }
+  .right .clock-side{grid-template-columns:20px 1fr!important;padding:5px!important}
+  .right .clock-time{font-size:20px!important}
+  .right .clock-byo{font-size:8px!important}
+  .right .clock-sound{align-self:center!important}
+  .app{grid-template-rows:76px minmax(470px,calc(100dvh - 300px)) 100px 118px!important}
+  .player{grid-row:4!important}
+}
+
 </style>
 </head>
 <body>
@@ -1351,7 +2147,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.1 修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.1 時鐘顯示修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1372,7 +2168,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   </main>
 
   <aside class="right" id="rightTools">
-    <div class="game-clock-panel" id="gameClockPanel" hidden>
+    <div class="game-clock-panel" id="gameClockPanel">
       <div class="clock-side" id="blackClockBox"><i class="clock-stone black"></i><span class="clock-name">黑方</span><strong class="clock-time" id="blackClock">30:00</strong><small class="clock-byo" id="blackByo">讀秒 30秒 × 3</small></div>
       <span class="clock-sound" id="clockSoundIcon">🔊</span>
       <div class="clock-side" id="whiteClockBox"><i class="clock-stone white"></i><span class="clock-name">白方</span><strong class="clock-time" id="whiteClock">30:00</strong><small class="clock-byo" id="whiteByo">讀秒 30秒 × 3</small></div>
@@ -1436,7 +2232,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build022.1 修正版</h2>
+  <h2>Build022.1 時鐘顯示修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1518,7 +2314,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build022.1 修正版</h2>
+  <h2>Build022.1 時鐘顯示修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2623,7 +3419,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build022.1 修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build022.1 時鐘顯示修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -3242,7 +4038,7 @@ function clockBeep(seconds){
 }
 function updateClockUI(){
   const panel=$("gameClockPanel");if(!panel)return;
-  panel.hidden=!state.humanMode;
+  panel.hidden=false;
   const data=[['B','blackClock','blackByo','blackClockBox'],['W','whiteClock','whiteByo','whiteClockBox']];
   for(const [c,timeId,byoId,boxId] of data){
     const main=c==='B'?state.blackTimeSec:state.whiteTimeSec;
