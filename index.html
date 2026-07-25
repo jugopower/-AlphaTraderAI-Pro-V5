@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build021.31 KataGo 速度與棋力模式</title>
+<title>AlphaTrader AI Pro V5｜Build022 自由讀秒時鐘版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build021.31 KataGo 速度與棋力模式 */
+/* Build022 自由讀秒時鐘版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build021.31 KataGo 速度與棋力模式 */
+/* Build022 自由讀秒時鐘版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.31 KataGo 速度與棋力模式 */
+/* Build022 自由讀秒時鐘版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build021.31 KataGo 速度與棋力模式 */
+/* Build022 自由讀秒時鐘版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -1274,6 +1274,15 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
  #board{width:min(calc(100dvh - 202px),calc(100vw - 126px))!important;height:min(calc(100dvh - 202px),calc(100vw - 126px))!important;}
 }
 @media (orientation:portrait){.move-tools{grid-template-columns:minmax(105px,1fr) 58px minmax(128px,1.2fr) 86px!important}.ai-hint-panel{display:none}.player{padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}}
+/* Build021.31 大棋盤對局時鐘 */
+.game-clock-panel{position:absolute;z-index:12;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:7px 9px;border-radius:14px;background:rgba(8,16,27,.88);backdrop-filter:blur(10px);box-shadow:0 6px 22px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);pointer-events:none;min-width:300px;justify-content:center}
+.clock-side{display:grid;grid-template-columns:auto 1fr;grid-template-areas:'stone name' 'stone time' 'stone byo';column-gap:8px;align-items:center;min-width:132px;padding:5px 8px;border-radius:10px;border:1px solid transparent}
+.clock-side.active{border-color:#58d68d;background:rgba(35,110,70,.28);box-shadow:0 0 0 1px rgba(88,214,141,.15) inset}
+.clock-stone{grid-area:stone;width:22px;height:22px;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.6)}
+.clock-stone.black{background:#111;border:1px solid #555}.clock-stone.white{background:#fff;border:1px solid #bbb}
+.clock-name{grid-area:name;font-size:11px;color:#cbd5e1}.clock-time{grid-area:time;font-size:23px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:#fff}.clock-byo{grid-area:byo;font-size:10px;color:#94a3b8;margin-top:3px}.clock-side.danger .clock-time,.clock-side.danger .clock-byo{color:#ff6b6b}
+.clock-sound{align-self:center;font-size:15px;opacity:.85}
+@media(max-width:760px){.game-clock-panel{top:6px;min-width:260px;padding:5px}.clock-side{min-width:112px;padding:4px 5px}.clock-time{font-size:19px}.clock-stone{width:18px;height:18px}}
 </style>
 </head>
 <body>
@@ -1282,7 +1291,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build021.31 KataGo 速度與棋力模式</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022 自由讀秒時鐘版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1294,11 +1303,18 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <div class="stat"><small>狀態</small><b id="statusText">待命</b></div>
       <div class="stat"><small>讓子</small><b id="handicapText">分先</b></div>
       <div class="stat"><small>AI 棋力</small><b id="aiLevelText">初段</b></div>
-      <div class="stat"><small>Visits</small><b id="aiVisitsText">300</b></div><div class="stat"><small>分析耗時</small><b id="aiTimeText">—</b></div><div class="stat"><small>AI 狀態</small><b id="aiRunStatus">待命</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div><div class="stat"><small>Renderer</small><b id="rendererText">待命</b></div><div class="stat"><small>局面雜湊</small><b id="renderHashText">—</b></div><div class="stat"><small>版面鎖定</small><b id="layoutText">待命</b></div><div class="stat"><small>版面模式</small><b id="layoutModeText">橫式優先</b></div>
+      <div class="stat"><small>Visits</small><b id="aiVisitsText">300</b></div><div class="stat"><small>規則引擎</small><b id="engineText">啟動中</b></div><div class="stat"><small>非法節點</small><b id="illegalMoves">0</b></div><div class="stat"><small>最後提子</small><b id="lastCapture">0</b></div><div class="stat"><small>快照</small><b id="snapshotText">0</b></div><div class="stat"><small>累計提子</small><b id="captureTotal">0</b></div><div class="stat"><small>Renderer</small><b id="rendererText">待命</b></div><div class="stat"><small>局面雜湊</small><b id="renderHashText">—</b></div><div class="stat"><small>版面鎖定</small><b id="layoutText">待命</b></div><div class="stat"><small>版面模式</small><b id="layoutModeText">橫式優先</b></div>
     </div>
   </aside>
 
-  <main class="board-wrap"><canvas id="board"></canvas></main>
+  <main class="board-wrap">
+    <div class="game-clock-panel" id="gameClockPanel" hidden>
+      <div class="clock-side" id="blackClockBox"><i class="clock-stone black"></i><span class="clock-name">黑方</span><strong class="clock-time" id="blackClock">30:00</strong><small class="clock-byo" id="blackByo">讀秒 30秒 × 3</small></div>
+      <span class="clock-sound" id="clockSoundIcon">🔊</span>
+      <div class="clock-side" id="whiteClockBox"><i class="clock-stone white"></i><span class="clock-name">白方</span><strong class="clock-time" id="whiteClock">30:00</strong><small class="clock-byo" id="whiteByo">讀秒 30秒 × 3</small></div>
+    </div>
+    <canvas id="board"></canvas>
+  </main>
 
   <aside class="right" id="rightTools"><button class="tool" id="redrawBtn" type="button"><span>↻</span>重繪</button>
     <section class="ai-hint-panel" id="aiHintPanel" aria-live="polite">
@@ -1359,7 +1375,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build021.31 KataGo 速度與棋力模式</h2>
+  <h2>Build022 自由讀秒時鐘版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1416,16 +1432,23 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <option value="0">分先（0子）</option><option value="2">讓2子</option><option value="3">讓3子</option><option value="4">讓4子</option><option value="5">讓5子</option><option value="6">讓6子</option><option value="7">讓7子</option><option value="8">讓8子</option><option value="9">讓9子</option>
     </select></label>
     <label>本局貼目<input id="gameKomi" type="number" step="0.5" value="7.5"></label>
-    <label>AI 棋力模式<select id="humanAiLevel">
-      <option value="seven" selected>七段模式（快速）</option>
-      <option value="pro">職業模式（較慢）</option>
-      <option value="deep">深度分析（復盤）</option>
+    <label>AI 強度<select id="humanAiLevel">
+      <option value="entry">入門</option>
+      <option value="beginner">初級</option>
+      <option value="advanced">高級</option>
+      <option value="dan13" selected>1-3段</option>
+      <option value="highdan">高段</option>
+      <option value="pro">職業</option>
     </select></label>
-    <label>分析 Visits<input id="humanAiVisits" type="number" min="10" max="10000" value="300" readonly></label>
-    <label>基本時間（分鐘）<input id="mainTime" type="number" min="0" value="30"></label>
-    <label>讀秒（秒）<input id="byoTime" type="number" min="0" value="30"></label>
-    <label>讀秒次數<input id="byoCount" type="number" min="0" value="3"></label>
-    <label>落子音<select id="soundOn"><option value="1">開</option><option value="0">關</option></select></label>
+    <label>分析 Visits<input id="humanAiVisits" type="number" min="10" max="10000" value="300"></label>
+    <label>基本時間（小時）<input id="mainHours" type="number" min="0" max="9" value="0"></label>
+    <label>基本時間（分鐘）<input id="mainMinutes" type="number" min="0" max="59" value="20"></label>
+    <div class="clock-preset-row" style="grid-column:1/-1"><span>快速設定</span><button type="button" class="clock-preset" data-minutes="10">10分鐘</button><button type="button" class="clock-preset" data-minutes="20">20分鐘</button><button type="button" class="clock-preset" data-minutes="30">30分鐘</button></div>
+    <label>每次讀秒<select id="byoTime"><option value="10">10秒</option><option value="20">20秒</option><option value="30" selected>30秒</option><option value="custom">自訂</option></select></label>
+    <label id="customByoWrap" hidden>自訂讀秒（秒）<input id="customByoTime" type="number" min="1" max="99" value="30"></label>
+    <label>讀秒次數<input id="byoCount" type="number" min="1" max="20" value="3"></label>
+    <label>聲音<select id="soundOn"><option value="1">開</option><option value="0">關</option></select></label>
+    <label>最後5秒語音<select id="voiceCountdownOn"><option value="1">開</option><option value="0">關</option></select></label>
     <label>AI 對局提示<select id="gameHintOn"><option value="0" selected>關閉</option><option value="1">開啟</option></select></label>
   </div>
   <p id="humanGameHint" style="color:var(--muted);margin:10px 0 0">分先：貼目 7.5。讓子局固定人類執黑、AI 執白。</p>
@@ -1434,7 +1457,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build021.31 KataGo 速度與棋力模式</h2>
+  <h2>Build022 自由讀秒時鐘版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -1581,7 +1604,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260725-02131";
+const APP_VERSION="20260722-0212";
 
 const $=id=>document.getElementById(id);
 
@@ -1600,7 +1623,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"seven",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,aiRunStatus:"待命"
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -1872,14 +1895,12 @@ async function requestCloudAnalysis(options={}){
     state.connector.lastError="";
     state.connector.source="katago";
     analysis.moveNumber=state.index;
-    state.aiRunStatus="完成";
     return analysis;
   }catch(err){
     state.connector.online=false;
     state.connector.lastLatency=Math.round(performance.now()-t0);
     state.connector.lastError=err.name==="AbortError"?"連線逾時":err.message;
     state.connector.source="demo";
-    state.aiRunStatus="連線失敗";
     throw new Error(state.connector.lastError);
   }finally{
     clearTimeout(timer);
@@ -2350,7 +2371,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.23]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.31]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -2398,7 +2419,7 @@ if($("katagoReconnectBtn")){
     btn.textContent="重新連線中…";
     setAiThinking(true);
     try{
-      const result=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
+      const result=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
       state.connector.online=true;
       state.connector.source="katago";
       state.connector.lastError="";
@@ -2541,7 +2562,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build021.31 KataGo 速度與棋力模式 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build022 自由讀秒時鐘版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -2936,12 +2957,10 @@ function syncUI(){
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
   $("statusText").textContent=state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命");
-  const levelNames=AI_LEVEL_NAMES;
+  const levelNames={entry:"入門",beginner:"初級",advanced:"高級",dan13:"1-3段",highdan:"高段",pro:"職業"};
   if($("handicapText"))$("handicapText").textContent=state.handicap>0?`讓${state.handicap}子`:"分先";
   if($("aiLevelText"))$("aiLevelText").textContent=levelNames[state.aiLevel]||"初段";
   if($("aiVisitsText"))$("aiVisitsText").textContent=String(state.aiVisits||300);
-  if($("aiTimeText"))$("aiTimeText").textContent=state.connector.lastLatency==null?"—":(state.connector.lastLatency/1000).toFixed(1)+"秒";
-  if($("aiRunStatus"))$("aiRunStatus").textContent=state.aiRunStatus||"待命";
   const pos=snapshot;
   state.blackCaptures=pos.blackCaptures;
   state.whiteCaptures=pos.whiteCaptures;
@@ -3072,9 +3091,7 @@ $("newGameBtn").onclick=()=>{
 };
 
 
-const AI_LEVEL_VISITS={seven:300,pro:2000,deep:5000};
-const AI_LEVEL_NAMES={seven:"七段",pro:"職業",deep:"深度分析"};
-function aiTimeoutSeconds(){return state.aiLevel==="deep"?110:(state.aiLevel==="pro"?80:50);}
+const AI_LEVEL_VISITS={entry:20,beginner:60,advanced:200,dan13:600,highdan:1500,pro:3000};
 function handicapPoints(size,count){
   if(count<2)return [];
   const low=size===19?3:size===13?3:2;
@@ -3094,9 +3111,8 @@ function syncHumanSettings(){
     $("humanGameHint").textContent=`讓${h}子：人類固定執黑，AI 執白先下，貼目 0.5。`;
   }else{
     $("humanColor").disabled=false;$("gameKomi").value="7.5";
+    $("humanGameHint").textContent="分先：貼目 7.5。可選擇人類執黑或執白。";
   }
-  const names={seven:"七段模式：速度優先，適合日常對弈。",pro:"職業模式：棋力優先，每手等待較久。",deep:"深度分析：適合復盤，不建議快速對局。"};
-  $("humanGameHint").textContent=(h>0?`讓${h}子：人類固定執黑，AI 執白先下，貼目 0.5。 `:"分先：貼目 7.5。可選擇人類執黑或執白。 ")+(names[level]||"");
 }
 $("handicapCount").onchange=syncHumanSettings;
 $("humanAiLevel").onchange=syncHumanSettings;
@@ -3129,22 +3145,99 @@ async function requestCloudAnalysisWithRetry(options={}){
   throw lastErr||new Error("KataGo 連線失敗");
 }
 
-let aiWakeTimer=null;
+function formatClock(sec){
+  sec=Math.max(0,Math.ceil(Number(sec)||0));
+  const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),r=sec%60;
+  return h>0?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(r).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(r).padStart(2,"0")}`;
+}
+let clockAudioContext=null;
+function unlockClockAudio(){
+  if(!state.sound)return;
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    if(!clockAudioContext)clockAudioContext=new AC();
+    if(clockAudioContext.state==='suspended')clockAudioContext.resume();
+    const o=clockAudioContext.createOscillator(),g=clockAudioContext.createGain();
+    g.gain.value=0;o.connect(g);g.connect(clockAudioContext.destination);o.start();o.stop(clockAudioContext.currentTime+.01);
+  }catch(_){ }
+}
+function clockBeep(seconds){
+  if(!state.sound)return;
+  try{
+    unlockClockAudio();
+    if(clockAudioContext){
+      const o=clockAudioContext.createOscillator(),g=clockAudioContext.createGain();
+      o.frequency.value=seconds<=3?760:520;
+      g.gain.setValueAtTime(.0001,clockAudioContext.currentTime);
+      g.gain.exponentialRampToValueAtTime(.10,clockAudioContext.currentTime+.01);
+      g.gain.exponentialRampToValueAtTime(.0001,clockAudioContext.currentTime+.11);
+      o.connect(g);g.connect(clockAudioContext.destination);o.start();o.stop(clockAudioContext.currentTime+.12);
+    }
+  }catch(_){ }
+  if(state.voiceCountdown && [5,4,3,2,1].includes(seconds) && 'speechSynthesis' in window){
+    try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(seconds));u.lang='zh-TW';u.rate=1.15;u.volume=.9;speechSynthesis.speak(u)}catch(_){ }
+  }
+}
+function updateClockUI(){
+  const panel=$("gameClockPanel");if(!panel)return;
+  panel.hidden=!state.humanMode;
+  const data=[['B','blackClock','blackByo','blackClockBox'],['W','whiteClock','whiteByo','whiteClockBox']];
+  for(const [c,timeId,byoId,boxId] of data){
+    const main=c==='B'?state.blackTimeSec:state.whiteTimeSec;
+    const byo=c==='B'?state.blackByoLeft:state.whiteByoLeft;
+    const periods=c==='B'?state.blackPeriods:state.whitePeriods;
+    const inByo=main<=0;
+    $(timeId).textContent=inByo?formatClock(byo):formatClock(main);
+    $(byoId).textContent=inByo?`讀秒 ${Math.ceil(byo)}秒 × ${periods}`:`基本時間 · 讀秒 ${state.byoTimeSec}秒 × ${periods}`;
+    const box=$(boxId);box.classList.toggle('active',state.humanMode&&state.turn===c);box.classList.toggle('danger',inByo&&byo<=10);
+  }
+  $("clockSoundIcon").textContent=state.sound?'🔊':'🔇';
+}
+function stopGameClock(){
+  state.clockRunning=false;
+  if(state.clockTimer){clearInterval(state.clockTimer);state.clockTimer=null;}
+  updateClockUI();
+}
+function loseOnTime(color){
+  stopGameClock();state.humanMode=false;state.playing=false;syncUI();
+  const loser=color==='B'?'黑方':'白方',winner=color==='B'?'白方':'黑方';
+  alert(`${loser}時間用盡，${winner}勝。`);
+}
+function clockTick(){
+  if(!state.clockRunning||!state.humanMode)return;
+  const now=performance.now();const delta=Math.min(1.5,(now-state.clockLastTick)/1000);state.clockLastTick=now;
+  const c=state.turn;
+  const mainKey=c==='B'?'blackTimeSec':'whiteTimeSec',byoKey=c==='B'?'blackByoLeft':'whiteByoLeft',periodKey=c==='B'?'blackPeriods':'whitePeriods';
+  if(state[mainKey]>0){state[mainKey]=Math.max(0,state[mainKey]-delta);}
+  else{
+    state[byoKey]=Math.max(0,state[byoKey]-delta);
+    const whole=Math.ceil(state[byoKey]);
+    if(whole<=10 && whole!==state.lastClockAnnounce){state.lastClockAnnounce=whole;clockBeep(whole);}
+    if(state[byoKey]<=0){
+      state[periodKey]-=1;
+      if(state[periodKey]<=0){loseOnTime(c);return;}
+      state[byoKey]=state.byoTimeSec;state.lastClockAnnounce=null;clockBeep(0);
+    }
+  }
+  updateClockUI();
+}
+function startGameClock(){
+  if(!state.humanMode)return;
+  state.clockRunning=true;state.clockLastTick=performance.now();
+  if(state.clockTimer)clearInterval(state.clockTimer);
+  state.clockTimer=setInterval(clockTick,200);updateClockUI();
+}
+function completeTurnClock(color){
+  if(!state.humanMode)return;
+  const main=color==='B'?state.blackTimeSec:state.whiteTimeSec;
+  if(main<=0){if(color==='B')state.blackByoLeft=state.byoTimeSec;else state.whiteByoLeft=state.byoTimeSec;}
+  state.lastClockAnnounce=null;updateClockUI();
+}
+
 function setAiThinking(show){
   const el=$("aiThinkingOverlay");
-  const sub=$("aiThinkingSub");
-  clearTimeout(aiWakeTimer);
   if(el)el.hidden=!show;
-  state.aiRunStatus=show?"思考中":"待命";
-  if(sub)sub.textContent=`${AI_LEVEL_NAMES[state.aiLevel]||"KataGo"}模式 · ${state.aiVisits} visits`;
-  if(show){
-    aiWakeTimer=setTimeout(()=>{
-      state.aiRunStatus="喚醒伺服器";
-      if(sub)sub.textContent="伺服器可能正在喚醒，第一次分析會較久";
-      syncUI();
-    },8000);
-  }
-  syncUI();
 }
 
 async function refreshGameHints(){
@@ -3152,7 +3245,7 @@ async function refreshGameHints(){
   if(state.hintLoading)return;
   state.hintLoading=true;
   try{
-    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
     if(!state.humanMode || !state.hintEnabled || state.turn!==state.humanColor)return;
     state.hintPoints=(analysis.recommendations||[]).filter(p=>p&&!p.pass).slice(0,3);
     state.hintBaseBlackWin=Number(analysis.blackWin);
@@ -3167,7 +3260,7 @@ async function evaluateHumanMoveForHint(move,beforeBlackWin){
   if(!state.humanMode || !state.hintEnabled)return;
   state.hintPoints=[];
   try{
-    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
     const afterBlackWin=Number(analysis.blackWin);
     if(Number.isFinite(beforeBlackWin)&&Number.isFinite(afterBlackWin)){
       const before=state.humanColor==="B"?beforeBlackWin:100-beforeBlackWin;
@@ -3213,9 +3306,11 @@ function chooseLocalAiPoint(){
 }
 function commitAiMove(x,y){
   if(!state.humanMode || state.turn===state.humanColor)return false;
+  const movedColor=state.turn;
   state.moves.push({c:state.turn,x,y});
   state.actions=[];state.replayCache=[];state.index++;
   state.turn=state.turn==="B"?"W":"B";
+  completeTurnClock(movedColor);
   syncUI();
   if(state.hintEnabled)setTimeout(refreshGameHints,120);
   return true;
@@ -3256,7 +3351,7 @@ function scheduleLocalAiMove(delay=350){
       if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
       if($("apiKomi"))$("apiKomi").value=String(state.komi);
 
-      const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:aiTimeoutSeconds()});
+      const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
       const best=(analysis.recommendations||[])[0];
 
       if(!best){
@@ -3266,9 +3361,11 @@ function scheduleLocalAiMove(delay=350){
         throw new Error("KataGo 未回傳可辨識的推薦落點（欄位："+keys+"）");
       }
       if(best.pass){
+        const movedColor=state.turn;
         state.moves.push({c:state.turn,pass:true,x:-1,y:-1});
         state.actions=[];state.replayCache=[];state.index++;
         state.turn=state.turn==="B"?"W":"B";
+        completeTurnClock(movedColor);
         syncUI();
         toast("KataGo Pass");
         if(state.hintEnabled)setTimeout(refreshGameHints,120);
@@ -3300,9 +3397,11 @@ function scheduleLocalAiMove(delay=350){
 function humanGamePass(){
   if(!state.humanMode){toast("請先開啟人機對弈");return;}
   if(state.turn!==state.humanColor){toast("目前輪到 AI");return;}
+  const movedColor=state.turn;
   state.moves.push({c:state.turn,pass:true,x:-1,y:-1});
   state.actions=[];state.replayCache=[];state.index++;
   state.turn=state.turn==="B"?"W":"B";
+  completeTurnClock(movedColor);
   syncUI();
   toast("已 Pass");
   scheduleLocalAiMove(200);
@@ -3312,6 +3411,7 @@ function humanGameResign(){
   if(!state.humanMode){toast("目前不是人機對弈");return;}
   const humanName=state.humanColor==="B"?"黑方":"白方";
   const aiName=state.humanColor==="B"?"白方":"黑方";
+  stopGameClock();
   state.humanMode=false;
   state.playing=false;
   if(state.timer){clearInterval(state.timer);state.timer=null;}
@@ -3357,7 +3457,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.23]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.31]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -3446,6 +3546,11 @@ $("scoreGameBtn").onclick=calculateGameResult;
 $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
 
+document.querySelectorAll(".clock-preset").forEach(btn=>btn.addEventListener("click",()=>{
+  $("mainHours").value="0";$("mainMinutes").value=btn.dataset.minutes||"20";
+}));
+$("byoTime").addEventListener("change",()=>{$("customByoWrap").hidden=$("byoTime").value!=="custom";});
+
 $("startHumanBtn").onclick=()=>{
   state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
@@ -3456,13 +3561,25 @@ $("startHumanBtn").onclick=()=>{
   state.setupB=handicapPoints(state.size,state.handicap);state.setupW=[];
   state.turn=state.handicap>0?"W":"B";
   state.sound=$("soundOn").value==="1";
-  state.hintEnabled=$("gameHintOn")?.value==="1";state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;state.aiRunStatus="待命";
+  state.voiceCountdown=$("voiceCountdownOn").value==="1";
+  const hours=Math.max(0,Math.min(9,Number($("mainHours").value||0)));
+  const minutes=Math.max(0,Math.min(59,Number($("mainMinutes").value||0)));
+  state.mainTimeSec=hours*3600+minutes*60;
+  const byoChoice=$("byoTime").value;
+  state.byoTimeSec=Math.max(1,Math.min(99,Number(byoChoice==="custom"?$("customByoTime").value:byoChoice)||30));
+  state.byoCount=Math.max(1,Math.min(20,Number($("byoCount").value||3)));
+  state.blackTimeSec=state.whiteTimeSec=state.mainTimeSec;
+  state.blackByoLeft=state.whiteByoLeft=state.byoTimeSec;
+  state.blackPeriods=state.whitePeriods=state.byoCount;
+  state.lastClockAnnounce=null;
+  unlockClockAudio();
+  state.hintEnabled=$("gameHintOn")?.value==="1";state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;
   $("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
   if($("apiKomi"))$("apiKomi").value=String(state.komi);
-  syncUI();closeModal("humanModal");
+  syncUI();closeModal("humanModal");startGameClock();
   if($("hintToggleBtn"))$("hintToggleBtn").textContent=state.hintEnabled?"關閉提示":"開啟提示";
-  const levelName=AI_LEVEL_NAMES[state.aiLevel]||state.aiLevel;
+  const levelName={entry:"入門",beginner:"初級",advanced:"高級",dan13:"1-3段",highdan:"高段",pro:"職業"}[state.aiLevel]||state.aiLevel;
   toast(`人機對弈已開始 · ${state.handicap>0?`讓${state.handicap}子`:"分先"} · ${levelName} · ${state.aiVisits} visits`);
   scheduleLocalAiMove(450);
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,200);
@@ -3488,6 +3605,7 @@ canvas.addEventListener("click",e=>{
   const prev=state.index>0?positionAtMove(state.index-1).board:null;
   const previousHash=prev?positionHash(prev):null;
   const move={c:state.turn,x,y};
+  const movedColor=state.turn;
   const result=executeMove(current,emptyProvenance(state.size),move,state.index+1,{rejectSuicide:true,koHash:previousHash});
   if(!result.ok){toast(result.error);return}
 
@@ -3495,6 +3613,7 @@ canvas.addEventListener("click",e=>{
   state.moves=state.moves.slice(0,state.index);state.actions=[];state.replayCache=[];
   state.moves.push(move);state.index++;
   state.turn=state.turn==="B"?"W":"B";
+  completeTurnClock(movedColor);
   state.hintPoints=[];
   syncUI();
   if(state.sound){
@@ -3599,7 +3718,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.31 KataGo 棋力模式 已啟動");
+  toast("Build021.29 拉桿版面修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
@@ -3611,7 +3730,7 @@ if(state.engineVerified&&state.rendererVerified){
   <div class="ai-thinking-card">
     <div class="ai-thinking-spinner"></div>
     <div class="ai-thinking-title">KataGo 思考中</div>
-    <div class="ai-thinking-sub" id="aiThinkingSub">七段模式 · 300 visits</div>
+    <div class="ai-thinking-sub">伺服器休眠時會自動重試，請稍候</div>
   </div>
 </div>
 
