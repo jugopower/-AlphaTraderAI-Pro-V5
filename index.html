@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260722-0212">
-<title>AlphaTrader AI Pro V5｜Build022 自由讀秒時鐘版</title>
+<meta name="app-version" content="20260725-0221">
+<title>AlphaTrader AI Pro V5｜Build022.1 時鐘側移版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -136,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build022 自由讀秒時鐘版 */
+/* Build022.1 時鐘側移版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -174,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build022 自由讀秒時鐘版 */
+/* Build022.1 時鐘側移版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -266,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build022 自由讀秒時鐘版 */
+/* Build022.1 時鐘側移版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -336,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build022 自由讀秒時鐘版 */
+/* Build022.1 時鐘側移版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -1275,14 +1275,38 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 @media (orientation:portrait){.move-tools{grid-template-columns:minmax(105px,1fr) 58px minmax(128px,1.2fr) 86px!important}.ai-hint-panel{display:none}.player{padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}}
 /* Build021.31 大棋盤對局時鐘 */
-.game-clock-panel{position:absolute;z-index:12;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:7px 9px;border-radius:14px;background:rgba(8,16,27,.88);backdrop-filter:blur(10px);box-shadow:0 6px 22px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);pointer-events:none;min-width:300px;justify-content:center}
-.clock-side{display:grid;grid-template-columns:auto 1fr;grid-template-areas:'stone name' 'stone time' 'stone byo';column-gap:8px;align-items:center;min-width:132px;padding:5px 8px;border-radius:10px;border:1px solid transparent}
+/* Build022.1：時鐘移至棋盤右側空白區，不遮住棋盤 */
+.board-wrap{position:relative}
+.game-clock-panel{
+  position:absolute;z-index:12;top:50%;right:8px;left:auto;
+  transform:translateY(-50%);display:flex;flex-direction:column;gap:7px;
+  width:124px;min-width:124px;padding:7px;border-radius:14px;
+  background:rgba(8,16,27,.92);backdrop-filter:blur(10px);
+  box-shadow:0 6px 22px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);
+  pointer-events:none;justify-content:center
+}
+.clock-side{
+  display:grid;grid-template-columns:22px 1fr;
+  grid-template-areas:'stone name' 'stone time' 'byo byo';
+  column-gap:7px;align-items:center;min-width:0;padding:7px 6px;
+  border-radius:10px;border:1px solid transparent
+}
 .clock-side.active{border-color:#58d68d;background:rgba(35,110,70,.28);box-shadow:0 0 0 1px rgba(88,214,141,.15) inset}
-.clock-stone{grid-area:stone;width:22px;height:22px;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.6)}
+.clock-stone{grid-area:stone;width:20px;height:20px;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.6)}
 .clock-stone.black{background:#111;border:1px solid #555}.clock-stone.white{background:#fff;border:1px solid #bbb}
-.clock-name{grid-area:name;font-size:11px;color:#cbd5e1}.clock-time{grid-area:time;font-size:23px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:#fff}.clock-byo{grid-area:byo;font-size:10px;color:#94a3b8;margin-top:3px}.clock-side.danger .clock-time,.clock-side.danger .clock-byo{color:#ff6b6b}
-.clock-sound{align-self:center;font-size:15px;opacity:.85}
-@media(max-width:760px){.game-clock-panel{top:6px;min-width:260px;padding:5px}.clock-side{min-width:112px;padding:4px 5px}.clock-time{font-size:19px}.clock-stone{width:18px;height:18px}}
+.clock-name{grid-area:name;font-size:11px;color:#cbd5e1}.clock-time{grid-area:time;font-size:21px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:#fff}.clock-byo{grid-area:byo;font-size:9px;color:#94a3b8;margin-top:5px;text-align:center;white-space:nowrap}.clock-side.danger .clock-time,.clock-side.danger .clock-byo{color:#ff6b6b}
+.clock-sound{align-self:center;font-size:14px;opacity:.85;height:16px;line-height:16px}
+/* 當右側空間不足時，縮成更窄的側邊時鐘，仍不蓋住主要落子區 */
+@media(max-width:760px){
+  .game-clock-panel{right:4px;width:104px;min-width:104px;padding:5px;gap:5px}
+  .clock-side{grid-template-columns:18px 1fr;padding:5px 4px;column-gap:5px}
+  .clock-time{font-size:17px}.clock-stone{width:17px;height:17px}.clock-name{font-size:10px}.clock-byo{font-size:8px}
+}
+/* 橫式且棋盤幾乎滿版時，時鐘靠右上空白邊緣直排 */
+@media (orientation:landscape) and (min-width:901px){
+  .game-clock-panel{top:8px;right:6px;transform:none;width:112px;min-width:112px}
+  .clock-time{font-size:19px}
+}
 </style>
 </head>
 <body>
@@ -1291,7 +1315,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022 自由讀秒時鐘版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.1 時鐘側移版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -1375,7 +1399,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build022 自由讀秒時鐘版</h2>
+  <h2>Build022.1 時鐘側移版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -1457,7 +1481,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build022 自由讀秒時鐘版</h2>
+  <h2>Build022.1 時鐘側移版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2562,7 +2586,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build022 自由讀秒時鐘版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build022.1 時鐘側移版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
