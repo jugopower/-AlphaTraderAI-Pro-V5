@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260725-0222">
-<title>AlphaTrader AI Pro V5｜Build022.3 穩定計時版</title>
+<meta name="app-version" content="20260726-0224">
+<title>AlphaTrader AI Pro V5｜Build022.5 手機相容版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -822,6 +822,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   font-weight:800;
 }
 #scoreGameBtn{background:linear-gradient(135deg,#ffd76c,#e8a91f);color:#1a1108}
+#situationGameBtn{background:linear-gradient(135deg,#67d8ff,#4588ff);color:#071426}
 #resignGameBtn{border-color:#8b4646}
 @media (orientation:landscape) and (min-width:900px){
   .player{
@@ -2166,6 +2167,70 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-row:4!important;}
 }
 </style>
+
+<style id="build0224-mobile-final">
+/* Build022.5：手機專用版面。只在 600px 以下啟用，不影響 iPad Air。 */
+@media (max-width:600px){
+  html,body{width:100%;min-width:0;overflow-x:hidden;overscroll-behavior:none}
+  .app{
+    width:100%;min-height:100dvh;height:auto!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:58px auto 88px auto!important;
+    gap:5px!important;padding:4px!important;
+  }
+  .topbar{
+    grid-row:1!important;display:flex!important;gap:4px!important;padding:4px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;white-space:nowrap;
+  }
+  .topbar::-webkit-scrollbar{display:none}
+  .topbar .tool{flex:0 0 58px!important;min-width:58px!important;min-height:48px!important;font-size:9px!important;border-radius:9px!important}
+  .topbar .tool span{font-size:16px!important}
+  .left{display:none!important}
+  .board-wrap{
+    grid-column:1!important;grid-row:2!important;
+    width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+    aspect-ratio:1/1!important;padding:0!important;border-radius:10px!important;overflow:hidden!important;
+  }
+  #board{
+    display:block!important;width:var(--board-size)!important;height:var(--board-size)!important;
+    max-width:100%!important;max-height:100%!important;touch-action:none!important;
+    -webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;
+  }
+  .right{
+    display:flex!important;grid-column:1!important;grid-row:3!important;
+    width:100%!important;min-width:0!important;max-width:none!important;
+    background:transparent!important;border:0!important;padding:0!important;overflow:visible!important;
+  }
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right .game-clock-panel{
+    display:grid!important;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr)!important;
+    width:100%!important;min-width:0!important;padding:5px!important;gap:4px!important;
+  }
+  .right .clock-side{grid-template-columns:20px minmax(0,1fr)!important;padding:4px!important;column-gap:4px!important}
+  .right .clock-stone{width:19px!important;height:19px!important}
+  .right .clock-name{font-size:9px!important}
+  .right .clock-time{font-size:clamp(19px,7vw,28px)!important;line-height:1!important;white-space:nowrap!important}
+  .right .clock-byo{font-size:7px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .right .clock-sound{font-size:11px!important;align-self:center!important}
+  .player{
+    grid-column:1!important;grid-row:4!important;width:100%!important;min-width:0!important;
+    padding:4px!important;overflow:visible!important;
+  }
+  .move-tools{grid-template-columns:minmax(0,1fr) auto!important;gap:4px!important;margin-top:0!important;padding:4px!important}
+  .move-tools label{font-size:9px!important}
+  .move-tools input,.move-tools select,.move-tools button{padding:7px 6px!important;font-size:12px!important}
+  .move-tools select{grid-column:1/-1!important}
+  .controls{gap:3px!important}
+  .controls button{min-height:44px!important;font-size:21px!important;border-radius:9px!important}
+  .game-action-row{display:flex!important;gap:4px!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;padding-bottom:2px!important}
+  .game-action-row button{flex:0 0 auto!important;min-height:38px!important;padding:7px 10px!important;font-size:11px!important}
+  .range-row{gap:5px!important;font-size:11px!important}
+  .info-collapse{display:none!important}
+  .modal-backdrop{padding:8px!important;align-items:flex-start!important;overflow:auto!important}
+  .modal{width:100%!important;max-height:none!important;margin-top:max(8px,env(safe-area-inset-top))!important;padding:12px!important;border-radius:14px!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2173,7 +2238,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.3 穩定計時版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.5 手機相容版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2229,7 +2294,8 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     </div>
     <div class="game-action-row" id="gameActionRow">
       <button id="undoGameBtn">悔棋</button>
-      <button id="scoreGameBtn">計算勝負</button>
+      <button id="situationGameBtn">形勢判斷</button>
+      <button id="scoreGameBtn">終局計算</button>
       <button id="passGameBtn">Pass</button>
       <button id="resignGameBtn">投降</button>
       <button id="saveSgfBtn">存檔 SGF</button>
@@ -2300,7 +2366,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.31</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build022.5</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -3257,7 +3323,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.31]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.5]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -3464,9 +3530,11 @@ const canvas=$("board"),ctx=canvas.getContext("2d");
 function resizeBoard(force=false){
   const wrap=canvas.parentElement;
   const parent=wrap.getBoundingClientRect();
-  const availableW=Math.max(280,Math.floor(parent.width-16));
-  const availableH=Math.max(280,Math.floor(parent.height-16));
-  const css=Math.max(280,Math.floor(Math.min(availableW,availableH)));
+  const isPhone=window.matchMedia("(max-width: 600px)").matches;
+  const minimum=isPhone?180:280;
+  const availableW=Math.max(minimum,Math.floor(parent.width-(isPhone?4:16)));
+  const availableH=Math.max(minimum,Math.floor(parent.height-(isPhone?4:16)));
+  const css=Math.max(minimum,Math.floor(Math.min(availableW,availableH)));
   if(!force && Math.abs(css-state.boardCssSize)<2)return false;
 
   state.boardCssSize=css;
@@ -4245,6 +4313,55 @@ function chooseKataGoMoveByLevel(recommendations,level){
   return r[Math.min(index,r.length-1)];
 }
 
+function hasTwoConsecutivePasses(){
+  if(state.index<2)return false;
+  const a=state.moves[state.index-1],b=state.moves[state.index-2];
+  return !!(a&&b&&a.pass&&b.pass);
+}
+
+async function finishGameAfterPasses(){
+  if(!hasTwoConsecutivePasses())return false;
+  stopGameClock();
+  state.aiRequestToken++;
+  setAiThinking(true);
+  toast("雙方連續 Pass，正在計算勝負…");
+  try{
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:70});
+    const lead=Number(analysis.scoreLead||0);
+    const blackWin=Number(analysis.blackWin||0);
+    const whiteWin=Number(analysis.whiteWin||100-blackWin);
+    const winner=lead>=0?"黑":"白";
+    state.humanMode=false;state.playing=false;syncUI();
+    alert(`雙方連續 Pass，對局結束。\n\nKataGo 終局判定：\n${winner}方約勝 ${Math.abs(lead).toFixed(1)} 目\n黑勝率 ${blackWin.toFixed(1)}%\n白勝率 ${whiteWin.toFixed(1)}%`);
+    return true;
+  }catch(err){
+    console.warn("KataGo 終局計算失敗，改用簡易估算",err);
+    const r=localStoneEstimate();
+    const winner=r.diff>=0?"黑":"白";
+    state.humanMode=false;state.playing=false;syncUI();
+    alert(`雙方連續 Pass，對局結束。\n\n簡易盤面估算（非正式數子）：\n${winner}方約勝 ${Math.abs(r.diff).toFixed(1)} 目`);
+    return true;
+  }finally{setAiThinking(false);}
+}
+
+async function judgeCurrentSituation(){
+  if(state.aiThinking){toast("KataGo 正在思考，請稍候");return;}
+  const btn=$("situationGameBtn"),old=btn?btn.textContent:"形勢判斷";
+  if(btn){btn.disabled=true;btn.textContent="判斷中…";}
+  try{
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:60});
+    const lead=Number(analysis.scoreLead||0);
+    const blackWin=Number(analysis.blackWin||0);
+    const whiteWin=Number(analysis.whiteWin||100-blackWin);
+    const leader=lead>=0?"黑":"白";
+    alert(`目前形勢判斷（不結束對局）：\n\n${leader}方約領先 ${Math.abs(lead).toFixed(1)} 目\n黑勝率 ${blackWin.toFixed(1)}%\n白勝率 ${whiteWin.toFixed(1)}%`);
+  }catch(err){
+    console.error("形勢判斷失敗",err);
+    const r=localStoneEstimate(),leader=r.diff>=0?"黑":"白";
+    alert(`KataGo 暫時無法連線。\n\n簡易盤面估算（非正式數子）：\n${leader}方約領先 ${Math.abs(r.diff).toFixed(1)} 目`);
+  }finally{if(btn){btn.disabled=false;btn.textContent=old;}}
+}
+
 function scheduleLocalAiMove(delay=350){
   if(!state.humanMode || state.turn===state.humanColor || state.aiThinking)return;
   const expectedIndex=state.index;
@@ -4278,6 +4395,7 @@ function scheduleLocalAiMove(delay=350){
         completeTurnClock(movedColor);
         syncUI();
         toast("KataGo Pass");
+        if(await finishGameAfterPasses())return;
         if(state.hintEnabled)setTimeout(refreshGameHints,120);
         return;
       }
@@ -4314,6 +4432,10 @@ function humanGamePass(){
   completeTurnClock(movedColor);
   syncUI();
   toast("已 Pass");
+  if(hasTwoConsecutivePasses()){
+    finishGameAfterPasses();
+    return;
+  }
   scheduleLocalAiMove(200);
 }
 
@@ -4367,7 +4489,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.31]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.5]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -4456,6 +4578,7 @@ function undoGameMove(){
 }
 $("undoGameBtn").onclick=undoGameMove;
 
+$("situationGameBtn").onclick=judgeCurrentSituation;
 $("scoreGameBtn").onclick=calculateGameResult;
 $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
@@ -4531,7 +4654,16 @@ $("startHumanBtn").onclick=()=>{
   scheduleLocalAiMove(450);
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,200);
 };
-canvas.addEventListener("click",e=>{
+let lastBoardPointerAt=0;
+function handleBoardInput(e){
+  if(e.type==="pointerup"){
+    if(e.pointerType==="mouse" && e.button!==0)return;
+    e.preventDefault();
+    lastBoardPointerAt=Date.now();
+  }else if(e.type==="click" && Date.now()-lastBoardPointerAt<700){
+    return;
+  }
+
   if(!state.humanMode && !state.teachingMode)return;
   const rect=canvas.getBoundingClientRect();
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
@@ -4573,7 +4705,14 @@ canvas.addEventListener("click",e=>{
   if(state.hintEnabled){
     evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
   }else scheduleLocalAiMove(350);
-});
+
+}
+if(window.PointerEvent){
+  canvas.addEventListener("pointerup",handleBoardInput,{passive:false});
+}else{
+  canvas.addEventListener("click",handleBoardInput);
+}
+
 $("saveApiBtn").onclick=()=>{
   saveApiSettings();
   state.analysis=null;
