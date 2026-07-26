@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260726-02244">
-<title>AlphaTrader AI Pro V5｜Build022.4.5 Android觸控與控制列修正版</title>
+<title>AlphaTrader AI Pro V5｜Build022.4.6 手機操作列修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2242,7 +2242,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   #gameSize{min-height:46px!important;touch-action:manipulation!important;pointer-events:auto!important}
 }
 </style>
-<script>window.BUILD_VERSION="022.4.4";</script>
+<script>window.BUILD_VERSION="022.4.6";</script>
 
 <style id="build02243-landscape-fix">
 /* Build022.4.3：iPad/平板橫式控制列修正 */
@@ -2377,7 +2377,7 @@ body.build02244-landscape .range-row{grid-column:1!important;grid-row:4!importan
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.4.5 Android觸控與控制列修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.4.6 手機操作列修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -5026,6 +5026,150 @@ if(state.engineVerified&&state.rendererVerified){
   document.addEventListener('visibilitychange',function(){if(!document.hidden)queueRefresh();});
   applyActualOrientation();
   queueRefresh();
+})();
+</script>
+
+
+
+<style id="build02246-mobile-dock">
+/* Build022.4.6：手機固定操作列與更多選單。僅手機啟用，不影響 iPad/桌機。 */
+#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop{display:none}
+@media (max-width:700px){
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
+  .app{padding-bottom:calc(82px + env(safe-area-inset-bottom))!important}
+  #mobileGameDock{
+    position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:10000!important;
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom))!important;
+    background:rgba(13,9,7,.97)!important;border-top:1px solid #7a552a!important;
+    box-shadow:0 -6px 20px rgba(0,0,0,.45)!important;backdrop-filter:blur(10px)!important;
+  }
+  #mobileGameDock button{
+    min-width:0!important;min-height:52px!important;padding:5px 2px!important;border-radius:10px!important;
+    border:1px solid #7a552a!important;background:#21160f!important;color:#fff!important;font-size:12px!important;
+    font-weight:800!important;line-height:1.15!important;touch-action:manipulation!important;pointer-events:auto!important;
+  }
+  #mobileGameDock button span{display:block!important;font-size:18px!important;margin-bottom:2px!important}
+  #mobileHumanBtn,#mobileNewGameBtn{background:linear-gradient(135deg,#7a4d13,#e5a92b)!important;color:#170e06!important}
+  #mobileMoreBtn{background:#17311f!important;border-color:#2f8a4a!important}
+  #mobileMoreBackdrop{
+    position:fixed!important;inset:0!important;z-index:10001!important;background:rgba(0,0,0,.56)!important;
+  }
+  #mobileMoreSheet{
+    position:fixed!important;left:8px!important;right:8px!important;bottom:calc(72px + env(safe-area-inset-bottom))!important;
+    z-index:10002!important;display:none!important;max-height:min(72dvh,620px)!important;overflow:auto!important;
+    padding:12px!important;border:1px solid #8b632f!important;border-radius:16px!important;
+    background:linear-gradient(180deg,#21160f,#100b08)!important;box-shadow:0 16px 50px rgba(0,0,0,.65)!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #mobileMoreSheet.open,#mobileMoreBackdrop.open{display:block!important}
+  .mobile-sheet-head{display:flex!important;align-items:center!important;justify-content:space-between!important;margin-bottom:10px!important}
+  .mobile-sheet-head strong{font-size:18px!important;color:#ffd76c!important}
+  #mobileMoreClose{width:40px!important;height:40px!important;border-radius:10px!important;font-size:22px!important}
+  .mobile-sheet-section{margin:10px 0!important;padding-top:10px!important;border-top:1px solid rgba(255,215,108,.18)!important}
+  .mobile-sheet-section:first-of-type{border-top:0!important;padding-top:0!important}
+  .mobile-sheet-section h4{margin:0 0 8px!important;font-size:13px!important;color:#e8c786!important}
+  .mobile-sheet-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+  .mobile-sheet-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .mobile-sheet-grid button{
+    min-height:46px!important;padding:7px 5px!important;border-radius:10px!important;border:1px solid #74502a!important;
+    background:#2a1d14!important;color:#fff!important;font-size:13px!important;font-weight:800!important;touch-action:manipulation!important;
+  }
+  .mobile-sheet-grid button.primary{background:linear-gradient(135deg,#ffd76c,#e7a91e)!important;color:#201307!important}
+  .mobile-sheet-grid button.blue{background:linear-gradient(135deg,#67d8ff,#4588ff)!important;color:#071426!important}
+  .mobile-sheet-grid button.green{background:#17652f!important;border-color:#2f9a52!important}
+  .mobile-sheet-status{margin-top:10px!important;padding:8px!important;border-radius:9px!important;background:#120d0a!important;color:#cdb892!important;font-size:11px!important}
+}
+</style>
+
+<div id="mobileMoreBackdrop" aria-hidden="true"></div>
+<nav id="mobileGameDock" aria-label="手機對局操作列">
+  <button id="mobileUndoBtn" type="button"><span>↶</span>悔棋</button>
+  <button id="mobilePassBtn" type="button"><span>PASS</span>停一手</button>
+  <button id="mobileHumanBtn" type="button"><span>♟</span>人機</button>
+  <button id="mobileNewGameBtn" type="button"><span>＋</span>新局</button>
+  <button id="mobileMoreBtn" type="button"><span>⋯</span>更多</button>
+</nav>
+
+<section id="mobileMoreSheet" role="dialog" aria-modal="true" aria-label="更多對局功能">
+  <div class="mobile-sheet-head"><strong>更多功能</strong><button id="mobileMoreClose" type="button">✕</button></div>
+  <div class="mobile-sheet-section">
+    <h4>棋盤尺寸</h4>
+    <div class="mobile-sheet-grid">
+      <button data-mobile-size="9" type="button">9 路</button>
+      <button data-mobile-size="13" type="button">13 路</button>
+      <button data-mobile-size="19" type="button">19 路</button>
+    </div>
+  </div>
+  <div class="mobile-sheet-section">
+    <h4>執子與設定</h4>
+    <div class="mobile-sheet-grid two">
+      <button data-mobile-color="B" type="button">人類執黑</button>
+      <button data-mobile-color="W" type="button">人類執白</button>
+      <button id="mobileHandicapBtn" type="button">讓子設定</button>
+      <button id="mobileClockBtn" type="button">時鐘設定</button>
+    </div>
+  </div>
+  <div class="mobile-sheet-section">
+    <h4>分析與棋譜</h4>
+    <div class="mobile-sheet-grid two">
+      <button id="mobileSituationBtn" class="blue" type="button">形勢判斷</button>
+      <button id="mobileScoreBtn" class="primary" type="button">終局計算</button>
+      <button id="mobileSaveBtn" class="green" type="button">儲存 SGF</button>
+      <button id="mobileHintBtn" type="button">開啟提示</button>
+    </div>
+  </div>
+  <div class="mobile-sheet-section">
+    <h4>其他</h4>
+    <div class="mobile-sheet-grid two">
+      <button id="mobileResignBtn" type="button">投降</button>
+      <button id="mobileInfoBtn" type="button">載入棋譜</button>
+    </div>
+  </div>
+  <div class="mobile-sheet-status" id="mobileSheetStatus">手機版操作列已啟用。先按「人機」或「新局」設定棋盤後即可開始。</div>
+</section>
+
+<script id="build02246-mobile-dock-script">
+(function(){
+  const byId=id=>document.getElementById(id);
+  const sheet=byId('mobileMoreSheet'),backdrop=byId('mobileMoreBackdrop');
+  function isMobile(){return window.matchMedia('(max-width:700px)').matches;}
+  function openSheet(){if(!isMobile())return;sheet.classList.add('open');backdrop.classList.add('open');document.body.style.overflow='hidden';}
+  function closeSheet(){sheet.classList.remove('open');backdrop.classList.remove('open');document.body.style.overflow='';}
+  function safeClick(id){const el=byId(id);if(el){el.click();return true;}return false;}
+  function openHumanSetup(){closeSheet();safeClick('humanBtn');}
+  function bindTap(el,fn){
+    if(!el)return;
+    let fired=0;
+    el.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen'){e.preventDefault();fired=Date.now();fn(e);}}, {passive:false});
+    el.addEventListener('click',e=>{if(Date.now()-fired<600)return;e.preventDefault();fn(e);});
+  }
+  bindTap(byId('mobileMoreBtn'),openSheet);
+  bindTap(byId('mobileMoreClose'),closeSheet);
+  bindTap(backdrop,closeSheet);
+  bindTap(byId('mobileUndoBtn'),()=>safeClick('undoGameBtn'));
+  bindTap(byId('mobilePassBtn'),()=>safeClick('passGameBtn'));
+  bindTap(byId('mobileHumanBtn'),openHumanSetup);
+  bindTap(byId('mobileNewGameBtn'),openHumanSetup);
+  bindTap(byId('mobileSituationBtn'),()=>{closeSheet();safeClick('situationGameBtn');});
+  bindTap(byId('mobileScoreBtn'),()=>{closeSheet();safeClick('scoreGameBtn');});
+  bindTap(byId('mobileSaveBtn'),()=>{closeSheet();safeClick('saveSgfBtn');});
+  bindTap(byId('mobileHintBtn'),()=>{closeSheet();safeClick('hintToggleBtn');});
+  bindTap(byId('mobileResignBtn'),()=>{closeSheet();safeClick('resignGameBtn');});
+  bindTap(byId('mobileInfoBtn'),()=>{closeSheet();safeClick('infoBtn');});
+  bindTap(byId('mobileHandicapBtn'),openHumanSetup);
+  bindTap(byId('mobileClockBtn'),openHumanSetup);
+  document.querySelectorAll('[data-mobile-size]').forEach(btn=>bindTap(btn,()=>{
+    const select=byId('gameSize');if(select){select.value=btn.dataset.mobileSize;select.dispatchEvent(new Event('change',{bubbles:true}));}
+    openHumanSetup();
+    setTimeout(()=>{const status=byId('mobileSheetStatus');if(status)status.textContent=`已選 ${btn.dataset.mobileSize} 路，請確認設定後按「開始新對局」。`;},100);
+  }));
+  document.querySelectorAll('[data-mobile-color]').forEach(btn=>bindTap(btn,()=>{
+    const select=byId('humanColor');if(select){select.value=btn.dataset.mobileColor;select.dispatchEvent(new Event('change',{bubbles:true}));}
+    openHumanSetup();
+  }));
+  window.addEventListener('orientationchange',closeSheet,{passive:true});
+  window.addEventListener('resize',()=>{if(!isMobile())closeSheet();},{passive:true});
 })();
 </script>
 
