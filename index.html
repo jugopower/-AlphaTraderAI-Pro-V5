@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260726-02244">
-<title>AlphaTrader AI Pro V5｜Build022.4.4 放大旋轉修正版</title>
+<title>AlphaTrader AI Pro V5｜Build022.4.5 Android觸控與控制列修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2274,7 +2274,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 </style>
 
 <style id="build02244-fullscreen-rotate-fix">
-/* Build022.4.4：放大後旋轉版面重排，避免座標及操作鍵被右欄遮住 */
+/* Build022.4.5：控制列雙排與 Android 觸控修正 */
 @media (orientation:landscape) and (min-width:701px){
   .app{
     grid-template-rows:minmax(0,1fr) clamp(188px,24dvh,244px)!important;
@@ -2322,6 +2322,54 @@ body.build02244-landscape .controls button{min-width:0!important;width:100%!impo
   body.build02244-portrait .player{min-width:0!important;width:100%!important}
 }
 </style>
+
+<style id="build02245-control-and-android-fix">
+/* Build022.4.5：窄橫式控制列固定分成兩排，避免座標鍵被播放鍵遮住 */
+@media (orientation:landscape) and (min-width:601px){
+  .app{grid-template-rows:minmax(0,1fr) clamp(238px,30dvh,300px)!important}
+  .player{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto auto minmax(24px,1fr)!important;
+    gap:6px!important;overflow:hidden!important;
+  }
+  .move-tools{
+    grid-column:1!important;grid-row:1!important;
+    display:grid!important;
+    grid-template-columns:minmax(118px,1fr) 64px minmax(155px,1.25fr) minmax(96px,112px)!important;
+    width:100%!important;min-width:0!important;overflow:visible!important;
+  }
+  .controls{
+    grid-column:1!important;grid-row:2!important;
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    width:100%!important;min-width:0!important;overflow:visible!important;
+  }
+  .game-action-row{
+    grid-column:1!important;grid-row:3!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    width:100%!important;min-width:0!important;overflow:visible!important;
+  }
+  .range-row{grid-column:1!important;grid-row:4!important;width:100%!important;min-width:0!important}
+  #coordToggleBtn{display:block!important;visibility:visible!important;opacity:1!important;position:static!important;width:100%!important;min-width:0!important;z-index:1!important}
+  .move-tools>*,.controls>*,.game-action-row>*{min-width:0!important;max-width:100%!important}
+}
+body.build02244-landscape .player{
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto auto auto minmax(24px,1fr)!important;
+}
+body.build02244-landscape .move-tools{grid-column:1!important;grid-row:1!important}
+body.build02244-landscape .controls{grid-column:1!important;grid-row:2!important}
+body.build02244-landscape .game-action-row{grid-column:1!important;grid-row:3!important}
+body.build02244-landscape .range-row{grid-column:1!important;grid-row:4!important}
+/* Android/Samsung：棋盤與容器禁止瀏覽器手勢攔截 */
+#board,.board-wrap{
+  touch-action:none!important;
+  -ms-touch-action:none!important;
+  overscroll-behavior:contain!important;
+  -webkit-user-select:none!important;user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2329,7 +2377,7 @@ body.build02244-landscape .controls button{min-width:0!important;width:100%!impo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.4.4 放大旋轉修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.4.5 Android觸控與控制列修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -4804,6 +4852,41 @@ if(window.PointerEvent){
   canvas.addEventListener("touchend",handleBoardInput,{passive:false});
   canvas.addEventListener("click",handleBoardInput,{passive:false});
 }
+
+
+// Build022.4.5：Samsung Internet / Android Chrome 穩定觸控。
+// 使用 pointerup 完成落子，並在 capture 階段攔截舊版 pointerdown，避免事件重複或被外層捲動取消。
+(function installAndroidBoardInputFix(){
+  if(!window.PointerEvent || !canvas)return;
+  let start=null;
+  const maxMove=18;
+  function isPrimary(e){return e.pointerType!=="mouse" || e.button===0;}
+  function down(e){
+    if(!isPrimary(e))return;
+    if(e.cancelable)e.preventDefault();
+    e.stopImmediatePropagation();
+    start={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now()};
+    try{canvas.setPointerCapture(e.pointerId)}catch(_){ }
+  }
+  function up(e){
+    if(!start || e.pointerId!==start.id || !isPrimary(e))return;
+    if(e.cancelable)e.preventDefault();
+    e.stopImmediatePropagation();
+    const dx=e.clientX-start.x,dy=e.clientY-start.y;
+    const elapsed=Date.now()-start.t;
+    start=null;
+    try{canvas.releasePointerCapture(e.pointerId)}catch(_){ }
+    if(Math.hypot(dx,dy)>maxMove || elapsed>1400)return;
+    handleBoardInput(e);
+  }
+  function cancel(e){
+    if(start && e.pointerId===start.id)start=null;
+  }
+  canvas.addEventListener("pointerdown",down,{capture:true,passive:false});
+  canvas.addEventListener("pointerup",up,{capture:true,passive:false});
+  canvas.addEventListener("pointercancel",cancel,{capture:true,passive:false});
+  canvas.addEventListener("contextmenu",e=>e.preventDefault(),{passive:false});
+})();
 
 $("saveApiBtn").onclick=()=>{
   saveApiSettings();
