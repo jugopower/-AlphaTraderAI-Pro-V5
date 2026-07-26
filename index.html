@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260726-0224">
-<title>AlphaTrader AI Pro V5｜Build022.4.1 三星手機觸控修正版</title>
+<meta name="app-version" content="20260726-02243">
+<title>AlphaTrader AI Pro V5｜Build022.4.3 橫式控制列修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2243,6 +2243,35 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 </style>
 <script>window.BUILD_VERSION="022.4.2";</script>
+
+<style id="build02243-landscape-fix">
+/* Build022.4.3：iPad/平板橫式控制列修正 */
+#situationGameBtn{background:linear-gradient(135deg,#67d8ff,#4588ff);color:#071426;font-weight:900}
+#scoreGameBtn{background:linear-gradient(135deg,#ffd76c,#e8a91f);color:#1a1108;font-weight:900}
+@media (orientation:landscape) and (min-width:701px){
+  .player{
+    grid-template-columns:minmax(430px,0.95fr) minmax(420px,1.05fr)!important;
+    grid-template-rows:auto auto auto!important;
+    gap:5px!important;
+    overflow:hidden!important;
+  }
+  .move-tools{
+    grid-column:1!important;grid-row:1!important;
+    grid-template-columns:minmax(105px,1fr) 62px minmax(150px,1.25fr) 96px!important;
+    min-width:0!important;width:100%!important;margin:0!important;padding:5px!important;
+  }
+  .move-tools label,.move-tools input,.move-tools select,.move-tools button{min-width:0!important}
+  #coordToggleBtn{display:block!important;visibility:visible!important;position:static!important;z-index:auto!important;white-space:nowrap!important}
+  .controls{grid-column:2!important;grid-row:1!important;min-width:0!important}
+  .game-action-row{
+    grid-column:1 / -1!important;grid-row:2!important;
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:6px!important;overflow:visible!important;min-height:88px!important;
+  }
+  .game-action-row button{min-width:0!important;font-size:16px!important;padding:8px 5px!important}
+  .range-row{grid-column:1 / -1!important;grid-row:3!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2250,7 +2279,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.4.1 三星手機觸控修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.4.3 橫式控制列修正版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2306,7 +2335,8 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     </div>
     <div class="game-action-row" id="gameActionRow">
       <button id="undoGameBtn">悔棋</button>
-      <button id="scoreGameBtn">計算勝負</button>
+      <button id="situationGameBtn">形勢判斷</button>
+      <button id="scoreGameBtn">終局計算</button>
       <button id="passGameBtn">Pass</button>
       <button id="resignGameBtn">投降</button>
       <button id="saveSgfBtn">存檔 SGF</button>
@@ -4324,6 +4354,24 @@ function chooseKataGoMoveByLevel(recommendations,level){
   return r[Math.min(index,r.length-1)];
 }
 
+async function judgeCurrentSituation(){
+  if(state.aiThinking){toast("KataGo 正在思考，請稍候");return;}
+  const btn=$("situationGameBtn"),old=btn?btn.textContent:"形勢判斷";
+  if(btn){btn.disabled=true;btn.textContent="判斷中…";}
+  try{
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:60});
+    const lead=Number(analysis.scoreLead||0);
+    const blackWin=Number(analysis.blackWin||0);
+    const whiteWin=Number(analysis.whiteWin||100-blackWin);
+    const leader=lead>=0?"黑":"白";
+    alert(`目前形勢判斷（不結束對局）：\n\n${leader}方約領先 ${Math.abs(lead).toFixed(1)} 目\n黑勝率 ${blackWin.toFixed(1)}%\n白勝率 ${whiteWin.toFixed(1)}%`);
+  }catch(err){
+    console.error("形勢判斷失敗",err);
+    const r=localStoneEstimate(),leader=r.diff>=0?"黑":"白";
+    alert(`KataGo 暫時無法連線。\n\n簡易盤面估算（非正式數子）：\n${leader}方約領先 ${Math.abs(r.diff).toFixed(1)} 目`);
+  }finally{if(btn){btn.disabled=false;btn.textContent=old;}}
+}
+
 function scheduleLocalAiMove(delay=350){
   if(!state.humanMode || state.turn===state.humanColor || state.aiThinking)return;
   const expectedIndex=state.index;
@@ -4535,6 +4583,7 @@ function undoGameMove(){
 }
 $("undoGameBtn").onclick=undoGameMove;
 
+$("situationGameBtn").onclick=judgeCurrentSituation;
 $("scoreGameBtn").onclick=calculateGameResult;
 $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
