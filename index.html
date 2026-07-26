@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260726-02244">
+<!-- Build022.5.1 滑動穩定與按鈕文字修正版 -->
 <title>AlphaTrader AI Pro V5｜Build022.4.6 手機操作列修正版</title>
 <style>
 :root{
@@ -4913,7 +4914,8 @@ function scheduleLayoutRefresh(delay=160){
     if(changed)drawBoard(state.currentSnapshot||activateSnapshot(state.index));
   },delay);
 }
-window.addEventListener("resize",()=>scheduleLayoutRefresh(180),{passive:true});
+/* Build022.5.1: resize refresh disabled on mobile Safari scroll. */
+window.addEventListener("resize",()=>{if(window.innerWidth>700)scheduleLayoutRefresh(180)},{passive:true});
 window.addEventListener("orientationchange",()=>scheduleLayoutRefresh(320),{passive:true});
 if(window.ResizeObserver){
   const boardObserver=new ResizeObserver(()=>scheduleLayoutRefresh(120));
@@ -5019,10 +5021,7 @@ if(state.engineVerified&&state.rendererVerified){
   window.addEventListener('resize',queueRefresh,{passive:true});
   document.addEventListener('fullscreenchange',queueRefresh,{passive:true});
   document.addEventListener('webkitfullscreenchange',queueRefresh,{passive:true});
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize',queueRefresh,{passive:true});
-    window.visualViewport.addEventListener('scroll',queueRefresh,{passive:true});
-  }
+  /* Build022.5.1: do not recalculate layout while Safari address bar scrolls. */
   document.addEventListener('visibilitychange',function(){if(!document.hidden)queueRefresh();});
   applyActualOrientation();
   queueRefresh();
@@ -5189,20 +5188,20 @@ if(state.engineVerified&&state.rendererVerified){
 #unifiedMobileBar{display:none}
 @media (max-width:700px){
   html,body{min-height:100%;overflow-x:hidden!important}
-  body{padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}
-  .app{padding-bottom:calc(136px + env(safe-area-inset-bottom))!important}
+  body{padding-bottom:0!important}
+  .app{padding-bottom:0!important}
   #unifiedMobileBar{
     display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:2147483000!important;
+    position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;z-index:20!important;
     gap:5px!important;padding:7px 7px calc(7px + env(safe-area-inset-bottom))!important;
     background:#120d09!important;border-top:2px solid #a47731!important;
-    box-shadow:0 -8px 24px rgba(0,0,0,.65)!important;pointer-events:auto!important;
+    box-shadow:0 -4px 18px rgba(0,0,0,.45)!important;pointer-events:auto!important;contain:layout paint!important;
   }
   #unifiedMobileBar button{
     display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
     min-width:0!important;min-height:48px!important;padding:5px 2px!important;margin:0!important;
     border:1px solid #7e5b2d!important;border-radius:10px!important;background:#2a1c13!important;
-    color:#fff!important;font-size:12px!important;font-weight:900!important;line-height:1.15!important;
+    color:#fff!important;font-size:13px!important;font-weight:900!important;line-height:1.2!important;
     touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;
   }
   #unifiedMobileBar button.primary{background:linear-gradient(135deg,#ffd76c,#d99617)!important;color:#1c1207!important}
@@ -5223,9 +5222,9 @@ if(state.engineVerified&&state.rendererVerified){
   <button id="uNew" class="primary" type="button">＋<br>新局</button>
   <button id="uUndo" type="button">↶<br>悔棋</button>
   <button id="uPass" type="button">PASS<br>停一手</button>
-  <button id="uResign" type="button">旗<br>投降</button>
+  <button id="uResign" type="button">投降</button>
   <button id="uSituation" class="blue" type="button">％<br>形勢</button>
-  <button id="uScore" class="primary" type="button">目<br>終局</button>
+  <button id="uScore" class="primary" type="button">終局計算</button>
   <button id="uSave" class="green" type="button">SGF<br>存檔</button>
   <button id="uHint" type="button">AI<br>提示</button>
 </nav>
