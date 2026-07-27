@@ -2194,6 +2194,16 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .result-detail.open{display:block}
 @media(max-width:560px){#resultModal .modal{width:min(94vw,520px);padding:16px}.result-title{font-size:25px}.result-winner{font-size:28px}.result-grid{grid-template-columns:1fr 1fr}.result-actions{grid-template-columns:1fr}}
 </style>
+
+<style id="build02237-result-visibility-fix">
+/* Build022.3.7：勝負結果欄位與詳細計算文字可讀性修正 */
+#resultModal .result-grid small{color:#715f4d!important;opacity:1!important;visibility:visible!important;}
+#resultModal .result-grid strong{display:block!important;color:#2b1a0f!important;opacity:1!important;visibility:visible!important;font-size:20px!important;line-height:1.35!important;margin-top:4px!important;}
+#resultModal .result-detail{color:#2b1a0f!important;opacity:1!important;visibility:visible!important;font-weight:600!important;}
+#resultModal .result-detail.open{display:block!important;}
+#resultModal .result-winner{color:#8a4300!important;opacity:1!important;}
+#resultModal .result-close-note{color:#6b5a4b!important;opacity:1!important;}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4486,13 +4496,13 @@ function showResultModal(data){
   const rawLead=Number(data.rawLead||0),finalLead=Number(data.finalLead||0);
   const margin=Math.abs(finalLead);
   const winner=finalLead>0?`⚫ 黑勝 ${margin.toFixed(1)} 目`:finalLead<0?`⚪ 白勝 ${margin.toFixed(1)} 目`:`和棋`;
-  $("resultBlack").textContent=data.blackLabel||`${black.toFixed(1)} 目`;
-  $("resultWhite").textContent=data.whiteLabel||`${white.toFixed(1)} 目`;
-  $("resultKomi").textContent=`${komi.toFixed(1)} 目`;
-  $("resultRawLead").textContent=rawLead===0?"盤面相同":`${rawLead>0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目`;
+  $("resultBlack").textContent=data.blackLabel||`${black.toFixed(1)} 目`; $("resultBlack").style.color="#2b1a0f";
+  $("resultWhite").textContent=data.whiteLabel||`${white.toFixed(1)} 目`; $("resultWhite").style.color="#2b1a0f";
+  $("resultKomi").textContent=`${komi.toFixed(1)} 目`; $("resultKomi").style.color="#2b1a0f";
+  $("resultRawLead").textContent=rawLead===0?"盤面相同":`${rawLead>0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目`; $("resultRawLead").style.color="#2b1a0f";
   $("resultWinner").textContent=winner;
   $("resultComment").textContent=resultCommentForMargin(margin);
-  $("resultDetail").textContent=data.detail||"";
+  $("resultDetail").textContent=data.detail||""; $("resultDetail").style.color="#2b1a0f";
   $("resultDetail").classList.remove("open");
   $("resultDetailBtn").textContent="查看詳細計算";
   openModal("resultModal");
