@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260726-02244">
-<!-- Build022.5.2 滑動穩定與按鈕文字修正版 -->
-<title>AlphaTrader AI Pro V5｜Build023 RC3 Recovery</title>
+<meta name="app-version" content="20260725-0222">
+<title>AlphaTrader AI Pro V5｜Build022.3 穩定計時版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -137,7 +136,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-column:1;grid-row:3}
 }
 
-/* Build022.5 Unified UI */
+/* Build022.1 時鐘顯示修正版 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
@@ -175,7 +174,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   body.info-collapsed .info-collapse{left:0;transform:translateY(-50%) rotate(180deg)}
 }
 
-/* Build022.5 Unified UI */
+/* Build022.1 時鐘顯示修正版 */
 .dashboard-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -267,7 +266,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build022.5 Unified UI */
+/* Build022.1 時鐘顯示修正版 */
 .ai-summary-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -337,7 +336,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 
 
-/* Build022.5 Unified UI */
+/* Build022.1 時鐘顯示修正版 */
 .connector-status{
   border:1px solid #6c4b2c;
   border-radius:12px;
@@ -414,7 +413,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
  .move-tools .compact-label:last-child{grid-column:1 / -1!important}
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -465,10 +464,6 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-row:4!important}
 }
 
-
-/* Build022.4.1 Android/Samsung touch safety */
-#board{pointer-events:auto!important;touch-action:none!important;position:relative;z-index:5;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.board-wrap{pointer-events:auto!important}
 </style>
 
 <style id="build0214-fix">
@@ -495,7 +490,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -559,7 +554,8 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       });
     },180);
   }
-  /* Build023 RC1: legacy continuous refresh listeners removed. */
+  window.addEventListener("orientationchange",refresh);
+  window.addEventListener("resize",refresh);
 })();
 </script>
 
@@ -671,7 +667,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .info-collapse{display:none!important}
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -745,7 +741,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -849,7 +845,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -997,7 +993,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1083,7 +1079,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .teach-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1182,7 +1178,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .teach-quick-bar button{height:36px;font-size:11px}
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1273,7 +1269,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1364,7 +1360,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   box-shadow:0 0 0 3px rgba(255,224,112,.75) inset,0 0 0 2px #f7cc56!important;
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1439,7 +1435,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .ai-thinking-sub{margin-top:8px;font-size:14px;opacity:.78}
 @keyframes katagoSpin{to{transform:rotate(360deg)}}
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1606,7 +1602,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   color:#ffe3a2!important;
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1743,7 +1739,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   #board{width:min(82vw,58dvh)!important;height:min(82vw,58dvh)!important}
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1848,7 +1844,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .game-action-row{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:40px!important;min-height:134px!important}
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -1987,7 +1983,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   }
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -2092,7 +2088,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .clock-time{font-size:19px}
 }
 
-/* Build022.5 Unified UI：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
+/* Build022.1 時鐘顯示修正版：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
 @media (orientation:landscape) and (min-width:901px){
   .app{
     grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 154px!important;
@@ -2170,295 +2166,6 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-row:4!important;}
 }
 </style>
-
-<style id="build0224-mobile-final">
-/* Build022.4.1：三星 Galaxy / Android Chrome / Samsung Internet 觸控修正；600px 以下啟用手機版，不影響 iPad Air。 */
-@media (max-width:600px){
-  html,body{width:100%;min-width:0;overflow-x:hidden;overscroll-behavior:none}
-  .app{
-    width:100%;min-height:100dvh;height:auto!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    grid-template-rows:58px auto 88px auto!important;
-    gap:5px!important;padding:4px!important;
-  }
-  .topbar{
-    grid-row:1!important;display:flex!important;gap:4px!important;padding:4px!important;
-    overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;
-    scrollbar-width:none;white-space:nowrap;
-  }
-  .topbar::-webkit-scrollbar{display:none}
-  .topbar .tool{flex:0 0 58px!important;min-width:58px!important;min-height:48px!important;font-size:9px!important;border-radius:9px!important}
-  .topbar .tool span{font-size:16px!important}
-  .left{display:none!important}
-  .board-wrap{
-    grid-column:1!important;grid-row:2!important;
-    width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
-    aspect-ratio:1/1!important;padding:0!important;border-radius:10px!important;overflow:hidden!important;
-  }
-  #board{
-    display:block!important;width:var(--board-size)!important;height:var(--board-size)!important;
-    max-width:100%!important;max-height:100%!important;touch-action:none!important;
-    -webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;
-  }
-  .right{
-    display:flex!important;grid-column:1!important;grid-row:3!important;
-    width:100%!important;min-width:0!important;max-width:none!important;
-    background:transparent!important;border:0!important;padding:0!important;overflow:visible!important;
-  }
-  .right > .tool,.right > .ai-hint-panel{display:none!important}
-  .right .game-clock-panel{
-    display:grid!important;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr)!important;
-    width:100%!important;min-width:0!important;padding:5px!important;gap:4px!important;
-  }
-  .right .clock-side{grid-template-columns:20px minmax(0,1fr)!important;padding:4px!important;column-gap:4px!important}
-  .right .clock-stone{width:19px!important;height:19px!important}
-  .right .clock-name{font-size:9px!important}
-  .right .clock-time{font-size:clamp(19px,7vw,28px)!important;line-height:1!important;white-space:nowrap!important}
-  .right .clock-byo{font-size:7px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-  .right .clock-sound{font-size:11px!important;align-self:center!important}
-  .player{
-    grid-column:1!important;grid-row:4!important;width:100%!important;min-width:0!important;
-    padding:4px!important;overflow:visible!important;
-  }
-  .move-tools{grid-template-columns:minmax(0,1fr) auto!important;gap:4px!important;margin-top:0!important;padding:4px!important}
-  .move-tools label{font-size:9px!important}
-  .move-tools input,.move-tools select,.move-tools button{padding:7px 6px!important;font-size:12px!important}
-  .move-tools select{grid-column:1/-1!important}
-  .controls{gap:3px!important}
-  .controls button{min-height:44px!important;font-size:21px!important;border-radius:9px!important}
-  .game-action-row{display:flex!important;gap:4px!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;padding-bottom:2px!important}
-  .game-action-row button{flex:0 0 auto!important;min-height:38px!important;padding:7px 10px!important;font-size:11px!important}
-  .range-row{gap:5px!important;font-size:11px!important}
-  .info-collapse{display:none!important}
-  .modal-backdrop{padding:8px!important;align-items:flex-start!important;overflow:auto!important}
-  .modal{width:100%!important;max-height:none!important;margin-top:max(8px,env(safe-area-inset-top))!important;padding:12px!important;border-radius:14px!important}
-}
-</style>
-
-<style id="build02242-samsung-start-fix">
-@media (max-width:600px){
-  #humanModal .modal-card{max-height:92dvh!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}
-  #startHumanBtn{position:relative!important;z-index:20!important;min-height:52px!important;touch-action:manipulation!important;pointer-events:auto!important}
-  #gameSize{min-height:46px!important;touch-action:manipulation!important;pointer-events:auto!important}
-}
-</style>
-<script>window.BUILD_VERSION="022.4.6";</script>
-
-<style id="build02243-landscape-fix">
-/* Build022.4.3：iPad/平板橫式控制列修正 */
-#situationGameBtn{background:linear-gradient(135deg,#67d8ff,#4588ff);color:#071426;font-weight:900}
-#scoreGameBtn{background:linear-gradient(135deg,#ffd76c,#e8a91f);color:#1a1108;font-weight:900}
-@media (orientation:landscape) and (min-width:701px){
-  .player{
-    grid-template-columns:minmax(430px,0.95fr) minmax(420px,1.05fr)!important;
-    grid-template-rows:auto auto auto!important;
-    gap:5px!important;
-    overflow:hidden!important;
-  }
-  .move-tools{
-    grid-column:1!important;grid-row:1!important;
-    grid-template-columns:minmax(105px,1fr) 62px minmax(150px,1.25fr) 96px!important;
-    min-width:0!important;width:100%!important;margin:0!important;padding:5px!important;
-  }
-  .move-tools label,.move-tools input,.move-tools select,.move-tools button{min-width:0!important}
-  #coordToggleBtn{display:block!important;visibility:visible!important;position:static!important;z-index:auto!important;white-space:nowrap!important}
-  .controls{grid-column:2!important;grid-row:1!important;min-width:0!important}
-  .game-action-row{
-    grid-column:1 / -1!important;grid-row:2!important;
-    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    gap:6px!important;overflow:visible!important;min-height:88px!important;
-  }
-  .game-action-row button{min-width:0!important;font-size:16px!important;padding:8px 5px!important}
-  .range-row{grid-column:1 / -1!important;grid-row:3!important}
-}
-</style>
-
-<style id="build02244-fullscreen-rotate-fix">
-/* Build022.4.5：控制列雙排與 Android 觸控修正 */
-@media (orientation:landscape) and (min-width:701px){
-  .app{
-    grid-template-rows:minmax(0,1fr) clamp(188px,24dvh,244px)!important;
-    min-width:0!important;width:100%!important;max-width:100vw!important;overflow:hidden!important;
-  }
-  .board-wrap,.player,.right{min-width:0!important;max-width:100%!important}
-  .player{
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-    grid-template-rows:auto auto minmax(24px,1fr)!important;
-    width:100%!important;overflow:hidden!important;padding:5px!important;
-  }
-  .move-tools{
-    grid-template-columns:minmax(92px,1fr) 58px minmax(128px,1.15fr) minmax(86px,96px)!important;
-    overflow:hidden!important;
-  }
-  .controls{grid-template-columns:repeat(5,minmax(0,1fr))!important;overflow:hidden!important}
-  .controls button{min-width:0!important;width:100%!important}
-  .game-action-row{
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    min-width:0!important;width:100%!important;overflow:hidden!important;
-  }
-  .game-action-row button{min-width:0!important;width:100%!important;white-space:normal!important;line-height:1.15!important}
-  #coordToggleBtn{min-width:0!important;width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important}
-}
-/* Safari 全螢幕或旋轉後，以 JS 判斷的實際方向為準 */
-body.build02244-landscape .app{
-  grid-template-rows:minmax(0,1fr) clamp(188px,24dvh,244px)!important;
-  overflow:hidden!important;
-}
-body.build02244-landscape .player{
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-  grid-template-rows:auto auto minmax(24px,1fr)!important;
-  min-width:0!important;width:100%!important;overflow:hidden!important;
-}
-body.build02244-landscape .move-tools{
-  grid-template-columns:minmax(92px,1fr) 58px minmax(128px,1.15fr) minmax(86px,96px)!important;
-  min-width:0!important;overflow:hidden!important;
-}
-body.build02244-landscape .controls{grid-template-columns:repeat(5,minmax(0,1fr))!important;min-width:0!important}
-body.build02244-landscape .game-action-row{grid-template-columns:repeat(4,minmax(0,1fr))!important;min-width:0!important;overflow:hidden!important}
-body.build02244-landscape .game-action-row button,
-body.build02244-landscape .controls button{min-width:0!important;width:100%!important}
-@media (orientation:portrait){
-  body.build02244-portrait .app{max-width:100vw!important;overflow-x:hidden!important}
-  body.build02244-portrait .player{min-width:0!important;width:100%!important}
-}
-</style>
-
-<style id="build02245-control-and-android-fix">
-/* Build022.4.5：窄橫式控制列固定分成兩排，避免座標鍵被播放鍵遮住 */
-@media (orientation:landscape) and (min-width:601px){
-  .app{grid-template-rows:minmax(0,1fr) clamp(238px,30dvh,300px)!important}
-  .player{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    grid-template-rows:auto auto auto minmax(24px,1fr)!important;
-    gap:6px!important;overflow:hidden!important;
-  }
-  .move-tools{
-    grid-column:1!important;grid-row:1!important;
-    display:grid!important;
-    grid-template-columns:minmax(118px,1fr) 64px minmax(155px,1.25fr) minmax(96px,112px)!important;
-    width:100%!important;min-width:0!important;overflow:visible!important;
-  }
-  .controls{
-    grid-column:1!important;grid-row:2!important;
-    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    width:100%!important;min-width:0!important;overflow:visible!important;
-  }
-  .game-action-row{
-    grid-column:1!important;grid-row:3!important;
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    width:100%!important;min-width:0!important;overflow:visible!important;
-  }
-  .range-row{grid-column:1!important;grid-row:4!important;width:100%!important;min-width:0!important}
-  #coordToggleBtn{display:block!important;visibility:visible!important;opacity:1!important;position:static!important;width:100%!important;min-width:0!important;z-index:1!important}
-  .move-tools>*,.controls>*,.game-action-row>*{min-width:0!important;max-width:100%!important}
-}
-body.build02244-landscape .player{
-  grid-template-columns:minmax(0,1fr)!important;
-  grid-template-rows:auto auto auto minmax(24px,1fr)!important;
-}
-body.build02244-landscape .move-tools{grid-column:1!important;grid-row:1!important}
-body.build02244-landscape .controls{grid-column:1!important;grid-row:2!important}
-body.build02244-landscape .game-action-row{grid-column:1!important;grid-row:3!important}
-body.build02244-landscape .range-row{grid-column:1!important;grid-row:4!important}
-/* Android/Samsung：棋盤與容器禁止瀏覽器手勢攔截 */
-#board,.board-wrap{
-  touch-action:none!important;
-  -ms-touch-action:none!important;
-  overscroll-behavior:contain!important;
-  -webkit-user-select:none!important;user-select:none!important;
-  -webkit-touch-callout:none!important;
-}
-</style>
-
-<style id="build023-rc1-layout">
-/* Build023 RC1: one control system, no fixed/sticky mobile layers, no scroll-driven redraw. */
-#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop,#unifiedMobileBar{display:none!important}
-#rcGameBar{display:none}
-html,body{overscroll-behavior-y:auto}
-
-/* Phone and iPad portrait/compact view: hide duplicate desktop action row and show one in-flow bar. */
-@media (max-width:1100px){
-  html,body{overflow-x:hidden!important;min-height:100%}
-  body,.app{padding-bottom:0!important}
-  .game-action-row{display:none!important}
-  #rcGameBar{
-    display:grid!important;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:7px;
-    position:relative!important;
-    inset:auto!important;
-    z-index:2;
-    width:auto;
-    margin:10px;
-    padding:9px 9px calc(9px + env(safe-area-inset-bottom));
-    border:1px solid #765126;
-    border-radius:16px;
-    background:#120d09;
-    box-shadow:none;
-    contain:layout;
-  }
-  #rcGameBar button{
-    min-width:0;min-height:52px;margin:0;padding:6px 3px;
-    border:1px solid #7e5b2d;border-radius:11px;
-    background:#2a1c13;color:#fff;
-    font-size:14px;font-weight:900;line-height:1.15;
-    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-  }
-  #rcGameBar button.primary{background:linear-gradient(135deg,#ffd76c,#d99617);color:#1c1207}
-  #rcGameBar button.blue{background:#164f73;border-color:#2c82b5}
-  #rcGameBar button.green{background:#17652f;border-color:#329052}
-  #rcGameBar button:active{filter:brightness(1.15)}
-  .player{padding-bottom:6px!important}
-}
-
-/* Narrow phones. */
-@media (max-width:560px){
-  #rcGameBar{gap:5px;margin:6px;padding:7px 6px calc(7px + env(safe-area-inset-bottom));border-radius:12px}
-  #rcGameBar button{min-height:48px;font-size:13px;border-radius:9px}
-  .move-tools,.controls,.range-row{position:relative!important;inset:auto!important}
-}
-
-/* Landscape iPad/desktop keeps original full action row and no second bar. */
-@media (min-width:1101px){
-  #rcGameBar{display:none!important}
-  .game-action-row{display:grid!important}
-}
-</style>
-
-
-<style id="build023-rc2-static-layout">
-/* Build023 RC2：純 CSS 文件流；滑動期間零版面腳本。 */
-html{height:auto!important;scroll-behavior:auto!important}
-body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
-#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop,#unifiedMobileBar{display:none!important}
-.board-wrap{position:relative!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:1/1!important;overflow:hidden!important;contain:layout paint!important}
-#board{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;position:static!important}
-#rcGameBar{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;transform:none!important}
-@media (max-width:1100px){
-  .app{height:auto!important;min-height:100%!important;overflow:visible!important;display:block!important}
-  .topbar,.board-wrap,.clock-panel,.player,#rcGameBar{position:static!important;transform:none!important}
-  .board-wrap{width:calc(100% - 16px)!important;margin:8px!important}
-  .clock-panel,.player{width:auto!important;margin:8px!important;min-height:0!important;max-height:none!important;overflow:visible!important}
-  .player{display:grid!important;grid-template-rows:auto auto auto auto!important}
-  .move-tools,.controls,.range-row{position:static!important;transform:none!important}
-  #rcGameBar{display:grid!important;width:auto!important;margin:8px!important;padding:7px!important;contain:layout paint!important}
-  #rcGameBar button{box-shadow:none!important;background-image:none!important}
-  #rcGameBar button.primary{background:#dca72e!important;color:#160f08!important}
-  #rcGameBar button.blue{background:#18577c!important}
-  #rcGameBar button.green{background:#17652f!important}
-}
-@media (max-width:560px){
-  .board-wrap{width:calc(100% - 10px)!important;margin:5px!important}
-  .clock-panel,.player,#rcGameBar{margin:5px!important}
-  #rcGameBar{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important}
-  #rcGameBar button{min-height:45px!important;font-size:12px!important;padding:4px 2px!important}
-  .player{padding:5px!important;gap:4px!important}
-}
-@media (min-width:1101px){
-  .board-wrap{aspect-ratio:auto!important}
-}
-</style>
 </head>
 <body>
 <div class="app">
@@ -2466,7 +2173,7 @@ body{height:auto!important;min-height:100%!important;overflow-x:hidden!important
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023 RC3 Recovery</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.3 穩定計時版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2522,8 +2229,7 @@ body{height:auto!important;min-height:100%!important;overflow-x:hidden!important
     </div>
     <div class="game-action-row" id="gameActionRow">
       <button id="undoGameBtn">悔棋</button>
-      <button id="situationGameBtn">形勢判斷</button>
-      <button id="scoreGameBtn">終局計算</button>
+      <button id="scoreGameBtn">計算勝負</button>
       <button id="passGameBtn">Pass</button>
       <button id="resignGameBtn">投降</button>
       <button id="saveSgfBtn">存檔 SGF</button>
@@ -2552,7 +2258,7 @@ body{height:auto!important;min-height:100%!important;overflow-x:hidden!important
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build023 RC1 Unified UI</h2>
+  <h2>Build022.1 時鐘顯示修正版</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -2634,7 +2340,7 @@ body{height:auto!important;min-height:100%!important;overflow-x:hidden!important
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build023 RC1 Unified UI</h2>
+  <h2>Build022.1 時鐘顯示修正版</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -3742,7 +3448,7 @@ function loadSGFText(text,name){
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
-    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build022.5 Unified UI 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
+    $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build022.1 時鐘顯示修正版 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
     return true;
   }catch(err){
@@ -3757,19 +3463,24 @@ function loadSGFText(text,name){
 const canvas=$("board"),ctx=canvas.getContext("2d");
 function resizeBoard(force=false){
   const wrap=canvas.parentElement;
-  /* Build023 RC2：棋盤只依容器寬度設定，不讀取 viewport 高度。 */
-  const rect=wrap.getBoundingClientRect();
-  const isPhone=window.matchMedia("(max-width: 600px)").matches;
-  const minimum=isPhone?180:280;
-  const css=Math.max(minimum,Math.floor(rect.width-(isPhone?0:8)));
+  const parent=wrap.getBoundingClientRect();
+  const availableW=Math.max(280,Math.floor(parent.width-16));
+  const availableH=Math.max(280,Math.floor(parent.height-16));
+  const css=Math.max(280,Math.floor(Math.min(availableW,availableH)));
   if(!force && Math.abs(css-state.boardCssSize)<2)return false;
+
   state.boardCssSize=css;
   wrap.style.setProperty("--board-size",css+"px");
   canvas.style.setProperty("--board-size",css+"px");
+
   const dpr=Math.min(window.devicePixelRatio||1,2);
   const px=Math.floor(css*dpr);
-  if(canvas.width!==px||canvas.height!==px){canvas.width=px;canvas.height=px;}
-  canvas._cssSize=css; canvas._dpr=dpr;
+  if(canvas.width!==px||canvas.height!==px){
+    canvas.width=px;
+    canvas.height=px;
+  }
+  canvas._cssSize=css;
+  canvas._dpr=dpr;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   return true;
 }
@@ -4534,24 +4245,6 @@ function chooseKataGoMoveByLevel(recommendations,level){
   return r[Math.min(index,r.length-1)];
 }
 
-async function judgeCurrentSituation(){
-  if(state.aiThinking){toast("KataGo 正在思考，請稍候");return;}
-  const btn=$("situationGameBtn"),old=btn?btn.textContent:"形勢判斷";
-  if(btn){btn.disabled=true;btn.textContent="判斷中…";}
-  try{
-    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:60});
-    const lead=Number(analysis.scoreLead||0);
-    const blackWin=Number(analysis.blackWin||0);
-    const whiteWin=Number(analysis.whiteWin||100-blackWin);
-    const leader=lead>=0?"黑":"白";
-    alert(`目前形勢判斷（不結束對局）：\n\n${leader}方約領先 ${Math.abs(lead).toFixed(1)} 目\n黑勝率 ${blackWin.toFixed(1)}%\n白勝率 ${whiteWin.toFixed(1)}%`);
-  }catch(err){
-    console.error("形勢判斷失敗",err);
-    const r=localStoneEstimate(),leader=r.diff>=0?"黑":"白";
-    alert(`KataGo 暫時無法連線。\n\n簡易盤面估算（非正式數子）：\n${leader}方約領先 ${Math.abs(r.diff).toFixed(1)} 目`);
-  }finally{if(btn){btn.disabled=false;btn.textContent=old;}}
-}
-
 function scheduleLocalAiMove(delay=350){
   if(!state.humanMode || state.turn===state.humanColor || state.aiThinking)return;
   const expectedIndex=state.index;
@@ -4763,7 +4456,6 @@ function undoGameMove(){
 }
 $("undoGameBtn").onclick=undoGameMove;
 
-$("situationGameBtn").onclick=judgeCurrentSituation;
 $("scoreGameBtn").onclick=calculateGameResult;
 $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
@@ -4803,9 +4495,8 @@ document.querySelectorAll(".clock-preset").forEach(btn=>btn.addEventListener("cl
 }));
 $("byoTime").addEventListener("change",()=>{$("customByoWrap").hidden=$("byoTime").value!=="custom";});
 
-function startHumanGame(){
-  const selectedSize=parseInt($("gameSize")?.value,10);
-  state.size=[9,13,19].includes(selectedSize)?selectedSize:19;state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
+$("startHumanBtn").onclick=()=>{
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
   state.komi=Number($("gameKomi").value||0);
@@ -4839,51 +4530,13 @@ function startHumanGame(){
   toast(`人機對弈已開始 · ${state.handicap>0?`讓${state.handicap}子`:"分先"} · ${levelName} · ${state.aiVisits} visits`);
   scheduleLocalAiMove(450);
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,200);
-  // RC2.1：開始新局只做一次棋盤同步，不派送 resize，避免 Safari 連鎖重排。
-  requestAnimationFrame(()=>{
-    const changed=resizeBoard(false);
-    if(changed)drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-    syncUI();
-  });
-}
-const startHumanBtn=$("startHumanBtn");
-if(startHumanBtn){
-  startHumanBtn.type="button";
-  startHumanBtn.onclick=null;
-  startHumanBtn.addEventListener("click",startHumanGame,{passive:false});
-  // 部分 Samsung Internet 對 modal 內 click 反應不穩，touchend 作為後備。
-  startHumanBtn.addEventListener("touchend",e=>{
-    e.preventDefault();
-    if(Date.now()-(startHumanBtn._lastStartAt||0)<700)return;
-    startHumanBtn._lastStartAt=Date.now();
-    startHumanGame();
-  },{passive:false});
-}
-let lastBoardPointerAt=0;
-let lastBoardTouchKey="";
-function boardEventPoint(e){
-  const t=(e.changedTouches&&e.changedTouches[0])||(e.touches&&e.touches[0]);
-  if(t)return {clientX:t.clientX,clientY:t.clientY,pointerType:"touch"};
-  return {clientX:e.clientX,clientY:e.clientY,pointerType:e.pointerType||"mouse"};
-}
-function handleBoardInput(e){
-  const point=boardEventPoint(e);
-  if(!Number.isFinite(point.clientX)||!Number.isFinite(point.clientY))return;
-  if((e.type==="pointerdown"||e.type==="pointerup") && point.pointerType==="mouse" && e.button!==0)return;
-  if(e.cancelable)e.preventDefault();
-
-  const now=Date.now();
-  const touchKey=Math.round(point.clientX)+":"+Math.round(point.clientY);
-  if((e.type==="click"||e.type==="touchend") && now-lastBoardPointerAt<650 && touchKey===lastBoardTouchKey)return;
-  lastBoardPointerAt=now;
-  lastBoardTouchKey=touchKey;
-
+};
+canvas.addEventListener("click",e=>{
   if(!state.humanMode && !state.teachingMode)return;
   const rect=canvas.getBoundingClientRect();
-  if(!rect.width||!rect.height)return;
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
-  const localX=(point.clientX-rect.left)*(css/rect.width);
-  const localY=(point.clientY-rect.top)*(css/rect.height);
+  const localX=(e.clientX-rect.left)*(css/rect.width);
+  const localY=(e.clientY-rect.top)*(css/rect.height);
   const pad=css*.055,step=(css-pad*2)/(state.size-1);
   let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step);
   const edgeTolerance=step*.62;
@@ -4920,56 +4573,7 @@ function handleBoardInput(e){
   if(state.hintEnabled){
     evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
   }else scheduleLocalAiMove(350);
-
-}
-// Build022.4.1: Samsung Internet / Android Chrome 優先在 pointerdown 落子。
-// touchend 與 click 僅作舊版瀏覽器後備，並由時間與座標去重。
-canvas.style.pointerEvents="auto";
-canvas.style.touchAction="none";
-canvas.style.webkitUserSelect="none";
-canvas.style.userSelect="none";
-if(window.PointerEvent){
-  canvas.addEventListener("pointerdown",handleBoardInput,{passive:false});
-}else{
-  canvas.addEventListener("touchend",handleBoardInput,{passive:false});
-  canvas.addEventListener("click",handleBoardInput,{passive:false});
-}
-
-
-// Build022.4.5：Samsung Internet / Android Chrome 穩定觸控。
-// 使用 pointerup 完成落子，並在 capture 階段攔截舊版 pointerdown，避免事件重複或被外層捲動取消。
-(function installAndroidBoardInputFix(){
-  if(!window.PointerEvent || !canvas)return;
-  let start=null;
-  const maxMove=18;
-  function isPrimary(e){return e.pointerType!=="mouse" || e.button===0;}
-  function down(e){
-    if(!isPrimary(e))return;
-    if(e.cancelable)e.preventDefault();
-    e.stopImmediatePropagation();
-    start={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now()};
-    try{canvas.setPointerCapture(e.pointerId)}catch(_){ }
-  }
-  function up(e){
-    if(!start || e.pointerId!==start.id || !isPrimary(e))return;
-    if(e.cancelable)e.preventDefault();
-    e.stopImmediatePropagation();
-    const dx=e.clientX-start.x,dy=e.clientY-start.y;
-    const elapsed=Date.now()-start.t;
-    start=null;
-    try{canvas.releasePointerCapture(e.pointerId)}catch(_){ }
-    if(Math.hypot(dx,dy)>maxMove || elapsed>1400)return;
-    handleBoardInput(e);
-  }
-  function cancel(e){
-    if(start && e.pointerId===start.id)start=null;
-  }
-  canvas.addEventListener("pointerdown",down,{capture:true,passive:false});
-  canvas.addEventListener("pointerup",up,{capture:true,passive:false});
-  canvas.addEventListener("pointercancel",cancel,{capture:true,passive:false});
-  canvas.addEventListener("contextmenu",e=>e.preventDefault(),{passive:false});
-})();
-
+});
 $("saveApiBtn").onclick=()=>{
   saveApiSettings();
   state.analysis=null;
@@ -4988,9 +4592,6 @@ setConnectorStatus("warn",getApiSettings().url?"已載入 API 設定，尚未測
 
 let layoutTimer=0;
 function scheduleLayoutRefresh(delay=160){
-  /* Build023 RC2: intentionally disabled. */
-  return;
-  
   clearTimeout(layoutTimer);
   layoutTimer=setTimeout(()=>{
     if(state.isSliderDragging)return;
@@ -4998,10 +4599,12 @@ function scheduleLayoutRefresh(delay=160){
     if(changed)drawBoard(state.currentSnapshot||activateSnapshot(state.index));
   },delay);
 }
-/* Build022.5.2: resize refresh disabled on mobile Safari scroll. */
-/* Build023 RC1: no layout work during viewport scroll/resize. */
-/* orientation refresh handled once by Build023 RC1 controller. */
-/* Build023 RC1: ResizeObserver removed to prevent scroll-triggered redraw loops. */
+window.addEventListener("resize",()=>scheduleLayoutRefresh(180),{passive:true});
+window.addEventListener("orientationchange",()=>scheduleLayoutRefresh(320),{passive:true});
+if(window.ResizeObserver){
+  const boardObserver=new ResizeObserver(()=>scheduleLayoutRefresh(120));
+  boardObserver.observe(canvas.parentElement);
+}
 
 
 
@@ -5062,18 +4665,13 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build023 RC3 Recovery 已啟動");
+  toast("Build021.29 拉桿版面修正版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
 }
 
 </script>
-
-
-
-
-
 
 <div id="aiThinkingOverlay" class="ai-thinking-overlay" hidden>
   <div class="ai-thinking-card">
@@ -5082,53 +4680,6 @@ if(state.engineVerified&&state.rendererVerified){
     <div class="ai-thinking-sub">伺服器休眠時會自動重試，請稍候</div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-<style id="build023-rc3-recovery-style">
-html,body{overflow-x:hidden!important;overflow-y:auto!important;height:auto!important;position:static!important;overscroll-behavior:auto!important}
-#board{pointer-events:auto!important;touch-action:manipulation!important;-webkit-touch-callout:none!important}
-.board-wrap{overflow:visible!important}
-/* Recovery: never create fixed/sticky duplicate game controls. */
-#rcGameBar,#rc22BoardTouchLayer{display:none!important;pointer-events:none!important}
-</style>
-<script id="build023-rc3-recovery-controller">
-(function(){
-  'use strict';
-  var timer=0;
-  var lastOrientation=window.matchMedia('(orientation: landscape)').matches?'landscape':'portrait';
-  function orientation(){return window.matchMedia('(orientation: landscape)').matches?'landscape':'portrait'}
-  function recoverLayout(){
-    clearTimeout(timer);
-    timer=setTimeout(function(){
-      requestAnimationFrame(function(){
-        try{
-          if(typeof resizeBoard==='function')resizeBoard(true);
-          if(typeof drawBoard==='function'&&typeof state!=='undefined')drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-          if(typeof syncUI==='function')syncUI();
-          lastOrientation=orientation();
-        }catch(err){console.warn('RC3 rotation recovery',err)}
-      });
-    },360);
-  }
-  window.addEventListener('orientationchange',recoverLayout,{passive:true});
-  if(screen.orientation&&screen.orientation.addEventListener){screen.orientation.addEventListener('change',recoverLayout)}
-  window.addEventListener('resize',function(){
-    var now=orientation();
-    if(now!==lastOrientation)recoverLayout();
-  },{passive:true});
-  window.addEventListener('pageshow',function(){
-    document.documentElement.style.overflowY='auto';
-    document.body.style.overflowY='auto';
-  },{passive:true});
-})();
-</script>
 
 </body>
 </html>
