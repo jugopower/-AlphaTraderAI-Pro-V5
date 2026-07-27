@@ -464,6 +464,10 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-row:4!important}
 }
 
+
+/* Build022.3.2 mobile board stabilization */
+#board{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:contain}
+@media (pointer:coarse){#board{touch-action:none}button,select,input{touch-action:manipulation}}
 </style>
 
 <style id="build0214-fix">
@@ -2253,7 +2257,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build022.3.1</p>
+  <p>版本：Build022.3.2</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2599,7 +2603,7 @@ function currentPositionPayload(){
     moves:played,
     initial_stones:initial,
     next_player:nextPlayer,
-    komi:Number(settings.komi),
+    komi:Number(state.humanMode ? state.komi : settings.komi),
     max_visits:Number(state.humanMode ? state.aiVisits : settings.visits)
   };
 }
@@ -3267,7 +3271,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.1]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.2]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -4366,13 +4370,35 @@ function humanGameResign(){
   alert(humanName+"投降，"+aiName+"（AI）勝。");
 }
 
+function estimateTerritory(snapshot){
+  const board=snapshot.board,size=state.size,seen=Array.from({length:size},()=>Array(size).fill(false));
+  let blackTerritory=0,whiteTerritory=0,neutral=0;
+  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+    if(seen[y][x]||board[y][x])continue;
+    const stack=[[x,y]],region=[];seen[y][x]=true;const borders=new Set();
+    while(stack.length){
+      const [cx,cy]=stack.pop();region.push([cx,cy]);
+      for(const [dx,dy] of dirs){
+        const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=size||ny>=size)continue;
+        const v=board[ny][nx];
+        if(v)borders.add(v);else if(!seen[ny][nx]){seen[ny][nx]=true;stack.push([nx,ny]);}
+      }
+    }
+    if(borders.size===1){if(borders.has('B'))blackTerritory+=region.length;else whiteTerritory+=region.length;}
+    else neutral+=region.length;
+  }
+  return {blackTerritory,whiteTerritory,neutral};
+}
 function localStoneEstimate(){
   const snap=currentSnapshot();
-  const counts=boardStoneCounts(snap);
-  const black=counts.black+(snap.blackCaptures||0);
-  const white=counts.white+(snap.whiteCaptures||0)+Number(state.komi||0);
+  const territory=estimateTerritory(snap);
+  const blackCaptures=Number(snap.blackCaptures||0),whiteCaptures=Number(snap.whiteCaptures||0),komi=Number(state.komi||0);
+  const black=territory.blackTerritory+blackCaptures;
+  const whiteRaw=territory.whiteTerritory+whiteCaptures;
+  const white=whiteRaw+komi;
   const diff=black-white;
-  return {diff,black,white};
+  return {diff,black,white,whiteRaw,komi,blackCaptures,whiteCaptures,...territory};
 }
 
 async function calculateGameResult(){
@@ -4383,7 +4409,7 @@ async function calculateGameResult(){
       const analysis=await requestCloudAnalysis();
       const lead=Number(analysis.scoreLead||0);
       const winner=lead>=0?"黑":"白";
-      alert("KataGo 形勢判定：\\n"+winner+"方約領先 "+Math.abs(lead).toFixed(1)+" 目\\n黑勝率 "+Number(analysis.blackWin||0).toFixed(1)+"%\\n白勝率 "+Number(analysis.whiteWin||0).toFixed(1)+"%");
+      alert("KataGo 形勢判定（已使用貼目 "+Number(state.komi||0).toFixed(1)+"）：\n"+winner+"方約領先 "+Math.abs(lead).toFixed(1)+" 目\n黑勝率 "+Number(analysis.blackWin||0).toFixed(1)+"%\n白勝率 "+Number(analysis.whiteWin||0).toFixed(1)+"%");
       return;
     }
   }catch(err){
@@ -4391,7 +4417,7 @@ async function calculateGameResult(){
   }
   const s=localStoneEstimate();
   const winner=s.diff>=0?"黑":"白";
-  alert("簡易盤面估算（非正式數子）：\\n"+winner+"方約領先 "+Math.abs(s.diff).toFixed(1)+" 目");
+  alert("簡易形勢估算（請先確認死子）：\n黑地 "+s.blackTerritory+"＋提子 "+s.blackCaptures+"＝"+s.black.toFixed(1)+"\n白地 "+s.whiteTerritory+"＋提子 "+s.whiteCaptures+"＝"+s.whiteRaw.toFixed(1)+"\n貼目：白加 "+s.komi.toFixed(1)+" 目\n最終："+winner+"勝 "+Math.abs(s.diff).toFixed(1)+" 目");
 }
 
 
@@ -4436,7 +4462,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.1]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.2]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -4604,7 +4630,13 @@ $("startHumanBtn").onclick=()=>{
   scheduleLocalAiMove(450);
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,200);
 };
-canvas.addEventListener("click",e=>{
+let lastBoardInputAt=0;
+function handleBoardInput(e){
+  if(!state.humanMode && !state.teachingMode)return;
+  if(state.aiThinking||state.gameEnded)return;
+  const now=Date.now();if(now-lastBoardInputAt<280)return;lastBoardInputAt=now;
+  if(e.cancelable)e.preventDefault();
+
   if(!state.humanMode && !state.teachingMode)return;
   const rect=canvas.getBoundingClientRect();
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
@@ -4646,7 +4678,16 @@ canvas.addEventListener("click",e=>{
   if(state.hintEnabled){
     evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
   }else scheduleLocalAiMove(350);
-});
+
+}
+if(window.PointerEvent){
+  canvas.addEventListener('pointerup',handleBoardInput,{passive:false});
+  canvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'&&e.cancelable)e.preventDefault();},{passive:false});
+}else{
+  canvas.addEventListener('touchend',e=>{const t=e.changedTouches&&e.changedTouches[0];if(t)handleBoardInput({clientX:t.clientX,clientY:t.clientY,cancelable:true,preventDefault:()=>e.preventDefault()});},{passive:false});
+  canvas.addEventListener('click',handleBoardInput);
+}
+
 $("saveApiBtn").onclick=()=>{
   saveApiSettings();
   state.analysis=null;
