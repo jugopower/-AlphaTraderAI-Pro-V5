@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260726-02244">
-<!-- Build022.5.1 滑動穩定與按鈕文字修正版 -->
+<!-- Build022.5.2 滑動穩定與按鈕文字修正版 -->
 <title>AlphaTrader AI Pro V5｜Build022.4.6 手機操作列修正版</title>
 <style>
 :root{
@@ -4914,7 +4914,7 @@ function scheduleLayoutRefresh(delay=160){
     if(changed)drawBoard(state.currentSnapshot||activateSnapshot(state.index));
   },delay);
 }
-/* Build022.5.1: resize refresh disabled on mobile Safari scroll. */
+/* Build022.5.2: resize refresh disabled on mobile Safari scroll. */
 window.addEventListener("resize",()=>{if(window.innerWidth>700)scheduleLayoutRefresh(180)},{passive:true});
 window.addEventListener("orientationchange",()=>scheduleLayoutRefresh(320),{passive:true});
 if(window.ResizeObserver){
@@ -5021,7 +5021,7 @@ if(state.engineVerified&&state.rendererVerified){
   window.addEventListener('resize',queueRefresh,{passive:true});
   document.addEventListener('fullscreenchange',queueRefresh,{passive:true});
   document.addEventListener('webkitfullscreenchange',queueRefresh,{passive:true});
-  /* Build022.5.1: do not recalculate layout while Safari address bar scrolls. */
+  /* Build022.5.2: do not recalculate layout while Safari address bar scrolls. */
   document.addEventListener('visibilitychange',function(){if(!document.hidden)queueRefresh();});
   applyActualOrientation();
   queueRefresh();
@@ -5082,97 +5082,6 @@ if(state.engineVerified&&state.rendererVerified){
   .mobile-sheet-status{margin-top:10px!important;padding:8px!important;border-radius:9px!important;background:#120d0a!important;color:#cdb892!important;font-size:11px!important}
 }
 </style>
-
-<div id="mobileMoreBackdrop" aria-hidden="true"></div>
-<nav id="mobileGameDock" aria-label="手機對局操作列">
-  <button id="mobileUndoBtn" type="button"><span>↶</span>悔棋</button>
-  <button id="mobilePassBtn" type="button"><span>PASS</span>停一手</button>
-  <button id="mobileHumanBtn" type="button"><span>♟</span>人機</button>
-  <button id="mobileNewGameBtn" type="button"><span>＋</span>新局</button>
-  <button id="mobileMoreBtn" type="button"><span>⋯</span>更多</button>
-</nav>
-
-<section id="mobileMoreSheet" role="dialog" aria-modal="true" aria-label="更多對局功能">
-  <div class="mobile-sheet-head"><strong>更多功能</strong><button id="mobileMoreClose" type="button">✕</button></div>
-  <div class="mobile-sheet-section">
-    <h4>棋盤尺寸</h4>
-    <div class="mobile-sheet-grid">
-      <button data-mobile-size="9" type="button">9 路</button>
-      <button data-mobile-size="13" type="button">13 路</button>
-      <button data-mobile-size="19" type="button">19 路</button>
-    </div>
-  </div>
-  <div class="mobile-sheet-section">
-    <h4>執子與設定</h4>
-    <div class="mobile-sheet-grid two">
-      <button data-mobile-color="B" type="button">人類執黑</button>
-      <button data-mobile-color="W" type="button">人類執白</button>
-      <button id="mobileHandicapBtn" type="button">讓子設定</button>
-      <button id="mobileClockBtn" type="button">時鐘設定</button>
-    </div>
-  </div>
-  <div class="mobile-sheet-section">
-    <h4>分析與棋譜</h4>
-    <div class="mobile-sheet-grid two">
-      <button id="mobileSituationBtn" class="blue" type="button">形勢判斷</button>
-      <button id="mobileScoreBtn" class="primary" type="button">終局計算</button>
-      <button id="mobileSaveBtn" class="green" type="button">儲存 SGF</button>
-      <button id="mobileHintBtn" type="button">開啟提示</button>
-    </div>
-  </div>
-  <div class="mobile-sheet-section">
-    <h4>其他</h4>
-    <div class="mobile-sheet-grid two">
-      <button id="mobileResignBtn" type="button">投降</button>
-      <button id="mobileInfoBtn" type="button">載入棋譜</button>
-    </div>
-  </div>
-  <div class="mobile-sheet-status" id="mobileSheetStatus">手機版操作列已啟用。先按「人機」或「新局」設定棋盤後即可開始。</div>
-</section>
-
-<script id="build02246-mobile-dock-script">
-(function(){
-  const byId=id=>document.getElementById(id);
-  const sheet=byId('mobileMoreSheet'),backdrop=byId('mobileMoreBackdrop');
-  function isMobile(){return window.matchMedia('(max-width:700px)').matches;}
-  function openSheet(){if(!isMobile())return;sheet.classList.add('open');backdrop.classList.add('open');document.body.style.overflow='hidden';}
-  function closeSheet(){sheet.classList.remove('open');backdrop.classList.remove('open');document.body.style.overflow='';}
-  function safeClick(id){const el=byId(id);if(el){el.click();return true;}return false;}
-  function openHumanSetup(){closeSheet();safeClick('humanBtn');}
-  function bindTap(el,fn){
-    if(!el)return;
-    let fired=0;
-    el.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen'){e.preventDefault();fired=Date.now();fn(e);}}, {passive:false});
-    el.addEventListener('click',e=>{if(Date.now()-fired<600)return;e.preventDefault();fn(e);});
-  }
-  bindTap(byId('mobileMoreBtn'),openSheet);
-  bindTap(byId('mobileMoreClose'),closeSheet);
-  bindTap(backdrop,closeSheet);
-  bindTap(byId('mobileUndoBtn'),()=>safeClick('undoGameBtn'));
-  bindTap(byId('mobilePassBtn'),()=>safeClick('passGameBtn'));
-  bindTap(byId('mobileHumanBtn'),openHumanSetup);
-  bindTap(byId('mobileNewGameBtn'),openHumanSetup);
-  bindTap(byId('mobileSituationBtn'),()=>{closeSheet();safeClick('situationGameBtn');});
-  bindTap(byId('mobileScoreBtn'),()=>{closeSheet();safeClick('scoreGameBtn');});
-  bindTap(byId('mobileSaveBtn'),()=>{closeSheet();safeClick('saveSgfBtn');});
-  bindTap(byId('mobileHintBtn'),()=>{closeSheet();safeClick('hintToggleBtn');});
-  bindTap(byId('mobileResignBtn'),()=>{closeSheet();safeClick('resignGameBtn');});
-  bindTap(byId('mobileInfoBtn'),()=>{closeSheet();safeClick('infoBtn');});
-  bindTap(byId('mobileHandicapBtn'),openHumanSetup);
-  bindTap(byId('mobileClockBtn'),openHumanSetup);
-  document.querySelectorAll('[data-mobile-size]').forEach(btn=>bindTap(btn,()=>{
-    const select=byId('gameSize');if(select){select.value=btn.dataset.mobileSize;select.dispatchEvent(new Event('change',{bubbles:true}));}
-    openHumanSetup();
-    setTimeout(()=>{const status=byId('mobileSheetStatus');if(status)status.textContent=`已選 ${btn.dataset.mobileSize} 路，請確認設定後按「開始新對局」。`;},100);
-  }));
-  document.querySelectorAll('[data-mobile-color]').forEach(btn=>bindTap(btn,()=>{
-    const select=byId('humanColor');if(select){select.value=btn.dataset.mobileColor;select.dispatchEvent(new Event('change',{bubbles:true}));}
-    openHumanSetup();
-  }));
-  window.addEventListener('orientationchange',closeSheet,{passive:true});
-  window.addEventListener('resize',()=>{if(!isMobile())closeSheet();},{passive:true});
-})();
-</script>
 
 <div id="aiThinkingOverlay" class="ai-thinking-overlay" hidden>
   <div class="ai-thinking-card">
@@ -5256,6 +5165,35 @@ if(state.engineVerified&&state.rendererVerified){
   window.addEventListener('pageshow',function(){
     var bar=byId('unifiedMobileBar');if(bar)bar.style.pointerEvents='auto';
   });
+})();
+</script>
+
+
+<style id="build02252-refresh-stability">
+/* Build022.5.2：只保留一套手機操作列，避免重新整理後重複 DOM／事件。 */
+#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop{display:none!important;pointer-events:none!important}
+@media (max-width:700px){
+  #unifiedMobileBar{contain:layout!important;isolation:isolate!important}
+}
+</style>
+<script id="build02252-singleton-refresh-fix">
+(function(){
+  'use strict';
+  function cleanupLegacy(){
+    ['mobileGameDock','mobileMoreSheet','mobileMoreBackdrop'].forEach(function(id){
+      var n=document.getElementById(id); if(n)n.remove();
+    });
+    var bars=document.querySelectorAll('#unifiedMobileBar');
+    for(var i=1;i<bars.length;i++)bars[i].remove();
+  }
+  cleanupLegacy();
+  // 重新整理或從快取返回時，只恢復現有操作列，不重建棋盤與控制列。
+  window.addEventListener('pageshow',function(){
+    cleanupLegacy();
+    var bar=document.getElementById('unifiedMobileBar');
+    if(bar){bar.style.pointerEvents='auto';bar.style.display='';}
+    document.body.style.overflow='';
+  },{passive:true});
 })();
 </script>
 

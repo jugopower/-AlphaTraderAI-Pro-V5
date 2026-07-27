@@ -1,10 +1,10 @@
-AlphaTrader AI Pro V5 — Build022.5.1
+# AlphaTrader AI Pro V5 — Build022.5.2
 
-修正：
-1. iPad「投降」按鈕只顯示投降。
-2. iPad「終局計算」按鈕顯示完整正確文字。
-3. 手機功能列改為頁面內一般區塊，避免 Safari 上滑時固定面板反覆定位。
-4. 停用 visualViewport 捲動與高度變化造成的棋盤重算。
-5. 手機 Safari 上下滑時不再持續重畫棋盤。
+更新穩定修正版：
 
-使用：將 index.html 部署到 GitHub Pages／Render。
+- 移除舊版手機底部控制列與「更多」面板。
+- 手機只保留一套 Unified UI 功能列。
+- 重新整理、更新或從 Safari 快取返回時，不再重複建立按鈕。
+- 防止按鈕事件重複綁定。
+- 保留新局、悔棋、Pass、投降、形勢判斷、終局計算、SGF 存檔與 AI 提示。
+- iPad 版投降與終局計算文字維持修正。
