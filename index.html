@@ -2180,6 +2180,20 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 #board{background:#d99a43!important;visibility:visible!important;opacity:1!important;contain:none!important}
 .board-wrap{contain:layout paint!important}
 </style>
+
+<style id="build02236-result-modal">
+#resultModal .modal{max-width:520px;text-align:center}
+.result-title{font-size:30px;font-weight:900;margin:4px 0 12px}
+.result-winner{font-size:34px;font-weight:900;margin:14px 0 8px;color:#7a3d00}
+.result-close-note{font-size:14px;color:#6b5a4b;margin:0 0 12px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;text-align:left}
+.result-grid div{background:#fff8e8;border:1px solid #e7cf9e;border-radius:12px;padding:10px}
+.result-grid small{display:block;color:#715f4d;margin-bottom:3px}.result-grid strong{font-size:18px}
+.result-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.result-detail{display:none;text-align:left;background:#f8f4ec;border:1px solid #ddd0bc;border-radius:12px;padding:12px;margin-top:12px;white-space:pre-line;line-height:1.55}
+.result-detail.open{display:block}
+@media(max-width:560px){#resultModal .modal{width:min(94vw,520px);padding:16px}.result-title{font-size:25px}.result-winner{font-size:28px}.result-grid{grid-template-columns:1fr 1fr}.result-actions{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2187,7 +2201,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.3 穩定計時版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.3.6 勝負結果彈窗版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2259,9 +2273,30 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <input id="sgfFile" type="file" accept=".sgf,.SGF,application/x-go-sgf,application/octet-stream,text/plain" hidden>
 
+
+<div id="resultModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="resultModalTitle">
+  <div class="modal">
+    <button class="close" data-close="resultModal" aria-label="關閉">✕</button>
+    <div class="result-title" id="resultModalTitle">對局結果</div>
+    <div class="result-grid">
+      <div><small>黑方</small><strong id="resultBlack">—</strong></div>
+      <div><small>白方</small><strong id="resultWhite">—</strong></div>
+      <div><small>貼目</small><strong id="resultKomi">—</strong></div>
+      <div><small>盤面差</small><strong id="resultRawLead">—</strong></div>
+    </div>
+    <div class="result-winner" id="resultWinner">—</div>
+    <p class="result-close-note" id="resultComment"></p>
+    <div class="result-actions">
+      <button class="action" id="resultOkBtn" type="button">確定</button>
+      <button class="secondary" id="resultDetailBtn" type="button">查看詳細計算</button>
+    </div>
+    <div class="result-detail" id="resultDetail"></div>
+  </div>
+</div>
+
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build022.3.2</p>
+  <p>版本：Build022.3.6</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -4430,23 +4465,68 @@ function localStoneEstimate(){
   return {diff,black,white,whiteRaw,komi,blackCaptures,whiteCaptures,...territory};
 }
 
+function stopAndLockAfterScoring(){
+  state.gameEnded=true;
+  state.clockRunning=false;
+  stopGameClock();
+  state.aiRequestToken++;
+  setAiThinking(false);
+  state.playing=false;
+  if(state.timer){clearInterval(state.timer);state.timer=null;}
+  syncUI();
+}
+function resultCommentForMargin(margin){
+  if(margin===0)return "雙方平分秋色";
+  if(margin<=2)return `激戰！僅差 ${margin.toFixed(1)} 目`;
+  if(margin>=5)return "勝方明顯領先";
+  return "對局已完成計算";
+}
+function showResultModal(data){
+  const black=Number(data.black||0),white=Number(data.white||0),komi=Number(data.komi||0);
+  const rawLead=Number(data.rawLead||0),finalLead=Number(data.finalLead||0);
+  const margin=Math.abs(finalLead);
+  const winner=finalLead>0?`⚫ 黑勝 ${margin.toFixed(1)} 目`:finalLead<0?`⚪ 白勝 ${margin.toFixed(1)} 目`:`和棋`;
+  $("resultBlack").textContent=data.blackLabel||`${black.toFixed(1)} 目`;
+  $("resultWhite").textContent=data.whiteLabel||`${white.toFixed(1)} 目`;
+  $("resultKomi").textContent=`${komi.toFixed(1)} 目`;
+  $("resultRawLead").textContent=rawLead===0?"盤面相同":`${rawLead>0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目`;
+  $("resultWinner").textContent=winner;
+  $("resultComment").textContent=resultCommentForMargin(margin);
+  $("resultDetail").textContent=data.detail||"";
+  $("resultDetail").classList.remove("open");
+  $("resultDetailBtn").textContent="查看詳細計算";
+  openModal("resultModal");
+}
+
 async function calculateGameResult(){
+  let data=null;
   try{
     const api=getApiSettings();
     if(api.url){
       if($("apiVisits"))$("apiVisits").value=String(Math.max(state.aiVisits||0,1600));
       const analysis=await requestCloudAnalysis();
-      const lead=Number(analysis.scoreLead||0);
-      const winner=lead>=0?"黑":"白";
-      alert("KataGo 形勢判定（已使用貼目 "+Number(state.komi||0).toFixed(1)+"）：\n"+winner+"方約領先 "+Math.abs(lead).toFixed(1)+" 目\n黑勝率 "+Number(analysis.blackWin||0).toFixed(1)+"%\n白勝率 "+Number(analysis.whiteWin||0).toFixed(1)+"%");
-      return;
+      const finalLead=Number(analysis.scoreLead||0); // KataGo scoreLead 已包含貼目
+      const komi=Number(state.komi||0);
+      const rawLead=finalLead+komi;
+      data={
+        black:0,white:0,komi,rawLead,finalLead,
+        blackLabel:`勝率 ${Number(analysis.blackWin||0).toFixed(1)}%`,
+        whiteLabel:`勝率 ${Number(analysis.whiteWin||0).toFixed(1)}%`,
+        detail:`KataGo 形勢判定\n黑勝率：${Number(analysis.blackWin||0).toFixed(1)}%\n白勝率：${Number(analysis.whiteWin||0).toFixed(1)}%\n盤面差（未扣貼目）：${rawLead>=0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目\n貼目：白加 ${komi.toFixed(1)} 目\n最終目差：${finalLead===0?"和棋":`${finalLead>0?"黑":"白"}勝 ${Math.abs(finalLead).toFixed(1)} 目`}`
+      };
     }
   }catch(err){
     console.warn("KataGo 計算勝負失敗，改用簡易估算",err);
   }
-  const s=localStoneEstimate();
-  const winner=s.diff>=0?"黑":"白";
-  alert("簡易形勢估算（請先確認死子）：\n黑地 "+s.blackTerritory+"＋提子 "+s.blackCaptures+"＝"+s.black.toFixed(1)+"\n白地 "+s.whiteTerritory+"＋提子 "+s.whiteCaptures+"＝"+s.whiteRaw.toFixed(1)+"\n貼目：白加 "+s.komi.toFixed(1)+" 目\n最終："+winner+"勝 "+Math.abs(s.diff).toFixed(1)+" 目");
+  if(!data){
+    const s=localStoneEstimate();
+    data={
+      black:s.black,white:s.whiteRaw,komi:s.komi,rawLead:s.black-s.whiteRaw,finalLead:s.diff,
+      detail:`簡易形勢估算（請先確認死子）\n黑地：${s.blackTerritory} 目\n黑方提子：${s.blackCaptures} 顆\n黑方合計：${s.black.toFixed(1)} 目\n白地：${s.whiteTerritory} 目\n白方提子：${s.whiteCaptures} 顆\n白方盤面合計：${s.whiteRaw.toFixed(1)} 目\n貼目：白加 ${s.komi.toFixed(1)} 目\n白方最終合計：${s.white.toFixed(1)} 目\n中立點：${s.neutral} 目`
+    };
+  }
+  stopAndLockAfterScoring();
+  showResultModal(data);
 }
 
 
@@ -4617,6 +4697,8 @@ function undoGameMove(){
 $("undoGameBtn").onclick=undoGameMove;
 
 $("scoreGameBtn").onclick=calculateGameResult;
+$("resultOkBtn").onclick=()=>closeModal("resultModal");
+$("resultDetailBtn").onclick=()=>{const d=$("resultDetail");d.classList.toggle("open");$("resultDetailBtn").textContent=d.classList.contains("open")?"收起詳細計算":"查看詳細計算";};
 $("passGameBtn").onclick=humanGamePass;
 $("resignGameBtn").onclick=humanGameResign;
 
