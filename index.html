@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260726-02244">
 <!-- Build022.5.2 滑動穩定與按鈕文字修正版 -->
-<title>AlphaTrader AI Pro V5｜Build023 RC1 統一介面重構版</title>
+<title>AlphaTrader AI Pro V5｜Build023 RC2 純 CSS 靜態穩定版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2426,6 +2426,39 @@ html,body{overscroll-behavior-y:auto}
 }
 </style>
 
+
+<style id="build023-rc2-static-layout">
+/* Build023 RC2：純 CSS 文件流；滑動期間零版面腳本。 */
+html{height:auto!important;scroll-behavior:auto!important}
+body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop,#unifiedMobileBar{display:none!important}
+.board-wrap{position:relative!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:1/1!important;overflow:hidden!important;contain:layout paint!important}
+#board{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;position:static!important}
+#rcGameBar{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;transform:none!important}
+@media (max-width:1100px){
+  .app{height:auto!important;min-height:100%!important;overflow:visible!important;display:block!important}
+  .topbar,.board-wrap,.clock-panel,.player,#rcGameBar{position:static!important;transform:none!important}
+  .board-wrap{width:calc(100% - 16px)!important;margin:8px!important}
+  .clock-panel,.player{width:auto!important;margin:8px!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+  .player{display:grid!important;grid-template-rows:auto auto auto auto!important}
+  .move-tools,.controls,.range-row{position:static!important;transform:none!important}
+  #rcGameBar{display:grid!important;width:auto!important;margin:8px!important;padding:7px!important;contain:layout paint!important}
+  #rcGameBar button{box-shadow:none!important;background-image:none!important}
+  #rcGameBar button.primary{background:#dca72e!important;color:#160f08!important}
+  #rcGameBar button.blue{background:#18577c!important}
+  #rcGameBar button.green{background:#17652f!important}
+}
+@media (max-width:560px){
+  .board-wrap{width:calc(100% - 10px)!important;margin:5px!important}
+  .clock-panel,.player,#rcGameBar{margin:5px!important}
+  #rcGameBar{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important}
+  #rcGameBar button{min-height:45px!important;font-size:12px!important;padding:4px 2px!important}
+  .player{padding:5px!important;gap:4px!important}
+}
+@media (min-width:1101px){
+  .board-wrap{aspect-ratio:auto!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2433,7 +2466,7 @@ html,body{overscroll-behavior-y:auto}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023 RC1 統一介面重構版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023 RC2 純 CSS 靜態穩定版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -3724,26 +3757,19 @@ function loadSGFText(text,name){
 const canvas=$("board"),ctx=canvas.getContext("2d");
 function resizeBoard(force=false){
   const wrap=canvas.parentElement;
-  const parent=wrap.getBoundingClientRect();
+  /* Build023 RC2：棋盤只依容器寬度設定，不讀取 viewport 高度。 */
+  const rect=wrap.getBoundingClientRect();
   const isPhone=window.matchMedia("(max-width: 600px)").matches;
   const minimum=isPhone?180:280;
-  const availableW=Math.max(minimum,Math.floor(parent.width-(isPhone?4:16)));
-  const availableH=Math.max(minimum,Math.floor(parent.height-(isPhone?4:16)));
-  const css=Math.max(minimum,Math.floor(Math.min(availableW,availableH)));
+  const css=Math.max(minimum,Math.floor(rect.width-(isPhone?0:8)));
   if(!force && Math.abs(css-state.boardCssSize)<2)return false;
-
   state.boardCssSize=css;
   wrap.style.setProperty("--board-size",css+"px");
   canvas.style.setProperty("--board-size",css+"px");
-
   const dpr=Math.min(window.devicePixelRatio||1,2);
   const px=Math.floor(css*dpr);
-  if(canvas.width!==px||canvas.height!==px){
-    canvas.width=px;
-    canvas.height=px;
-  }
-  canvas._cssSize=css;
-  canvas._dpr=dpr;
+  if(canvas.width!==px||canvas.height!==px){canvas.width=px;canvas.height=px;}
+  canvas._cssSize=css; canvas._dpr=dpr;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   return true;
 }
@@ -4962,6 +4988,9 @@ setConnectorStatus("warn",getApiSettings().url?"已載入 API 設定，尚未測
 
 let layoutTimer=0;
 function scheduleLayoutRefresh(delay=160){
+  /* Build023 RC2: intentionally disabled. */
+  return;
+  
   clearTimeout(layoutTimer);
   layoutTimer=setTimeout(()=>{
     if(state.isSliderDragging)return;
@@ -5033,7 +5062,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build023 RC1 統一介面重構版 已啟動");
+  toast("Build023 RC2 純 CSS 靜態穩定版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
@@ -5061,7 +5090,7 @@ if(state.engineVerified&&state.rendererVerified){
 
 
 
-<nav id="rcGameBar" aria-label="Build023 RC1 對局功能列">
+<nav id="rcGameBar" aria-label="Build023 RC2 對局功能列">
   <button id="rcNew" class="primary" type="button">＋<br>新局</button>
   <button id="rcUndo" type="button">↶<br>悔棋</button>
   <button id="rcPass" type="button">PASS<br>停一手</button>
@@ -5098,22 +5127,7 @@ if(state.engineVerified&&state.rendererVerified){
   bind('rcSave',function(){trigger('saveSgfBtn')});
   bind('rcHint',function(){trigger('hintToggleBtn')});
 
-  /* Exactly one delayed layout refresh after a real orientation change. No resize/scroll listener. */
-  var orientationTimer=0;
-  function refreshOnce(){
-    clearTimeout(orientationTimer);
-    orientationTimer=setTimeout(function(){
-      try{
-        if(typeof resizeBoard==='function')resizeBoard(true);
-        if(typeof syncUI==='function')syncUI();
-      }catch(_e){}
-    },360);
-  }
-  if(screen.orientation && screen.orientation.addEventListener){
-    screen.orientation.addEventListener('change',refreshOnce,{passive:true});
-  }else{
-    window.addEventListener('orientationchange',refreshOnce,{passive:true});
-  }
+  /* Build023 RC2：滑動、縮放與旋轉期間不執行版面重算。 */
   window.addEventListener('pageshow',function(){
     document.body.style.overflow='';
   },{passive:true});
