@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260725-0222">
-<title>AlphaTrader AI Pro V5｜Build022.3 穩定計時版</title>
+<meta name="app-version" content="20260727-02235">
+<title>AlphaTrader AI Pro V5｜Build022.3.5 Canvas 強制重建版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2176,6 +2176,10 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .game-action-row button{min-height:38px;font-size:12px!important;padding:7px 5px!important}
 @media (orientation:portrait){.game-action-row{grid-template-columns:repeat(3,minmax(82px,1fr))!important}}
 </style>
+<style id="build02235-canvas-rebuild">
+#board{background:#d99a43!important;visibility:visible!important;opacity:1!important;contain:none!important}
+.board-wrap{contain:layout paint!important}
+</style>
 </head>
 <body>
 <div class="app">
@@ -3474,29 +3478,54 @@ function loadSGFText(text,name){
   }
 }
 
-const canvas=$("board"),ctx=canvas.getContext("2d");
+const canvas=$("board");
+let ctx=canvas.getContext("2d",{alpha:false});
 function resizeBoard(force=false){
   const wrap=canvas.parentElement;
+  if(!wrap)return false;
   const parent=wrap.getBoundingClientRect();
-  const availableW=Math.max(280,Math.floor(parent.width-16));
-  const availableH=Math.max(280,Math.floor(parent.height-16));
-  const css=Math.max(280,Math.floor(Math.min(availableW,availableH)));
-  if(!force && Math.abs(css-state.boardCssSize)<2)return false;
+  const vw=Math.max(320,window.innerWidth||document.documentElement.clientWidth||320);
+  const vh=Math.max(320,window.innerHeight||document.documentElement.clientHeight||320);
+  const fallback=Math.floor(Math.min(vw*0.88,vh*0.76));
+  const availableW=parent.width>80?Math.floor(parent.width-8):fallback;
+  const availableH=parent.height>80?Math.floor(parent.height-8):fallback;
+  const css=Math.max(260,Math.floor(Math.min(availableW,availableH)));
+  const oldCss=canvas._cssSize||0;
 
   state.boardCssSize=css;
   wrap.style.setProperty("--board-size",css+"px");
   canvas.style.setProperty("--board-size",css+"px");
+  canvas.style.setProperty("width",css+"px","important");
+  canvas.style.setProperty("height",css+"px","important");
+  canvas.style.setProperty("display","block","important");
 
-  const dpr=Math.min(window.devicePixelRatio||1,2);
-  const px=Math.floor(css*dpr);
-  if(canvas.width!==px||canvas.height!==px){
+  const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
+  const px=Math.max(260,Math.floor(css*dpr));
+  const bitmapChanged=canvas.width!==px||canvas.height!==px;
+  if(bitmapChanged||force){
     canvas.width=px;
     canvas.height=px;
+    ctx=canvas.getContext("2d",{alpha:false});
   }
   canvas._cssSize=css;
   canvas._dpr=dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  return true;
+  if(ctx)ctx.setTransform(dpr,0,0,dpr,0,0);
+  return bitmapChanged||Math.abs(css-oldCss)>=1||force;
+}
+function forceBoardRebuild(reason="refresh"){
+  try{
+    resizeBoard(true);
+    const snap=state.currentSnapshot||activateSnapshot(state.index);
+    drawBoard(snap);
+    requestAnimationFrame(()=>{
+      resizeBoard(true);
+      drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+    });
+    return true;
+  }catch(err){
+    console.error("forceBoardRebuild",reason,err);
+    return false;
+  }
 }
 function emptyPosition(size){
   return Array.from({length:size},()=>Array(size).fill(null));
@@ -4527,8 +4556,7 @@ async function saveCurrentSgf(){
   }catch(err){
     console.error("SGF 存檔失敗",err);
     toast("SGF 存檔失敗，請再按一次");
-    alert("SGF 存檔失敗：
-"+(err?.message||err));
+    alert("SGF 存檔失敗：\n"+(err?.message||err));
   }finally{
     if(btn){btn.dataset.saving="0";btn.disabled=false;btn.textContent="存檔 SGF";}
   }
@@ -4742,8 +4770,8 @@ function scheduleLayoutRefresh(delay=160){
   clearTimeout(layoutTimer);
   layoutTimer=setTimeout(()=>{
     if(state.isSliderDragging)return;
-    const changed=resizeBoard(false);
-    if(changed)drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+    resizeBoard(false);
+    drawBoard(state.currentSnapshot||activateSnapshot(state.index));
   },delay);
 }
 window.addEventListener("resize",()=>scheduleLayoutRefresh(180),{passive:true});
@@ -4789,9 +4817,9 @@ renderBookmarks();
 const redrawBtn=document.getElementById("redrawBtn");
 if(redrawBtn){
   redrawBtn.addEventListener("click",()=>{
-    resizeBoard(true);
+    forceBoardRebuild("manual");
     syncUI();
-    toast("棋盤已重新繪製");
+    toast("棋盤已強制重建");
   });
 }
 
@@ -4806,13 +4834,23 @@ if(winCanvas){
     updateProfessionalDashboard();
   });
 }
+window.addEventListener("pageshow",()=>setTimeout(()=>forceBoardRebuild("pageshow"),80),{passive:true});
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden)setTimeout(()=>forceBoardRebuild("visible"),100);
+},{passive:true});
+window.addEventListener("orientationchange",()=>{
+  setTimeout(()=>forceBoardRebuild("orientation-1"),180);
+  setTimeout(()=>forceBoardRebuild("orientation-2"),520);
+},{passive:true});
+window.addEventListener("load",()=>setTimeout(()=>forceBoardRebuild("load"),120),{once:true});
+
 state.engineVerified=verifyRulesEngine();
-resizeBoard(true);syncUI();
+forceBoardRebuild("startup");syncUI();
 state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build022.3.4 棋盤恢復修正版 已啟動");
+  toast("Build022.3.5 Canvas 強制重建版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
@@ -4827,89 +4865,6 @@ if(state.engineVerified&&state.rendererVerified){
     <div class="ai-thinking-sub">伺服器休眠時會自動重試，請稍候</div>
   </div>
 </div>
-
-<script id="build02234-board-recovery">
-(function(){
-  let recoveryTimer=0;
-  let recovering=false;
-
-  function currentSnapshotSafe(){
-    try{
-      return state.currentSnapshot || activateSnapshot(state.index);
-    }catch(err){
-      console.warn('Build022.3.4 snapshot recovery failed',err);
-      return null;
-    }
-  }
-
-  function recoverBoard(reason){
-    clearTimeout(recoveryTimer);
-    recoveryTimer=setTimeout(function(){
-      if(recovering)return;
-      recovering=true;
-      try{
-        const c=document.getElementById('board');
-        if(!c)return;
-        const wrap=c.parentElement;
-        if(wrap){
-          const r=wrap.getBoundingClientRect();
-          // Safari 從分享表、郵件或背景回來時，容器可能短暫回報 0。
-          // 等待下一幀再處理，避免把 Canvas 設成空白尺寸。
-          if(r.width<40 || r.height<40){
-            recovering=false;
-            recoverBoard(reason+'-retry');
-            return;
-          }
-        }
-        resizeBoard(true);
-        const snap=currentSnapshotSafe();
-        if(snap)drawBoard(snap);
-        if(typeof syncUI==='function')syncUI();
-      }catch(err){
-        console.error('Build022.3.4 board recovery error',reason,err);
-      }finally{
-        recovering=false;
-      }
-    },120);
-  }
-
-  window.__recoverGoBoard=recoverBoard;
-
-  document.addEventListener('visibilitychange',function(){
-    if(document.visibilityState==='visible')recoverBoard('visibilitychange');
-  },{passive:true});
-  window.addEventListener('pageshow',function(){recoverBoard('pageshow');},{passive:true});
-  window.addEventListener('focus',function(){recoverBoard('focus');},{passive:true});
-  window.addEventListener('orientationchange',function(){recoverBoard('orientationchange');},{passive:true});
-  window.addEventListener('resize',function(){recoverBoard('resize');},{passive:true});
-
-  // 分享表／檔案儲存完成或取消後，強制重畫，不重設棋局。
-  const saveBtn=document.getElementById('saveSgfBtn');
-  if(saveBtn){
-    saveBtn.addEventListener('click',function(){
-      setTimeout(function(){recoverBoard('after-save-click');},500);
-      setTimeout(function(){recoverBoard('after-save-return');},1800);
-    },{passive:true});
-  }
-
-  // Safari 有時會清除 Canvas backing store，但尺寸值仍不變；週期性檢查透明空白。
-  function canvasLooksBlank(){
-    try{
-      const c=document.getElementById('board');
-      if(!c || !c.width || !c.height)return true;
-      const x=Math.max(0,Math.floor(c.width/2));
-      const y=Math.max(0,Math.floor(c.height/2));
-      const d=c.getContext('2d').getImageData(x,y,1,1).data;
-      return d[3]===0;
-    }catch(_){return false;}
-  }
-  setInterval(function(){
-    if(document.visibilityState==='visible' && canvasLooksBlank())recoverBoard('blank-watch');
-  },2500);
-
-  recoverBoard('startup');
-})();
-</script>
 
 </body>
 </html>
