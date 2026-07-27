@@ -2166,6 +2166,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   .player{grid-row:4!important;}
 }
 </style>
+
+<style id="build02231-patch">
+.game-action-row{grid-template-columns:repeat(5,minmax(74px,1fr))!important;gap:6px!important}
+.game-action-row button{min-height:38px;font-size:12px!important;padding:7px 5px!important}
+@media (orientation:portrait){.game-action-row{grid-template-columns:repeat(3,minmax(82px,1fr))!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2233,7 +2239,11 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       <button id="passGameBtn">Pass</button>
       <button id="resignGameBtn">投降</button>
       <button id="saveSgfBtn">存檔 SGF</button>
-      <button id="hintToggleBtn">開啟提示</button>
+      <button id="firstChoiceBtn">第一選</button>
+      <button id="secondChoiceBtn">第二選</button>
+      <button id="badMoveBtn">惡手</button>
+      <button id="positionJudgeBtn">形勢判斷</button>
+      <button id="hintToggleBtn">全部提示</button>
     </div>
     <div class="range-row"><input id="moveSlider" type="range" min="0" max="0" value="0"><span id="sliderText">0 / 0</span></div>
   </section>
@@ -2243,7 +2253,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：20260722-0212</p>
+  <p>版本：Build022.3.1</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2506,7 +2516,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all"
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3257,7 +3267,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.31]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.1]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -3757,7 +3767,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
       ctx.lineWidth=Math.max(1.5,step*.04);
       ctx.beginPath();ctx.arc(cx,cy,step*(i===0?.28:i===1?.24:.21),0,Math.PI*2);ctx.fill();ctx.stroke();
       ctx.fillStyle="#102314";ctx.font=`700 ${Math.max(14,step*.30)}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
-      ctx.fillText(String(i+1),cx,cy+.5);ctx.restore();
+      ctx.fillText(String(pt.rank||i+1),cx,cy+.5);ctx.restore();
     });
     const bp=state.hintBadPoint;
     if(bp && bp.x>=0 && bp.y>=0 && bp.x<state.size && bp.y<state.size){
@@ -4219,6 +4229,7 @@ function commitAiMove(x,y){
   state.moves.push({c:state.turn,x,y});
   state.actions=[];state.replayCache=[];state.index++;
   state.turn=state.turn==="B"?"W":"B";
+  registerStoneMove();
   completeTurnClock(movedColor);
   syncUI();
   if(state.hintEnabled)setTimeout(refreshGameHints,120);
@@ -4246,7 +4257,7 @@ function chooseKataGoMoveByLevel(recommendations,level){
 }
 
 function scheduleLocalAiMove(delay=350){
-  if(!state.humanMode || state.turn===state.humanColor || state.aiThinking)return;
+  if(!state.humanMode || state.gameEnded || state.turn===state.humanColor || state.aiThinking)return;
   const expectedIndex=state.index;
   const requestToken=++state.aiRequestToken;
 
@@ -4278,6 +4289,7 @@ function scheduleLocalAiMove(delay=350){
         completeTurnClock(movedColor);
         syncUI();
         toast("KataGo Pass");
+        if(registerPassAndCheckEnd())return;
         if(state.hintEnabled)setTimeout(refreshGameHints,120);
         return;
       }
@@ -4304,8 +4316,32 @@ function scheduleLocalAiMove(delay=350){
   },delay);
 }
 
+function finishHumanGame(message){
+  if(state.gameEnded)return;
+  state.gameEnded=true;
+  state.clockRunning=false;
+  stopGameClock();
+  state.aiRequestToken++;
+  setAiThinking(false);
+  state.playing=false;
+  if(state.timer){clearInterval(state.timer);state.timer=null;}
+  syncUI();
+  toast(message||"對局結束");
+  setTimeout(()=>alert(message||"對局結束"),80);
+}
+function registerPassAndCheckEnd(){
+  state.consecutivePasses=(state.consecutivePasses||0)+1;
+  if(state.consecutivePasses>=2){
+    finishHumanGame("雙方連續 Pass，對局結束。\n時間與讀秒已停止，可按『形勢判斷』查看結果。");
+    return true;
+  }
+  return false;
+}
+function registerStoneMove(){state.consecutivePasses=0;}
+
 function humanGamePass(){
   if(!state.humanMode){toast("請先開啟人機對弈");return;}
+  if(state.gameEnded){toast("本局已結束，請開始新局");return;}
   if(state.turn!==state.humanColor){toast("目前輪到 AI");return;}
   const movedColor=state.turn;
   state.moves.push({c:state.turn,pass:true,x:-1,y:-1});
@@ -4314,6 +4350,7 @@ function humanGamePass(){
   completeTurnClock(movedColor);
   syncUI();
   toast("已 Pass");
+  if(registerPassAndCheckEnd())return;
   scheduleLocalAiMove(200);
 }
 
@@ -4358,6 +4395,38 @@ async function calculateGameResult(){
 }
 
 
+async function showKataGoChoice(rank){
+  if(!state.humanMode){toast("請先開始人機對弈");return;}
+  if(state.gameEnded){toast("本局已結束，可使用形勢判斷");return;}
+  try{
+    state.hintLoading=true;syncUI();
+    const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
+    const rec=(analysis.recommendations||[]).filter(p=>p&&!p.pass);
+    const pt=rec[rank-1];
+    if(!pt){toast(`KataGo 沒有回傳第 ${rank} 選`);return;}
+    state.hintEnabled=true;
+    state.hintDisplayMode=rank===1?"first":"second";
+    state.hintPoints=[Object.assign({},pt,{rank})];
+    state.hintBaseBlackWin=Number(analysis.blackWin);
+    drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+    syncUI();
+    toast(`已顯示 KataGo 第 ${rank} 選：${coordLabel(pt.x,pt.y)}`);
+  }catch(err){toast("KataGo 推薦暫時無法取得");console.warn(err);}
+  finally{state.hintLoading=false;syncUI();}
+}
+function showBadMoveMark(){
+  if(!state.humanMode){toast("請先開始人機對弈");return;}
+  state.hintEnabled=true;
+  state.hintPoints=[];
+  if(state.hintBadPoint){
+    drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+    toast(`惡手：勝率約下降 ${Number(state.hintBadPoint.loss||0).toFixed(1)}%`);
+  }else{
+    toast("目前沒有偵測到勝率下降 5% 以上的惡手；開啟全部提示後，下一手會自動判斷");
+    setHintEnabled(true);
+  }
+}
+
 function sgfEscapeText(value){
   return String(value??"").replace(/\\/g,"\\\\").replace(/\]/g,"\\]");
 }
@@ -4367,7 +4436,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build021.31]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.1]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -4406,7 +4475,11 @@ function saveCurrentSgf(){
   toast("SGF 棋譜已存檔");
 }
 $("saveSgfBtn").onclick=saveCurrentSgf;
-$("hintToggleBtn").onclick=()=>{if(!state.humanMode){toast("請先開始人機對弈");return;}setHintEnabled(!state.hintEnabled);};
+$("firstChoiceBtn").onclick=()=>showKataGoChoice(1);
+$("secondChoiceBtn").onclick=()=>showKataGoChoice(2);
+$("badMoveBtn").onclick=showBadMoveMark;
+$("positionJudgeBtn").onclick=calculateGameResult;
+$("hintToggleBtn").onclick=()=>{if(!state.humanMode){toast("請先開始人機對弈");return;}state.hintDisplayMode="all";setHintEnabled(!state.hintEnabled);};
 $("coordToggleBtn").onclick=()=>setCoordsEnabled(!state.showCoords);
 
 
@@ -4448,7 +4521,7 @@ function undoGameMove(){
   state.turn=state.index%2===0?"B":"W";
   state.bestPoint=null;
   state.analysis=null;
-  state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;
+  state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;state.gameEnded=false;state.consecutivePasses=0;
   syncUI();
   if(resumeAfterUndo)startGameClock();
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,150);
@@ -4520,7 +4593,7 @@ $("startHumanBtn").onclick=()=>{
   state.aiRequestToken++;
   saveClockPreferences();
   unlockClockAudio();
-  state.hintEnabled=$("gameHintOn")?.value==="1";state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;
+  state.hintEnabled=$("gameHintOn")?.value==="1";state.hintPoints=[];state.hintBadPoint=null;state.hintBaseBlackWin=null;state.gameEnded=false;state.consecutivePasses=0;
   $("blackName").textContent=state.humanColor==="B"?"人類":"AI";$("whiteName").textContent=state.humanColor==="W"?"人類":"AI";
   if($("apiVisits"))$("apiVisits").value=String(state.aiVisits);
   if($("apiKomi"))$("apiKomi").value=String(state.komi);
