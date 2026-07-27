@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260726-02244">
 <!-- Build022.5.2 滑動穩定與按鈕文字修正版 -->
-<title>AlphaTrader AI Pro V5｜Build023 RC2.2 無捲動＋順暢旋轉＋手機落子版</title>
+<title>AlphaTrader AI Pro V5｜Build023 RC3 Recovery</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2466,7 +2466,7 @@ body{height:auto!important;min-height:100%!important;overflow-x:hidden!important
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023 RC2.2 無捲動＋順暢旋轉＋手機落子版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023 RC3 Recovery</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -5062,7 +5062,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build023 RC2.2 無捲動＋順暢旋轉＋手機落子版 已啟動");
+  toast("Build023 RC3 Recovery 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
@@ -5090,174 +5090,43 @@ if(state.engineVerified&&state.rendererVerified){
 
 
 
-<nav id="rcGameBar" aria-label="Build023 RC2.1 對局功能列">
-  <button id="rcNew" class="primary" type="button">＋<br>新局</button>
-  <button id="rcUndo" type="button">↶<br>悔棋</button>
-  <button id="rcPass" type="button">PASS<br>停一手</button>
-  <button id="rcResign" type="button">投降</button>
-  <button id="rcSituation" class="blue" type="button">形勢判斷</button>
-  <button id="rcScore" class="primary" type="button">終局計算</button>
-  <button id="rcSave" class="green" type="button">SGF<br>存檔</button>
-  <button id="rcHint" type="button">AI<br>提示</button>
-</nav>
 
-
-<script id="build023-rc21-controller">
+<style id="build023-rc3-recovery-style">
+html,body{overflow-x:hidden!important;overflow-y:auto!important;height:auto!important;position:static!important;overscroll-behavior:auto!important}
+#board{pointer-events:auto!important;touch-action:manipulation!important;-webkit-touch-callout:none!important}
+.board-wrap{overflow:visible!important}
+/* Recovery: never create fixed/sticky duplicate game controls. */
+#rcGameBar,#rc22BoardTouchLayer{display:none!important;pointer-events:none!important}
+</style>
+<script id="build023-rc3-recovery-controller">
 (function(){
   'use strict';
-  function id(x){return document.getElementById(x)}
-  function trigger(targetId){
-    var el=id(targetId); if(!el)return;
-    el.click();
-  }
-  function bind(buttonId,fn){
-    var b=id(buttonId); if(!b)return;
-    b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});
-  }
-  bind('rcNew',function(){
-    var m=id('humanModal');
-    if(m){m.classList.add('open');document.body.style.overflow='hidden';}
-    else trigger('newGameBtn');
-  });
-  bind('rcUndo',function(){trigger('undoGameBtn')});
-  bind('rcPass',function(){trigger('passGameBtn')});
-  bind('rcResign',function(){trigger('resignGameBtn')});
-  bind('rcSituation',function(){trigger('situationGameBtn')});
-  bind('rcScore',function(){trigger('scoreGameBtn')});
-  bind('rcSave',function(){trigger('saveSgfBtn')});
-  bind('rcHint',function(){trigger('hintToggleBtn')});
-
-  /* Build023 RC2.1：滑動期間零重算；只有真正旋轉完成後才校正一次。 */
-  var orientationTimer=0;
-  var lastOrientation=(screen.orientation&&screen.orientation.type)||
-    (window.matchMedia('(orientation: landscape)').matches?'landscape':'portrait');
-  var lastWidth=Math.round(document.documentElement.clientWidth||window.innerWidth||0);
-
-  function currentOrientation(){
-    return (screen.orientation&&screen.orientation.type)||
-      (window.matchMedia('(orientation: landscape)').matches?'landscape':'portrait');
-  }
-
-  function refreshAfterRotation(){
-    clearTimeout(orientationTimer);
-    orientationTimer=setTimeout(function(){
+  var timer=0;
+  var lastOrientation=window.matchMedia('(orientation: landscape)').matches?'landscape':'portrait';
+  function orientation(){return window.matchMedia('(orientation: landscape)').matches?'landscape':'portrait'}
+  function recoverLayout(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
       requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          var changed=resizeBoard(true);
-          drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-          syncUI();
-          lastWidth=Math.round(document.documentElement.clientWidth||window.innerWidth||0);
-          lastOrientation=currentOrientation();
-          if(changed&&typeof toast==='function')toast('棋盤方向已重新適配');
-        });
+        try{
+          if(typeof resizeBoard==='function')resizeBoard(true);
+          if(typeof drawBoard==='function'&&typeof state!=='undefined')drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+          if(typeof syncUI==='function')syncUI();
+          lastOrientation=orientation();
+        }catch(err){console.warn('RC3 rotation recovery',err)}
       });
-    },420);
+    },360);
   }
-
-  window.addEventListener('orientationchange',refreshAfterRotation,{passive:true});
-  if(screen.orientation&&screen.orientation.addEventListener){
-    screen.orientation.addEventListener('change',refreshAfterRotation);
-  }
+  window.addEventListener('orientationchange',recoverLayout,{passive:true});
+  if(screen.orientation&&screen.orientation.addEventListener){screen.orientation.addEventListener('change',recoverLayout)}
   window.addEventListener('resize',function(){
-    var nowOrientation=currentOrientation();
-    var nowWidth=Math.round(document.documentElement.clientWidth||window.innerWidth||0);
-    var orientationChanged=nowOrientation!==lastOrientation;
-    var majorWidthChange=Math.abs(nowWidth-lastWidth)>160;
-    if(orientationChanged||majorWidthChange)refreshAfterRotation();
+    var now=orientation();
+    if(now!==lastOrientation)recoverLayout();
   },{passive:true});
-
   window.addEventListener('pageshow',function(){
-    document.body.style.overflow='';
-    var nowOrientation=currentOrientation();
-    if(nowOrientation!==lastOrientation)refreshAfterRotation();
+    document.documentElement.style.overflowY='auto';
+    document.body.style.overflowY='auto';
   },{passive:true});
-})();
-</script>
-
-
-<style id="build023-rc22-stable-layout">
-html,body{overscroll-behavior:none!important;-webkit-overflow-scrolling:auto!important}
-#board{touch-action:none!important;-webkit-touch-callout:none!important;user-select:none!important}
-.board-wrap{position:relative!important}
-#rc22BoardTouchLayer{position:absolute;z-index:80;background:transparent;touch-action:none;-webkit-touch-callout:none;user-select:none;cursor:crosshair}
-@media (orientation:portrait),(max-width:900px){
-  html,body{width:100%!important;height:100%!important;overflow:hidden!important}
-  body{position:fixed!important;inset:0!important}
-  .app{height:calc(100svh - 126px)!important;min-height:0!important;overflow:hidden!important;grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) 92px!important;gap:6px!important;padding:6px!important}
-  .topbar,.left,.player{display:none!important}
-  .board-wrap{grid-column:1!important;grid-row:1!important;width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;overflow:hidden!important}
-  #board{width:min(96vw,calc(100svh - 232px))!important;height:min(96vw,calc(100svh - 232px))!important;max-width:100%!important;max-height:100%!important}
-  .right{display:flex!important;grid-column:1!important;grid-row:2!important;height:92px!important;min-height:92px!important;overflow:hidden!important}
-  .right .game-clock-panel{height:100%!important;box-sizing:border-box!important}
-  #rcGameBar{position:fixed!important;left:0!important;right:0!important;bottom:0!important;height:126px!important;min-height:126px!important;z-index:120!important;padding:6px 8px calc(6px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important;grid-template-columns:repeat(4,1fr)!important;grid-template-rows:repeat(2,1fr)!important;gap:5px!important;background:#100b08!important}
-  #rcGameBar button{min-height:0!important;font-size:15px!important;line-height:1.05!important;padding:4px!important}
-  .modal{z-index:300!important}
-}
-@media (orientation:landscape) and (max-height:600px){
-  html,body{overflow:hidden!important}
-  .app{height:100svh!important;min-height:0!important}
-}
-</style>
-<script id="build023-rc22-input-and-rotation">
-(function(){
- 'use strict';
- var canvas=document.getElementById('board');
- var wrap=canvas&&canvas.closest('.board-wrap');
- if(!canvas||!wrap)return;
- var layer=document.createElement('div');
- layer.id='rc22BoardTouchLayer';
- layer.setAttribute('aria-label','棋盤觸控層');
- wrap.appendChild(layer);
- var down=null, rotateTimer=0, locked=false;
- function positionLayer(){
-   var wr=wrap.getBoundingClientRect(), cr=canvas.getBoundingClientRect();
-   layer.style.left=(cr.left-wr.left)+'px';
-   layer.style.top=(cr.top-wr.top)+'px';
-   layer.style.width=cr.width+'px';
-   layer.style.height=cr.height+'px';
- }
- function synthetic(e){
-   return {type:'pointerup',pointerType:e.pointerType||'touch',button:0,clientX:e.clientX,clientY:e.clientY,cancelable:true,preventDefault:function(){},stopPropagation:function(){}};
- }
- layer.addEventListener('pointerdown',function(e){
-   if(e.pointerType==='mouse'&&e.button!==0)return;
-   e.preventDefault();e.stopPropagation();
-   down={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now()};
-   try{layer.setPointerCapture(e.pointerId)}catch(_){ }
- },{passive:false});
- layer.addEventListener('pointerup',function(e){
-   e.preventDefault();e.stopPropagation();
-   if(!down||down.id!==e.pointerId||locked)return;
-   var dx=e.clientX-down.x,dy=e.clientY-down.y,dt=Date.now()-down.t;down=null;
-   if(Math.hypot(dx,dy)>16||dt>1200)return;
-   if(!state.humanMode&&!state.teachingMode){
-     var m=document.getElementById('humanModal');
-     if(m){m.classList.add('open');document.body.style.overflow='hidden';}
-     if(typeof toast==='function')toast('請設定後按「開始對弈」');
-     return;
-   }
-   locked=true;
-   try{handleBoardInput(synthetic(e));}finally{setTimeout(function(){locked=false},120)}
- },{passive:false});
- layer.addEventListener('pointercancel',function(){down=null},{passive:true});
- layer.addEventListener('contextmenu',function(e){e.preventDefault()},{passive:false});
- function refreshOnce(){
-   clearTimeout(rotateTimer);rotateTimer=setTimeout(function(){
-     requestAnimationFrame(function(){requestAnimationFrame(function(){
-       try{resizeBoard(true);drawBoard(state.currentSnapshot||activateSnapshot(state.index));syncUI();}catch(_){ }
-       positionLayer();
-     })});
-   },360);
- }
- positionLayer();
- window.addEventListener('orientationchange',refreshOnce,{passive:true});
- if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',refreshOnce);
- window.addEventListener('pageshow',function(){setTimeout(positionLayer,80)},{passive:true});
- document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(positionLayer,80)},{passive:true});
- var oldStart=window.startHumanGame;
- var start=document.getElementById('startHumanBtn');
- if(start)start.addEventListener('click',function(){setTimeout(function(){positionLayer()},120)},{passive:true});
- setTimeout(positionLayer,250);
 })();
 </script>
 
