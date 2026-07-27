@@ -1,13 +1,9 @@
-# Joy Go Studio Professional — Build022.4 RC1
+# Build022.4 Professional Stable RC2
 
-本版由 Build022.3.7 穩定基線升級。
+修正重點：
+- 「計算勝負」按下後立即顯示本機估算結果，不再等待 KataGo 連線。
+- KataGo 改為背景更新，8 秒逾時後保留本機結果。
+- 強化 iPad Safari 的 click／touchend 按鈕事件。
+- 計算錯誤時顯示明確訊息，不再完全無反應。
 
-新增與修正：
-- 雙方連續 Pass 後停止計時並詢問是否立即計算勝負。
-- 勝負視窗顯示黑方、白方、貼目、盤面差與最終結果。
-- KataGo 結果與本機地盤估算分開標示，避免誤解。
-- 詳細計算加入公式、勝率、中立點與死子提醒。
-- 目差提示分為激戰、小幅領先、明顯領先與大勝。
-- 更新版本標示與 SGF AP 資訊。
-
-注意：此版本為 Professional Stable RC1，仍需在 iPad Safari 實機測試。
+請在 iPad Safari 實機測試，尚未宣稱所有情境均已驗證。
