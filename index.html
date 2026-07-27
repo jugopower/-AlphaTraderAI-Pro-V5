@@ -3271,7 +3271,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.2]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.3]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -4462,7 +4462,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.2]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.3]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -4478,29 +4478,62 @@ function buildCurrentSgf(){
   sgf+=")";
   return sgf;
 }
-function saveCurrentSgf(){
-  const sgf=buildCurrentSgf();
-  const blob=new Blob([sgf],{type:"application/x-go-sgf;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  const now=new Date();
-  const stamp=[
-    now.getFullYear(),
-    String(now.getMonth()+1).padStart(2,"0"),
-    String(now.getDate()).padStart(2,"0"),
-    "-",
-    String(now.getHours()).padStart(2,"0"),
-    String(now.getMinutes()).padStart(2,"0")
-  ].join("");
-  a.href=url;
-  a.download="AlphaTrader-Go-"+state.size+"x"+state.size+"-"+stamp+".sgf";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-  toast("SGF 棋譜已存檔");
+async function saveCurrentSgf(){
+  const btn=$("saveSgfBtn");
+  if(btn?.dataset.saving==="1")return;
+  if(btn){btn.dataset.saving="1";btn.disabled=true;btn.textContent="準備存檔…";}
+  try{
+    const sgf=buildCurrentSgf();
+    const now=new Date();
+    const stamp=[
+      now.getFullYear(),
+      String(now.getMonth()+1).padStart(2,"0"),
+      String(now.getDate()).padStart(2,"0"),
+      "-",
+      String(now.getHours()).padStart(2,"0"),
+      String(now.getMinutes()).padStart(2,"0"),
+      String(now.getSeconds()).padStart(2,"0")
+    ].join("");
+    const filename="AlphaTrader-Go-"+state.size+"x"+state.size+"-"+stamp+".sgf";
+    const blob=new Blob([sgf],{type:"application/x-go-sgf;charset=utf-8"});
+    const file=new File([blob],filename,{type:"application/x-go-sgf",lastModified:Date.now()});
+
+    // iPhone / Android 優先使用系統分享表，可直接「儲存到檔案」。
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({files:[file],title:"圍棋 SGF 棋譜",text:"AlphaTrader AI Pro 對局棋譜"});
+        toast("SGF 已建立，可儲存到檔案");
+        return;
+      }catch(err){
+        if(err && err.name==="AbortError"){
+          toast("已取消存檔");
+          return;
+        }
+        console.warn("系統分享失敗，改用下載方式",err);
+      }
+    }
+
+    // 桌面與不支援檔案分享的瀏覽器，改用標準下載。
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=filename;
+    a.rel="noopener";
+    a.style.display="none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},3000);
+    toast("SGF 棋譜已建立");
+  }catch(err){
+    console.error("SGF 存檔失敗",err);
+    toast("SGF 存檔失敗，請再按一次");
+    alert("SGF 存檔失敗：
+"+(err?.message||err));
+  }finally{
+    if(btn){btn.dataset.saving="0";btn.disabled=false;btn.textContent="存檔 SGF";}
+  }
 }
-$("saveSgfBtn").onclick=saveCurrentSgf;
+$("saveSgfBtn").onclick=(e)=>{e?.preventDefault?.();saveCurrentSgf();};
 $("firstChoiceBtn").onclick=()=>showKataGoChoice(1);
 $("secondChoiceBtn").onclick=()=>showKataGoChoice(2);
 $("badMoveBtn").onclick=showBadMoveMark;
