@@ -2306,7 +2306,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build022.3.6</p>
+  <p>版本：Build022.4 Professional Stable RC1</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -3320,7 +3320,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.3]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.4-RC1]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -4410,7 +4410,15 @@ function finishHumanGame(message){
 function registerPassAndCheckEnd(){
   state.consecutivePasses=(state.consecutivePasses||0)+1;
   if(state.consecutivePasses>=2){
-    finishHumanGame("雙方連續 Pass，對局結束。\n時間與讀秒已停止，可按『形勢判斷』查看結果。");
+    stopAndLockAfterScoring();
+    setTimeout(async()=>{
+      const shouldScore=confirm("雙方連續 Pass，對局結束。\n\n是否立即計算勝負？");
+      if(shouldScore){
+        await calculateGameResult();
+      }else{
+        toast("對局已結束，可按『計算勝負』查看結果");
+      }
+    },80);
     return true;
   }
   return false;
@@ -4487,9 +4495,10 @@ function stopAndLockAfterScoring(){
 }
 function resultCommentForMargin(margin){
   if(margin===0)return "雙方平分秋色";
-  if(margin<=2)return `激戰！僅差 ${margin.toFixed(1)} 目`;
-  if(margin>=5)return "勝方明顯領先";
-  return "對局已完成計算";
+  if(margin<=2.5)return `激戰！僅差 ${margin.toFixed(1)} 目`;
+  if(margin<=7)return "勝方小幅領先";
+  if(margin<=15)return "勝方明顯領先";
+  return "勝方大勝";
 }
 function showResultModal(data){
   const black=Number(data.black||0),white=Number(data.white||0),komi=Number(data.komi||0);
@@ -4510,6 +4519,7 @@ function showResultModal(data){
 
 async function calculateGameResult(){
   let data=null;
+  const local=localStoneEstimate();
   try{
     const api=getApiSettings();
     if(api.url){
@@ -4519,20 +4529,22 @@ async function calculateGameResult(){
       const komi=Number(state.komi||0);
       const rawLead=finalLead+komi;
       data={
-        black:0,white:0,komi,rawLead,finalLead,
-        blackLabel:`勝率 ${Number(analysis.blackWin||0).toFixed(1)}%`,
-        whiteLabel:`勝率 ${Number(analysis.whiteWin||0).toFixed(1)}%`,
-        detail:`KataGo 形勢判定\n黑勝率：${Number(analysis.blackWin||0).toFixed(1)}%\n白勝率：${Number(analysis.whiteWin||0).toFixed(1)}%\n盤面差（未扣貼目）：${rawLead>=0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目\n貼目：白加 ${komi.toFixed(1)} 目\n最終目差：${finalLead===0?"和棋":`${finalLead>0?"黑":"白"}勝 ${Math.abs(finalLead).toFixed(1)} 目`}`
+        black:local.black,
+        white:local.whiteRaw,
+        komi,
+        rawLead,
+        finalLead,
+        detail:`KataGo 最終形勢判定（主要結果）\n黑勝率：${Number(analysis.blackWin||0).toFixed(1)}%\n白勝率：${Number(analysis.whiteWin||0).toFixed(1)}%\n盤面差（未扣貼目）：${rawLead===0?"盤面相同":`${rawLead>0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目`}\n貼目：白加 ${komi.toFixed(1)} 目\n最終結果：${finalLead===0?"和棋":`${finalLead>0?"黑":"白"}勝 ${Math.abs(finalLead).toFixed(1)} 目`}\n\n本機地盤參考（未標記死子）\n黑地＋提子：${local.black.toFixed(1)} 目\n白地＋提子：${local.whiteRaw.toFixed(1)} 目\n中立點：${local.neutral} 目\n提醒：終局前請先確認死子，正式比賽結果以雙方確認為準。`
       };
     }
   }catch(err){
-    console.warn("KataGo 計算勝負失敗，改用簡易估算",err);
+    console.warn("KataGo 計算勝負失敗，改用本機簡易估算",err);
   }
   if(!data){
-    const s=localStoneEstimate();
+    const s=local;
     data={
       black:s.black,white:s.whiteRaw,komi:s.komi,rawLead:s.black-s.whiteRaw,finalLead:s.diff,
-      detail:`簡易形勢估算（請先確認死子）\n黑地：${s.blackTerritory} 目\n黑方提子：${s.blackCaptures} 顆\n黑方合計：${s.black.toFixed(1)} 目\n白地：${s.whiteTerritory} 目\n白方提子：${s.whiteCaptures} 顆\n白方盤面合計：${s.whiteRaw.toFixed(1)} 目\n貼目：白加 ${s.komi.toFixed(1)} 目\n白方最終合計：${s.white.toFixed(1)} 目\n中立點：${s.neutral} 目`
+      detail:`本機簡易形勢估算（請先確認死子）\n黑地：${s.blackTerritory} 目\n黑方提子：${s.blackCaptures} 顆\n黑方合計：${s.black.toFixed(1)} 目\n白地：${s.whiteTerritory} 目\n白方提子：${s.whiteCaptures} 顆\n白方盤面合計：${s.whiteRaw.toFixed(1)} 目\n貼目：白加 ${s.komi.toFixed(1)} 目\n白方最終合計：${s.white.toFixed(1)} 目\n中立點：${s.neutral} 目\n計算式：${s.black.toFixed(1)} − ${s.whiteRaw.toFixed(1)} − ${s.komi.toFixed(1)} = ${s.diff.toFixed(1)} 目`
     };
   }
   stopAndLockAfterScoring();
@@ -4581,7 +4593,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[AlphaTraderAI-Pro:Build022.3.3]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.4-RC1]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
