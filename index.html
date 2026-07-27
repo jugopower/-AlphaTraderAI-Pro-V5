@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260726-02244">
 <!-- Build022.5.2 滑動穩定與按鈕文字修正版 -->
-<title>AlphaTrader AI Pro V5｜Build022.4.6 手機操作列修正版</title>
+<title>AlphaTrader AI Pro V5｜Build023 RC1 統一介面重構版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -559,8 +559,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
       });
     },180);
   }
-  window.addEventListener("orientationchange",refresh);
-  window.addEventListener("resize",refresh);
+  /* Build023 RC1: legacy continuous refresh listeners removed. */
 })();
 </script>
 
@@ -2371,6 +2370,62 @@ body.build02244-landscape .range-row{grid-column:1!important;grid-row:4!importan
   -webkit-touch-callout:none!important;
 }
 </style>
+
+<style id="build023-rc1-layout">
+/* Build023 RC1: one control system, no fixed/sticky mobile layers, no scroll-driven redraw. */
+#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop,#unifiedMobileBar{display:none!important}
+#rcGameBar{display:none}
+html,body{overscroll-behavior-y:auto}
+
+/* Phone and iPad portrait/compact view: hide duplicate desktop action row and show one in-flow bar. */
+@media (max-width:1100px){
+  html,body{overflow-x:hidden!important;min-height:100%}
+  body,.app{padding-bottom:0!important}
+  .game-action-row{display:none!important}
+  #rcGameBar{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
+    position:relative!important;
+    inset:auto!important;
+    z-index:2;
+    width:auto;
+    margin:10px;
+    padding:9px 9px calc(9px + env(safe-area-inset-bottom));
+    border:1px solid #765126;
+    border-radius:16px;
+    background:#120d09;
+    box-shadow:none;
+    contain:layout;
+  }
+  #rcGameBar button{
+    min-width:0;min-height:52px;margin:0;padding:6px 3px;
+    border:1px solid #7e5b2d;border-radius:11px;
+    background:#2a1c13;color:#fff;
+    font-size:14px;font-weight:900;line-height:1.15;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  }
+  #rcGameBar button.primary{background:linear-gradient(135deg,#ffd76c,#d99617);color:#1c1207}
+  #rcGameBar button.blue{background:#164f73;border-color:#2c82b5}
+  #rcGameBar button.green{background:#17652f;border-color:#329052}
+  #rcGameBar button:active{filter:brightness(1.15)}
+  .player{padding-bottom:6px!important}
+}
+
+/* Narrow phones. */
+@media (max-width:560px){
+  #rcGameBar{gap:5px;margin:6px;padding:7px 6px calc(7px + env(safe-area-inset-bottom));border-radius:12px}
+  #rcGameBar button{min-height:48px;font-size:13px;border-radius:9px}
+  .move-tools,.controls,.range-row{position:relative!important;inset:auto!important}
+}
+
+/* Landscape iPad/desktop keeps original full action row and no second bar. */
+@media (min-width:1101px){
+  #rcGameBar{display:none!important}
+  .game-action-row{display:grid!important}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2378,7 +2433,7 @@ body.build02244-landscape .range-row{grid-column:1!important;grid-row:4!importan
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.4.6 手機操作列修正版</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023 RC1 統一介面重構版</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2464,7 +2519,7 @@ body.build02244-landscape .range-row{grid-column:1!important;grid-row:4!importan
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build022.5 Unified UI</h2>
+  <h2>Build023 RC1 Unified UI</h2>
   <span class="ai-badge" id="aiEngineBadge">● 本機示範分析</span>
 
   <div class="ai-summary-grid">
@@ -2546,7 +2601,7 @@ body.build02244-landscape .range-row{grid-column:1!important;grid-row:4!importan
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build022.5 Unified UI</h2>
+  <h2>Build023 RC1 Unified UI</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -4915,12 +4970,9 @@ function scheduleLayoutRefresh(delay=160){
   },delay);
 }
 /* Build022.5.2: resize refresh disabled on mobile Safari scroll. */
-window.addEventListener("resize",()=>{if(window.innerWidth>700)scheduleLayoutRefresh(180)},{passive:true});
-window.addEventListener("orientationchange",()=>scheduleLayoutRefresh(320),{passive:true});
-if(window.ResizeObserver){
-  const boardObserver=new ResizeObserver(()=>scheduleLayoutRefresh(120));
-  boardObserver.observe(canvas.parentElement);
-}
+/* Build023 RC1: no layout work during viewport scroll/resize. */
+/* orientation refresh handled once by Build023 RC1 controller. */
+/* Build023 RC1: ResizeObserver removed to prevent scroll-triggered redraw loops. */
 
 
 
@@ -4981,7 +5033,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build021.29 拉桿版面修正版 已啟動");
+  toast("Build023 RC1 統一介面重構版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
@@ -4990,98 +5042,9 @@ if(state.engineVerified&&state.rendererVerified){
 </script>
 
 
-<script id="build02244-layout-refresh">
-(function(){
-  let refreshToken=0;
-  function applyActualOrientation(){
-    const vv=window.visualViewport;
-    const w=vv&&vv.width?vv.width:window.innerWidth;
-    const h=vv&&vv.height?vv.height:window.innerHeight;
-    document.body.classList.toggle('build02244-landscape',w>h);
-    document.body.classList.toggle('build02244-portrait',h>=w);
-  }
-  function forceLayoutRefresh(){
-    applyActualOrientation();
-    document.documentElement.style.setProperty('--build02244-vw',(window.visualViewport?.width||window.innerWidth)+'px');
-    try{
-      if(typeof resizeBoard==='function') resizeBoard(true);
-      if(typeof syncUI==='function') syncUI();
-      if(typeof drawBoard==='function' && typeof activateSnapshot==='function' && window.state){
-        drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-      }
-    }catch(_e){}
-  }
-  function queueRefresh(){
-    const token=++refreshToken;
-    [40,160,360,700].forEach(function(delay){
-      setTimeout(function(){if(token===refreshToken) forceLayoutRefresh();},delay);
-    });
-  }
-  window.addEventListener('orientationchange',queueRefresh,{passive:true});
-  window.addEventListener('resize',queueRefresh,{passive:true});
-  document.addEventListener('fullscreenchange',queueRefresh,{passive:true});
-  document.addEventListener('webkitfullscreenchange',queueRefresh,{passive:true});
-  /* Build022.5.2: do not recalculate layout while Safari address bar scrolls. */
-  document.addEventListener('visibilitychange',function(){if(!document.hidden)queueRefresh();});
-  applyActualOrientation();
-  queueRefresh();
-})();
-</script>
 
 
 
-<style id="build02246-mobile-dock">
-#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop{display:none!important;}
-@media(max-width:700px){#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop{display:none!important;}}
-/* Build022.4.6：手機固定操作列與更多選單。僅手機啟用，不影響 iPad/桌機。 */
-#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop{display:none}
-@media (max-width:700px){
-  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
-  .app{padding-bottom:calc(82px + env(safe-area-inset-bottom))!important}
-  #mobileGameDock{
-    position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:10000!important;
-    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;
-    padding:6px 6px calc(6px + env(safe-area-inset-bottom))!important;
-    background:rgba(13,9,7,.97)!important;border-top:1px solid #7a552a!important;
-    box-shadow:0 -6px 20px rgba(0,0,0,.45)!important;backdrop-filter:blur(10px)!important;
-  }
-  #mobileGameDock button{
-    min-width:0!important;min-height:52px!important;padding:5px 2px!important;border-radius:10px!important;
-    border:1px solid #7a552a!important;background:#21160f!important;color:#fff!important;font-size:12px!important;
-    font-weight:800!important;line-height:1.15!important;touch-action:manipulation!important;pointer-events:auto!important;
-  }
-  #mobileGameDock button span{display:block!important;font-size:18px!important;margin-bottom:2px!important}
-  #mobileHumanBtn,#mobileNewGameBtn{background:linear-gradient(135deg,#7a4d13,#e5a92b)!important;color:#170e06!important}
-  #mobileMoreBtn{background:#17311f!important;border-color:#2f8a4a!important}
-  #mobileMoreBackdrop{
-    position:fixed!important;inset:0!important;z-index:10001!important;background:rgba(0,0,0,.56)!important;
-  }
-  #mobileMoreSheet{
-    position:fixed!important;left:8px!important;right:8px!important;bottom:calc(72px + env(safe-area-inset-bottom))!important;
-    z-index:10002!important;display:none!important;max-height:min(72dvh,620px)!important;overflow:auto!important;
-    padding:12px!important;border:1px solid #8b632f!important;border-radius:16px!important;
-    background:linear-gradient(180deg,#21160f,#100b08)!important;box-shadow:0 16px 50px rgba(0,0,0,.65)!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-  #mobileMoreSheet.open,#mobileMoreBackdrop.open{display:block!important}
-  .mobile-sheet-head{display:flex!important;align-items:center!important;justify-content:space-between!important;margin-bottom:10px!important}
-  .mobile-sheet-head strong{font-size:18px!important;color:#ffd76c!important}
-  #mobileMoreClose{width:40px!important;height:40px!important;border-radius:10px!important;font-size:22px!important}
-  .mobile-sheet-section{margin:10px 0!important;padding-top:10px!important;border-top:1px solid rgba(255,215,108,.18)!important}
-  .mobile-sheet-section:first-of-type{border-top:0!important;padding-top:0!important}
-  .mobile-sheet-section h4{margin:0 0 8px!important;font-size:13px!important;color:#e8c786!important}
-  .mobile-sheet-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
-  .mobile-sheet-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .mobile-sheet-grid button{
-    min-height:46px!important;padding:7px 5px!important;border-radius:10px!important;border:1px solid #74502a!important;
-    background:#2a1d14!important;color:#fff!important;font-size:13px!important;font-weight:800!important;touch-action:manipulation!important;
-  }
-  .mobile-sheet-grid button.primary{background:linear-gradient(135deg,#ffd76c,#e7a91e)!important;color:#201307!important}
-  .mobile-sheet-grid button.blue{background:linear-gradient(135deg,#67d8ff,#4588ff)!important;color:#071426!important}
-  .mobile-sheet-grid button.green{background:#17652f!important;border-color:#2f9a52!important}
-  .mobile-sheet-status{margin-top:10px!important;padding:8px!important;border-radius:9px!important;background:#120d0a!important;color:#cdb892!important;font-size:11px!important}
-}
-</style>
 
 <div id="aiThinkingOverlay" class="ai-thinking-overlay" hidden>
   <div class="ai-thinking-card">
@@ -5092,106 +5055,66 @@ if(state.engineVerified&&state.rendererVerified){
 </div>
 
 
-<style id="build0225-unified-ui">
-/* Build022.5 Unified UI：手機使用同一套對局功能與單一 click 事件。 */
-#unifiedMobileBar{display:none}
-@media (max-width:700px){
-  html,body{min-height:100%;overflow-x:hidden!important}
-  body{padding-bottom:0!important}
-  .app{padding-bottom:0!important}
-  #unifiedMobileBar{
-    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;z-index:20!important;
-    gap:5px!important;padding:7px 7px calc(7px + env(safe-area-inset-bottom))!important;
-    background:#120d09!important;border-top:2px solid #a47731!important;
-    box-shadow:0 -4px 18px rgba(0,0,0,.45)!important;pointer-events:auto!important;contain:layout paint!important;
-  }
-  #unifiedMobileBar button{
-    display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
-    min-width:0!important;min-height:48px!important;padding:5px 2px!important;margin:0!important;
-    border:1px solid #7e5b2d!important;border-radius:10px!important;background:#2a1c13!important;
-    color:#fff!important;font-size:13px!important;font-weight:900!important;line-height:1.2!important;
-    touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;
-  }
-  #unifiedMobileBar button.primary{background:linear-gradient(135deg,#ffd76c,#d99617)!important;color:#1c1207!important}
-  #unifiedMobileBar button.blue{background:#164f73!important;border-color:#2c82b5!important}
-  #unifiedMobileBar button.green{background:#17652f!important;border-color:#329052!important}
-  #unifiedMobileBar button:active{transform:scale(.96)!important;filter:brightness(1.2)!important}
-  .player{padding-bottom:8px!important}
-  .game-action-row{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;min-height:0!important;height:auto!important}
-  .game-action-row button{display:block!important;visibility:visible!important;pointer-events:auto!important}
-  .move-tools,.controls,.range-row{position:relative!important;z-index:3!important}
-  .modal-backdrop{z-index:2147483600!important}
-  .modal-backdrop.open{display:flex!important}
-  #humanModal .modal{max-height:88dvh!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding-bottom:calc(20px + env(safe-area-inset-bottom))!important}
-}
-</style>
 
-<nav id="unifiedMobileBar" aria-label="手機完整對局功能列">
-  <button id="uNew" class="primary" type="button">＋<br>新局</button>
-  <button id="uUndo" type="button">↶<br>悔棋</button>
-  <button id="uPass" type="button">PASS<br>停一手</button>
-  <button id="uResign" type="button">投降</button>
-  <button id="uSituation" class="blue" type="button">％<br>形勢</button>
-  <button id="uScore" class="primary" type="button">終局計算</button>
-  <button id="uSave" class="green" type="button">SGF<br>存檔</button>
-  <button id="uHint" type="button">AI<br>提示</button>
+
+
+
+
+
+<nav id="rcGameBar" aria-label="Build023 RC1 對局功能列">
+  <button id="rcNew" class="primary" type="button">＋<br>新局</button>
+  <button id="rcUndo" type="button">↶<br>悔棋</button>
+  <button id="rcPass" type="button">PASS<br>停一手</button>
+  <button id="rcResign" type="button">投降</button>
+  <button id="rcSituation" class="blue" type="button">形勢判斷</button>
+  <button id="rcScore" class="primary" type="button">終局計算</button>
+  <button id="rcSave" class="green" type="button">SGF<br>存檔</button>
+  <button id="rcHint" type="button">AI<br>提示</button>
 </nav>
 
-<script id="build0225-unified-ui-script">
-(function(){
-  function byId(id){return document.getElementById(id)}
-  function clickOriginal(id){
-    var el=byId(id);
-    if(!el){return false}
-    el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
-    return true;
-  }
-  function bind(id,fn){
-    var el=byId(id); if(!el)return;
-    el.onclick=function(e){e.preventDefault();e.stopPropagation();fn();};
-  }
-  bind('uNew',function(){
-    var modal=byId('humanModal');
-    if(modal){modal.classList.add('open');document.body.style.overflow='hidden';}
-  });
-  bind('uUndo',function(){clickOriginal('undoGameBtn')});
-  bind('uPass',function(){clickOriginal('passGameBtn')});
-  bind('uResign',function(){clickOriginal('resignGameBtn')});
-  bind('uSituation',function(){clickOriginal('situationGameBtn')});
-  bind('uScore',function(){clickOriginal('scoreGameBtn')});
-  bind('uSave',function(){clickOriginal('saveSgfBtn')});
-  bind('uHint',function(){clickOriginal('hintToggleBtn')});
-  window.addEventListener('pageshow',function(){
-    var bar=byId('unifiedMobileBar');if(bar)bar.style.pointerEvents='auto';
-  });
-})();
-</script>
 
-
-<style id="build02252-refresh-stability">
-/* Build022.5.2：只保留一套手機操作列，避免重新整理後重複 DOM／事件。 */
-#mobileGameDock,#mobileMoreSheet,#mobileMoreBackdrop{display:none!important;pointer-events:none!important}
-@media (max-width:700px){
-  #unifiedMobileBar{contain:layout!important;isolation:isolate!important}
-}
-</style>
-<script id="build02252-singleton-refresh-fix">
+<script id="build023-rc1-controller">
 (function(){
   'use strict';
-  function cleanupLegacy(){
-    ['mobileGameDock','mobileMoreSheet','mobileMoreBackdrop'].forEach(function(id){
-      var n=document.getElementById(id); if(n)n.remove();
-    });
-    var bars=document.querySelectorAll('#unifiedMobileBar');
-    for(var i=1;i<bars.length;i++)bars[i].remove();
+  function id(x){return document.getElementById(x)}
+  function trigger(targetId){
+    var el=id(targetId); if(!el)return;
+    el.click();
   }
-  cleanupLegacy();
-  // 重新整理或從快取返回時，只恢復現有操作列，不重建棋盤與控制列。
+  function bind(buttonId,fn){
+    var b=id(buttonId); if(!b)return;
+    b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});
+  }
+  bind('rcNew',function(){
+    var m=id('humanModal');
+    if(m){m.classList.add('open');document.body.style.overflow='hidden';}
+    else trigger('newGameBtn');
+  });
+  bind('rcUndo',function(){trigger('undoGameBtn')});
+  bind('rcPass',function(){trigger('passGameBtn')});
+  bind('rcResign',function(){trigger('resignGameBtn')});
+  bind('rcSituation',function(){trigger('situationGameBtn')});
+  bind('rcScore',function(){trigger('scoreGameBtn')});
+  bind('rcSave',function(){trigger('saveSgfBtn')});
+  bind('rcHint',function(){trigger('hintToggleBtn')});
+
+  /* Exactly one delayed layout refresh after a real orientation change. No resize/scroll listener. */
+  var orientationTimer=0;
+  function refreshOnce(){
+    clearTimeout(orientationTimer);
+    orientationTimer=setTimeout(function(){
+      try{
+        if(typeof resizeBoard==='function')resizeBoard(true);
+        if(typeof syncUI==='function')syncUI();
+      }catch(_e){}
+    },360);
+  }
+  if(screen.orientation && screen.orientation.addEventListener){
+    screen.orientation.addEventListener('change',refreshOnce,{passive:true});
+  }else{
+    window.addEventListener('orientationchange',refreshOnce,{passive:true});
+  }
   window.addEventListener('pageshow',function(){
-    cleanupLegacy();
-    var bar=document.getElementById('unifiedMobileBar');
-    if(bar){bar.style.pointerEvents='auto';bar.style.display='';}
     document.body.style.overflow='';
   },{passive:true});
 })();
