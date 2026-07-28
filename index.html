@@ -2306,7 +2306,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build022.4 Professional Stable RC2</p>
+  <p>版本：Build022.4 Professional Stable RC3</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2550,7 +2550,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <script>
 "use strict";
-const APP_VERSION="20260728-0224-RC2";
+const APP_VERSION="20260728-0224-RC3";
 
 const $=id=>document.getElementById(id);
 
@@ -3320,7 +3320,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.4-RC1]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.4-RC3]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -4472,6 +4472,10 @@ function estimateTerritory(snapshot){
   }
   return {blackTerritory,whiteTerritory,neutral};
 }
+function currentSnapshot(){
+  // RC3：統一取得目前棋盤快照，避免 Safari 出現 currentSnapshot 未定義。
+  return state.currentSnapshot||activateSnapshot(state.index);
+}
 function localStoneEstimate(){
   const snap=currentSnapshot();
   const territory=estimateTerritory(snap);
@@ -4518,7 +4522,7 @@ function showResultModal(data){
 }
 
 async function calculateGameResult(){
-  // RC2：先用本機估算立即顯示結果，避免等待雲端 KataGo 時按鈕看似無反應。
+  // RC3：修正 currentSnapshot 未定義；先用目前棋盤快照做本機估算。
   let local;
   try{
     local=localStoneEstimate();
@@ -4609,7 +4613,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.4-RC1]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.4-RC3]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");

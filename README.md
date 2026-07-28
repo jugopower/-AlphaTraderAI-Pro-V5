@@ -1,9 +1,10 @@
-# Build022.4 Professional Stable RC2
+# Build022.4 Professional Stable RC3
 
 修正重點：
-- 「計算勝負」按下後立即顯示本機估算結果，不再等待 KataGo 連線。
-- KataGo 改為背景更新，8 秒逾時後保留本機結果。
-- 強化 iPad Safari 的 click／touchend 按鈕事件。
-- 計算錯誤時顯示明確訊息，不再完全無反應。
+- 修正「計算勝負」出現 `Can't find variable: currentSnapshot` 的錯誤。
+- 新增統一的目前棋盤快照取得函式。
+- 本機勝負估算若快照缺失，會重新建立目前局面，不再中斷。
+- 保留 RC2 的立即顯示結果與 KataGo 背景更新機制。
+- SGF 版本資訊更新為 Build022.4 RC3。
 
-請在 iPad Safari 實機測試，尚未宣稱所有情境均已驗證。
+請在 iPad Safari 實機測試；尚未宣稱所有終局局面均已驗證。
