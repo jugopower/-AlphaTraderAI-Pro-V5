@@ -1,7 +1,9 @@
-# Build022.4 Professional Stable RC4
+AlphaTrader AI Pro V5 — Build022.4 Professional Stable RC5
 
-本版修正 KataGo 勝率黑白方向顛倒問題。當目差顯示黑方領先、勝率卻顯示白方極高時，程式會依 scoreLead 自動校正勝率方向，避免勝負與勝率互相矛盾。
+本版修正 iPad／平板直式畫面：
+- 縮短棋盤與計時器、功能鍵之間的多餘空白
+- 棋盤下緣改為貼近計時器區
+- 計時器高度略縮，操作區更緊湊
+- 橫式版維持 RC4 版面，不做變更
 
-同時保留 RC3 的計算勝負彈窗、currentSnapshot 修正、本機估算與 KataGo 背景更新。
-
-請在 iPad 與手機 Safari 實機測試。
+請上傳 index.html 後，以 iPad Safari 直式與橫式各測試一次。
