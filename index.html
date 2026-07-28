@@ -2306,7 +2306,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build022.4 Professional Stable RC3</p>
+  <p>版本：Build022.4 Professional Stable RC4</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2701,6 +2701,18 @@ function parseCloudAnalysis(raw){
   let scoreLead=Number(data.scoreLead ?? data.score_lead ?? root.scoreLead ?? root.score_lead ?? 0);
   if(!Number.isFinite(scoreLead))scoreLead=0;
 
+  // RC4：KataGo 後端的 winrate 欄位有時代表「目前手番」而非固定黑方。
+  // 以黑方視角的 scoreLead 做一致性校正，避免顯示「黑勝很多但白勝率 99%」。
+  let winrateColorCorrected=false;
+  if(Math.abs(scoreLead)>=0.5){
+    const winnerByScore=scoreLead>0?"B":"W";
+    const winnerByRate=blackWin>=50?"B":"W";
+    if(winnerByScore!==winnerByRate){
+      blackWin=100-blackWin;
+      winrateColorCorrected=true;
+    }
+  }
+
   const infos=
     data.moveInfos ||
     data.move_infos ||
@@ -2802,7 +2814,8 @@ function parseCloudAnalysis(raw){
     source:"katago",
     visits:Number(root.visits ?? data.visits ?? 0),
     ownership:Array.isArray(data.ownership)?data.ownership:null,
-    raw:data
+    raw:data,
+    winrateColorCorrected
   };
 }
 
@@ -4522,7 +4535,7 @@ function showResultModal(data){
 }
 
 async function calculateGameResult(){
-  // RC3：修正 currentSnapshot 未定義；先用目前棋盤快照做本機估算。
+  // RC4：修正勝率黑白方向，並保留 currentSnapshot 修正；先用目前棋盤快照做本機估算。
   let local;
   try{
     local=localStoneEstimate();
@@ -4562,7 +4575,7 @@ async function calculateGameResult(){
       finalLead,
       blackLabel:`勝率 ${Number(analysis.blackWin||0).toFixed(1)}%`,
       whiteLabel:`勝率 ${Number(analysis.whiteWin||0).toFixed(1)}%`,
-      detail:`KataGo 最終形勢判定（主要結果）\n黑勝率：${Number(analysis.blackWin||0).toFixed(1)}%\n白勝率：${Number(analysis.whiteWin||0).toFixed(1)}%\n盤面差（未扣貼目）：${rawLead===0?"盤面相同":`${rawLead>0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目`}\n貼目：白加 ${komi.toFixed(1)} 目\n最終結果：${finalLead===0?"和棋":`${finalLead>0?"黑":"白"}勝 ${Math.abs(finalLead).toFixed(1)} 目`}\n\n本機地盤參考（未標記死子）\n黑地＋提子：${local.black.toFixed(1)} 目\n白地＋提子：${local.whiteRaw.toFixed(1)} 目\n中立點：${local.neutral} 目\n提醒：終局前請先確認死子，正式比賽結果以雙方確認為準。`
+      detail:`KataGo 最終形勢判定（主要結果）\n黑勝率：${Number(analysis.blackWin||0).toFixed(1)}%\n白勝率：${Number(analysis.whiteWin||0).toFixed(1)}%${analysis.winrateColorCorrected?"\n（已依目差自動校正黑白勝率方向）":""}\n盤面差（未扣貼目）：${rawLead===0?"盤面相同":`${rawLead>0?"黑":"白"}領先 ${Math.abs(rawLead).toFixed(1)} 目`}\n貼目：白加 ${komi.toFixed(1)} 目\n最終結果：${finalLead===0?"和棋":`${finalLead>0?"黑":"白"}勝 ${Math.abs(finalLead).toFixed(1)} 目`}\n\n本機地盤參考（未標記死子）\n黑地＋提子：${local.black.toFixed(1)} 目\n白地＋提子：${local.whiteRaw.toFixed(1)} 目\n中立點：${local.neutral} 目\n提醒：終局前請先確認死子，正式比賽結果以雙方確認為準。`
     };
     if($("resultModal")?.classList.contains("open"))showResultModal(cloudData);
   }catch(err){
