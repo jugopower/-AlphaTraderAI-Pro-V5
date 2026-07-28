@@ -2246,10 +2246,12 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 #trialModeBar{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:8px 10px;margin:6px 0;border:2px solid #1976d2;border-radius:12px;background:#eaf4ff;color:#0d47a1;font-weight:800}
 #trialModeBar button{min-height:38px;padding:7px 14px;border-radius:9px;border:1px solid #1976d2;background:#fff;color:#0d47a1;font-weight:800}
 #trialModeBar .apply{background:#1976d2;color:#fff}
+#trialModeBar select{min-height:38px;padding:6px 9px;border:1px solid #1976d2;border-radius:9px;background:#fff;color:#0d47a1;font-weight:800}
+#trialBranchInfo{font-size:13px;white-space:nowrap}
 body.trial-mode #trialModeBar{display:flex}
 body.trial-mode .board-wrap{outline:4px solid #2196f3;outline-offset:-4px;border-radius:12px}
 body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
-@media (max-width:700px){#trialModeBar{gap:5px;padding:6px}#trialModeBar button{padding:6px 9px;font-size:14px}}
+@media (max-width:700px){#trialModeBar{gap:5px;padding:6px;margin:4px 0}#trialModeBar button,#trialModeBar select{min-height:34px;padding:5px 8px;font-size:13px}#trialModeBar>span:first-child{width:100%;text-align:center}}
 </style>
 </head>
 <body>
@@ -2330,6 +2332,13 @@ body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
       <button class="apply" id="trialApplyBtn" type="button">✓ 套用</button>
       <button id="trialResetBtn" type="button">↺ 重設</button>
       <button id="trialCancelBtn" type="button">✕ 取消</button>
+      <select id="trialBranchSelect" aria-label="變化分支">
+        <option value="A">分支 A</option><option value="B">分支 B</option><option value="C">分支 C</option>
+      </select>
+      <button id="trialBranchSaveBtn" type="button">儲存分支</button>
+      <button id="trialBranchLoadBtn" type="button">載入分支</button>
+      <button id="trialBranchDeleteBtn" type="button">刪除分支</button>
+      <span id="trialBranchInfo">A：空｜B：空｜C：空</span>
     </div>
     <div class="range-row"><input id="moveSlider" type="range" min="0" max="0" value="0"><span id="sliderText">0 / 0</span></div>
   </section>
@@ -2623,7 +2632,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:""
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:""
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -4000,6 +4009,11 @@ function syncUI(){
   $("statusText").textContent=state.trialMode?"試下中":(state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命"));
   document.body.classList.toggle("trial-mode",!!state.trialMode);
   const trialBtn=$("trialModeBtn");if(trialBtn)trialBtn.textContent=state.trialMode?"試下中":"🧪 試下";
+  const branchInfo=$("trialBranchInfo");
+  if(branchInfo){
+    const tb=state.trialBranches||{};
+    branchInfo.textContent=["A","B","C"].map(k=>tb[k]?`${k}：${tb[k].moves?.length||0}手`:`${k}：空`).join("｜");
+  }
   const levelNames={entry:"入門",beginner:"初級",advanced:"高級",dan13:"1-3段",highdan:"高段",pro:"職業"};
   if($("handicapText"))$("handicapText").textContent=state.handicap>0?`讓${state.handicap}子`:"分先";
   if($("aiLevelText"))$("aiLevelText").textContent=levelNames[state.aiLevel]||"初段";
@@ -4134,7 +4148,7 @@ $("loadPasteBtn").onclick=()=>{
 };
 $("newGameBtn").onclick=()=>{
   stopGameClock();state.aiRequestToken++;setAiThinking(false);
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
@@ -4812,6 +4826,8 @@ function startTrialMode(){
   state.aiRequestToken++;setAiThinking(false);
   state.trialBackup=cloneTrialState();state.trialBaseIndex=state.index;
   state.trialOriginalMovesJSON=JSON.stringify(state.moves||[]);
+  const newBranchKey=JSON.stringify({size:state.size,index:state.index,moves:(state.moves||[]).slice(0,state.index)});
+  if(state.trialBranchBaseKey!==newBranchKey){state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey=newBranchKey;}
   state.trialMode=true;
   state.hintPoints=[];state.hintBadPoint=null;state.analysis=null;
   syncUI();toast(`已從第 ${state.trialBaseIndex} 手開始試下`);
@@ -4834,17 +4850,49 @@ function resetTrialMode(){
 function applyTrialMode(){
   if(!state.trialMode||!state.trialBackup){toast("目前沒有試下內容");return;}
   const added=Math.max(0,state.index-state.trialBaseIndex),resume=state.trialWasClockRunning;
-  state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";
+  state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";
   state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.gameEnded=false;state.consecutivePasses=0;
   syncUI();
   if(resume&&state.humanMode&&state.index===state.moves.length)startGameClock();
   if(state.humanMode&&state.turn!==state.humanColor)scheduleLocalAiMove(350);
   toast(added?`已將 ${added} 手試下內容套用到正式棋譜`:"沒有新增試下手順");
 }
+function selectedTrialBranch(){return ($("trialBranchSelect")?.value||"A").toUpperCase();}
+function saveTrialBranch(){
+  if(!state.trialMode||!state.trialBackup){toast("請先進入試下模式");return;}
+  const slot=selectedTrialBranch(),base=state.trialBaseIndex;
+  const moves=JSON.parse(JSON.stringify((state.moves||[]).slice(base,state.index)));
+  if(!moves.length){toast("目前沒有可儲存的試下手順");return;}
+  state.trialBranches=state.trialBranches||{A:null,B:null,C:null};
+  state.trialBranches[slot]={moves,createdAt:Date.now()};
+  syncUI();toast(`已儲存分支 ${slot}（${moves.length} 手）`);
+}
+function loadTrialBranch(){
+  if(!state.trialMode||!state.trialBackup){toast("請先進入試下模式");return;}
+  const slot=selectedTrialBranch(),branch=state.trialBranches?.[slot];
+  if(!branch?.moves?.length){toast(`分支 ${slot} 尚未儲存`);return;}
+  const base=state.trialBaseIndex;
+  restoreTrialBasePosition(true);
+  state.moves=(state.moves||[]).slice(0,base).concat(JSON.parse(JSON.stringify(branch.moves)));
+  state.index=state.moves.length;
+  state.turn=state.index>0?(state.moves[state.index-1]?.c==="B"?"W":"B"):(state.handicap>0?"W":"B");
+  state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";state.bestPoint=null;
+  forceBoardRebuild("trial-branch-load");syncUI();stopGameClock();
+  toast(`已載入分支 ${slot}（${branch.moves.length} 手）`);
+}
+function deleteTrialBranch(){
+  const slot=selectedTrialBranch();
+  if(!state.trialBranches?.[slot]){toast(`分支 ${slot} 目前是空的`);return;}
+  state.trialBranches[slot]=null;syncUI();toast(`已刪除分支 ${slot}`);
+}
+
 $("trialModeBtn").onclick=startTrialMode;
 $("trialApplyBtn").onclick=applyTrialMode;
 $("trialResetBtn").onclick=resetTrialMode;
 $("trialCancelBtn").onclick=cancelTrialMode;
+$("trialBranchSaveBtn").onclick=saveTrialBranch;
+$("trialBranchLoadBtn").onclick=loadTrialBranch;
+$("trialBranchDeleteBtn").onclick=deleteTrialBranch;
 
 function undoGameMove(){
   if(state.aiThinking){
@@ -4947,7 +4995,7 @@ document.querySelectorAll(".clock-preset").forEach(btn=>btn.addEventListener("cl
 $("byoTime").addEventListener("change",()=>{$("customByoWrap").hidden=$("byoTime").value!=="custom";});
 
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
   state.komi=Number($("gameKomi").value||0);
@@ -5143,7 +5191,7 @@ state.rendererVerified=verifySnapshotRenderer();
 syncUI();
 if(state.engineVerified&&state.rendererVerified){
   $("engineText").textContent="規則正常";
-  toast("Build022.5.1 試下取消／重設修正版 已啟動");
+  toast("Build022.6 多分支試下版 已啟動");
 }else{
   $("engineText").textContent="引擎異常";$("rendererText").textContent="同步異常";
   toast("規則引擎自我測試失敗");
