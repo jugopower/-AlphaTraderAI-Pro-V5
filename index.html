@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build022.5 Professional Variation Edition</title>
+<title>AlphaTrader AI Pro V5｜Build023.0 RC1 Professional Scoring Edition</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2252,6 +2252,18 @@ body.trial-mode #trialModeBar{display:flex}
 body.trial-mode .board-wrap{outline:4px solid #2196f3;outline-offset:-4px;border-radius:12px}
 body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
 @media (max-width:700px){#trialModeBar{gap:5px;padding:6px;margin:4px 0}#trialModeBar button,#trialModeBar select{min-height:34px;padding:5px 8px;font-size:13px}#trialModeBar>span:first-child{width:100%;text-align:center}}
+
+/* Build023.0 RC1 正式終局判定 */
+body.scoring-mode .board-wrap{outline:5px solid #e5484d;outline-offset:-5px;border-radius:12px}
+#scoringModeBar{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:9px 10px;margin-top:8px;border:1px solid #ad3438;border-radius:12px;background:linear-gradient(135deg,#351416,#1d1010);color:#fff}
+body.scoring-mode #scoringModeBar{display:flex}
+#scoringModeBar strong{color:#ffd36a}
+#scoringModeBar button{min-height:38px;padding:7px 14px}
+#scoringConfirmBtn{background:linear-gradient(135deg,#ffd76c,#e8a91f)!important;color:#1a1108!important;font-weight:800}
+#scoringCancelBtn{background:#4a2020!important;color:#fff!important}
+.scoring-help{font-size:12px;color:#f2d9d9;width:100%;text-align:center}
+@media(max-width:700px){#scoringModeBar{gap:5px;padding:7px}#scoringModeBar button{min-height:34px;padding:5px 9px;font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -2260,7 +2272,7 @@ body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build022.5 Professional Variation Edition</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC1 Professional Scoring Edition</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2316,7 +2328,7 @@ body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
     </div>
     <div class="game-action-row" id="gameActionRow">
       <button id="undoGameBtn">悔棋</button>
-      <button id="scoreGameBtn">計算勝負</button>
+      <button id="scoreGameBtn">正式數地</button>
       <button id="passGameBtn">Pass</button>
       <button id="resignGameBtn">投降</button>
       <button id="saveSgfBtn">存檔 SGF</button>
@@ -2339,6 +2351,14 @@ body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
       <button id="trialBranchLoadBtn" type="button">載入分支</button>
       <button id="trialBranchDeleteBtn" type="button">刪除分支</button>
       <span id="trialBranchInfo">A：空｜B：空｜C：空</span>
+    </div>
+    <div id="scoringModeBar" role="status" aria-live="polite">
+      <strong>⚖️ 確認死子模式</strong>
+      <span id="scoringDeadInfo">已標記：黑死子 0｜白死子 0</span>
+      <button id="scoringClearBtn" type="button">清除標記</button>
+      <button id="scoringConfirmBtn" type="button">正式計算</button>
+      <button id="scoringCancelBtn" type="button">取消</button>
+      <span class="scoring-help">請點擊死棋，整塊棋會一起標記；再次點擊可取消。</span>
     </div>
     <div class="range-row"><input id="moveSlider" type="range" min="0" max="0" value="0"><span id="sliderText">0 / 0</span></div>
   </section>
@@ -2369,7 +2389,7 @@ body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build022.4 Professional Stable RC4</p>
+  <p>版本：Build023.0 RC1 Professional Scoring Edition</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2632,7 +2652,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:""
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3908,6 +3928,20 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
       ctx.beginPath();ctx.arc(cx,cy,r*.78,0,Math.PI*2);ctx.stroke();
     }
   }
+  // Build023.0 RC1：正式數地時，以半透明紅色與叉號標示死子。
+  if(state.scoringMode && state.scoringDead && state.scoringDead.size){
+    for(const key of state.scoringDead){
+      const [x,y]=key.split(",").map(Number);
+      const c=board[y]?.[x];if(!c)continue;
+      const cx=pad+x*step,cy=pad+y*step,r=step*.43;
+      ctx.save();
+      ctx.fillStyle="rgba(210,35,42,.40)";ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle="#ffdfdf";ctx.lineWidth=Math.max(3,step*.085);ctx.lineCap="round";
+      ctx.beginPath();ctx.moveTo(cx-r*.48,cy-r*.48);ctx.lineTo(cx+r*.48,cy+r*.48);ctx.moveTo(cx+r*.48,cy-r*.48);ctx.lineTo(cx-r*.48,cy+r*.48);ctx.stroke();
+      ctx.restore();
+    }
+  }
+
   // Build021.28 AI 對局提示：放大前三推薦點與惡手標記
   if(state.humanMode && state.hintEnabled){
     const hintColors=["rgba(30,170,70,.95)","rgba(105,205,120,.82)","rgba(175,235,180,.72)"];
@@ -4495,9 +4529,9 @@ function registerPassAndCheckEnd(){
   if(state.consecutivePasses>=2){
     stopAndLockAfterScoring();
     setTimeout(async()=>{
-      const shouldScore=confirm("雙方連續 Pass，對局結束。\n\n是否立即計算勝負？");
+      const shouldScore=confirm("雙方連續 Pass，對局結束。\n\n是否進入『確認死子』正式數地？");
       if(shouldScore){
-        await calculateGameResult();
+        startFormalScoring();
       }else{
         toast("對局已結束，可按『計算勝負』查看結果");
       }
@@ -4533,6 +4567,81 @@ function humanGameResign(){
   if(state.timer){clearInterval(state.timer);state.timer=null;}
   syncUI();
   alert(humanName+"投降，"+aiName+"（AI）勝。");
+}
+
+
+function scoringKey(x,y){return `${x},${y}`;}
+function getStoneGroup(board,x,y){
+  const color=board[y]?.[x];if(!color)return [];
+  const out=[],seen=new Set([scoringKey(x,y)]),stack=[[x,y]];
+  while(stack.length){
+    const [cx,cy]=stack.pop();out.push([cx,cy]);
+    for(const [nx,ny] of neighbors(cx,cy,state.size)){
+      const k=scoringKey(nx,ny);
+      if(!seen.has(k)&&board[ny][nx]===color){seen.add(k);stack.push([nx,ny]);}
+    }
+  }
+  return out;
+}
+function scoringDeadCounts(){
+  const snap=currentSnapshot();let black=0,white=0;
+  for(const key of state.scoringDead||[]){
+    const [x,y]=key.split(",").map(Number),c=snap.board[y]?.[x];
+    if(c==="B")black++;else if(c==="W")white++;
+  }
+  return {black,white};
+}
+function updateScoringInfo(){
+  const c=scoringDeadCounts();
+  if($("scoringDeadInfo"))$("scoringDeadInfo").textContent=`已標記：黑死子 ${c.black}｜白死子 ${c.white}`;
+}
+function startFormalScoring(){
+  if(state.trialMode){toast("請先套用或取消試下");return;}
+  state.scoringMode=true;state.scoringDead=new Set();
+  state.scoringWasClockRunning=!!state.clockRunning;
+  state.scoringBackup={gameEnded:state.gameEnded};
+  state.clockRunning=false;stopGameClock();state.aiRequestToken++;setAiThinking(false);
+  document.body.classList.add("scoring-mode");
+  updateScoringInfo();drawBoard(currentSnapshot());
+  toast("請點擊死子，整塊棋會一起標記");
+}
+function exitFormalScoring(restoreClock=false){
+  state.scoringMode=false;state.scoringDead=new Set();document.body.classList.remove("scoring-mode");
+  if(restoreClock && state.scoringWasClockRunning && !state.gameEnded){startGameClock();}
+  updateScoringInfo();drawBoard(currentSnapshot());
+}
+function toggleDeadGroupAt(x,y){
+  const snap=currentSnapshot(),group=getStoneGroup(snap.board,x,y);if(!group.length){toast("此處沒有棋子");return;}
+  const allMarked=group.every(([gx,gy])=>state.scoringDead.has(scoringKey(gx,gy)));
+  for(const [gx,gy] of group){const k=scoringKey(gx,gy);if(allMarked)state.scoringDead.delete(k);else state.scoringDead.add(k);}
+  updateScoringInfo();drawBoard(snap);
+}
+function handleScoringBoardInput(e){
+  const now=Date.now();if(now-lastBoardInputAt<250)return;lastBoardInputAt=now;if(e.cancelable)e.preventDefault();
+  const rect=canvas.getBoundingClientRect(),css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
+  const localX=(e.clientX-rect.left)*(css/rect.width),localY=(e.clientY-rect.top)*(css/rect.height);
+  const pad=css*(state.showCoords?0.085:0.055),step=(css-pad*2)/(state.size-1);
+  let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step),tol=step*.62;
+  if(localX<pad-tol||localX>css-pad+tol||localY<pad-tol||localY>css-pad+tol)return;
+  x=Math.max(0,Math.min(state.size-1,x));y=Math.max(0,Math.min(state.size-1,y));toggleDeadGroupAt(x,y);
+}
+function formalJapaneseScore(){
+  const snap=currentSnapshot(),board=clonePosition(snap.board);let deadBlack=0,deadWhite=0;
+  for(const key of state.scoringDead){const [x,y]=key.split(",").map(Number),c=board[y]?.[x];if(c==="B")deadBlack++;else if(c==="W")deadWhite++;if(c)board[y][x]=null;}
+  const territory=estimateTerritory({board});
+  const blackCaptures=Number(snap.blackCaptures||0)+deadWhite;
+  const whiteCaptures=Number(snap.whiteCaptures||0)+deadBlack;
+  const black=territory.blackTerritory+blackCaptures;
+  const whiteRaw=territory.whiteTerritory+whiteCaptures;
+  const komi=Number(state.komi||0),finalLead=black-(whiteRaw+komi),rawLead=black-whiteRaw;
+  return {black,whiteRaw,komi,finalLead,rawLead,deadBlack,deadWhite,blackCaptures,whiteCaptures,...territory};
+}
+function confirmFormalScoring(){
+  const r=formalJapaneseScore();
+  state.gameEnded=true;stopAndLockAfterScoring();
+  exitFormalScoring(false);
+  showResultModal({black:r.black,white:r.whiteRaw,komi:r.komi,rawLead:r.rawLead,finalLead:r.finalLead,
+    detail:`正式數地（日本規則・雙方確認死子）\n黑地：${r.blackTerritory} 目\n黑方原提子＋白死子：${r.blackCaptures} 顆（白死子 ${r.deadWhite}）\n黑方合計：${r.black.toFixed(1)} 目\n\n白地：${r.whiteTerritory} 目\n白方原提子＋黑死子：${r.whiteCaptures} 顆（黑死子 ${r.deadBlack}）\n白方盤面合計：${r.whiteRaw.toFixed(1)} 目\n貼目：白加 ${r.komi.toFixed(1)} 目\n中立點：${r.neutral} 目\n\n正式結果：${r.finalLead===0?"和棋":`${r.finalLead>0?"黑":"白"}勝 ${Math.abs(r.finalLead).toFixed(1)} 目`}\n提醒：本結果依您標記的死子計算；若死活仍有爭議，請回棋盤續弈。`});
 }
 
 function estimateTerritory(snapshot){
@@ -4947,8 +5056,8 @@ $("undoGameBtn").onclick=undoGameMove;
     if(e){e.preventDefault();e.stopPropagation();}
     if(scoreBusy)return;
     scoreBusy=true;
-    try{await calculateGameResult();}
-    catch(err){console.error("計算勝負按鈕錯誤",err);alert("計算勝負失敗：\n"+(err?.message||err));}
+    try{startFormalScoring();}
+    catch(err){console.error("正式數地按鈕錯誤",err);alert("開啟正式數地失敗：\n"+(err?.message||err));}
     finally{scoreBusy=false;}
   };
   scoreBtn.onclick=runScore;
@@ -5032,6 +5141,7 @@ $("startHumanBtn").onclick=()=>{
 };
 let lastBoardInputAt=0;
 function handleBoardInput(e){
+  if(state.scoringMode){handleScoringBoardInput(e);return;}
   if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
   if(state.aiThinking||state.gameEnded)return;
   const now=Date.now();if(now-lastBoardInputAt<280)return;lastBoardInputAt=now;
@@ -5089,6 +5199,11 @@ if(window.PointerEvent){
   canvas.addEventListener('touchend',e=>{const t=e.changedTouches&&e.changedTouches[0];if(t)handleBoardInput({clientX:t.clientX,clientY:t.clientY,cancelable:true,preventDefault:()=>e.preventDefault()});},{passive:false});
   canvas.addEventListener('click',handleBoardInput);
 }
+
+
+if($("scoringClearBtn"))$("scoringClearBtn").onclick=()=>{state.scoringDead=new Set();updateScoringInfo();drawBoard(currentSnapshot());toast("已清除死子標記");};
+if($("scoringCancelBtn"))$("scoringCancelBtn").onclick=()=>{const wasEnded=state.scoringBackup?.gameEnded;state.gameEnded=!!wasEnded;exitFormalScoring(true);toast("已取消正式數地");};
+if($("scoringConfirmBtn"))$("scoringConfirmBtn").onclick=confirmFormalScoring;
 
 $("saveApiBtn").onclick=()=>{
   saveApiSettings();
