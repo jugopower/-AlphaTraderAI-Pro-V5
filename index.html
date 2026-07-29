@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build023.0 RC2.1 Professional Scoring UI Fix</title>
+<title>AlphaTrader AI Pro V5｜Build023.0 RC3.1 Professional Scoring UI Fix</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -468,6 +468,11 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 /* Build022.3.2 mobile board stabilization */
 #board{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:contain}
 @media (pointer:coarse){#board{touch-action:none}button,select,input{touch-action:manipulation}}
+
+#scoringModeBar .scoring-point-info{
+  flex:1 1 100%;padding:8px 12px;border:1px solid rgba(255,255,255,.22);border-radius:10px;
+  background:rgba(0,0,0,.24);color:#fff4d5;font-weight:700;line-height:1.35;
+}
 </style>
 
 <style id="build0214-fix">
@@ -2253,7 +2258,7 @@ body.trial-mode .board-wrap{outline:4px solid #2196f3;outline-offset:-4px;border
 body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
 @media (max-width:700px){#trialModeBar{gap:5px;padding:6px;margin:4px 0}#trialModeBar button,#trialModeBar select{min-height:34px;padding:5px 8px;font-size:13px}#trialModeBar>span:first-child{width:100%;text-align:center}}
 
-/* Build023.0 RC2 正式終局判定 */
+/* Build023.0 RC3 正式終局判定 */
 body.scoring-mode .board-wrap{outline:5px solid #e5484d;outline-offset:-5px;border-radius:12px}
 #scoringModeBar{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:2px solid #e5484d;border-radius:14px;background:linear-gradient(135deg,#351416,#1d1010);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.55)}
 body.scoring-mode #scoringModeBar{display:flex;position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;width:min(720px,calc(100vw - 24px))}
@@ -2276,7 +2281,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC2.1 Professional Scoring UI Fix</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC3.1 Professional Scoring UI Fix</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2364,6 +2369,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
       <button id="scoringConfirmBtn" type="button">正式計算</button>
       <button id="scoringCancelBtn" type="button">取消</button>
       <span id="scoringVerifyInfo">黑地 0｜白地 0｜單官 0</span>
+      <span id="scoringPointInfo" class="scoring-point-info">逐點檢查：開啟驗證後，點空點即可查看座標與判定。</span>
       <span class="scoring-help">請點擊死棋；開啟驗證後，藍點＝黑地、紅點＝白地、灰點＝單官。</span>
     </div>
     <div class="range-row"><input id="moveSlider" type="range" min="0" max="0" value="0"><span id="sliderText">0 / 0</span></div>
@@ -2395,7 +2401,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build023.0 RC2.1 Professional Scoring UI Fix</p>
+  <p>版本：Build023.0 RC3.1 Professional Scoring UI Fix</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -3934,7 +3940,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
       ctx.beginPath();ctx.arc(cx,cy,r*.78,0,Math.PI*2);ctx.stroke();
     }
   }
-  // Build023.0 RC2：數地驗證著色。藍＝黑地、紅＝白地、灰＝單官。
+  // Build023.0 RC3：數地驗證著色。藍＝黑地、紅＝白地、灰＝單官。
   if(state.scoringMode && state.scoringVerify && state.scoringTerritoryMap){
     for(const cell of state.scoringTerritoryMap.cells||[]){
       const cx=pad+cell.x*step,cy=pad+cell.y*step;
@@ -3945,7 +3951,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     }
   }
 
-  // Build023.0 RC2：正式數地時，以半透明紅色與叉號標示死子。
+  // Build023.0 RC3：正式數地時，以半透明紅色與叉號標示死子。
   if(state.scoringMode && state.scoringDead && state.scoringDead.size){
     for(const key of state.scoringDead){
       const [x,y]=key.split(",").map(Number);
@@ -4636,6 +4642,29 @@ function toggleDeadGroupAt(x,y){
   for(const [gx,gy] of group){const k=scoringKey(gx,gy);if(allMarked)state.scoringDead.delete(k);else state.scoringDead.add(k);}
   updateScoringInfo();if(state.scoringVerify)refreshScoringVerification();else drawBoard(snap);
 }
+function scoringCoordinateLabel(x,y){
+  return `${coordLetters[x]||"?"}${state.size-y}`;
+}
+function inspectScoringPoint(x,y){
+  if(!state.scoringVerify||!state.scoringTerritoryMap)return false;
+  const board=scoringBoardWithoutDead();
+  const info=$("scoringPointInfo");
+  const coord=scoringCoordinateLabel(x,y);
+  if(board[y]?.[x]){
+    const color=board[y][x]==="B"?"黑棋":"白棋";
+    if(info)info.textContent=`${coord}：${color}（棋子位置；點擊可標記或取消整塊死子）`;
+    return false;
+  }
+  const cell=(state.scoringTerritoryMap.cells||[]).find(c=>c.x===x&&c.y===y);
+  const owner=cell?.owner||"N";
+  const label=owner==="B"?"黑地":owner==="W"?"白地":"單官";
+  const boardNow=scoringBoardWithoutDead(),dirs=[[1,0],[-1,0],[0,1],[0,-1]],touch=new Set();
+  for(const [dx,dy] of dirs){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<state.size&&ny<state.size){const v=boardNow[ny][nx];if(v)touch.add(v);}}
+  const reason=owner==="B"?"此空區只接觸黑棋":owner==="W"?"此空區只接觸白棋":"此空區同時接觸黑白，或未被單方完整包圍";
+  if(info)info.textContent=`${coord}：${label}｜${reason}`;
+  toast(`${coord}：${label}`);
+  return true;
+}
 function handleScoringBoardInput(e){
   const now=Date.now();if(now-lastBoardInputAt<250)return;lastBoardInputAt=now;if(e.cancelable)e.preventDefault();
   const rect=canvas.getBoundingClientRect(),css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
@@ -4643,7 +4672,10 @@ function handleScoringBoardInput(e){
   const pad=css*(state.showCoords?0.085:0.055),step=(css-pad*2)/(state.size-1);
   let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step),tol=step*.62;
   if(localX<pad-tol||localX>css-pad+tol||localY<pad-tol||localY>css-pad+tol)return;
-  x=Math.max(0,Math.min(state.size-1,x));y=Math.max(0,Math.min(state.size-1,y));toggleDeadGroupAt(x,y);
+  x=Math.max(0,Math.min(state.size-1,x));y=Math.max(0,Math.min(state.size-1,y));
+  const snap=currentSnapshot();
+  if(state.scoringVerify && !snap.board[y]?.[x]){inspectScoringPoint(x,y);return;}
+  toggleDeadGroupAt(x,y);
 }
 function scoringBoardWithoutDead(){
   const snap=currentSnapshot(),board=clonePosition(snap.board);
@@ -4661,7 +4693,10 @@ function toggleScoringVerification(){
   if(!state.scoringMode)return;
   state.scoringVerify=!state.scoringVerify;document.body.classList.toggle("scoring-verify",state.scoringVerify);
   const btn=$("scoringVerifyBtn");if(btn)btn.textContent=state.scoringVerify?"關閉驗證":"🔍 驗證數地";
-  refreshScoringVerification();toast(state.scoringVerify?"已開啟數地驗證：藍黑地、紅白地、灰單官":"已關閉數地驗證");
+  refreshScoringVerification();
+  const pointInfo=$("scoringPointInfo");
+  if(pointInfo)pointInfo.textContent=state.scoringVerify?"逐點檢查：請點棋盤上的藍、紅或灰色空點。":"逐點檢查：開啟驗證後，點空點即可查看座標與判定。";
+  toast(state.scoringVerify?"已開啟數地驗證：點空點可查看判定":"已關閉數地驗證");
 }
 function formalJapaneseScore(){
   const snap=currentSnapshot(),board=clonePosition(snap.board);let deadBlack=0,deadWhite=0;
