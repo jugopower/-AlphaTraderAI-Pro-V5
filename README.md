@@ -1,4 +1,4 @@
-# AlphaTrader AI Pro V5 — Build024.3 Real KataGo
+# AlphaTrader AI Pro V5 — Build024.3.1 Real KataGo
 
 ## 本版重點
 
@@ -19,3 +19,9 @@
 ## 重要限制
 
 本 ZIP 是前端完整部署版。Render 服務本身必須已部署可運作的 KataGo API，並允許 GitHub Pages 網域的 CORS 請求。若 Render 後端未啟動、網址錯誤或 API JSON 規格不符，前端會顯示連線失敗，不會偽造分析結果。
+
+
+## API 422 修正
+- `moves` 改為 Render FastAPI 要求的字串陣列格式，例如 `"B G7"`。
+- 保留 `movePairs` 與 `moveObjects` 作為相容欄位。
+- 修正錯誤：`Input should be a valid string`。
