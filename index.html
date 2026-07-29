@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build023.0 RC1.1.1 Professional Scoring UI Fix</title>
+<title>AlphaTrader AI Pro V5｜Build023.0 RC2.1 Professional Scoring UI Fix</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2253,7 +2253,7 @@ body.trial-mode .board-wrap{outline:4px solid #2196f3;outline-offset:-4px;border
 body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
 @media (max-width:700px){#trialModeBar{gap:5px;padding:6px;margin:4px 0}#trialModeBar button,#trialModeBar select{min-height:34px;padding:5px 8px;font-size:13px}#trialModeBar>span:first-child{width:100%;text-align:center}}
 
-/* Build023.0 RC1.1 正式終局判定 */
+/* Build023.0 RC2 正式終局判定 */
 body.scoring-mode .board-wrap{outline:5px solid #e5484d;outline-offset:-5px;border-radius:12px}
 #scoringModeBar{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:2px solid #e5484d;border-radius:14px;background:linear-gradient(135deg,#351416,#1d1010);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.55)}
 body.scoring-mode #scoringModeBar{display:flex;position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;width:min(720px,calc(100vw - 24px))}
@@ -2261,6 +2261,10 @@ body.scoring-mode #scoringModeBar{display:flex;position:fixed;left:50%;bottom:ma
 #scoringModeBar button{min-height:38px;padding:7px 14px}
 #scoringConfirmBtn{background:linear-gradient(135deg,#ffd76c,#e8a91f)!important;color:#1a1108!important;font-weight:800}
 #scoringCancelBtn{background:#4a2020!important;color:#fff!important}
+#scoringVerifyBtn{background:linear-gradient(135deg,#2f7fd8,#174d91)!important;color:#fff!important;font-weight:800}
+#scoringVerifyInfo{width:100%;text-align:center;color:#ffe7a8;font-weight:750;display:none}
+body.scoring-verify #scoringVerifyInfo{display:block}
+body.scoring-verify .board-wrap{outline-color:#3d9cff}
 .scoring-help{font-size:12px;color:#f2d9d9;width:100%;text-align:center}
 @media(max-width:700px){body.scoring-mode #scoringModeBar{bottom:max(8px,env(safe-area-inset-bottom));width:calc(100vw - 16px)}#scoringModeBar{gap:5px;padding:8px}#scoringModeBar button{min-height:36px;padding:6px 10px;font-size:13px}.scoring-help{font-size:11px}}
 
@@ -2272,7 +2276,7 @@ body.scoring-mode #scoringModeBar{display:flex;position:fixed;left:50%;bottom:ma
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC1.1.1 Professional Scoring UI Fix</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC2.1 Professional Scoring UI Fix</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2356,9 +2360,11 @@ body.scoring-mode #scoringModeBar{display:flex;position:fixed;left:50%;bottom:ma
       <strong>⚖️ 確認死子模式</strong>
       <span id="scoringDeadInfo">已標記：黑死子 0｜白死子 0</span>
       <button id="scoringClearBtn" type="button">清除標記</button>
+      <button id="scoringVerifyBtn" type="button">🔍 驗證數地</button>
       <button id="scoringConfirmBtn" type="button">正式計算</button>
       <button id="scoringCancelBtn" type="button">取消</button>
-      <span class="scoring-help">請點擊死棋，整塊棋會一起標記；再次點擊可取消。</span>
+      <span id="scoringVerifyInfo">黑地 0｜白地 0｜單官 0</span>
+      <span class="scoring-help">請點擊死棋；開啟驗證後，藍點＝黑地、紅點＝白地、灰點＝單官。</span>
     </div>
     <div class="range-row"><input id="moveSlider" type="range" min="0" max="0" value="0"><span id="sliderText">0 / 0</span></div>
   </section>
@@ -2389,7 +2395,7 @@ body.scoring-mode #scoringModeBar{display:flex;position:fixed;left:50%;bottom:ma
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build023.0 RC1.1.1 Professional Scoring UI Fix</p>
+  <p>版本：Build023.0 RC2.1 Professional Scoring UI Fix</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2652,7 +2658,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3928,7 +3934,18 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
       ctx.beginPath();ctx.arc(cx,cy,r*.78,0,Math.PI*2);ctx.stroke();
     }
   }
-  // Build023.0 RC1.1：正式數地時，以半透明紅色與叉號標示死子。
+  // Build023.0 RC2：數地驗證著色。藍＝黑地、紅＝白地、灰＝單官。
+  if(state.scoringMode && state.scoringVerify && state.scoringTerritoryMap){
+    for(const cell of state.scoringTerritoryMap.cells||[]){
+      const cx=pad+cell.x*step,cy=pad+cell.y*step;
+      ctx.save();
+      ctx.fillStyle=cell.owner==="B"?"rgba(55,145,255,.48)":cell.owner==="W"?"rgba(255,95,105,.48)":"rgba(160,160,160,.50)";
+      ctx.beginPath();ctx.arc(cx,cy,Math.max(3,step*.19),0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle="rgba(255,255,255,.78)";ctx.lineWidth=Math.max(1,step*.025);ctx.stroke();ctx.restore();
+    }
+  }
+
+  // Build023.0 RC2：正式數地時，以半透明紅色與叉號標示死子。
   if(state.scoringMode && state.scoringDead && state.scoringDead.size){
     for(const key of state.scoringDead){
       const [x,y]=key.split(",").map(Number);
@@ -4597,7 +4614,7 @@ function updateScoringInfo(){
 }
 function startFormalScoring(){
   if(state.trialMode){toast("請先套用或取消試下");return;}
-  state.scoringMode=true;state.scoringDead=new Set();
+  state.scoringMode=true;state.scoringDead=new Set();state.scoringVerify=false;state.scoringTerritoryMap=null;document.body.classList.remove("scoring-verify");
   state.scoringWasClockRunning=!!state.clockRunning;
   state.scoringBackup={gameEnded:state.gameEnded};
   state.clockRunning=false;stopGameClock();state.aiRequestToken++;setAiThinking(false);
@@ -4608,7 +4625,7 @@ function startFormalScoring(){
   toast("已進入正式數地：請點擊死子，再按『正式計算』");
 }
 function exitFormalScoring(restoreClock=false){
-  state.scoringMode=false;state.scoringDead=new Set();document.body.classList.remove("scoring-mode");
+  state.scoringMode=false;state.scoringDead=new Set();state.scoringVerify=false;state.scoringTerritoryMap=null;document.body.classList.remove("scoring-mode","scoring-verify");
   const bar=$("scoringModeBar");if(bar){bar.style.display="";bar.setAttribute("aria-hidden","true");}
   if(restoreClock && state.scoringWasClockRunning && !state.gameEnded){startGameClock();}
   updateScoringInfo();drawBoard(currentSnapshot());
@@ -4617,7 +4634,7 @@ function toggleDeadGroupAt(x,y){
   const snap=currentSnapshot(),group=getStoneGroup(snap.board,x,y);if(!group.length){toast("此處沒有棋子");return;}
   const allMarked=group.every(([gx,gy])=>state.scoringDead.has(scoringKey(gx,gy)));
   for(const [gx,gy] of group){const k=scoringKey(gx,gy);if(allMarked)state.scoringDead.delete(k);else state.scoringDead.add(k);}
-  updateScoringInfo();drawBoard(snap);
+  updateScoringInfo();if(state.scoringVerify)refreshScoringVerification();else drawBoard(snap);
 }
 function handleScoringBoardInput(e){
   const now=Date.now();if(now-lastBoardInputAt<250)return;lastBoardInputAt=now;if(e.cancelable)e.preventDefault();
@@ -4627,6 +4644,24 @@ function handleScoringBoardInput(e){
   let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step),tol=step*.62;
   if(localX<pad-tol||localX>css-pad+tol||localY<pad-tol||localY>css-pad+tol)return;
   x=Math.max(0,Math.min(state.size-1,x));y=Math.max(0,Math.min(state.size-1,y));toggleDeadGroupAt(x,y);
+}
+function scoringBoardWithoutDead(){
+  const snap=currentSnapshot(),board=clonePosition(snap.board);
+  for(const key of state.scoringDead||[]){const [x,y]=key.split(",").map(Number);if(board[y]?.[x])board[y][x]=null;}
+  return board;
+}
+function refreshScoringVerification(){
+  if(!state.scoringMode)return;
+  const t=estimateTerritory({board:scoringBoardWithoutDead()});
+  state.scoringTerritoryMap=t;
+  const info=$("scoringVerifyInfo");if(info)info.textContent=`黑地 ${t.blackTerritory}｜白地 ${t.whiteTerritory}｜單官 ${t.neutral}`;
+  drawBoard(currentSnapshot());
+}
+function toggleScoringVerification(){
+  if(!state.scoringMode)return;
+  state.scoringVerify=!state.scoringVerify;document.body.classList.toggle("scoring-verify",state.scoringVerify);
+  const btn=$("scoringVerifyBtn");if(btn)btn.textContent=state.scoringVerify?"關閉驗證":"🔍 驗證數地";
+  refreshScoringVerification();toast(state.scoringVerify?"已開啟數地驗證：藍黑地、紅白地、灰單官":"已關閉數地驗證");
 }
 function formalJapaneseScore(){
   const snap=currentSnapshot(),board=clonePosition(snap.board);let deadBlack=0,deadWhite=0;
@@ -4644,12 +4679,12 @@ function confirmFormalScoring(){
   state.gameEnded=true;stopAndLockAfterScoring();
   exitFormalScoring(false);
   showResultModal({black:r.black,white:r.whiteRaw,komi:r.komi,rawLead:r.rawLead,finalLead:r.finalLead,
-    detail:`正式數地（日本規則・雙方確認死子）\n黑地：${r.blackTerritory} 目\n黑方原提子＋白死子：${r.blackCaptures} 顆（白死子 ${r.deadWhite}）\n黑方合計：${r.black.toFixed(1)} 目\n\n白地：${r.whiteTerritory} 目\n白方原提子＋黑死子：${r.whiteCaptures} 顆（黑死子 ${r.deadBlack}）\n白方盤面合計：${r.whiteRaw.toFixed(1)} 目\n貼目：白加 ${r.komi.toFixed(1)} 目\n中立點：${r.neutral} 目\n\n正式結果：${r.finalLead===0?"和棋":`${r.finalLead>0?"黑":"白"}勝 ${Math.abs(r.finalLead).toFixed(1)} 目`}\n提醒：本結果依您標記的死子計算；若死活仍有爭議，請回棋盤續弈。`});
+    detail:`正式數地（日本規則・雙方確認死子）\n黑地：${r.blackTerritory} 目\n黑方原提子＋白死子：${r.blackCaptures} 顆（白死子 ${r.deadWhite}）\n黑方合計：${r.black.toFixed(1)} 目\n\n白地：${r.whiteTerritory} 目\n白方原提子＋黑死子：${r.whiteCaptures} 顆（黑死子 ${r.deadBlack}）\n白方盤面合計：${r.whiteRaw.toFixed(1)} 目\n貼目：白加 ${r.komi.toFixed(1)} 目\n單官：${r.neutral} 目\n\n正式結果：${r.finalLead===0?"和棋":`${r.finalLead>0?"黑":"白"}勝 ${Math.abs(r.finalLead).toFixed(1)} 目`}\n提醒：本結果依您標記的死子計算；若死活仍有爭議，請回棋盤續弈。`});
 }
 
 function estimateTerritory(snapshot){
   const board=snapshot.board,size=state.size,seen=Array.from({length:size},()=>Array(size).fill(false));
-  let blackTerritory=0,whiteTerritory=0,neutral=0;
+  let blackTerritory=0,whiteTerritory=0,neutral=0;const cells=[];
   const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
   for(let y=0;y<size;y++)for(let x=0;x<size;x++){
     if(seen[y][x]||board[y][x])continue;
@@ -4662,10 +4697,12 @@ function estimateTerritory(snapshot){
         if(v)borders.add(v);else if(!seen[ny][nx]){seen[ny][nx]=true;stack.push([nx,ny]);}
       }
     }
-    if(borders.size===1){if(borders.has('B'))blackTerritory+=region.length;else whiteTerritory+=region.length;}
+    let owner="N";
+    if(borders.size===1){if(borders.has('B')){blackTerritory+=region.length;owner="B";}else{whiteTerritory+=region.length;owner="W";}}
     else neutral+=region.length;
+    for(const [rx,ry] of region)cells.push({x:rx,y:ry,owner});
   }
-  return {blackTerritory,whiteTerritory,neutral};
+  return {blackTerritory,whiteTerritory,neutral,cells};
 }
 function currentSnapshot(){
   // RC3：統一取得目前棋盤快照，避免 Safari 出現 currentSnapshot 未定義。
@@ -5204,7 +5241,8 @@ if(window.PointerEvent){
 }
 
 
-if($("scoringClearBtn"))$("scoringClearBtn").onclick=()=>{state.scoringDead=new Set();updateScoringInfo();drawBoard(currentSnapshot());toast("已清除死子標記");};
+if($("scoringClearBtn"))$("scoringClearBtn").onclick=()=>{state.scoringDead=new Set();updateScoringInfo();if(state.scoringVerify)refreshScoringVerification();else drawBoard(currentSnapshot());toast("已清除死子標記");};
+if($("scoringVerifyBtn"))$("scoringVerifyBtn").onclick=toggleScoringVerification;
 if($("scoringCancelBtn"))$("scoringCancelBtn").onclick=()=>{const wasEnded=state.scoringBackup?.gameEnded;state.gameEnded=!!wasEnded;exitFormalScoring(true);toast("已取消正式數地");};
 if($("scoringConfirmBtn"))$("scoringConfirmBtn").onclick=confirmFormalScoring;
 
