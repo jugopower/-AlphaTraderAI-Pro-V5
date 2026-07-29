@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build023.0 RC1 Professional Scoring Edition</title>
+<title>AlphaTrader AI Pro V5｜Build023.0 RC1.1.1 Professional Scoring UI Fix</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2253,16 +2253,16 @@ body.trial-mode .board-wrap{outline:4px solid #2196f3;outline-offset:-4px;border
 body.trial-mode #trialModeBtn{background:#1976d2!important;color:#fff!important}
 @media (max-width:700px){#trialModeBar{gap:5px;padding:6px;margin:4px 0}#trialModeBar button,#trialModeBar select{min-height:34px;padding:5px 8px;font-size:13px}#trialModeBar>span:first-child{width:100%;text-align:center}}
 
-/* Build023.0 RC1 正式終局判定 */
+/* Build023.0 RC1.1 正式終局判定 */
 body.scoring-mode .board-wrap{outline:5px solid #e5484d;outline-offset:-5px;border-radius:12px}
-#scoringModeBar{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:9px 10px;margin-top:8px;border:1px solid #ad3438;border-radius:12px;background:linear-gradient(135deg,#351416,#1d1010);color:#fff}
-body.scoring-mode #scoringModeBar{display:flex}
+#scoringModeBar{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:2px solid #e5484d;border-radius:14px;background:linear-gradient(135deg,#351416,#1d1010);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+body.scoring-mode #scoringModeBar{display:flex;position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;width:min(720px,calc(100vw - 24px))}
 #scoringModeBar strong{color:#ffd36a}
 #scoringModeBar button{min-height:38px;padding:7px 14px}
 #scoringConfirmBtn{background:linear-gradient(135deg,#ffd76c,#e8a91f)!important;color:#1a1108!important;font-weight:800}
 #scoringCancelBtn{background:#4a2020!important;color:#fff!important}
 .scoring-help{font-size:12px;color:#f2d9d9;width:100%;text-align:center}
-@media(max-width:700px){#scoringModeBar{gap:5px;padding:7px}#scoringModeBar button{min-height:34px;padding:5px 9px;font-size:13px}}
+@media(max-width:700px){body.scoring-mode #scoringModeBar{bottom:max(8px,env(safe-area-inset-bottom));width:calc(100vw - 16px)}#scoringModeBar{gap:5px;padding:8px}#scoringModeBar button{min-height:36px;padding:6px 10px;font-size:13px}.scoring-help{font-size:11px}}
 
 </style>
 </head>
@@ -2272,7 +2272,7 @@ body.scoring-mode #scoringModeBar{display:flex}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC1 Professional Scoring Edition</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC1.1.1 Professional Scoring UI Fix</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2389,7 +2389,7 @@ body.scoring-mode #scoringModeBar{display:flex}
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build023.0 RC1 Professional Scoring Edition</p>
+  <p>版本：Build023.0 RC1.1.1 Professional Scoring UI Fix</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -3928,7 +3928,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
       ctx.beginPath();ctx.arc(cx,cy,r*.78,0,Math.PI*2);ctx.stroke();
     }
   }
-  // Build023.0 RC1：正式數地時，以半透明紅色與叉號標示死子。
+  // Build023.0 RC1.1：正式數地時，以半透明紅色與叉號標示死子。
   if(state.scoringMode && state.scoringDead && state.scoringDead.size){
     for(const key of state.scoringDead){
       const [x,y]=key.split(",").map(Number);
@@ -4603,10 +4603,13 @@ function startFormalScoring(){
   state.clockRunning=false;stopGameClock();state.aiRequestToken++;setAiThinking(false);
   document.body.classList.add("scoring-mode");
   updateScoringInfo();drawBoard(currentSnapshot());
-  toast("請點擊死子，整塊棋會一起標記");
+  const bar=$("scoringModeBar");
+  if(bar){bar.style.display="flex";bar.setAttribute("aria-hidden","false");}
+  toast("已進入正式數地：請點擊死子，再按『正式計算』");
 }
 function exitFormalScoring(restoreClock=false){
   state.scoringMode=false;state.scoringDead=new Set();document.body.classList.remove("scoring-mode");
+  const bar=$("scoringModeBar");if(bar){bar.style.display="";bar.setAttribute("aria-hidden","true");}
   if(restoreClock && state.scoringWasClockRunning && !state.gameEnded){startGameClock();}
   updateScoringInfo();drawBoard(currentSnapshot());
 }
