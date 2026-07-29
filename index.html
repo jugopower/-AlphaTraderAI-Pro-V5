@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build024.1 Alpha KataGo Core</title>
+<title>AlphaTrader AI Pro V5｜Build024.2 Alpha KataGo Status</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2281,7 +2281,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build024.1 Alpha · KataGo Core</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build024.2 Alpha · KataGo Status</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2401,7 +2401,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build024.1 Alpha · KataGo Core</p>
+  <p>版本：Build024.2 Alpha · KataGo Status</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2458,7 +2458,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build024.1 Alpha</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build024.2 Alpha</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -2544,8 +2544,13 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
   <div class="connector-meta">
     <div><small>連線狀態</small><strong id="connectorState">Offline</strong></div>
+    <div><small>伺服器</small><strong id="connectorServer">Render</strong></div>
+    <div><small>模型</small><strong id="connectorModel">—</strong></div>
+    <div><small>Visits</small><strong id="connectorVisits">—</strong></div>
+    <div><small>NPS</small><strong id="connectorNps">—</strong></div>
     <div><small>最後耗時</small><strong id="connectorLatency">—</strong></div>
-    <div><small>分析來源</small><strong id="connectorSource">Demo</strong></div>
+    <div><small>分析來源</small><strong id="connectorSource">尚未連線</strong></div>
+    <div><small>最後成功</small><strong id="connectorLastSuccess">—</strong></div>
   </div>
 
   <details style="margin-top:10px">
@@ -2664,7 +2669,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"demo"},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan",aiVisits:300,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -2722,9 +2727,15 @@ function setConnectorStatus(type,text){
   const el=$("cloudStatus");
   el.className="connector-status "+type;
   el.textContent=text;
-  $("connectorState").textContent=state.connector.online?"Online":"Offline";
-  $("connectorLatency").textContent=state.connector.lastLatency==null?"—":state.connector.lastLatency+" ms";
-  $("connectorSource").textContent=state.connector.source==="katago"?"KataGo":(state.connector.source==="error"?"連線失敗":"Demo");
+  const c=state.connector;
+  $("connectorState").textContent=c.online?"🟢 Online":"🔴 Offline";
+  $("connectorLatency").textContent=c.lastLatency==null?"—":c.lastLatency+" ms";
+  $("connectorSource").textContent=c.source==="katago"?"真實 KataGo":(c.source==="error"?"連線失敗":"尚未連線");
+  $("connectorModel").textContent=c.model||"—";
+  $("connectorVisits").textContent=c.visits?String(c.visits):"—";
+  $("connectorNps").textContent=c.nps?Math.round(c.nps).toLocaleString():"—";
+  $("connectorLastSuccess").textContent=c.lastSuccess||"—";
+  try{$("connectorServer").textContent=new URL(getApiSettings().url).hostname.includes("onrender.com")?"Render":"自訂伺服器";}catch(_){$("connectorServer").textContent="—";}
 }
 
 function moveToGtp(move){
@@ -2906,7 +2917,9 @@ function parseCloudAnalysis(raw){
     history,
     mistakes:mistakes.slice(0,5),
     source:"katago",
-    visits:Number(root.visits ?? data.visits ?? 0),
+    visits:Number(root.visits ?? data.visits ?? root.rootInfo?.visits ?? data.rootInfo?.visits ?? 0),
+    nps:Number(root.nps ?? data.nps ?? root.rootInfo?.nps ?? data.rootInfo?.nps ?? root.nodesPerSecond ?? data.nodesPerSecond ?? 0),
+    model:String(root.model ?? data.model ?? root.modelName ?? data.modelName ?? root.engine?.model ?? data.engine?.model ?? ""),
     ownership:Array.isArray(data.ownership)?data.ownership:null,
     raw:data,
     winrateColorCorrected
@@ -2947,6 +2960,10 @@ async function requestCloudAnalysis(options={}){
     state.connector.lastLatency=Math.round(performance.now()-t0);
     state.connector.lastError="";
     state.connector.source="katago";
+    state.connector.model=analysis.model||"KataGo";
+    state.connector.visits=Number(analysis.visits||0);
+    state.connector.nps=Number(analysis.nps||0);
+    state.connector.lastSuccess=new Date().toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
     analysis.moveNumber=state.index;
     return analysis;
   }catch(err){
@@ -2954,6 +2971,7 @@ async function requestCloudAnalysis(options={}){
     state.connector.lastLatency=Math.round(performance.now()-t0);
     state.connector.lastError=err.name==="AbortError"?"連線逾時":err.message;
     state.connector.source="error";
+    state.connector.model="";state.connector.visits=0;state.connector.nps=0;
     throw new Error(state.connector.lastError);
   }finally{
     clearTimeout(timer);
@@ -2969,7 +2987,7 @@ async function runCloudAnalysis({openDashboard=true}={}){
   setConnectorStatus("warn","正在傳送目前局面到 KataGo 後端…");
   try{
     state.analysis=await requestCloudAnalysis();
-    setConnectorStatus("ok",`KataGo 分析成功，耗時 ${state.connector.lastLatency} ms。`);
+    setConnectorStatus("ok",`真實 KataGo 已連線 · ${state.connector.visits||"—"} visits · ${state.connector.lastLatency} ms。`);
     renderProfessionalDashboard(state.analysis);
     if(openDashboard){
       closeModal("cloudModal");
