@@ -1,27 +1,14 @@
-# AlphaTrader AI Pro V5 — Build024.3.1 Real KataGo
+# AlphaTrader AI Pro V5 — Build024.3.2 Debug
 
-## 本版重點
+用途：擷取 Render `/analyze` 實際回傳的完整 JSON，以確認 `move_infos` 內推薦落點的真實格式。
 
-- 嚴格真實 KataGo 模式：連線失敗時不再顯示本機示範勝率或推薦手。
-- 分析 API 同時送出 camelCase 與 snake_case 欄位，提高 Render 後端相容性。
-- 同時支援棋步陣列格式與物件格式。
-- 傳送規則、貼目、手番、Visits、Ownership 與 Policy 要求。
-- AI 人機對弈仍採真實 KataGo 回傳結果；失敗時停止落子，不使用假 AI。
-- 保留 Build024.2 的棋盤、SGF、正式數地、計時器及 iPad 介面。
+## 使用方式
+1. 上傳 `index.html` 與 `README.md` 到 GitHub，覆蓋同名檔案。
+2. 開啟 9 路人機對弈並讓 AI 思考。
+3. 若前端仍找不到推薦落點，畫面會自動開啟「Render 原始 JSON」視窗。
+4. 按「複製 JSON」，再把內容貼回 ChatGPT。
 
-## 部署後測試
-
-1. 開啟 KataGo 設定。
-2. 確認 API：`https://alphatrader-katago-server-v2.onrender.com/analyze`
-3. 先以 9 路空棋盤、30 visits 測試。
-4. 顯示「真實 KataGo Online」後，再測試人機對弈。
-
-## 重要限制
-
-本 ZIP 是前端完整部署版。Render 服務本身必須已部署可運作的 KataGo API，並允許 GitHub Pages 網域的 CORS 請求。若 Render 後端未啟動、網址錯誤或 API JSON 規格不符，前端會顯示連線失敗，不會偽造分析結果。
-
-
-## API 422 修正
-- `moves` 改為 Render FastAPI 要求的字串陣列格式，例如 `"B G7"`。
-- 保留 `movePairs` 與 `moveObjects` 作為相容欄位。
-- 修正錯誤：`Input should be a valid string`。
+## 注意
+- 這是診斷版，不會用示範棋力取代 KataGo。
+- 棋盤、SGF、數地與計時器維持原功能。
+- 找到回傳格式後，應再製作非 Debug 的正式修正版。
