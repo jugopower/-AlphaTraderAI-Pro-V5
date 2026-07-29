@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build023.0 RC3.1 Professional Scoring UI Fix</title>
+<title>AlphaTrader AI Pro V5｜Build024.1 Alpha KataGo Core</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2281,7 +2281,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build023.0 RC3.1 Professional Scoring UI Fix</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build024.1 Alpha · KataGo Core</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2401,7 +2401,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build023.0 RC3.1 Professional Scoring UI Fix</p>
+  <p>版本：Build024.1 Alpha · KataGo Core</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2458,7 +2458,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build021.31</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build024.1 Alpha</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -2724,7 +2724,7 @@ function setConnectorStatus(type,text){
   el.textContent=text;
   $("connectorState").textContent=state.connector.online?"Online":"Offline";
   $("connectorLatency").textContent=state.connector.lastLatency==null?"—":state.connector.lastLatency+" ms";
-  $("connectorSource").textContent=state.connector.source==="katago"?"KataGo":"Demo";
+  $("connectorSource").textContent=state.connector.source==="katago"?"KataGo":(state.connector.source==="error"?"連線失敗":"Demo");
 }
 
 function moveToGtp(move){
@@ -2739,8 +2739,7 @@ function currentPositionPayload(){
     ...state.setupB.map(p=>({color:"B",coordinate:moveToGtp(p)})),
     ...state.setupW.map(p=>({color:"W",coordinate:moveToGtp(p)}))
   ];
-  const last=playedMoves[playedMoves.length-1];
-  const nextPlayer=last ? (last.c==="B"?"W":"B") : (state.setupB.length>0?"W":"B");
+  const nextPlayer=(state.turn==="W"?"W":"B");
   const settings=getApiSettings();
   return {
     board_size:state.size,
@@ -2788,7 +2787,7 @@ function parseCloudAnalysis(raw){
   );
   if(blackWin==null){
     const sideRate=normalizeRate(root.winrate ?? root.win_rate ?? data.winrate ?? data.win_rate);
-    const nextColor=state.index<state.moves.length?state.moves[state.index]?.c:(state.index%2===0?"B":"W");
+    const nextColor=(state.turn==="W"?"W":"B");
     if(sideRate!=null)blackWin=nextColor==="B"?sideRate:100-sideRate;
   }
   if(blackWin==null)blackWin=50;
@@ -2954,7 +2953,7 @@ async function requestCloudAnalysis(options={}){
     state.connector.online=false;
     state.connector.lastLatency=Math.round(performance.now()-t0);
     state.connector.lastError=err.name==="AbortError"?"連線逾時":err.message;
-    state.connector.source="demo";
+    state.connector.source="error";
     throw new Error(state.connector.lastError);
   }finally{
     clearTimeout(timer);
@@ -4491,13 +4490,26 @@ function scheduleLocalAiMove(delay=350){
       if($("apiKomi"))$("apiKomi").value=String(state.komi);
 
       const analysis=await requestCloudAnalysisWithRetry({timeoutSeconds:45});
-      const best=(analysis.recommendations||[])[0];
+      const ranked=(analysis.recommendations||[]).filter(Boolean);
+      const preferred=chooseKataGoMoveByLevel(ranked,state.aiLevel);
+      const ordered=preferred?[preferred,...ranked.filter(m=>m!==preferred)]:ranked;
+      let best=null;
+      const currentBoard=positionAtMove(state.index).board;
+      const previousBoard=state.index>0?positionAtMove(state.index-1).board:null;
+      const previousHash=previousBoard?positionHash(previousBoard):null;
+      for(const candidate of ordered){
+        if(candidate.pass){best=candidate;break;}
+        const cx=Number(candidate.x),cy=Number(candidate.y);
+        if(!Number.isInteger(cx)||!Number.isInteger(cy))continue;
+        const test=executeMove(currentBoard,emptyProvenance(state.size),{c:state.turn,x:cx,y:cy},state.index+1,{rejectSuicide:true,koHash:previousHash});
+        if(test.ok){best=candidate;break;}
+      }
 
       if(!best){
         const keys=analysis?.raw && typeof analysis.raw==="object"
           ? Object.keys(analysis.raw).join(", ")
           : "無";
-        throw new Error("KataGo 未回傳可辨識的推薦落點（欄位："+keys+"）");
+        throw new Error("KataGo 未回傳合法且可辨識的推薦落點（欄位："+keys+"）");
       }
       if(best.pass){
         const movedColor=state.turn;
@@ -4524,7 +4536,7 @@ function scheduleLocalAiMove(delay=350){
     }catch(err){
       console.error("KataGo 對弈落子失敗：",err);
       state.connector.online=false;
-      state.connector.source="demo";
+      state.connector.source="error";
       state.connector.lastError=err?.message||String(err);
       toast("KataGo 連線失敗，AI 未落子");
       alert("KataGo 連線失敗：\n"+(err?.message||err)+"\n\n已停止 AI 落子，不會改用示範棋力。");
