@@ -2603,7 +2603,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <button class="teach-choice" data-teach-tool="black">擺黑棋</button>
     <button class="teach-choice" data-teach-tool="white">擺白棋</button>
     <button class="teach-choice" id="teachNumberToggle" type="button">手順顯示：關</button>
-    <button class="teach-choice" id="teachStartAnswer" type="button">開始解答手順</button>
+    <button class="teach-choice" id="teachStartAnswer" type="button">鎖定題目／開始試下</button>
     <button class="teach-choice" data-teach-tool="erase">刪除棋子</button>
     <button class="teach-choice" data-teach-tool="A">標記 A</button>
     <button class="teach-choice" data-teach-tool="B">標記 B</button>
@@ -2620,7 +2620,8 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <div class="grid2" style="margin-top:10px">
     <button class="action" id="saveTeachCommentBtn">儲存評語</button>
     <button class="secondary" id="clearTeachMarksBtn">清除標記</button>
-    <button class="secondary" id="clearTeachTrialBtn">清空試下</button>
+    <button class="secondary" id="clearTeachTrialBtn">重設回題目</button>
+    <button class="secondary" id="clearTeachBoardBtn">清空題目棋盤</button>
     <button class="secondary" id="startVariationBtn">建立變化圖</button>
     <button class="secondary" id="returnMainBtn">返回主棋譜</button>
   </div>
@@ -2642,9 +2643,9 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <button data-qtool="black">擺黑</button>
   <button data-qtool="white">擺白</button>
   <button id="teachQuickNumber" type="button">手順：關</button>
-  <button id="teachQuickAnswer" type="button">開始解答</button>
+  <button id="teachQuickAnswer" type="button">鎖定題目</button>
   <button id="teachQuickUndo" type="button">悔棋</button>
-  <button id="teachQuickReset" type="button">清空試下</button>
+  <button id="teachQuickReset" type="button">重設題目</button>
   <button data-qtool="erase">刪棋</button>
   <button data-qtool="A">A</button>
   <button data-qtool="B">B</button>
@@ -2660,7 +2661,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <script>
 "use strict";
-const APP_VERSION="20260728-0225.1";
+const APP_VERSION="20260731-0250.1";
 
 const $=id=>document.getElementById(id);
 
@@ -2679,7 +2680,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan13",aiVisits:80,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingSessionBackup:null,teachingInputBusy:false,teachingBaseMoveCount:0,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan13",aiVisits:80,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingSessionBackup:null,teachingInputBusy:false,teachingBaseMoveCount:0,teachingPositionBackup:null,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3330,12 +3331,13 @@ function beginTeachingMode(){
   state.teachingInputBusy=false;
   state.teachingSequence=[];
   state.teachingBaseMoveCount=state.moves.length;
-  state.teachingAnswerMode=true;
-  state.teachingShowNumbers=true;
-  state.teachingTool="alternate";
+  state.teachingPositionBackup=null;
+  state.teachingAnswerMode=false;
+  state.teachingShowNumbers=false;
+  state.teachingTool="black";
   state.teachingNext="B";
   updateTeachingUI();
-  toast("教學試下已啟動；黑白交替，手順從 1 開始");
+  toast("已進入擺題模式；可自由擺黑棋、白棋，不顯示手順");
 }
 function finishTeachingMode({restore=true}={}){
   if(restore && state.teachingSessionBackup){
@@ -3350,31 +3352,37 @@ function finishTeachingMode({restore=true}={}){
   state.teachingBarSuppressed=false;
   state.teachingInputBusy=false;
   state.teachingBaseMoveCount=0;
+  state.teachingPositionBackup=null;
   closeModal("teachModal");
   updateTeachingUI();
   toast(restore?"已離開教學模式，正式棋譜已恢復":"教學編輯完成");
 }
 function clearTeachingTrial(){
   if(!state.teachingMode)return;
-  if(state.teachingSessionBackup){
-    const base=state.teachingSessionBackup;
-    state.size=base.size;
-    state.moves=JSON.parse(JSON.stringify(base.moves||[]));
-    state.index=base.index||0;
-    state.setupB=JSON.parse(JSON.stringify(base.setupB||[]));
-    state.setupW=JSON.parse(JSON.stringify(base.setupW||[]));
-    state.actions=JSON.parse(JSON.stringify(base.actions||[]));
-  }else{
-    state.moves=[];state.index=0;state.actions=[];
+  if(!state.teachingPositionBackup){
+    toast("請先按『鎖定題目／開始試下』");
+    return;
   }
+  const keepSession=state.teachingSessionBackup;
+  const keepPosition=state.teachingPositionBackup;
+  restoreTeachingState(keepPosition);
+  state.teachingSessionBackup=keepSession;
+  state.teachingPositionBackup=keepPosition;
+  state.teachingMode=true;
   state.teachingSequence=[];
-  state.teachingBaseMoveCount=state.moves.length;
   state.teachingAnswerMode=true;
   state.teachingShowNumbers=true;
   state.teachingTool="alternate";
   state.teachingNext="B";
+  state.teachingBaseMoveCount=state.moves.length;
   state.replayCache=[];
-  syncUI();updateTeachingUI();toast("試下手順已清空，下一手從 1 開始");
+  syncUI();updateTeachingUI();toast("已重設回原始題目；下一手從 1 開始");
+}
+function clearTeachingBoard(){
+  if(!state.teachingMode)return;
+  if(state.teachingAnswerMode){toast("試下中不能清空題目，請先離開後重新進入擺題模式");return;}
+  state.moves=[];state.index=0;state.actions=[];state.setupB=[];state.setupW=[];state.teachingSequence=[];state.teachingMarks=[];state.teachingPositionBackup=null;state.replayCache=[];
+  syncUI();updateTeachingUI();toast("題目棋盤已清空");
 }
 function syncTeachQuickBar(){
   const bar=$("teachQuickBar");
@@ -3430,9 +3438,9 @@ function updateTeachingUI(){
   const quickNum=$("teachQuickNumber");
   if(quickNum){quickNum.textContent="手順："+(state.teachingShowNumbers?"開":"關");quickNum.classList.toggle("active",state.teachingShowNumbers);}
   const startBtn=$("teachStartAnswer");
-  if(startBtn){startBtn.textContent=state.teachingAnswerMode?"解答手順進行中":"開始解答手順";startBtn.classList.toggle("active",state.teachingAnswerMode);}
+  if(startBtn){startBtn.textContent=state.teachingAnswerMode?"試下進行中":"鎖定題目／開始試下";startBtn.classList.toggle("active",state.teachingAnswerMode);}
   const quickAnswer=$("teachQuickAnswer");
-  if(quickAnswer){quickAnswer.textContent=state.teachingAnswerMode?"解答中":"開始解答";quickAnswer.classList.toggle("active",state.teachingAnswerMode);}
+  if(quickAnswer){quickAnswer.textContent=state.teachingAnswerMode?"試下中":"鎖定題目";quickAnswer.classList.toggle("active",state.teachingAnswerMode);}
   ["teachBtn_rightTools","teachBtn_topbar"].forEach(id=>$(id)?.classList.toggle("active-mode",state.teachingMode));
   if($("teachComment"))$("teachComment").value=state.teachingComment||"";
   syncTeachQuickBar();
@@ -3522,15 +3530,20 @@ function teachingPlaceAt(x,y){
   syncUI();updateTeachingUI();return true;
 }
 function startTeachingAnswerSequence(){
-  // 保留目前題目圖形，之後新增的棋才從解答第 1 手開始編號。
+  if(!state.teachingMode)return;
+  // 將目前棋形固定為題目底圖；之後的落子才是試下手順。
+  if(state.moves.length>0 || state.index>0)teachSnapshotToSetup();
   state.teachingSequence=[];
-  state.teachingBaseMoveCount=state.moves.length;
+  state.teachingAnswerMode=false;
+  state.teachingShowNumbers=false;
+  state.teachingPositionBackup=cloneTeachingState();
   state.teachingAnswerMode=true;
   state.teachingShowNumbers=true;
   state.teachingTool="alternate";
   state.teachingNext="B";
+  state.teachingBaseMoveCount=state.moves.length;
   syncUI();updateTeachingUI();
-  toast("題目圖形已固定；下一顆棋從解答第 1 手開始");
+  toast("題目已鎖定；現在開始試下，手順從 1 開始");
 }
 function cloneTeachingState(){
   return {
@@ -3575,6 +3588,7 @@ $("clearTeachMarksBtn").onclick=()=>{
   state.teachingMarks=[];syncUI();toast("教學標記已清除");
 };
 $("clearTeachTrialBtn").onclick=clearTeachingTrial;
+$("clearTeachBoardBtn").onclick=clearTeachingBoard;
 $("teachQuickReset").onclick=clearTeachingTrial;
 $("teachQuickUndo").onclick=undoGameMove;
 $("startVariationBtn").onclick=()=>{
