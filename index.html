@@ -2780,8 +2780,9 @@ function currentPositionPayload(){
     moves:playedStrings,
     movePairs:playedPairs,
     moveObjects:playedObjects,
+    // camelCase 保留舊伺服器相容；snake_case 配合目前 FastAPI StoneInput 字典格式。
     initialStones:initialStrings,
-    initial_stones:initialStrings,
+    initial_stones:initialObjects,
     initialStonePairs:initialPairs,
     initialStoneObjects:initialObjects,
     nextPlayer,
@@ -2792,7 +2793,7 @@ function currentPositionPayload(){
     max_visits:visits,
     includeOwnership:true,
     includePolicy:true,
-    client:"AlphaTraderAI-Pro-V5-Build024.6"
+    client:"AlphaTraderAI-Pro-V5-Build024.9"
   };
 }
 
