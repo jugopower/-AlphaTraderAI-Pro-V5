@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build025.0 Teaching Mode Engine</title>
+<title>AlphaTrader AI Pro V5｜Build024.6 Visits Verification</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2287,7 +2287,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build025.0 Teaching Mode Engine · KataGo Core</small></div>
+    <div class="brand">AlphaTrader AI Pro V5<br><small>Build024.8 Real KataGo · KataGo Core</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2407,7 +2407,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build025.0 Teaching Mode Engine · KataGo Core</p>
+  <p>版本：Build024.8 Real KataGo · KataGo Core</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -2464,7 +2464,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build025.0 Teaching Mode Engine</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build024.6 Visits Verification</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -2504,7 +2504,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build025.0 API Inspector</h2>
+  <h2>Build024.6 API Inspector</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2596,14 +2596,16 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 <div id="teachModal" class="modal-backdrop"><div class="modal teaching-modal">
   <button class="close" data-close="teachModal">✕</button>
   <h2>教學模式</h2>
-  <p class="teach-hint">先用擺黑、擺白完成題目圖形，題目棋子不必顯示數字。完成後按「開始解答手順」，下一顆棋會從第 1 手開始編號。</p>
+  <p class="teach-hint">先用擺黑、擺白完成題目圖形，題目棋子不必顯示數字。完成後先選「黑先」或「白先」，再按「開始解答手順」；先手棋會從第 1 手開始編號。</p>
 
   <div class="teach-grid">
     <button class="teach-choice active" data-teach-tool="alternate">黑白交替</button>
     <button class="teach-choice" data-teach-tool="black">擺黑棋</button>
     <button class="teach-choice" data-teach-tool="white">擺白棋</button>
     <button class="teach-choice" id="teachNumberToggle" type="button">手順顯示：關</button>
-    <button class="teach-choice" id="teachStartAnswer" type="button">鎖定題目／開始試下</button>
+    <button class="teach-choice" id="teachStartAnswer" type="button">開始解答手順</button>
+    <button class="teach-choice active" id="teachFirstBlack" type="button">黑先（黑1）</button>
+    <button class="teach-choice" id="teachFirstWhite" type="button">白先（白1）</button>
     <button class="teach-choice" data-teach-tool="erase">刪除棋子</button>
     <button class="teach-choice" data-teach-tool="A">標記 A</button>
     <button class="teach-choice" data-teach-tool="B">標記 B</button>
@@ -2620,8 +2622,6 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <div class="grid2" style="margin-top:10px">
     <button class="action" id="saveTeachCommentBtn">儲存評語</button>
     <button class="secondary" id="clearTeachMarksBtn">清除標記</button>
-    <button class="secondary" id="clearTeachTrialBtn">重設回題目</button>
-    <button class="secondary" id="clearTeachBoardBtn">清空題目棋盤</button>
     <button class="secondary" id="startVariationBtn">建立變化圖</button>
     <button class="secondary" id="returnMainBtn">返回主棋譜</button>
   </div>
@@ -2643,9 +2643,8 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   <button data-qtool="black">擺黑</button>
   <button data-qtool="white">擺白</button>
   <button id="teachQuickNumber" type="button">手順：關</button>
-  <button id="teachQuickAnswer" type="button">鎖定題目</button>
-  <button id="teachQuickUndo" type="button">悔棋</button>
-  <button id="teachQuickReset" type="button">重設題目</button>
+  <button id="teachQuickAnswer" type="button">開始解答</button>
+  <button id="teachQuickFirst" type="button">先手：黑</button>
   <button data-qtool="erase">刪棋</button>
   <button data-qtool="A">A</button>
   <button data-qtool="B">B</button>
@@ -2661,7 +2660,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <script>
 "use strict";
-const APP_VERSION="20260731-0250.1";
+const APP_VERSION="20260801-025.0.2";
 
 const $=id=>document.getElementById(id);
 
@@ -2680,7 +2679,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan13",aiVisits:80,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingSessionBackup:null,teachingInputBusy:false,teachingBaseMoveCount:0,teachingPositionBackup:null,katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan13",aiVisits:80,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3289,7 +3288,7 @@ function closeModal(id){$(id).classList.remove("open");if(id!=="teachModal")setT
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
-  ["teachBtn","▣","教學",()=>{beginTeachingMode();openModal("teachModal")}],
+  ["teachBtn","▣","教學",()=>{state.teachingMode=true;state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn","♟","人機",()=>openModal("humanModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
@@ -3320,70 +3319,6 @@ function resetView(){
 
 
 
-
-function beginTeachingMode(){
-  if(!state.teachingMode){
-    state.teachingSessionBackup=cloneTeachingState();
-  }
-  state.teachingMode=true;
-  state.teachingBarCollapsed=false;
-  state.teachingBarSuppressed=false;
-  state.teachingInputBusy=false;
-  state.teachingSequence=[];
-  state.teachingBaseMoveCount=state.moves.length;
-  state.teachingPositionBackup=null;
-  state.teachingAnswerMode=false;
-  state.teachingShowNumbers=false;
-  state.teachingTool="black";
-  state.teachingNext="B";
-  updateTeachingUI();
-  toast("已進入擺題模式；可自由擺黑棋、白棋，不顯示手順");
-}
-function finishTeachingMode({restore=true}={}){
-  if(restore && state.teachingSessionBackup){
-    const backup=state.teachingSessionBackup;
-    state.teachingSessionBackup=null;
-    restoreTeachingState(backup);
-  }else{
-    state.teachingSessionBackup=null;
-  }
-  state.teachingMode=false;
-  state.teachingBarCollapsed=false;
-  state.teachingBarSuppressed=false;
-  state.teachingInputBusy=false;
-  state.teachingBaseMoveCount=0;
-  state.teachingPositionBackup=null;
-  closeModal("teachModal");
-  updateTeachingUI();
-  toast(restore?"已離開教學模式，正式棋譜已恢復":"教學編輯完成");
-}
-function clearTeachingTrial(){
-  if(!state.teachingMode)return;
-  if(!state.teachingPositionBackup){
-    toast("請先按『鎖定題目／開始試下』");
-    return;
-  }
-  const keepSession=state.teachingSessionBackup;
-  const keepPosition=state.teachingPositionBackup;
-  restoreTeachingState(keepPosition);
-  state.teachingSessionBackup=keepSession;
-  state.teachingPositionBackup=keepPosition;
-  state.teachingMode=true;
-  state.teachingSequence=[];
-  state.teachingAnswerMode=true;
-  state.teachingShowNumbers=true;
-  state.teachingTool="alternate";
-  state.teachingNext="B";
-  state.teachingBaseMoveCount=state.moves.length;
-  state.replayCache=[];
-  syncUI();updateTeachingUI();toast("已重設回原始題目；下一手從 1 開始");
-}
-function clearTeachingBoard(){
-  if(!state.teachingMode)return;
-  if(state.teachingAnswerMode){toast("試下中不能清空題目，請先離開後重新進入擺題模式");return;}
-  state.moves=[];state.index=0;state.actions=[];state.setupB=[];state.setupW=[];state.teachingSequence=[];state.teachingMarks=[];state.teachingPositionBackup=null;state.replayCache=[];
-  syncUI();updateTeachingUI();toast("題目棋盤已清空");
-}
 function syncTeachQuickBar(){
   const bar=$("teachQuickBar");
   const toggle=$("teachBarToggle");
@@ -3409,7 +3344,7 @@ $("teachQuickClear").onclick=()=>{
   state.teachingMarks=[];syncUI();updateTeachingUI();toast("教學標記已清除");
 };
 $("teachQuickClose").onclick=()=>{
-  finishTeachingMode({restore:true});
+  state.teachingMode=false;state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;closeModal("teachModal");updateTeachingUI();toast("教學編輯完成");
 };
 
 
@@ -3432,15 +3367,19 @@ function updateTeachingUI(){
     btn.classList.toggle("active",btn.dataset.teachTool===state.teachingTool);
   });
   const status=$("teachStatus");
-  if(status)status.textContent="目前工具："+(labels[state.teachingTool]||state.teachingTool)+(state.teachingTool==="alternate"?"｜下一顆："+(state.teachingNext==="B"?"黑棋":"白棋"):"")+"｜階段："+(state.teachingAnswerMode?"解答手順":"題目擺棋")+"｜手順："+(state.teachingShowNumbers?"顯示":"隱藏");
+  if(status)status.textContent="目前工具："+(labels[state.teachingTool]||state.teachingTool)+(state.teachingTool==="alternate"?"｜下一顆："+(state.teachingNext==="B"?"黑棋":"白棋"):"")+"｜先手："+(state.teachingFirstPlayer==="W"?"白":"黑")+"｜階段："+(state.teachingAnswerMode?"解答手順":"題目擺棋")+"｜手順："+(state.teachingShowNumbers?"顯示":"隱藏");
   const numBtn=$("teachNumberToggle");
   if(numBtn){numBtn.textContent="解答手順顯示："+(state.teachingShowNumbers?"開":"關");numBtn.classList.toggle("active",state.teachingShowNumbers);}
   const quickNum=$("teachQuickNumber");
   if(quickNum){quickNum.textContent="手順："+(state.teachingShowNumbers?"開":"關");quickNum.classList.toggle("active",state.teachingShowNumbers);}
   const startBtn=$("teachStartAnswer");
-  if(startBtn){startBtn.textContent=state.teachingAnswerMode?"試下進行中":"鎖定題目／開始試下";startBtn.classList.toggle("active",state.teachingAnswerMode);}
+  if(startBtn){startBtn.textContent=state.teachingAnswerMode?"解答手順進行中":"開始解答手順";startBtn.classList.toggle("active",state.teachingAnswerMode);}
   const quickAnswer=$("teachQuickAnswer");
-  if(quickAnswer){quickAnswer.textContent=state.teachingAnswerMode?"試下中":"鎖定題目";quickAnswer.classList.toggle("active",state.teachingAnswerMode);}
+  if(quickAnswer){quickAnswer.textContent=state.teachingAnswerMode?"解答中":"開始解答";quickAnswer.classList.toggle("active",state.teachingAnswerMode);}
+  const firstBlack=$("teachFirstBlack"),firstWhite=$("teachFirstWhite"),quickFirst=$("teachQuickFirst");
+  firstBlack?.classList.toggle("active",state.teachingFirstPlayer==="B");
+  firstWhite?.classList.toggle("active",state.teachingFirstPlayer==="W");
+  if(quickFirst){quickFirst.textContent="先手："+(state.teachingFirstPlayer==="W"?"白":"黑");quickFirst.classList.toggle("active",state.teachingFirstPlayer==="W");}
   ["teachBtn_rightTools","teachBtn_topbar"].forEach(id=>$(id)?.classList.toggle("active-mode",state.teachingMode));
   if($("teachComment"))$("teachComment").value=state.teachingComment||"";
   syncTeachQuickBar();
@@ -3463,9 +3402,6 @@ function removeTeachingSequenceAt(x,y){
 }
 function teachingPlaceAt(x,y){
   if(!state.teachingMode)return false;
-  if(state.teachingInputBusy)return true;
-  state.teachingInputBusy=true;
-  setTimeout(()=>{state.teachingInputBusy=false},180);
   const tool=state.teachingTool;
 
   if(["A","B","C","triangle","circle","cross"].includes(tool)){
@@ -3530,36 +3466,27 @@ function teachingPlaceAt(x,y){
   syncUI();updateTeachingUI();return true;
 }
 function startTeachingAnswerSequence(){
-  if(!state.teachingMode)return;
-  // 將目前棋形固定為題目底圖；之後的落子才是試下手順。
-  if(state.moves.length>0 || state.index>0)teachSnapshotToSetup();
+  // 保留目前題目圖形，之後新增的棋才從解答第 1 手開始編號。
   state.teachingSequence=[];
-  state.teachingAnswerMode=false;
-  state.teachingShowNumbers=false;
-  state.teachingPositionBackup=cloneTeachingState();
   state.teachingAnswerMode=true;
   state.teachingShowNumbers=true;
   state.teachingTool="alternate";
-  state.teachingNext="B";
-  state.teachingBaseMoveCount=state.moves.length;
+  state.teachingNext=state.teachingFirstPlayer||"B";
   syncUI();updateTeachingUI();
-  toast("題目已鎖定；現在開始試下，手順從 1 開始");
+  toast(`題目圖形已固定；${state.teachingNext==="W"?"白":"黑"}棋從第 1 手開始`);
 }
 function cloneTeachingState(){
   return {
     size:state.size,moves:JSON.parse(JSON.stringify(state.moves)),index:state.index,
     setupB:JSON.parse(JSON.stringify(state.setupB)),setupW:JSON.parse(JSON.stringify(state.setupW)),
     actions:JSON.parse(JSON.stringify(state.actions||[])),marks:JSON.parse(JSON.stringify(state.teachingMarks||[])),
-    comment:state.teachingComment||"",sequence:JSON.parse(JSON.stringify(state.teachingSequence||[])),showNumbers:!!state.teachingShowNumbers,answerMode:!!state.teachingAnswerMode,
-    teachingNext:state.teachingNext,teachingTool:state.teachingTool,turn:state.turn,
-    blackCaptures:state.blackCaptures,whiteCaptures:state.whiteCaptures,koHash:state.koHash,
-    teachingBaseMoveCount:state.teachingBaseMoveCount||0
+    comment:state.teachingComment||"",sequence:JSON.parse(JSON.stringify(state.teachingSequence||[])),showNumbers:!!state.teachingShowNumbers,answerMode:!!state.teachingAnswerMode,firstPlayer:state.teachingFirstPlayer||"B"
   };
 }
 function restoreTeachingState(s){
   if(!s)return;
   state.size=s.size;state.moves=s.moves;state.index=s.index;state.setupB=s.setupB;state.setupW=s.setupW;
-  state.actions=s.actions;state.teachingMarks=s.marks;state.teachingComment=s.comment;state.teachingSequence=s.sequence||[];state.teachingShowNumbers=!!s.showNumbers;state.teachingAnswerMode=!!s.answerMode;state.teachingNext=s.teachingNext||"B";state.teachingTool=s.teachingTool||"alternate";state.turn=s.turn||"B";state.blackCaptures=s.blackCaptures||0;state.whiteCaptures=s.whiteCaptures||0;state.koHash=s.koHash||null;state.teachingBaseMoveCount=s.teachingBaseMoveCount||0;state.replayCache=[];
+  state.actions=s.actions;state.teachingMarks=s.marks;state.teachingComment=s.comment;state.teachingSequence=s.sequence||[];state.teachingShowNumbers=!!s.showNumbers;state.teachingAnswerMode=!!s.answerMode;state.teachingFirstPlayer=s.firstPlayer||"B";state.teachingNext=state.teachingFirstPlayer;state.replayCache=[];
   syncUI();updateTeachingUI();
 }
 document.querySelectorAll(".teach-choice").forEach(btn=>{
@@ -3568,16 +3495,27 @@ document.querySelectorAll(".teach-choice").forEach(btn=>{
     updateTeachingUI();
   });
 });
-$("teachNumberToggle").onclick=()=>{
+function redrawTeachingNumbersNow(){
+  state.currentSnapshot=activateSnapshot(state.index);
+  drawBoard(state.currentSnapshot);
+  requestAnimationFrame(()=>drawBoard(state.currentSnapshot||activateSnapshot(state.index)));
+}
+function toggleTeachingNumbers(){
   state.teachingShowNumbers=!state.teachingShowNumbers;
-  syncUI();updateTeachingUI();
+  syncUI();updateTeachingUI();redrawTeachingNumbersNow();
   toast(state.teachingShowNumbers?"已顯示教學手順":"已隱藏教學手順");
-};
-$("teachQuickNumber").onclick=()=>{
-  state.teachingShowNumbers=!state.teachingShowNumbers;
-  syncUI();updateTeachingUI();
-  toast(state.teachingShowNumbers?"已顯示教學手順":"已隱藏教學手順");
-};
+}
+$("teachNumberToggle").onclick=toggleTeachingNumbers;
+$("teachQuickNumber").onclick=toggleTeachingNumbers;
+function setTeachingFirstPlayer(color){
+  if(state.teachingAnswerMode && state.teachingSequence.length){toast("已有解答手順，請先重設後再更換先手");return;}
+  state.teachingFirstPlayer=color;state.teachingNext=color;
+  updateTeachingUI();
+  toast(color==="W"?"已設定白先，白棋為第 1 手":"已設定黑先，黑棋為第 1 手");
+}
+$("teachFirstBlack").onclick=()=>setTeachingFirstPlayer("B");
+$("teachFirstWhite").onclick=()=>setTeachingFirstPlayer("W");
+$("teachQuickFirst").onclick=()=>setTeachingFirstPlayer(state.teachingFirstPlayer==="B"?"W":"B");
 $("teachStartAnswer").onclick=startTeachingAnswerSequence;
 $("teachQuickAnswer").onclick=startTeachingAnswerSequence;
 $("saveTeachCommentBtn").onclick=()=>{
@@ -3587,13 +3525,9 @@ $("saveTeachCommentBtn").onclick=()=>{
 $("clearTeachMarksBtn").onclick=()=>{
   state.teachingMarks=[];syncUI();toast("教學標記已清除");
 };
-$("clearTeachTrialBtn").onclick=clearTeachingTrial;
-$("clearTeachBoardBtn").onclick=clearTeachingBoard;
-$("teachQuickReset").onclick=clearTeachingTrial;
-$("teachQuickUndo").onclick=undoGameMove;
 $("startVariationBtn").onclick=()=>{
   if(!state.variationBackup)state.variationBackup=cloneTeachingState();
-  beginTeachingMode();state.teachingTool="alternate";
+  state.teachingMode=true;state.teachingTool="alternate";
   toast("變化圖已建立，可直接在棋盤落子");
   closeModal("teachModal");updateTeachingUI();
 };
@@ -3602,9 +3536,11 @@ $("returnMainBtn").onclick=()=>{
   restoreTeachingState(state.variationBackup);state.variationBackup=null;
   toast("已返回主棋譜");
 };
-$("exitTeachBtn").onclick=()=>finishTeachingMode({restore:true});
+$("exitTeachBtn").onclick=()=>{
+  state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
+};
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build025.0]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.5]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -3791,7 +3727,7 @@ function loadSGFText(text,name){
     const g=parseSGF(text);
     state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
     state.setupB=g.setupB; state.setupW=g.setupW; state.actions=g.actions||[]; state.gameInfo=g; state.replayCache=[]; state.illegalCount=0;
-    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
+    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.teachingFirstPlayer="B"; state.teachingNext="B"; state.variationBackup=null;
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
@@ -5077,7 +5013,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build025.0]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.5]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
@@ -5280,10 +5216,6 @@ function undoGameMove(){
     toast("KataGo 思考中，暫時不能悔棋");
     return;
   }
-  if(state.teachingMode && state.teachingAnswerMode && !(state.teachingSequence||[]).length){
-    toast("目前沒有可悔的試下手順");
-    return;
-  }
   if(!state.moves.length || state.index<=0){
     toast("目前沒有可悔的棋");
     return;
@@ -5293,9 +5225,7 @@ function undoGameMove(){
   if(resumeAfterUndo)stopGameClock();
   state.aiRequestToken++;
   let removeCount=1;
-  if(state.teachingMode && state.teachingAnswerMode){
-    removeCount=1;
-  }else if(state.humanMode && !state.trialMode){
+  if(state.humanMode && !state.trialMode){
     const visible=state.moves.slice(0,state.index);
     const last=visible[visible.length-1];
     const prev=visible[visible.length-2];
@@ -5312,7 +5242,7 @@ function undoGameMove(){
     state.teachingSequence.splice(Math.max(0,state.teachingSequence.length-removeCount),removeCount);
     renumberTeachingSequence();
     const last=state.moves[state.moves.length-1];
-    state.teachingNext=last?(last.c==="B"?"W":"B"):"B";
+    state.teachingNext=last?(last.c==="B"?"W":"B"):(state.teachingFirstPlayer||"B");
   }
   state.actions=[];
   state.replayCache=[];
@@ -5382,7 +5312,7 @@ document.querySelectorAll(".clock-preset").forEach(btn=>btn.addEventListener("cl
 $("byoTime").addEventListener("change",()=>{$("customByoWrap").hidden=$("byoTime").value!=="custom";});
 
 $("startHumanBtn").onclick=()=>{
-  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.variationBackup=null;
+  state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.teachingFirstPlayer="B"; state.teachingNext="B"; state.variationBackup=null;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
   state.komi=Number($("gameKomi").value||0);
@@ -5430,11 +5360,8 @@ function handleBoardInput(e){
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
   const localX=(e.clientX-rect.left)*(css/rect.width);
   const localY=(e.clientY-rect.top)*(css/rect.height);
-  const pad=css*(state.showCoords?0.085:0.055),step=(css-pad*2)/(state.size-1);
+  const pad=css*.055,step=(css-pad*2)/(state.size-1);
   let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step);
-  const nearestX=pad+x*step,nearestY=pad+y*step;
-  // Build025.0：只有點在交叉點附近才落子，避免 iPad 點空白區被四捨五入到已有棋子。
-  if(Math.hypot(localX-nearestX,localY-nearestY)>step*.46)return;
   const edgeTolerance=step*.62;
   if(localX<pad-edgeTolerance||localX>css-pad+edgeTolerance||localY<pad-edgeTolerance||localY>css-pad+edgeTolerance)return;
   x=Math.max(0,Math.min(state.size-1,x));
@@ -5610,7 +5537,7 @@ if(state.engineVerified&&state.rendererVerified){
 
 <button id="apiInspectorToggle" class="api-inspector-toggle" type="button">API 資料</button>
 <section id="apiInspectorPanel" class="api-inspector-panel" hidden aria-label="Render API Inspector">
-  <div class="api-inspector-head"><strong>Build025.0 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
+  <div class="api-inspector-head"><strong>Build024.6 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
   <div class="api-inspector-status"><span id="apiInspectorDot" class="api-inspector-dot"></span><span id="apiInspectorStatus">尚未執行分析</span></div>
   <pre id="apiInspectorPre" class="api-inspector-pre">按一次 KataGo 分析後，這裡會同時顯示 Request、Response 與 Visits 核對結果。</pre>
   <div class="api-inspector-actions"><button id="apiInspectorCopy" class="primary" type="button">複製 JSON</button><button id="apiInspectorClear" type="button">清除</button></div>
