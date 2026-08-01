@@ -2503,7 +2503,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build026.0 API Inspector</h2>
+  <h2>Build026.1 API Inspector</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2631,7 +2631,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   </div>
 
   <section id="lifeDeathVerifyPanel" style="margin-top:14px;padding:14px;border:1px solid #6c4a28;border-radius:16px;background:#100b08">
-    <h3 style="margin:0 0 10px">Build 026.0｜死活題半自動驗證</h3>
+    <h3 style="margin:0 0 10px">Build 026.1｜局部死活驗證</h3>
     <div class="grid2">
       <label>題號<input id="verifyQuestionNo" placeholder="例如 320"></label>
       <label>題型<select id="verifyProblemType">
@@ -2640,14 +2640,21 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
         <option value="black_live">黑先做活</option>
         <option value="white_live">白先做活</option>
       </select></label>
+      <label>目標棋群座標<input id="verifyTargetCoordinate" placeholder="先按右側按鈕，再點目標棋子" readonly></label>
+      <button class="secondary" id="selectVerifyTarget" type="button">點選目標棋群</button>
+      <label>局部範圍<select id="verifyRegionRadius">
+        <option value="3">半徑 3（小角部）</option>
+        <option value="4" selected>半徑 4（建議）</option>
+        <option value="5">半徑 5（較大棋形）</option>
+      </select></label>
       <label>驗證 Visits<select id="verifyVisits">
         <option value="100">100（快速初判）</option>
         <option value="300" selected>300（建議）</option>
         <option value="500">500（較深入）</option>
       </select></label>
-      <button class="action" id="runLifeDeathVerify" type="button">一鍵 KataGo 驗證</button>
+      <button class="action" id="runLifeDeathVerify" type="button">局部 KataGo 驗證</button>
     </div>
-    <div id="lifeDeathVerifyStatus" class="connector-status" style="margin-top:10px">請先完成題目擺棋，再按驗證。</div>
+    <div id="lifeDeathVerifyStatus" class="connector-status" style="margin-top:10px">請先完成題目擺棋，點選要殺或要救的棋群，再按驗證。</div>
     <pre id="lifeDeathVerifyResult" style="white-space:pre-wrap;max-height:280px;overflow:auto;background:#050403;padding:12px;border-radius:12px;margin:10px 0 0;font-size:13px">尚未驗證</pre>
   </section>
   <div id="teachStatus" class="connector-status ok" style="margin-top:12px">
@@ -2679,7 +2686,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <script>
 "use strict";
-const APP_VERSION="20260801-025.0.2";
+const APP_VERSION="20260801-026.1";
 
 const $=id=>document.getElementById(id);
 
@@ -2698,7 +2705,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3082,6 +3089,7 @@ function formatLifeDeathReport(r){
     `${r.question_no?"第 "+r.question_no+" 題｜":""}${r.problem_label||"死活題"}`,
     `最佳第一手：${r.best_move||"—"}`,
     `初步判定：${r.uniqueness_hint||"無法判定"}`,
+    `目標棋群：${r.local_region?.target_coordinate||"—"}｜局部半徑：${r.local_region?.radius||"—"}`,
     `總 Visits：${r.visits||"—"}｜耗時：${r.elapsed_ms||"—"} ms`,
     "",
     "候選第一手：",
@@ -3104,9 +3112,12 @@ async function runLifeDeathVerification(){
   payload.question_no=$("verifyQuestionNo").value.trim();
   payload.problem_type=$("verifyProblemType").value;
   payload.verification_visits=Number($("verifyVisits").value||300);
+  payload.target_coordinate=$("verifyTargetCoordinate").value.trim();
+  payload.region_radius=Number($("verifyRegionRadius").value||4);
+  if(!payload.target_coordinate){toast("請先點選要殺或要救的目標棋群");return;}
   payload.next_player=payload.problem_type.startsWith("white_")?"W":"B";
   payload.nextPlayer=payload.next_player;
-  btn.disabled=true;btn.textContent="驗證中…";status.className="connector-status warn";status.textContent="KataGo 正在比較候選第一手，請稍候…";
+  btn.disabled=true;btn.textContent="驗證中…";status.className="connector-status warn";status.textContent="KataGo 正在指定局部範圍內比較攻防手段，請稍候…";
   try{
     const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(payload),cache:"no-store"});
     const data=await response.json();
@@ -3117,9 +3128,15 @@ async function runLifeDeathVerification(){
     window.__lastLifeDeathVerification=data;
   }catch(err){
     status.className="connector-status bad";status.textContent="驗證失敗："+err.message;pre.textContent=String(err.message);
-  }finally{btn.disabled=false;btn.textContent="一鍵 KataGo 驗證";}
+  }finally{btn.disabled=false;btn.textContent="局部 KataGo 驗證";}
 }
 $("runLifeDeathVerify").addEventListener("click",runLifeDeathVerification);
+$("selectVerifyTarget").addEventListener("click",()=>{
+  state.verificationSelectingTarget=true;
+  $("lifeDeathVerifyStatus").className="connector-status warn";
+  $("lifeDeathVerifyStatus").textContent="請直接點棋盤上要殺或要救的那一群棋。";
+  toast("請點選目標棋群中的任一顆棋");
+});
 
 async function runCloudAnalysis({openDashboard=true}={}){
   const btn=$("analyzeCloudBtn");
@@ -5437,6 +5454,18 @@ function handleBoardInput(e){
   if(localX<pad-edgeTolerance||localX>css-pad+edgeTolerance||localY<pad-edgeTolerance||localY>css-pad+edgeTolerance)return;
   x=Math.max(0,Math.min(state.size-1,x));
   y=Math.max(0,Math.min(state.size-1,y));
+  if(state.teachingMode && state.verificationSelectingTarget){
+    const snap=positionAtMove(state.index);
+    const stone=snap.board?.[y]?.[x];
+    if(stone!=="B"&&stone!=="W"){toast("請點在目標棋群的黑棋或白棋上");return;}
+    const coord=coordLabel(x,y);
+    state.verificationTarget=coord;state.verificationSelectingTarget=false;
+    $("verifyTargetCoordinate").value=coord;
+    $("lifeDeathVerifyStatus").className="connector-status ok";
+    $("lifeDeathVerifyStatus").textContent=`已選目標：${stone==="B"?"黑棋":"白棋"} ${coord}。現在可執行局部驗證。`;
+    toast(`已選取目標棋群：${coord}`);
+    return;
+  }
   if(state.teachingMode){
     teachingPlaceAt(x,y);
     return;
@@ -5608,7 +5637,7 @@ if(state.engineVerified&&state.rendererVerified){
 
 <button id="apiInspectorToggle" class="api-inspector-toggle" type="button">API 資料</button>
 <section id="apiInspectorPanel" class="api-inspector-panel" hidden aria-label="Render API Inspector">
-  <div class="api-inspector-head"><strong>Build026.0 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
+  <div class="api-inspector-head"><strong>Build026.1 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
   <div class="api-inspector-status"><span id="apiInspectorDot" class="api-inspector-dot"></span><span id="apiInspectorStatus">尚未執行分析</span></div>
   <pre id="apiInspectorPre" class="api-inspector-pre">按一次 KataGo 分析後，這裡會同時顯示 Request、Response 與 Visits 核對結果。</pre>
   <div class="api-inspector-actions"><button id="apiInspectorCopy" class="primary" type="button">複製 JSON</button><button id="apiInspectorClear" type="button">清除</button></div>
