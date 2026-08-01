@@ -2503,7 +2503,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build025.2 API Inspector</h2>
+  <h2>Build026.0 API Inspector</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2630,6 +2630,26 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <button class="secondary" id="exitTeachBtn">離開教學模式</button>
   </div>
 
+  <section id="lifeDeathVerifyPanel" style="margin-top:14px;padding:14px;border:1px solid #6c4a28;border-radius:16px;background:#100b08">
+    <h3 style="margin:0 0 10px">Build 026.0｜死活題半自動驗證</h3>
+    <div class="grid2">
+      <label>題號<input id="verifyQuestionNo" placeholder="例如 320"></label>
+      <label>題型<select id="verifyProblemType">
+        <option value="black_kill_white">黑先殺白</option>
+        <option value="white_kill_black">白先殺黑</option>
+        <option value="black_live">黑先做活</option>
+        <option value="white_live">白先做活</option>
+      </select></label>
+      <label>驗證 Visits<select id="verifyVisits">
+        <option value="100">100（快速初判）</option>
+        <option value="300" selected>300（建議）</option>
+        <option value="500">500（較深入）</option>
+      </select></label>
+      <button class="action" id="runLifeDeathVerify" type="button">一鍵 KataGo 驗證</button>
+    </div>
+    <div id="lifeDeathVerifyStatus" class="connector-status" style="margin-top:10px">請先完成題目擺棋，再按驗證。</div>
+    <pre id="lifeDeathVerifyResult" style="white-space:pre-wrap;max-height:280px;overflow:auto;background:#050403;padding:12px;border-radius:12px;margin:10px 0 0;font-size:13px">尚未驗證</pre>
+  </section>
   <div id="teachStatus" class="connector-status ok" style="margin-top:12px">
     目前工具：黑白交替
   </div>
@@ -2795,7 +2815,7 @@ function currentPositionPayload(){
     max_visits:visits,
     includeOwnership:true,
     includePolicy:true,
-    client:"AlphaTraderAI-Pro-V5-Build024.9"
+    client:"AlphaTraderAI-Pro-V5-Build026.0"
   };
 }
 
@@ -3048,6 +3068,58 @@ async function requestCloudAnalysis(options={}){
     clearTimeout(timer);
   }
 }
+
+
+function verificationApiUrl(){
+  const base=getApiSettings().url||"";
+  if(!base)return "";
+  return base.replace(/\/analyze\/?$/,"/verify-life-death");
+}
+function formatLifeDeathReport(r){
+  if(!r||r.status!=="ok")return `驗證失敗：${r?.message||"未知錯誤"}`;
+  const rows=(r.candidates||[]).slice(0,5).map(c=>`${c.rank}. ${c.move}｜visits ${c.visits}｜PV ${(c.pv||[]).join(" → ")||"—"}`);
+  return [
+    `${r.question_no?"第 "+r.question_no+" 題｜":""}${r.problem_label||"死活題"}`,
+    `最佳第一手：${r.best_move||"—"}`,
+    `初步判定：${r.uniqueness_hint||"無法判定"}`,
+    `總 Visits：${r.visits||"—"}｜耗時：${r.elapsed_ms||"—"} ms`,
+    "",
+    "候選第一手：",
+    ...rows,
+    "",
+    "注意：",
+    ...(r.warnings||[])
+  ].join("\n");
+}
+async function runLifeDeathVerification(){
+  const btn=$("runLifeDeathVerify"),status=$("lifeDeathVerifyStatus"),pre=$("lifeDeathVerifyResult");
+  if(state.teachingAnswerMode && state.moves.length){toast("請先按重設題目，回到初始棋形再驗證");return;}
+  const url=verificationApiUrl();
+  if(!url){toast("請先設定 KataGo API 網址");return;}
+  const settings=getApiSettings();
+  const headers={"Content-Type":"application/json","Accept":"application/json"};
+  if(settings.key&&settings.authMode==="bearer")headers.Authorization="Bearer "+settings.key;
+  if(settings.key&&settings.authMode==="x-api-key")headers["X-API-Key"]=settings.key;
+  const payload=currentPositionPayload();
+  payload.question_no=$("verifyQuestionNo").value.trim();
+  payload.problem_type=$("verifyProblemType").value;
+  payload.verification_visits=Number($("verifyVisits").value||300);
+  payload.next_player=payload.problem_type.startsWith("white_")?"W":"B";
+  payload.nextPlayer=payload.next_player;
+  btn.disabled=true;btn.textContent="驗證中…";status.className="connector-status warn";status.textContent="KataGo 正在比較候選第一手，請稍候…";
+  try{
+    const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(payload),cache:"no-store"});
+    const data=await response.json();
+    if(!response.ok)throw new Error(data?.detail||data?.message||`HTTP ${response.status}`);
+    pre.textContent=formatLifeDeathReport(data);
+    status.className="connector-status "+(data.status==="ok"?"ok":"bad");
+    status.textContent=data.status==="ok"?"初步驗證完成；仍需朱老師確認淨殺、劫與唯一解。":"驗證失敗";
+    window.__lastLifeDeathVerification=data;
+  }catch(err){
+    status.className="connector-status bad";status.textContent="驗證失敗："+err.message;pre.textContent=String(err.message);
+  }finally{btn.disabled=false;btn.textContent="一鍵 KataGo 驗證";}
+}
+$("runLifeDeathVerify").addEventListener("click",runLifeDeathVerification);
 
 async function runCloudAnalysis({openDashboard=true}={}){
   const btn=$("analyzeCloudBtn");
@@ -5536,7 +5608,7 @@ if(state.engineVerified&&state.rendererVerified){
 
 <button id="apiInspectorToggle" class="api-inspector-toggle" type="button">API 資料</button>
 <section id="apiInspectorPanel" class="api-inspector-panel" hidden aria-label="Render API Inspector">
-  <div class="api-inspector-head"><strong>Build025.2 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
+  <div class="api-inspector-head"><strong>Build026.0 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
   <div class="api-inspector-status"><span id="apiInspectorDot" class="api-inspector-dot"></span><span id="apiInspectorStatus">尚未執行分析</span></div>
   <pre id="apiInspectorPre" class="api-inspector-pre">按一次 KataGo 分析後，這裡會同時顯示 Request、Response 與 Visits 核對結果。</pre>
   <div class="api-inspector-actions"><button id="apiInspectorCopy" class="primary" type="button">複製 JSON</button><button id="apiInspectorClear" type="button">清除</button></div>
