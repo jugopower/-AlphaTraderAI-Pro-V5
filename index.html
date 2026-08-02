@@ -2631,7 +2631,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   </div>
 
   <section id="lifeDeathVerifyPanel" style="margin-top:14px;padding:14px;border:1px solid #6c4a28;border-radius:16px;background:#100b08">
-    <h3 style="margin:0 0 10px">Build 027.0｜KataGo AI 自動解題</h3>
+    <h3 style="margin:0 0 10px">Build 027.1｜嚴格局部 AI 解題</h3>
     <div class="grid2">
       <label>題號<input id="verifyQuestionNo" placeholder="例如 320"></label>
       <label>題型<select id="verifyProblemType">
@@ -2839,7 +2839,7 @@ function currentPositionPayload(){
     max_visits:visits,
     includeOwnership:true,
     includePolicy:true,
-    client:"AlphaTraderAI-Pro-V5-Build027.0"
+    client:"AlphaTraderAI-Pro-V5-Build027.1"
   };
 }
 
@@ -3104,8 +3104,10 @@ function formatAiSolution(data){
   if(!data||data.status!=="ok")return `解題失敗：${data?.message||"沒有取得解答手順"}`;
   const rows=(data.line||[]).map(m=>`${m.number}. ${m.color==="B"?"黑":"白"} ${m.move}`);
   return [
-    `${data.question_no?"第 "+data.question_no+" 題｜":""}KataGo AI 主變化`,
+    `${data.question_no?"第 "+data.question_no+" 題｜":""}KataGo 嚴格局部主變化`,
     `共 ${data.move_count||rows.length} 手｜耗時 ${data.elapsed_ms||0} ms`,
+    `停止原因：${data.stop_reason||"—"}`,
+    data.conclusion||"",
     "",
     ...rows,
     "",
@@ -3135,8 +3137,25 @@ function applyAiSolutionLine(line){
   state.index=state.moves.length;state.teachingNext=state.moves.length?(state.moves.at(-1).c==="B"?"W":"B"):state.teachingFirstPlayer;
   state.currentSnapshot=activateSnapshot(state.index);
   syncUI();updateTeachingUI();redrawTeachingNumbersNow();
-  toast(`已在棋盤顯示 ${applied} 手 AI 解答`);
+  toast(`已在棋盤顯示 ${applied} 手嚴格局部解答`);
   return applied>0;
+}
+function solverPositionPayload(){
+  // Build 027.1: freeze the currently displayed position as setup stones.
+  // Existing teaching moves are not counted as answer moves, so AI always starts at 1.
+  const snap=positionAtMove(state.index);
+  const initial=[];
+  for(let y=0;y<state.size;y++)for(let x=0;x<state.size;x++){
+    const c=snap.board?.[y]?.[x];
+    if(c==="B"||c==="W")initial.push({color:c,coordinate:(coordLetters[x]||"?")+(state.size-y)});
+  }
+  const settings=getApiSettings();
+  return {
+    board_size:state.size,boardSize:state.size,
+    moves:[],initial_stones:initial,initialStones:initial.map(s=>`${s.color} ${s.coordinate}`),
+    next_player:"B",nextPlayer:"B",komi:Number(settings.komi||7.5),
+    max_visits:Number(settings.visits||80),client:"AlphaTraderAI-Pro-V5-Build027.1"
+  };
 }
 async function runAiLifeDeathSolver(){
   const btn=$("runAiLifeDeathSolver"),status=$("lifeDeathVerifyStatus"),pre=$("lifeDeathVerifyResult");
@@ -3147,7 +3166,7 @@ async function runAiLifeDeathSolver(){
   const settings=getApiSettings(),headers={"Content-Type":"application/json","Accept":"application/json"};
   if(settings.key&&settings.authMode==="bearer")headers.Authorization="Bearer "+settings.key;
   if(settings.key&&settings.authMode==="x-api-key")headers["X-API-Key"]=settings.key;
-  const payload=currentPositionPayload();
+  const payload=solverPositionPayload();
   payload.question_no=$("verifyQuestionNo").value.trim();
   payload.problem_type=$("verifyProblemType").value;
   payload.target_coordinate=target;
@@ -3161,11 +3180,16 @@ async function runAiLifeDeathSolver(){
     const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(payload),cache:"no-store"});
     const data=await response.json();
     if(!response.ok||data.status!=="ok")throw new Error(data?.detail||data?.message||`HTTP ${response.status}`);
-    state.aiSolutionLine=data.line||[];window.__lastAiSolution=data;
-    pre.textContent=formatAiSolution(data);
-    status.className="connector-status ok";status.textContent=`AI 已完成 ${data.move_count||0} 手主變化，並顯示在棋盤。`;
+    const maxMoves=Number(payload.max_solution_moves||12);
+    const allowed=new Set(data?.local_region?.allowed_moves||[]);
+    const rawLine=Array.isArray(data.line)?data.line.slice(0,maxMoves):[];
+    const bad=rawLine.find(m=>!allowed.has(String(m.move||"").toUpperCase()));
+    if(bad)throw new Error(`後端回傳超出局部範圍的落點：${bad.move}`);
+    state.aiSolutionLine=rawLine;window.__lastAiSolution=data;
+    pre.textContent=formatAiSolution({...data,line:rawLine,move_count:rawLine.length});
+    status.className="connector-status ok";status.textContent=`AI 已完成 ${rawLine.length} 手嚴格局部主變化，並顯示在棋盤。`;
     closeModal("teachModal");
-    applyAiSolutionLine(state.aiSolutionLine);
+    applyAiSolutionLine(rawLine);
   }catch(err){status.className="connector-status bad";status.textContent="AI 解題失敗："+err.message;pre.textContent=String(err.message);}
   finally{btn.disabled=false;btn.textContent="AI 自動解題並顯示手順";}
 }
@@ -3226,7 +3250,7 @@ async function runLifeDeathVerification(){
   const headers={"Content-Type":"application/json","Accept":"application/json"};
   if(settings.key&&settings.authMode==="bearer")headers.Authorization="Bearer "+settings.key;
   if(settings.key&&settings.authMode==="x-api-key")headers["X-API-Key"]=settings.key;
-  const payload=currentPositionPayload();
+  const payload=solverPositionPayload();
   payload.question_no=$("verifyQuestionNo").value.trim();
   payload.problem_type=$("verifyProblemType").value;
   payload.verification_visits=Number($("verifyVisits").value||300);
