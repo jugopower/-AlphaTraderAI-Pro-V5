@@ -2503,7 +2503,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build026.1 API Inspector</h2>
+  <h2>Build027.0 API Inspector</h2>
 
   <label>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -2631,7 +2631,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   </div>
 
   <section id="lifeDeathVerifyPanel" style="margin-top:14px;padding:14px;border:1px solid #6c4a28;border-radius:16px;background:#100b08">
-    <h3 style="margin:0 0 10px">Build 026.1｜局部死活驗證</h3>
+    <h3 style="margin:0 0 10px">Build 027.0｜KataGo AI 自動解題</h3>
     <div class="grid2">
       <label>題號<input id="verifyQuestionNo" placeholder="例如 320"></label>
       <label>題型<select id="verifyProblemType">
@@ -2647,15 +2647,32 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
         <option value="4" selected>半徑 4（建議）</option>
         <option value="5">半徑 5（較大棋形）</option>
       </select></label>
-      <label>驗證 Visits<select id="verifyVisits">
-        <option value="100">100（快速初判）</option>
-        <option value="300" selected>300（建議）</option>
-        <option value="500">500（較深入）</option>
+      <label>每手 Visits<select id="solveVisitsPerMove">
+        <option value="40">40（快速）</option>
+        <option value="80" selected>80（建議）</option>
+        <option value="150">150（深入）</option>
       </select></label>
-      <button class="action" id="runLifeDeathVerify" type="button">局部 KataGo 驗證</button>
+      <label>最多解答手數<select id="solveMaxMoves">
+        <option value="8">8 手</option>
+        <option value="12" selected>12 手</option>
+        <option value="20">20 手</option>
+      </select></label>
+      <button class="action" id="runAiLifeDeathSolver" type="button">AI 自動解題並顯示手順</button>
+      <button class="secondary" id="playAiSolution" type="button">▶ 播放解答</button>
+      <button class="secondary" id="resetAiSolution" type="button">重設回題目</button>
     </div>
-    <div id="lifeDeathVerifyStatus" class="connector-status" style="margin-top:10px">請先完成題目擺棋，點選要殺或要救的棋群，再按驗證。</div>
-    <pre id="lifeDeathVerifyResult" style="white-space:pre-wrap;max-height:280px;overflow:auto;background:#050403;padding:12px;border-radius:12px;margin:10px 0 0;font-size:13px">尚未驗證</pre>
+    <details style="margin-top:10px"><summary>進階：保留 Build 026.1 局部候選驗證</summary>
+      <div class="grid2" style="margin-top:10px">
+        <label>驗證 Visits<select id="verifyVisits">
+          <option value="100">100（快速初判）</option>
+          <option value="300" selected>300（建議）</option>
+          <option value="500">500（較深入）</option>
+        </select></label>
+        <button class="secondary" id="runLifeDeathVerify" type="button">局部候選驗證</button>
+      </div>
+    </details>
+    <div id="lifeDeathVerifyStatus" class="connector-status" style="margin-top:10px">擺好題目後，點選目標棋群，再按「AI 自動解題」。</div>
+    <pre id="lifeDeathVerifyResult" style="white-space:pre-wrap;max-height:280px;overflow:auto;background:#050403;padding:12px;border-radius:12px;margin:10px 0 0;font-size:13px">尚未解題</pre>
   </section>
   <div id="teachStatus" class="connector-status ok" style="margin-top:12px">
     目前工具：黑白交替
@@ -2686,7 +2703,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 
 <script>
 "use strict";
-const APP_VERSION="20260801-026.1";
+const APP_VERSION="20260802-027.0";
 
 const $=id=>document.getElementById(id);
 
@@ -2705,7 +2722,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -2822,7 +2839,7 @@ function currentPositionPayload(){
     max_visits:visits,
     includeOwnership:true,
     includePolicy:true,
-    client:"AlphaTraderAI-Pro-V5-Build026.0"
+    client:"AlphaTraderAI-Pro-V5-Build027.0"
   };
 }
 
@@ -3077,6 +3094,107 @@ async function requestCloudAnalysis(options={}){
 }
 
 
+
+function solutionApiUrl(){
+  const base=getApiSettings().url||"";
+  if(!base)return "";
+  return base.replace(/\/analyze\/?$/,"/solve-life-death");
+}
+function formatAiSolution(data){
+  if(!data||data.status!=="ok")return `解題失敗：${data?.message||"沒有取得解答手順"}`;
+  const rows=(data.line||[]).map(m=>`${m.number}. ${m.color==="B"?"黑":"白"} ${m.move}`);
+  return [
+    `${data.question_no?"第 "+data.question_no+" 題｜":""}KataGo AI 主變化`,
+    `共 ${data.move_count||rows.length} 手｜耗時 ${data.elapsed_ms||0} ms`,
+    "",
+    ...rows,
+    "",
+    ...(data.warnings||[])
+  ].join("\n");
+}
+function applyAiSolutionLine(line){
+  if(!Array.isArray(line)||!line.length){toast("沒有可顯示的解答手順");return false;}
+  if(!state.aiSolutionBackup)state.aiSolutionBackup=cloneTeachingState();
+  // 回到題目初始圖形，再套用 AI 主變化。
+  state.moves=[];state.actions=[];state.index=0;state.replayCache=[];
+  state.teachingSequence=[];state.teachingAnswerMode=true;state.teachingShowNumbers=true;
+  state.teachingFirstPlayer=line[0]?.color||"B";state.teachingNext=state.teachingFirstPlayer;
+  let applied=0;
+  for(const item of line){
+    const p=gtpToPoint(item.move);
+    if(!p||p.pass)break;
+    const current=getSnapshot(state.moves.length);
+    const koHash=state.moves.length>0?getSnapshot(state.moves.length-1).hash:null;
+    const move={c:item.color,x:p.x,y:p.y};
+    const result=executeMove(current.board,current.provenance,move,state.moves.length+1,{rejectSuicide:true,koHash});
+    if(!result.ok)break;
+    state.moves.push(move);
+    state.teachingSequence.push({x:p.x,y:p.y,color:item.color,n:state.teachingSequence.length+1});
+    applied++;
+  }
+  state.index=state.moves.length;state.teachingNext=state.moves.length?(state.moves.at(-1).c==="B"?"W":"B"):state.teachingFirstPlayer;
+  state.currentSnapshot=activateSnapshot(state.index);
+  syncUI();updateTeachingUI();redrawTeachingNumbersNow();
+  toast(`已在棋盤顯示 ${applied} 手 AI 解答`);
+  return applied>0;
+}
+async function runAiLifeDeathSolver(){
+  const btn=$("runAiLifeDeathSolver"),status=$("lifeDeathVerifyStatus"),pre=$("lifeDeathVerifyResult");
+  if(state.teachingAnswerMode&&state.moves.length){toast("請先重設回題目，再執行 AI 解題");return;}
+  const target=$("verifyTargetCoordinate").value.trim();
+  if(!target){toast("請先點選要殺或要救的目標棋群");return;}
+  const url=solutionApiUrl();if(!url){toast("請先設定 KataGo API 網址");return;}
+  const settings=getApiSettings(),headers={"Content-Type":"application/json","Accept":"application/json"};
+  if(settings.key&&settings.authMode==="bearer")headers.Authorization="Bearer "+settings.key;
+  if(settings.key&&settings.authMode==="x-api-key")headers["X-API-Key"]=settings.key;
+  const payload=currentPositionPayload();
+  payload.question_no=$("verifyQuestionNo").value.trim();
+  payload.problem_type=$("verifyProblemType").value;
+  payload.target_coordinate=target;
+  payload.region_radius=Number($("verifyRegionRadius").value||4);
+  payload.visits_per_move=Number($("solveVisitsPerMove").value||80);
+  payload.max_solution_moves=Number($("solveMaxMoves").value||12);
+  payload.next_player=payload.problem_type.startsWith("white_")?"W":"B";
+  btn.disabled=true;btn.textContent="AI 解題中…";status.className="connector-status warn";
+  status.textContent="KataGo 正在黑白交替求出局部主變化；手數越多需要越久。";
+  try{
+    const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(payload),cache:"no-store"});
+    const data=await response.json();
+    if(!response.ok||data.status!=="ok")throw new Error(data?.detail||data?.message||`HTTP ${response.status}`);
+    state.aiSolutionLine=data.line||[];window.__lastAiSolution=data;
+    pre.textContent=formatAiSolution(data);
+    status.className="connector-status ok";status.textContent=`AI 已完成 ${data.move_count||0} 手主變化，並顯示在棋盤。`;
+    closeModal("teachModal");
+    applyAiSolutionLine(state.aiSolutionLine);
+  }catch(err){status.className="connector-status bad";status.textContent="AI 解題失敗："+err.message;pre.textContent=String(err.message);}
+  finally{btn.disabled=false;btn.textContent="AI 自動解題並顯示手順";}
+}
+async function playAiSolutionLine(){
+  if(!state.aiSolutionLine?.length){toast("請先執行 AI 自動解題");return;}
+  if(state.aiSolutionPlaying)return;
+  state.aiSolutionPlaying=true;
+  if(state.aiSolutionBackup)restoreTeachingState(state.aiSolutionBackup);
+  else {state.aiSolutionBackup=cloneTeachingState();state.moves=[];state.index=0;state.teachingSequence=[];}
+  state.teachingAnswerMode=true;state.teachingShowNumbers=true;state.moves=[];state.index=0;state.teachingSequence=[];state.replayCache=[];
+  closeModal("teachModal");
+  for(const item of state.aiSolutionLine){
+    if(!state.aiSolutionPlaying)break;
+    const p=gtpToPoint(item.move);if(!p||p.pass)break;
+    const current=getSnapshot(state.moves.length),koHash=state.moves.length?getSnapshot(state.moves.length-1).hash:null;
+    const move={c:item.color,x:p.x,y:p.y},r=executeMove(current.board,current.provenance,move,state.moves.length+1,{rejectSuicide:true,koHash});
+    if(!r.ok)break;
+    state.moves.push(move);state.index=state.moves.length;state.teachingSequence.push({x:p.x,y:p.y,color:item.color,n:state.teachingSequence.length+1});state.replayCache=[];
+    syncUI();redrawTeachingNumbersNow();await new Promise(resolve=>setTimeout(resolve,650));
+  }
+  state.aiSolutionPlaying=false;toast("AI 解答播放完成");
+}
+function resetAiSolution(){
+  state.aiSolutionPlaying=false;
+  if(state.aiSolutionBackup){restoreTeachingState(state.aiSolutionBackup);state.aiSolutionBackup=null;}
+  else{state.moves=[];state.index=0;state.teachingSequence=[];state.teachingAnswerMode=false;state.teachingShowNumbers=false;syncUI();updateTeachingUI();}
+  toast("已重設回題目");
+}
+
 function verificationApiUrl(){
   const base=getApiSettings().url||"";
   if(!base)return "";
@@ -3137,6 +3255,9 @@ $("selectVerifyTarget").addEventListener("click",()=>{
   $("lifeDeathVerifyStatus").textContent="請直接點棋盤上要殺或要救的那一群棋。";
   toast("請點選目標棋群中的任一顆棋");
 });
+$("runAiLifeDeathSolver").addEventListener("click",runAiLifeDeathSolver);
+$("playAiSolution").addEventListener("click",playAiSolutionLine);
+$("resetAiSolution").addEventListener("click",resetAiSolution);
 
 async function runCloudAnalysis({openDashboard=true}={}){
   const btn=$("analyzeCloudBtn");
@@ -5637,7 +5758,7 @@ if(state.engineVerified&&state.rendererVerified){
 
 <button id="apiInspectorToggle" class="api-inspector-toggle" type="button">API 資料</button>
 <section id="apiInspectorPanel" class="api-inspector-panel" hidden aria-label="Render API Inspector">
-  <div class="api-inspector-head"><strong>Build026.1 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
+  <div class="api-inspector-head"><strong>Build027.0 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
   <div class="api-inspector-status"><span id="apiInspectorDot" class="api-inspector-dot"></span><span id="apiInspectorStatus">尚未執行分析</span></div>
   <pre id="apiInspectorPre" class="api-inspector-pre">按一次 KataGo 分析後，這裡會同時顯示 Request、Response 與 Visits 核對結果。</pre>
   <div class="api-inspector-actions"><button id="apiInspectorCopy" class="primary" type="button">複製 JSON</button><button id="apiInspectorClear" type="button">清除</button></div>
