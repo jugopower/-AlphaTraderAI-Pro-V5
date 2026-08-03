@@ -2649,7 +2649,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.1｜朱老師題庫管理</h3>
+    <h3>Build 028.1.1｜朱老師題庫管理</h3>
     <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
@@ -2663,7 +2663,9 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <div class="qb-actions">
       <button class="action" id="qbSaveCurrent" type="button">儲存／更新</button>
       <button class="secondary" id="qbSaveAs" type="button">另存新題</button>
-      <button class="secondary" id="qbNew" type="button">新增空白資料</button>
+      <button class="action" id="qbNewNext" type="button">新增下一題</button>
+      <button class="secondary" id="qbClearBoard" type="button">清空棋盤</button>
+      <button class="secondary" id="qbNew" type="button">只清空資料</button>
       <button class="secondary" id="qbDeleteCurrent" type="button">刪除目前題</button>
     </div>
     <div class="qb-nav">
@@ -3856,7 +3858,7 @@ $("exportTeachSgfBtn").onclick=()=>{
 };
 
 
-// Build 028.1 - question bank management
+// Build 028.1.1 - question bank management
 const QB_STORAGE_KEY="joygo-question-bank-v1";
 const QB_RECENT_KEY="joygo-question-bank-recent-v1";
 let qbEditingId=null;
@@ -3934,13 +3936,36 @@ function qbNavigate(step){
   const rows=qbVisibleRows();if(!rows.length){toast("目前沒有可切換的題目");return}
   let i=rows.findIndex(x=>x.id===qbEditingId);if(i<0)i=step>0?-1:0;const next=rows[(i+step+rows.length)%rows.length];qbLoadRecord(next);
 }
+function qbClearBoardOnly(){
+  state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.actions=[];state.replayCache=[];
+  state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.captureEvents=[];state.lastCapture=0;
+  state.teachingMarks=[];state.teachingSequence=[];state.teachingComment="";state.teachingAnswerMode=false;state.teachingShowNumbers=false;
+  state.teachingNext=state.teachingFirstPlayer||"B";state.variationBackup=null;state.aiSolutionLine=[];state.aiSolutionBackup=null;
+  if($("teachComment"))$("teachComment").value="";
+  syncUI();updateTeachingUI();
+}
+function qbNextNumber(){
+  const cur=qbNaturalNumber($("qbNumber").value);
+  if(Number.isFinite(cur)&&cur!==Number.MAX_SAFE_INTEGER)return String(cur+1);
+  const nums=qbRead().map(r=>qbNaturalNumber(r.number)).filter(n=>Number.isFinite(n)&&n!==Number.MAX_SAFE_INTEGER);
+  return String((nums.length?Math.max(...nums):0)+1);
+}
 $("qbSaveCurrent").onclick=()=>qbSave(false);
 $("qbSaveAs").onclick=()=>{qbEditingId=null;qbSave(true)};
-$("qbNew").onclick=()=>{qbClearForm();toast("已切換至新題目資料；棋盤內容不會自動清除")};
+$("qbClearBoard").onclick=()=>{if(!confirm("確定清空棋盤、標記、解答手順與評語？題號與分類資料會保留。"))return;qbClearBoardOnly();toast("棋盤已清空")};
+$("qbNewNext").onclick=()=>{
+  const nextNo=qbNextNumber();
+  if(!confirm(`確定已儲存目前題目，並建立第 ${nextNo} 題？`))return;
+  const keepType=$("qbType").value,keepFirst=$("qbFirst").value,keepDifficulty=$("qbDifficulty").value;
+  qbClearBoardOnly();qbEditingId=null;$("qbNumber").value=nextNo;$("qbTitle").value="";$("qbTags").value="";
+  $("qbType").value=keepType;$("qbFirst").value=keepFirst;$("qbDifficulty").value=keepDifficulty;
+  state.teachingFirstPlayer=keepFirst;state.teachingNext=keepFirst;qbUpdateCurrentLabel();updateTeachingUI();toast(`已建立第 ${nextNo} 題空白棋盤`);
+};
+$("qbNew").onclick=()=>{qbClearForm();toast("已清空題目資料；棋盤內容保留")};
 $("qbDeleteCurrent").onclick=()=>{if(!qbEditingId){toast("目前尚未載入已儲存題目");return}qbDeleteById(qbEditingId)};
 $("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.1",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.1.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.1.1",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.1.1.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 qbRender();
 
