@@ -2649,7 +2649,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.1.2｜朱老師題庫管理</h3>
+    <h3>Build 028.1.3｜朱老師題庫管理</h3>
     <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
@@ -2778,7 +2778,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
+  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingWasClockRunning:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3575,9 +3575,27 @@ function toast(msg){
 function openModal(id){$(id).classList.add("open");if(id!=="teachModal")setTeachingBarSuppressed(true)}
 function closeModal(id){$(id).classList.remove("open");if(id!=="teachModal")setTeachingBarSuppressed(false)}
 
+function enterTeachingMode(){
+  if(!state.teachingMode){
+    state.teachingWasClockRunning=!!state.clockRunning;
+    stopGameClock();
+  }
+  state.teachingMode=true;
+  updateClockUI();
+}
+function leaveTeachingMode(){
+  const shouldResume=!!state.teachingWasClockRunning;
+  state.teachingMode=false;
+  state.teachingWasClockRunning=false;
+  updateClockUI();
+  if(shouldResume && state.humanMode && state.index===state.moves.length && !state.gameEnded){
+    startGameClock();
+  }
+}
+
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
-  ["teachBtn","▣","教學",()=>{state.teachingMode=true;state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動")}],
+  ["teachBtn","▣","教學",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn","♟","人機",()=>openModal("humanModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
@@ -3633,7 +3651,7 @@ $("teachQuickClear").onclick=()=>{
   state.teachingMarks=[];syncUI();updateTeachingUI();toast("教學標記已清除");
 };
 $("teachQuickClose").onclick=()=>{
-  state.teachingMode=false;state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;closeModal("teachModal");updateTeachingUI();toast("教學編輯完成");
+  leaveTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;closeModal("teachModal");updateTeachingUI();toast("教學編輯完成");
 };
 
 
@@ -3816,7 +3834,7 @@ $("clearTeachMarksBtn").onclick=()=>{
 };
 $("startVariationBtn").onclick=()=>{
   if(!state.variationBackup)state.variationBackup=cloneTeachingState();
-  state.teachingMode=true;state.teachingTool="alternate";
+  enterTeachingMode();state.teachingTool="alternate";
   toast("變化圖已建立，可直接在棋盤落子");
   closeModal("teachModal");updateTeachingUI();
 };
@@ -3826,7 +3844,7 @@ $("returnMainBtn").onclick=()=>{
   toast("已返回主棋譜");
 };
 $("exitTeachBtn").onclick=()=>{
-  state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
+  leaveTeachingMode();closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
   let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build028.0]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
@@ -3859,7 +3877,7 @@ $("exportTeachSgfBtn").onclick=()=>{
 };
 
 
-// Build 028.1.2 - question bank management
+// Build 028.1.3 - question bank management
 const QB_STORAGE_KEY="joygo-question-bank-v1";
 const QB_RECENT_KEY="joygo-question-bank-recent-v1";
 let qbEditingId=null;
@@ -3989,7 +4007,7 @@ $("qbNew").onclick=()=>{qbClearForm();toast("已清空題目資料；棋盤內�
 $("qbDeleteCurrent").onclick=()=>{if(!qbEditingId){toast("目前尚未載入已儲存題目");return}qbDeleteById(qbEditingId)};
 $("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);$("qbToggleAnswer").onclick=qbToggleAnswer;
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.1.2",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.1.2.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.1.3",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.1.3.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 qbRender();
 
@@ -4847,6 +4865,15 @@ function updateClockUI(){
   const panel=$("gameClockPanel");if(!panel)return;
   panel.hidden=false;
   const data=[['B','blackClock','blackByo','blackClockBox'],['W','whiteClock','whiteByo','whiteClockBox']];
+  if(state.teachingMode){
+    for(const [,timeId,byoId,boxId] of data){
+      $(timeId).textContent="暫停";
+      $(byoId).textContent="教學模式｜計時暫停";
+      const box=$(boxId);box.classList.remove("active","danger");
+    }
+    $("clockSoundIcon").textContent=state.sound?'🔊':'🔇';
+    return;
+  }
   for(const [c,timeId,byoId,boxId] of data){
     const main=c==='B'?state.blackTimeSec:state.whiteTimeSec;
     const byo=c==='B'?state.blackByoLeft:state.whiteByoLeft;
@@ -4869,7 +4896,7 @@ function loseOnTime(color){
   alert(`${loser}時間用盡，${winner}勝。`);
 }
 function clockTick(){
-  if(!state.clockRunning||!state.humanMode)return;
+  if(!state.clockRunning||!state.humanMode||state.teachingMode)return;
   const now=performance.now();const delta=Math.min(1.5,(now-state.clockLastTick)/1000);state.clockLastTick=now;
   const c=state.turn;
   const mainKey=c==='B'?'blackTimeSec':'whiteTimeSec',byoKey=c==='B'?'blackByoLeft':'whiteByoLeft',periodKey=c==='B'?'blackPeriods':'whitePeriods';
@@ -4887,7 +4914,7 @@ function clockTick(){
   updateClockUI();
 }
 function startGameClock(){
-  if(!state.humanMode || state.index!==state.moves.length)return;
+  if(!state.humanMode || state.teachingMode || state.index!==state.moves.length)return;
   state.clockRunning=true;state.clockLastTick=performance.now();
   if(state.clockTimer)clearInterval(state.clockTimer);
   state.clockTimer=setInterval(clockTick,200);updateClockUI();
