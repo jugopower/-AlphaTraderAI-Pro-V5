@@ -2649,7 +2649,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.1.1｜朱老師題庫管理</h3>
+    <h3>Build 028.1.2｜朱老師題庫管理</h3>
     <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
@@ -2671,6 +2671,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <div class="qb-nav">
       <button class="secondary" id="qbPrev" type="button">← 上一題</button>
       <button class="secondary" id="qbNext" type="button">下一題 →</button>
+      <button class="action" id="qbToggleAnswer" type="button">查看答案</button>
       <button class="secondary" id="qbExportAll" type="button">備份 JSON</button>
       <label style="margin:0">匯入 JSON<input id="qbImportAll" type="file" accept="application/json,.json"></label>
     </div>
@@ -3858,10 +3859,12 @@ $("exportTeachSgfBtn").onclick=()=>{
 };
 
 
-// Build 028.1.1 - question bank management
+// Build 028.1.2 - question bank management
 const QB_STORAGE_KEY="joygo-question-bank-v1";
 const QB_RECENT_KEY="joygo-question-bank-recent-v1";
 let qbEditingId=null;
+let qbLoadedAnswer=null;
+let qbAnswerVisible=false;
 function qbRead(){try{const v=JSON.parse(localStorage.getItem(QB_STORAGE_KEY)||"[]");return Array.isArray(v)?v:[]}catch{return []}}
 function qbWrite(items){localStorage.setItem(QB_STORAGE_KEY,JSON.stringify(items))}
 function qbRecentRead(){try{const v=JSON.parse(localStorage.getItem(QB_RECENT_KEY)||"[]");return Array.isArray(v)?v:[]}catch{return []}}
@@ -3887,12 +3890,30 @@ function qbUpdateCurrentLabel(){
   $("qbCurrent").textContent=r?`目前：第 ${r.number||"未編號"} 題｜${r.title||"未命名"}`:"目前：新題目（尚未儲存）";
 }
 function qbClearForm(){
-  qbEditingId=null;$("qbNumber").value="";$("qbTitle").value="";$("qbType").value="死活";$("qbFirst").value="B";$("qbDifficulty").value="中級";$("qbTags").value="";qbUpdateCurrentLabel();
+  qbEditingId=null;qbLoadedAnswer=null;qbAnswerVisible=false;qbUpdateAnswerButton();$("qbNumber").value="";$("qbTitle").value="";$("qbType").value="死活";$("qbFirst").value="B";$("qbDifficulty").value="中級";$("qbTags").value="";qbUpdateCurrentLabel();
+}
+function qbHasAnswer(r){return !!((r?.moves?.length||0)||(r?.sequence?.length||0))}
+function qbUpdateAnswerButton(){
+  const b=$("qbToggleAnswer");if(!b)return;
+  b.textContent=qbAnswerVisible?"隱藏答案":"查看答案";
 }
 function qbLoadRecord(r){
-  qbEditingId=r.id;$("qbNumber").value=r.number||"";$("qbTitle").value=r.title||"";$("qbType").value=r.type||"死活";$("qbFirst").value=r.first||"B";$("qbDifficulty").value=r.difficulty||"中級";$("qbTags").value=r.tags||"";
-  state.size=r.size||19;state.setupB=JSON.parse(JSON.stringify(r.setupB||[]));state.setupW=JSON.parse(JSON.stringify(r.setupW||[]));state.moves=JSON.parse(JSON.stringify(r.moves||[]));state.index=state.moves.length;state.actions=[];state.replayCache=[];state.teachingMarks=JSON.parse(JSON.stringify(r.marks||[]));state.teachingSequence=JSON.parse(JSON.stringify(r.sequence||[]));state.teachingComment=r.comment||"";state.teachingFirstPlayer=r.first||"B";state.teachingNext=state.teachingFirstPlayer;state.teachingAnswerMode=state.moves.length>0;state.teachingShowNumbers=state.teachingSequence.length>0;
-  if($("teachComment"))$("teachComment").value=state.teachingComment;syncUI();updateTeachingUI();qbTouchRecent(r.id);qbUpdateCurrentLabel();qbRender();toast(`已載入第 ${r.number||"未編號"} 題`);
+  qbEditingId=r.id;qbLoadedAnswer=JSON.parse(JSON.stringify(r));qbAnswerVisible=false;
+  $("qbNumber").value=r.number||"";$("qbTitle").value=r.title||"";$("qbType").value=r.type||"死活";$("qbFirst").value=r.first||"B";$("qbDifficulty").value=r.difficulty||"中級";$("qbTags").value=r.tags||"";
+  state.size=r.size||19;state.setupB=JSON.parse(JSON.stringify(r.setupB||[]));state.setupW=JSON.parse(JSON.stringify(r.setupW||[]));state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingMarks=JSON.parse(JSON.stringify(r.marks||[]));state.teachingSequence=[];state.teachingComment=r.comment||"";state.teachingFirstPlayer=r.first||"B";state.teachingNext=state.teachingFirstPlayer;state.teachingAnswerMode=false;state.teachingShowNumbers=false;
+  if($("teachComment"))$("teachComment").value=state.teachingComment;syncUI();updateTeachingUI();qbUpdateAnswerButton();qbTouchRecent(r.id);qbUpdateCurrentLabel();qbRender();toast(`已載入第 ${r.number||"未編號"} 題（答案已隱藏）`);
+}
+function qbToggleAnswer(){
+  if(!qbEditingId){toast("請先載入題目");return}
+  const r=qbRead().find(x=>x.id===qbEditingId)||qbLoadedAnswer;
+  if(!qbAnswerVisible){
+    if(!qbHasAnswer(r)){alert("本題尚未建立答案。請按「開始解答手順」輸入答案，再按「儲存／更新」。");return}
+    state.moves=JSON.parse(JSON.stringify(r.moves||[]));state.index=state.moves.length;state.teachingSequence=JSON.parse(JSON.stringify(r.sequence||[]));state.teachingAnswerMode=true;state.teachingShowNumbers=true;qbAnswerVisible=true;
+    syncUI();updateTeachingUI();qbUpdateAnswerButton();toast("已顯示答案");
+  }else{
+    state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingSequence=[];state.teachingAnswerMode=false;state.teachingShowNumbers=false;state.teachingNext=state.teachingFirstPlayer||"B";qbAnswerVisible=false;
+    syncUI();updateTeachingUI();qbUpdateAnswerButton();toast("答案已隱藏");
+  }
 }
 function qbSortedRows(items){
   const mode=$("qbSort")?.value||"number",difficultyOrder={"初級":1,"中級":2,"高級":3,"高段":4};
@@ -3917,7 +3938,7 @@ function qbRenderRecent(){
 function qbRender(){
   const all=qbRead(),rows=qbVisibleRows();
   $("qbStatus").textContent=`題庫共 ${all.length} 題｜目前顯示 ${rows.length} 題`;
-  $("qbList").innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><div><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
+  $("qbList").innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><div><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}・${qbHasAnswer(r)?`答案已建立（${Math.max(r.moves?.length||0,r.sequence?.length||0)}手）`:"尚未建立答案"}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
   $("qbList").querySelectorAll("[data-qb-load]").forEach(b=>b.onclick=()=>{const r=qbRead().find(x=>x.id===b.dataset.qbLoad);if(r)qbLoadRecord(r)});
   $("qbList").querySelectorAll("[data-qb-star]").forEach(b=>b.onclick=()=>{const items=qbRead(),r=items.find(x=>x.id===b.dataset.qbStar);if(!r)return;r.favorite=!r.favorite;r.updatedAt=new Date().toISOString();qbWrite(items);qbRender();toast(r.favorite?"已加入收藏":"已取消收藏")});
   $("qbList").querySelectorAll("[data-qb-delete]").forEach(b=>b.onclick=()=>qbDeleteById(b.dataset.qbDelete));
@@ -3933,8 +3954,13 @@ function qbSave(forceNew=false){
   qbEditingId=rec.id;qbWrite(items);qbTouchRecent(rec.id);qbRender();toast(forceNew?`已另存為第 ${rec.number} 題`:`第 ${rec.number} 題已儲存`);
 }
 function qbNavigate(step){
-  const rows=qbVisibleRows();if(!rows.length){toast("目前沒有可切換的題目");return}
-  let i=rows.findIndex(x=>x.id===qbEditingId);if(i<0)i=step>0?-1:0;const next=rows[(i+step+rows.length)%rows.length];qbLoadRecord(next);
+  const rows=qbSortedRows(qbRead());if(!rows.length){toast("題庫目前沒有題目");return}
+  let i=rows.findIndex(x=>x.id===qbEditingId);
+  if(i<0){qbLoadRecord(step>0?rows[0]:rows[rows.length-1]);return}
+  const ni=i+step;
+  if(ni<0){toast("已是第一題");return}
+  if(ni>=rows.length){toast("已是最後一題");return}
+  qbLoadRecord(rows[ni]);
 }
 function qbClearBoardOnly(){
   state.moves=[];state.index=0;state.setupB=[];state.setupW=[];state.actions=[];state.replayCache=[];
@@ -3945,8 +3971,6 @@ function qbClearBoardOnly(){
   syncUI();updateTeachingUI();
 }
 function qbNextNumber(){
-  const cur=qbNaturalNumber($("qbNumber").value);
-  if(Number.isFinite(cur)&&cur!==Number.MAX_SAFE_INTEGER)return String(cur+1);
   const nums=qbRead().map(r=>qbNaturalNumber(r.number)).filter(n=>Number.isFinite(n)&&n!==Number.MAX_SAFE_INTEGER);
   return String((nums.length?Math.max(...nums):0)+1);
 }
@@ -3963,9 +3987,9 @@ $("qbNewNext").onclick=()=>{
 };
 $("qbNew").onclick=()=>{qbClearForm();toast("已清空題目資料；棋盤內容保留")};
 $("qbDeleteCurrent").onclick=()=>{if(!qbEditingId){toast("目前尚未載入已儲存題目");return}qbDeleteById(qbEditingId)};
-$("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);
+$("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);$("qbToggleAnswer").onclick=qbToggleAnswer;
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.1.1",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.1.1.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.1.2",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.1.2.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 qbRender();
 
