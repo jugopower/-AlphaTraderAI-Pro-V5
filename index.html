@@ -2280,6 +2280,19 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 .api-inspector-panel[hidden]{display:none!important}.api-inspector-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:#28150e;border-bottom:1px solid #68451f}.api-inspector-head strong{color:#ffd66a;font-size:16px}.api-inspector-status{padding:8px 14px;color:#f1ddbd;font-size:13px;border-bottom:1px solid #4d321b}.api-inspector-pre{margin:0;padding:13px;overflow:auto;min-height:130px;max-height:42vh;background:#080605;color:#fff0cb;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word;-webkit-overflow-scrolling:touch}.api-inspector-actions{display:flex;gap:8px;padding:10px;background:#1f110c}.api-inspector-actions button,.api-inspector-head button{border:1px solid #805728;border-radius:10px;background:#321b11;color:#fff;padding:8px 11px;font-weight:800}.api-inspector-actions .primary{background:linear-gradient(90deg,#d99d25,#ffd65d);color:#1a0e07;flex:1}.api-inspector-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#888;margin-right:6px}.api-inspector-dot.wait{background:#f2b83f}.api-inspector-dot.ok{background:#42cc78}.api-inspector-dot.bad{background:#ef5d5d}
 @media(max-width:700px){.api-inspector-panel{right:8px;bottom:62px;width:calc(100vw - 16px);max-height:58vh}.api-inspector-toggle{right:9px;bottom:max(9px,env(safe-area-inset-bottom));font-size:13px}}
 </style>
+
+<style id="build028-question-bank-style">
+.question-bank-panel{margin-top:14px;padding:14px;border:1px solid #6c4a28;border-radius:16px;background:#100b08}
+.question-bank-panel h3{margin:0 0 10px}
+.qb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qb-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+.qb-list{margin-top:12px;display:grid;gap:8px;max-height:340px;overflow:auto}
+.qb-item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px;border:1px solid #5f4025;border-radius:12px;background:#080604}
+.qb-title{font-weight:700}.qb-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.qb-item-actions{display:flex;gap:6px}.qb-item-actions button{padding:8px 10px;min-width:auto}
+#lifeDeathVerifyPanel{display:none!important}
+@media(max-width:700px){.qb-grid{grid-template-columns:1fr}.qb-actions{grid-template-columns:1fr 1fr}.qb-item{grid-template-columns:1fr}.qb-item-actions{justify-content:flex-end}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2630,8 +2643,32 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
     <button class="secondary" id="exitTeachBtn">離開教學模式</button>
   </div>
 
+  <section id="questionBankPanel" class="question-bank-panel">
+    <h3>Build 028.0｜朱老師題庫</h3>
+    <p class="teach-hint">擺好題目與正解後，輸入資料並儲存。第一版先保存在這台 iPad 的瀏覽器中。</p>
+    <div class="qb-grid">
+      <label>題號<input id="qbNumber" placeholder="例如 320"></label>
+      <label>題名<input id="qbTitle" placeholder="例如 角部淨殺"></label>
+      <label>題型<select id="qbType"><option>死活</option><option>手筋</option><option>官子</option><option>布局</option><option>其他</option></select></label>
+      <label>先手<select id="qbFirst"><option value="B">黑先</option><option value="W">白先</option></select></label>
+      <label>難度<select id="qbDifficulty"><option>初級</option><option selected>中級</option><option>高級</option><option>高段</option></select></label>
+      <label>標籤<input id="qbTags" placeholder="例如 淨殺、角部、手筋"></label>
+    </div>
+    <div class="qb-actions">
+      <button class="action" id="qbSaveCurrent" type="button">儲存目前題目</button>
+      <button class="secondary" id="qbNew" type="button">新增空白資料</button>
+      <button class="secondary" id="qbExportAll" type="button">備份題庫 JSON</button>
+    </div>
+    <div class="qb-grid" style="margin-top:10px">
+      <label>搜尋題庫<input id="qbSearch" placeholder="題號、題名、標籤"></label>
+      <label>分類篩選<select id="qbFilter"><option value="">全部</option><option>死活</option><option>手筋</option><option>官子</option><option>布局</option><option>其他</option></select></label>
+    </div>
+    <div id="qbStatus" class="connector-status ok" style="margin-top:10px">目前 0 題</div>
+    <div id="qbList" class="qb-list"></div>
+  </section>
+
   <section id="lifeDeathVerifyPanel" style="margin-top:14px;padding:14px;border:1px solid #6c4a28;border-radius:16px;background:#100b08">
-    <h3 style="margin:0 0 10px">Build 027.1｜嚴格局部 AI 解題</h3>
+    <h3 style="margin:0 0 10px">Build 027.1｜AI 解題（暫停／實驗）</h3>
     <div class="grid2">
       <label>題號<input id="verifyQuestionNo" placeholder="例如 320"></label>
       <label>題型<select id="verifyProblemType">
@@ -3773,7 +3810,7 @@ $("exitTeachBtn").onclick=()=>{
   state.teachingMode=false;closeModal("teachModal");updateTeachingUI();toast("已離開教學模式");
 };
 function buildTeachingSgf(){
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.5]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build028.0]SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length)sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   if(state.setupW.length)sgf+="AW"+state.setupW.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
   const markGroups={A:[],B:[],C:[],triangle:[],circle:[],cross:[]};
@@ -3801,6 +3838,53 @@ $("exportTeachSgfBtn").onclick=()=>{
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   toast("教學 SGF 已匯出");
 };
+
+
+// Build 028.0 - local question bank MVP
+const QB_STORAGE_KEY="joygo-question-bank-v1";
+let qbEditingId=null;
+function qbRead(){try{return JSON.parse(localStorage.getItem(QB_STORAGE_KEY)||"[]")}catch{return []}}
+function qbWrite(items){localStorage.setItem(QB_STORAGE_KEY,JSON.stringify(items))}
+function qbId(){return "q"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function qbCurrentRecord(){
+  state.teachingComment=$("teachComment")?.value.trim()||state.teachingComment||"";
+  return {
+    id:qbEditingId||qbId(),number:$("qbNumber").value.trim(),title:$("qbTitle").value.trim(),
+    type:$("qbType").value,first:$("qbFirst").value,difficulty:$("qbDifficulty").value,
+    tags:$("qbTags").value.trim(),size:state.size,comment:state.teachingComment,
+    setupB:JSON.parse(JSON.stringify(state.setupB||[])),setupW:JSON.parse(JSON.stringify(state.setupW||[])),
+    moves:JSON.parse(JSON.stringify((state.moves||[]).slice(0,state.index))),
+    marks:JSON.parse(JSON.stringify(state.teachingMarks||[])),
+    sequence:JSON.parse(JSON.stringify(state.teachingSequence||[])),
+    sgf:buildTeachingSgf(),updatedAt:new Date().toISOString(),createdAt:new Date().toISOString()
+  };
+}
+function qbClearForm(){qbEditingId=null;$("qbNumber").value="";$("qbTitle").value="";$("qbType").value="死活";$("qbFirst").value="B";$("qbDifficulty").value="中級";$("qbTags").value="";}
+function qbLoadRecord(r){
+  qbEditingId=r.id;$("qbNumber").value=r.number||"";$("qbTitle").value=r.title||"";$("qbType").value=r.type||"死活";$("qbFirst").value=r.first||"B";$("qbDifficulty").value=r.difficulty||"中級";$("qbTags").value=r.tags||"";
+  state.size=r.size||19;state.setupB=JSON.parse(JSON.stringify(r.setupB||[]));state.setupW=JSON.parse(JSON.stringify(r.setupW||[]));state.moves=JSON.parse(JSON.stringify(r.moves||[]));state.index=state.moves.length;state.actions=[];state.replayCache=[];state.teachingMarks=JSON.parse(JSON.stringify(r.marks||[]));state.teachingSequence=JSON.parse(JSON.stringify(r.sequence||[]));state.teachingComment=r.comment||"";state.teachingFirstPlayer=r.first||"B";state.teachingNext=state.teachingFirstPlayer;state.teachingAnswerMode=state.moves.length>0;state.teachingShowNumbers=state.teachingSequence.length>0;
+  if($("teachComment"))$("teachComment").value=state.teachingComment;syncUI();updateTeachingUI();toast(`已載入第 ${r.number||"未編號"} 題`);
+}
+function qbRender(){
+  const all=qbRead(),q=($("qbSearch")?.value||"").trim().toLowerCase(),f=$("qbFilter")?.value||"";
+  const rows=all.filter(r=>(!f||r.type===f)&&(!q||[r.number,r.title,r.tags,r.type,r.difficulty].join(" ").toLowerCase().includes(q)));
+  $("qbStatus").textContent=`題庫共 ${all.length} 題｜目前顯示 ${rows.length} 題`;
+  $("qbList").innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><div><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta">${escapeHtml(r.type||"")}・${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}</div></div><div class="qb-item-actions"><button class="secondary" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。</div>";
+  $("qbList").querySelectorAll("[data-qb-load]").forEach(b=>b.onclick=()=>{const r=qbRead().find(x=>x.id===b.dataset.qbLoad);if(r)qbLoadRecord(r)});
+  $("qbList").querySelectorAll("[data-qb-delete]").forEach(b=>b.onclick=()=>{const items=qbRead(),r=items.find(x=>x.id===b.dataset.qbDelete);if(!r)return;if(!confirm(`刪除第 ${r.number||"未編號"} 題？`))return;qbWrite(items.filter(x=>x.id!==r.id));if(qbEditingId===r.id)qbClearForm();qbRender();toast("題目已刪除")});
+}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("qbSaveCurrent").onclick=()=>{
+  const rec=qbCurrentRecord();if(!rec.number){toast("請先輸入題號");$("qbNumber").focus();return}
+  const items=qbRead(),i=items.findIndex(x=>x.id===rec.id),duplicate=items.find(x=>x.number===rec.number&&x.id!==rec.id);
+  if(duplicate&&!confirm(`題號 ${rec.number} 已存在，仍要另外儲存嗎？`))return;
+  if(i>=0){rec.createdAt=items[i].createdAt||rec.createdAt;items[i]=rec}else items.unshift(rec);
+  qbEditingId=rec.id;qbWrite(items);qbRender();toast(`第 ${rec.number} 題已儲存`);
+};
+$("qbNew").onclick=()=>{qbClearForm();toast("可建立新題目資料")};
+$("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.0",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+qbRender();
 
 
 ["infoBtn_rightTools","infoBtn_topbar","aiBtn_rightTools","aiBtn_topbar",
@@ -5246,7 +5330,7 @@ function pointToSgf(x,y){
 }
 function buildCurrentSgf(){
   if(state.teachingMode)return buildTeachingSgf();
-  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build022.5]";
+  let sgf="(;GM[1]FF[4]CA[UTF-8]AP[JoyGoStudio:Build028.0]";
   sgf+="SZ["+state.size+"]KM["+Number(state.komi||0)+"]";
   if(state.setupB.length){
     sgf+="AB"+state.setupB.map(p=>"["+pointToSgf(p.x,p.y)+"]").join("");
