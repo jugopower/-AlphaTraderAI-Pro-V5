@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.2 題庫縮圖瀏覽器</title>
+<title>AlphaTrader AI Pro V5｜Build028.2.1 縮圖滑動穩定修正</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2300,7 +2300,7 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 .qb-item{position:relative;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px;border:1px solid #5f4025;border-radius:14px;background:#080604}
 .qb-list.grid-view .qb-item{grid-template-columns:1fr;align-items:stretch;padding:9px}
 .qb-thumb-wrap{position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:#d89a3d;border:1px solid #8b5e28;cursor:pointer}
-.qb-thumb{display:block;width:100%;height:100%}
+.qb-thumb{display:block;width:100%;height:100%;object-fit:cover;-webkit-transform:translateZ(0);transform:translateZ(0)}
 .qb-card-info{min-width:0}.qb-title{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qb-meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
 .qb-list.grid-view .qb-title{margin-top:7px}.qb-list.grid-view .qb-meta{min-height:36px}
 .qb-item-actions{display:flex;gap:6px}.qb-item-actions button{padding:8px 10px;min-width:auto}
@@ -2713,7 +2713,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.2｜題庫縮圖瀏覽器</h3>
+    <h3>Build 028.2.1｜縮圖滑動穩定修正</h3>
     <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
@@ -4067,11 +4067,12 @@ function qbRenderRecent(){
   box.innerHTML=`<b>最近使用：</b>${items.length?items.map(r=>`<button class="secondary" data-qb-recent="${r.id}">${escapeHtml(r.number||"未編號")}</button>`).join(""):"<span>尚無</span>"}`;
   box.querySelectorAll("[data-qb-recent]").forEach(b=>b.onclick=()=>{const r=qbRead().find(x=>x.id===b.dataset.qbRecent);if(r)qbLoadRecord(r)});
 }
-function qbDrawThumbnail(canvas,r){
-  if(!canvas)return;
-  const dpr=Math.min(window.devicePixelRatio||1,2),css=Math.max(150,Math.floor(canvas.getBoundingClientRect().width||220));
-  canvas.width=Math.floor(css*dpr);canvas.height=Math.floor(css*dpr);
-  const c=canvas.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);
+const qbThumbCache=new Map();
+function qbThumbnailKey(r){return JSON.stringify([r?.id,r?.updatedAt,r?.size,r?.setupB,r?.setupW])}
+function qbThumbnailDataURL(r){
+  const key=qbThumbnailKey(r);if(qbThumbCache.has(key))return qbThumbCache.get(key);
+  const css=420,canvas=document.createElement("canvas");canvas.width=css;canvas.height=css;
+  const c=canvas.getContext("2d",{alpha:false});
   const size=Math.max(2,Number(r.size)||19),pad=css*.105,step=(css-pad*2)/(size-1);
   const bg=c.createLinearGradient(0,0,css,css);bg.addColorStop(0,"#efbd63");bg.addColorStop(1,"#cf8730");c.fillStyle=bg;c.fillRect(0,0,css,css);
   c.strokeStyle="rgba(66,43,22,.82)";c.lineWidth=Math.max(1,css/260);
@@ -4080,16 +4081,23 @@ function qbDrawThumbnail(canvas,r){
   for(const x of stars)for(const y of stars){c.beginPath();c.arc(pad+x*step,pad+y*step,Math.max(1.7,css/95),0,Math.PI*2);c.fill()}
   const stones=[...(r.setupB||[]).map(p=>({...p,c:"B"})),...(r.setupW||[]).map(p=>({...p,c:"W"}))],rad=Math.max(3,step*.46);
   for(const p of stones){if(!Number.isFinite(+p.x)||!Number.isFinite(+p.y))continue;const x=pad+(+p.x)*step,y=pad+(+p.y)*step,g=c.createRadialGradient(x-rad*.3,y-rad*.35,rad*.1,x,y,rad);if(p.c==="B"){g.addColorStop(0,"#555");g.addColorStop(.35,"#111");g.addColorStop(1,"#000")}else{g.addColorStop(0,"#fff");g.addColorStop(.55,"#f4f4f4");g.addColorStop(1,"#bbb")}c.fillStyle=g;c.beginPath();c.arc(x,y,rad,0,Math.PI*2);c.fill();c.strokeStyle=p.c==="B"?"#050505":"#aaa";c.lineWidth=1;c.stroke()}
+  const url=canvas.toDataURL("image/png");qbThumbCache.set(key,url);
+  if(qbThumbCache.size>300)qbThumbCache.delete(qbThumbCache.keys().next().value);
+  return url;
 }
+function qbRefreshVisibleThumbs(){
+  const all=qbRead();document.querySelectorAll("img[data-qb-thumb]").forEach(img=>{const r=all.find(x=>x.id===img.dataset.qbThumb);if(r&&(!img.complete||!img.naturalWidth||!img.src))img.src=qbThumbnailDataURL(r)});
+}
+
 function qbRender(){
   const all=qbRead(),rows=qbVisibleRows(),view=$("qbViewMode")?.value||"grid",list=$("qbList");
   $("qbStatus").textContent=`題庫共 ${all.length} 題｜目前顯示 ${rows.length} 題`;
   list.className=`qb-list ${view==="grid"?"grid-view":"list-view"}`;
-  list.innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><div class="qb-thumb-wrap" data-qb-load="${r.id}" title="點擊縮圖載入"><canvas class="qb-thumb" data-qb-thumb="${r.id}"></canvas></div><div class="qb-card-info"><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}・${qbHasAnswer(r)?`答案已建立（${Math.max(r.moves?.length||0,r.sequence?.length||0)}手）`:"尚未建立答案"}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
+  list.innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><div class="qb-thumb-wrap" data-qb-load="${r.id}" title="點擊縮圖載入"><img class="qb-thumb" data-qb-thumb="${r.id}" alt="第 ${escapeHtml(r.number||"")} 題棋盤縮圖" src="${qbThumbnailDataURL(r)}"></div><div class="qb-card-info"><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}・${qbHasAnswer(r)?`答案已建立（${Math.max(r.moves?.length||0,r.sequence?.length||0)}手）`:"尚未建立答案"}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
   list.querySelectorAll("[data-qb-load]").forEach(b=>b.onclick=()=>{const r=qbRead().find(x=>x.id===b.dataset.qbLoad);if(r)qbLoadRecord(r)});
   list.querySelectorAll("[data-qb-star]").forEach(b=>b.onclick=e=>{e.stopPropagation();const items=qbRead(),r=items.find(x=>x.id===b.dataset.qbStar);if(!r)return;r.favorite=!r.favorite;r.updatedAt=new Date().toISOString();qbWrite(items);qbRender();toast(r.favorite?"已加入收藏":"已取消收藏")});
   list.querySelectorAll("[data-qb-delete]").forEach(b=>b.onclick=e=>{e.stopPropagation();qbDeleteById(b.dataset.qbDelete)});
-  requestAnimationFrame(()=>list.querySelectorAll("[data-qb-thumb]").forEach(cv=>{const r=rows.find(x=>x.id===cv.dataset.qbThumb);if(r)qbDrawThumbnail(cv,r)}));
+  requestAnimationFrame(qbRefreshVisibleThumbs);
   qbRenderRecent();qbUpdateCurrentLabel();
 }
 function qbDeleteById(id){const items=qbRead(),r=items.find(x=>x.id===id);if(!r)return;if(!confirm(`確定刪除第 ${r.number||"未編號"} 題？`))return;qbWrite(items.filter(x=>x.id!==r.id));qbRecentWrite(qbRecentRead().filter(x=>x!==r.id));if(qbEditingId===r.id)qbClearForm();qbRender();toast("題目已刪除")}
@@ -4141,6 +4149,14 @@ $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").oncha
 $("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.2",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.2.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 qbRender();
+let qbThumbRefreshTimer=0;
+function qbScheduleThumbRefresh(){clearTimeout(qbThumbRefreshTimer);qbThumbRefreshTimer=setTimeout(qbRefreshVisibleThumbs,80)}
+$("qbList")?.addEventListener("scroll",qbScheduleThumbRefresh,{passive:true});
+document.getElementById("teachModal")?.addEventListener("scroll",qbScheduleThumbRefresh,{passive:true});
+window.addEventListener("resize",qbScheduleThumbRefresh,{passive:true});
+window.addEventListener("orientationchange",()=>setTimeout(qbRefreshVisibleThumbs,180),{passive:true});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(qbRefreshVisibleThumbs,80)});
+
 
 
 ["infoBtn_rightTools","infoBtn_topbar","aiBtn_rightTools","aiBtn_topbar",
