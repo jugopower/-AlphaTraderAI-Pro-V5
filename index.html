@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build025.2 AI 棋力分級</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.5 人機對弈新圖示</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -78,6 +78,9 @@ button{touch-action:manipulation}
   font-size:10px;
 }
 .tool span{font-size:17px;color:var(--gold)}
+.tool .tool-logo{width:34px;height:34px;display:block;object-fit:cover;border-radius:9px;border:1px solid #d9a83e;box-shadow:0 2px 8px #0009;background:#0b0907}
+.topbar .tool .tool-logo{width:38px;height:38px;border-radius:10px}
+.right .tool .tool-logo{width:40px;height:40px;border-radius:11px}
 .controls{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
 .controls button{
   border:1px solid #6c4b2c;border-radius:14px;background:#17100c;color:white;font-size:26px;font-weight:900
@@ -3599,7 +3602,7 @@ const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
   ["teachBtn","▣","教學",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
-  ["humanBtn","♟","人機",()=>openModal("humanModal")],
+  ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>openModal("humanModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
   ["zoomBtn","⛶","放大",()=>toggleFullscreen()],
   ["resetBtn","↺","還原",()=>resetView()]
