@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.1.10 試下座標修正</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.11 終局後試下解鎖</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -5706,6 +5706,8 @@ function startTrialMode(){
   const newBranchKey=JSON.stringify({size:state.size,index:state.index,moves:(state.moves||[]).slice(0,state.index)});
   if(state.trialBranchBaseKey!==newBranchKey){state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey=newBranchKey;}
   state.trialMode=true;
+  // Build028.1.11：終局後進入試下時，暫時解除終局鎖定；取消試下時由備份恢復原狀。
+  state.gameEnded=false;state.consecutivePasses=0;
   // Build028.1.8：試下只允許黑白交替落子，不沿用 A/B/C/△/○/× 標記工具。
   state.teachingTool="alternate";
   state.teachingNext=state.turn;
@@ -5941,7 +5943,7 @@ function boardInputPointFromEvent(e){
 function handleBoardInput(e){
   if(state.scoringMode){handleScoringBoardInput(e);return;}
   if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
-  if(state.aiThinking||state.gameEnded||boardInputBusy)return;
+  if(state.aiThinking||(!state.trialMode&&state.gameEnded)||boardInputBusy)return;
   if(e.cancelable)e.preventDefault();
   const point=boardInputPointFromEvent(e);if(!point)return;
   const now=Date.now(),pointKey=`${point.x},${point.y}`;
