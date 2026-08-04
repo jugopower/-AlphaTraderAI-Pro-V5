@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.1.11 終局後試下解鎖</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.12 題庫與試下穩定版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -5680,6 +5680,7 @@ function restoreTrialState(b){
   state.replayCache=[];state.currentSnapshot=null;state.bestPoint=null;
 }
 function restoreTrialBasePosition(keepTrialMode){
+  resetBoardInputGuard();
   if(!state.trialBackup)return false;
   const backup=state.trialBackup;
   restoreTrialState(backup);
@@ -5696,6 +5697,7 @@ function restoreTrialBasePosition(keepTrialMode){
   return true;
 }
 function startTrialMode(){
+  resetBoardInputGuard();
   if(state.aiThinking){toast("請等 KataGo 思考完成後再試下");return;}
   if(state.trialMode){toast("目前已在試下模式");return;}
   state.trialWasClockRunning=!!state.clockRunning;
@@ -5715,6 +5717,7 @@ function startTrialMode(){
   syncUI();toast(`已從第 ${state.trialBaseIndex} 手開始試下；試下手順由 1 開始`);
 }
 function cancelTrialMode(){
+  resetBoardInputGuard();
   if(!state.trialMode||!state.trialBackup){toast("目前沒有試下內容");return;}
   const resume=state.trialWasClockRunning,base=state.trialBaseIndex;
   restoreTrialBasePosition(false);
@@ -5723,6 +5726,7 @@ function cancelTrialMode(){
   toast(`已取消試下，返回第 ${base} 手`);
 }
 function resetTrialMode(){
+  resetBoardInputGuard();
   if(!state.trialMode||!state.trialBackup){toast("目前沒有試下內容");return;}
   const base=state.trialBaseIndex;
   restoreTrialBasePosition(true);
@@ -5730,6 +5734,7 @@ function resetTrialMode(){
   toast(`已重設試下，回到第 ${base} 手`);
 }
 function applyTrialMode(){
+  resetBoardInputGuard();
   if(!state.trialMode||!state.trialBackup){toast("目前沒有試下內容");return;}
   const added=Math.max(0,state.index-state.trialBaseIndex),resume=state.trialWasClockRunning;
   state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";
@@ -5922,6 +5927,13 @@ let boardPointerStart=null;
 const BOARD_INPUT_LOCK_MS=420;
 const BOARD_SAME_POINT_LOCK_MS=650;
 const BOARD_DRAG_TOLERANCE_PX=18;
+function resetBoardInputGuard(){
+  lastBoardInputAt=0;
+  lastBoardInputPoint="";
+  boardInputBusy=false;
+  activeBoardPointer=null;
+  boardPointerStart=null;
+}
 function boardInputPointFromEvent(e){
   const rect=canvas.getBoundingClientRect();
   if(!rect.width||!rect.height)return null;
@@ -6026,6 +6038,10 @@ if(window.PointerEvent){
     handleBoardInput({clientX:t.clientX,clientY:t.clientY,cancelable:true,preventDefault:()=>e.preventDefault()});
   },{passive:false});
 }
+// Build028.1.12：切換方向、分頁或返回頁面時清除殘留觸控鎖，避免下一次試下無法落子或誤判重複。
+window.addEventListener('orientationchange',resetBoardInputGuard,{passive:true});
+window.addEventListener('pageshow',resetBoardInputGuard,{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)resetBoardInputGuard();},{passive:true});
 
 
 if($("scoringClearBtn"))$("scoringClearBtn").onclick=()=>{state.scoringDead=new Set();updateScoringInfo();if(state.scoringVerify)refreshScoringVerification();else drawBoard(currentSnapshot());toast("已清除死子標記");};
