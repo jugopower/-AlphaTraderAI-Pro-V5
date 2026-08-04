@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.1.5 人機對弈新圖示</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.6 人機對弈新圖示</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2301,6 +2301,21 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 #lifeDeathVerifyPanel{display:none!important}
 @media(max-width:700px){.qb-grid{grid-template-columns:1fr}.qb-actions,.qb-nav{grid-template-columns:1fr 1fr}.qb-item{grid-template-columns:1fr}.qb-item-actions{justify-content:flex-end}}
 </style>
+
+<style id="build02816-floating-control-fix">
+/* Build 028.1.6：教學快捷列與 API Inspector 互斥，避免手機與 iPad 重疊 */
+body.teaching-bar-expanded #apiInspectorToggle{display:none!important}
+body.api-inspector-open #teachQuickBar{opacity:0!important;pointer-events:none!important;transform:translate(-50%,14px)!important}
+body.api-inspector-open #teachBarToggle{display:none!important}
+#teachBarToggle{z-index:20002!important}
+#teachQuickBar{z-index:20001!important}
+#apiInspectorToggle{z-index:20000!important}
+#apiInspectorPanel{z-index:20003!important}
+@media (max-width:900px), (orientation:portrait){
+  #teachBarToggle{right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important}
+  #apiInspectorToggle{right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -3081,8 +3096,22 @@ function inspectorSet(status,message,data){
     if(pre)pre.textContent=text||"（空白回應）";
   }
 }
-function inspectorOpen(){const p=document.getElementById("apiInspectorPanel");if(p)p.hidden=false}
-function inspectorClose(){const p=document.getElementById("apiInspectorPanel");if(p)p.hidden=true}
+function syncFloatingControls(){
+  const teachingExpanded=!!state?.teachingMode && !state.teachingBarCollapsed && !state.teachingBarSuppressed;
+  const apiOpen=!document.getElementById("apiInspectorPanel")?.hidden;
+  document.body.classList.toggle("teaching-bar-expanded",teachingExpanded && !apiOpen);
+  document.body.classList.toggle("api-inspector-open",apiOpen);
+}
+function inspectorOpen(){
+  const p=document.getElementById("apiInspectorPanel");
+  if(state?.teachingMode){state.teachingBarCollapsed=true;syncTeachQuickBar();}
+  if(p)p.hidden=false;
+  syncFloatingControls();
+}
+function inspectorClose(){
+  const p=document.getElementById("apiInspectorPanel");if(p)p.hidden=true;
+  syncFloatingControls();
+}
 async function inspectorCopy(){
   const text=window.__apiInspectorText||document.getElementById("apiInspectorPre")?.textContent||"";
   try{await navigator.clipboard.writeText(text);toast("JSON 已複製")}catch(_){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast("JSON 已複製")}
@@ -3644,6 +3673,7 @@ function syncTeachQuickBar(){
     btn.classList.toggle("active",btn.dataset.qtool===state.teachingTool);
   });
   toggle.textContent=state.teachingBarCollapsed?"展開教學工具":"收合教學工具";
+  syncFloatingControls();
 }
 document.querySelectorAll("[data-qtool]").forEach(btn=>{
   btn.addEventListener("click",()=>{
@@ -6050,6 +6080,7 @@ if(state.engineVerified&&state.rendererVerified){
  byId('apiInspectorClose')?.addEventListener('click',inspectorClose);
  byId('apiInspectorCopy')?.addEventListener('click',inspectorCopy);
  byId('apiInspectorClear')?.addEventListener('click',()=>inspectorSet('', '尚未執行分析', ''));
+ syncFloatingControls();
 })();
 </script>
 </body>
