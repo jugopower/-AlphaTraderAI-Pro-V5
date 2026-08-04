@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.1.8 浮動按鈕固定分區</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.9 試下防重複落子</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2537,7 +2537,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build025.2 AI 棋力分級</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build028.1.9</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -5910,15 +5910,17 @@ $("startHumanBtn").onclick=()=>{
   scheduleLocalAiMove(450);
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,200);
 };
+// Build028.1.9：iPad／手機試下模式防重複落子。
+// 同一觸控只接受一次 pointerup；短時間同座標重複事件直接忽略。
 let lastBoardInputAt=0;
-function handleBoardInput(e){
-  if(state.scoringMode){handleScoringBoardInput(e);return;}
-  if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
-  if(state.aiThinking||state.gameEnded)return;
-  const now=Date.now();if(now-lastBoardInputAt<280)return;lastBoardInputAt=now;
-  if(e.cancelable)e.preventDefault();
-
-  if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
+let lastBoardInputPoint="";
+let boardInputBusy=false;
+let activeBoardPointer=null;
+let boardPointerStart=null;
+const BOARD_INPUT_LOCK_MS=420;
+const BOARD_SAME_POINT_LOCK_MS=650;
+const BOARD_DRAG_TOLERANCE_PX=18;
+function boardInputPointFromEvent(e){
   const rect=canvas.getBoundingClientRect();
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
   const localX=(e.clientX-rect.left)*(css/rect.width);
@@ -5926,9 +5928,25 @@ function handleBoardInput(e){
   const pad=css*.055,step=(css-pad*2)/(state.size-1);
   let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step);
   const edgeTolerance=step*.62;
-  if(localX<pad-edgeTolerance||localX>css-pad+edgeTolerance||localY<pad-edgeTolerance||localY>css-pad+edgeTolerance)return;
+  if(localX<pad-edgeTolerance||localX>css-pad+edgeTolerance||localY<pad-edgeTolerance||localY>css-pad+edgeTolerance)return null;
   x=Math.max(0,Math.min(state.size-1,x));
   y=Math.max(0,Math.min(state.size-1,y));
+  return {x,y,rect,css};
+}
+function handleBoardInput(e){
+  if(state.scoringMode){handleScoringBoardInput(e);return;}
+  if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
+  if(state.aiThinking||state.gameEnded||boardInputBusy)return;
+  if(e.cancelable)e.preventDefault();
+  const point=boardInputPointFromEvent(e);if(!point)return;
+  const now=Date.now(),pointKey=`${point.x},${point.y}`;
+  if(now-lastBoardInputAt<BOARD_INPUT_LOCK_MS)return;
+  if(state.trialMode && pointKey===lastBoardInputPoint && now-lastBoardInputAt<BOARD_SAME_POINT_LOCK_MS)return;
+  boardInputBusy=true;lastBoardInputAt=now;lastBoardInputPoint=pointKey;
+  window.setTimeout(()=>{boardInputBusy=false;},BOARD_INPUT_LOCK_MS);
+
+  if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
+  const x=point.x,y=point.y;
   if(state.teachingMode && !state.trialMode && state.verificationSelectingTarget){
     const snap=positionAtMove(state.index);
     const stone=snap.board?.[y]?.[x];
@@ -5976,11 +5994,30 @@ function handleBoardInput(e){
 
 }
 if(window.PointerEvent){
-  canvas.addEventListener('pointerup',handleBoardInput,{passive:false});
-  canvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'&&e.cancelable)e.preventDefault();},{passive:false});
+  canvas.addEventListener('pointerdown',e=>{
+    if(e.pointerType!=='mouse'&&e.cancelable)e.preventDefault();
+    activeBoardPointer=e.pointerId;
+    boardPointerStart={x:e.clientX,y:e.clientY};
+    try{canvas.setPointerCapture(e.pointerId)}catch(_){}
+  },{passive:false});
+  canvas.addEventListener('pointerup',e=>{
+    if(activeBoardPointer!==null && e.pointerId!==activeBoardPointer)return;
+    const start=boardPointerStart;
+    activeBoardPointer=null;boardPointerStart=null;
+    try{canvas.releasePointerCapture(e.pointerId)}catch(_){}
+    if(start && Math.hypot(e.clientX-start.x,e.clientY-start.y)>BOARD_DRAG_TOLERANCE_PX)return;
+    handleBoardInput(e);
+  },{passive:false});
+  canvas.addEventListener('pointercancel',()=>{activeBoardPointer=null;boardPointerStart=null;},{passive:true});
 }else{
-  canvas.addEventListener('touchend',e=>{const t=e.changedTouches&&e.changedTouches[0];if(t)handleBoardInput({clientX:t.clientX,clientY:t.clientY,cancelable:true,preventDefault:()=>e.preventDefault()});},{passive:false});
-  canvas.addEventListener('click',handleBoardInput);
+  // 舊瀏覽器只綁 touchend，不再同時綁 click，避免一次觸碰執行兩次。
+  canvas.addEventListener('touchstart',e=>{const t=e.touches&&e.touches[0];if(t)boardPointerStart={x:t.clientX,y:t.clientY};if(e.cancelable)e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchend',e=>{
+    const t=e.changedTouches&&e.changedTouches[0];if(!t)return;
+    const start=boardPointerStart;boardPointerStart=null;
+    if(start && Math.hypot(t.clientX-start.x,t.clientY-start.y)>BOARD_DRAG_TOLERANCE_PX)return;
+    handleBoardInput({clientX:t.clientX,clientY:t.clientY,cancelable:true,preventDefault:()=>e.preventDefault()});
+  },{passive:false});
 }
 
 
