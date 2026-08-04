@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.1.7 浮動按鈕固定分區</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.8 浮動按鈕固定分區</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2318,7 +2318,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 </style>
 
 <style id="build02817-floating-zone-fix">
-/* Build 028.1.7：API 與教學工具固定分區；所有手機、iPad 直橫式均不重疊 */
+/* Build 028.1.8：API 與教學工具固定分區；所有手機、iPad 直橫式均不重疊 */
 :root{--floating-safe-bottom:max(12px,env(safe-area-inset-bottom));--floating-control-gap:12px}
 #teachBarToggle{
   right:12px!important;
@@ -2428,7 +2428,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
       <button id="hintToggleBtn">全部提示</button>
     </div>
     <div id="trialModeBar" role="status" aria-live="polite">
-      <span>🧪 試下模式（不影響正式棋譜）</span>
+      <span>🧪 試下模式（獨立手順 1、2、3…，不影響正式棋譜）</span>
       <button class="apply" id="trialApplyBtn" type="button">✓ 套用</button>
       <button id="trialResetBtn" type="button">↺ 重設</button>
       <button id="trialCancelBtn" type="button">✕ 取消</button>
@@ -4588,13 +4588,17 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
     else{g.addColorStop(0,"#fff");g.addColorStop(.55,"#eee");g.addColorStop(1,"#bbb")}
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
     const moveNumber=provenance[y][x]||0;
+    // Build028.1.8：試下手順獨立從 1 開始；原棋譜棋子不顯示試下編號。
+    const isTrialStone=state.trialMode && moveNumber>Number(state.trialBaseIndex||0) && moveNumber<=snapshot.index;
+    const trialDisplayNumber=isTrialStone ? moveNumber-Number(state.trialBaseIndex||0) : 0;
     // Build024.8：教學手順由 teachingSequence 單獨繪製，避免與一般棋號重複疊字。
-    const useStandardMoveNumbers=!(state.teachingMode && state.teachingShowNumbers);
-    if(useStandardMoveNumbers && mode!=="off" && moveNumber>0 && moveNumber>start && moveNumber<=snapshot.index){
+    const useStandardMoveNumbers=!(state.teachingMode && state.teachingShowNumbers && !state.trialMode);
+    const showNormalNumber=!state.trialMode && mode!=="off" && moveNumber>0 && moveNumber>start && moveNumber<=snapshot.index;
+    if(useStandardMoveNumbers && (isTrialStone || showNormalNumber)){
       ctx.fillStyle=c==="B"?"#fff":"#222";
       ctx.font=`${Math.max(10,step*.32)}px sans-serif`;
       ctx.textAlign="center";ctx.textBaseline="middle";
-      ctx.fillText(String(moveNumber),cx,cy);
+      ctx.fillText(String(isTrialStone?trialDisplayNumber:moveNumber),cx,cy);
     }
     if(snapshot.index>0 && moveNumber>0 && moveNumber===snapshot.index){
       ctx.strokeStyle="#ff5148";ctx.lineWidth=Math.max(2,step*.07);
@@ -4681,7 +4685,7 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
   }
 
   // Build021.20 教學標記：專業低調風格
-  for(const mark of (state.teachingMarks||[])){
+  for(const mark of (state.trialMode?[]:(state.teachingMarks||[]))){
     if(mark.x<0||mark.y<0||mark.x>=state.size||mark.y>=state.size)continue;
     const cx=pad+mark.x*step,cy=pad+mark.y*step;
     const stoneColor=board[mark.y]?.[mark.x]||null;
@@ -5702,8 +5706,11 @@ function startTrialMode(){
   const newBranchKey=JSON.stringify({size:state.size,index:state.index,moves:(state.moves||[]).slice(0,state.index)});
   if(state.trialBranchBaseKey!==newBranchKey){state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey=newBranchKey;}
   state.trialMode=true;
+  // Build028.1.8：試下只允許黑白交替落子，不沿用 A/B/C/△/○/× 標記工具。
+  state.teachingTool="alternate";
+  state.teachingNext=state.turn;
   state.hintPoints=[];state.hintBadPoint=null;state.analysis=null;
-  syncUI();toast(`已從第 ${state.trialBaseIndex} 手開始試下`);
+  syncUI();toast(`已從第 ${state.trialBaseIndex} 手開始試下；試下手順由 1 開始`);
 }
 function cancelTrialMode(){
   if(!state.trialMode||!state.trialBackup){toast("目前沒有試下內容");return;}
@@ -5922,7 +5929,7 @@ function handleBoardInput(e){
   if(localX<pad-edgeTolerance||localX>css-pad+edgeTolerance||localY<pad-edgeTolerance||localY>css-pad+edgeTolerance)return;
   x=Math.max(0,Math.min(state.size-1,x));
   y=Math.max(0,Math.min(state.size-1,y));
-  if(state.teachingMode && state.verificationSelectingTarget){
+  if(state.teachingMode && !state.trialMode && state.verificationSelectingTarget){
     const snap=positionAtMove(state.index);
     const stone=snap.board?.[y]?.[x];
     if(stone!=="B"&&stone!=="W"){toast("請點在目標棋群的黑棋或白棋上");return;}
@@ -5934,7 +5941,7 @@ function handleBoardInput(e){
     toast(`已選取目標棋群：${coord}`);
     return;
   }
-  if(state.teachingMode){
+  if(state.teachingMode && !state.trialMode){
     teachingPlaceAt(x,y);
     return;
   }
