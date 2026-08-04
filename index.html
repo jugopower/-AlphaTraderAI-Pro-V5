@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.1.6 人機對弈新圖示</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.7 浮動按鈕固定分區</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2314,6 +2314,43 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 @media (max-width:900px), (orientation:portrait){
   #teachBarToggle{right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important}
   #apiInspectorToggle{right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important}
+}
+</style>
+
+<style id="build02817-floating-zone-fix">
+/* Build 028.1.7：API 與教學工具固定分區；所有手機、iPad 直橫式均不重疊 */
+:root{--floating-safe-bottom:max(12px,env(safe-area-inset-bottom));--floating-control-gap:12px}
+#teachBarToggle{
+  right:12px!important;
+  bottom:var(--floating-safe-bottom)!important;
+  z-index:20002!important;
+}
+#apiInspectorToggle{
+  right:12px!important;
+  bottom:var(--floating-safe-bottom)!important;
+  z-index:20000!important;
+}
+/* 教學模式收合時，API 固定在展開按鈕上方，保留明確間距 */
+body.teaching-active:not(.teaching-bar-expanded):not(.api-inspector-open) #apiInspectorToggle{
+  bottom:calc(var(--floating-safe-bottom) + 54px)!important;
+}
+/* 快捷列展開時只保留收合按鈕，API 隱藏 */
+body.teaching-bar-expanded #apiInspectorToggle{display:none!important}
+/* API 面板開啟時隱藏教學快捷列與切換按鈕 */
+body.api-inspector-open #teachQuickBar,
+body.api-inspector-open #teachBarToggle{display:none!important}
+#apiInspectorPanel{
+  right:12px!important;
+  bottom:calc(var(--floating-safe-bottom) + 56px)!important;
+  z-index:20003!important;
+}
+@media(max-width:700px){
+  :root{--floating-safe-bottom:max(10px,env(safe-area-inset-bottom))}
+  #teachBarToggle,#apiInspectorToggle{right:10px!important}
+  body.teaching-active:not(.teaching-bar-expanded):not(.api-inspector-open) #apiInspectorToggle{
+    bottom:calc(var(--floating-safe-bottom) + 52px)!important;
+  }
+  #apiInspectorPanel{right:8px!important;bottom:calc(var(--floating-safe-bottom) + 54px)!important}
 }
 </style>
 </head>
