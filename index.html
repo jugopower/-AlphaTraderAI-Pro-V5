@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.1.9 試下防重複落子</title>
+<title>AlphaTrader AI Pro V5｜Build028.1.10 試下座標修正</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2537,7 +2537,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build028.1.9</div>
+  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build028.1.10</div>
   <p style="color:var(--muted);font-size:11px">
     已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
   </p>
@@ -5910,7 +5910,7 @@ $("startHumanBtn").onclick=()=>{
   scheduleLocalAiMove(450);
   if(state.hintEnabled && state.turn===state.humanColor)setTimeout(refreshGameHints,200);
 };
-// Build028.1.9：iPad／手機試下模式防重複落子。
+// Build028.1.10：iPad／手機試下座標換算修正，並保留防重複落子。
 // 同一觸控只接受一次 pointerup；短時間同座標重複事件直接忽略。
 let lastBoardInputAt=0;
 let lastBoardInputPoint="";
@@ -5922,16 +5922,21 @@ const BOARD_SAME_POINT_LOCK_MS=650;
 const BOARD_DRAG_TOLERANCE_PX=18;
 function boardInputPointFromEvent(e){
   const rect=canvas.getBoundingClientRect();
+  if(!rect.width||!rect.height)return null;
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
+  // 將 Safari／iPad 實際顯示座標，換算回 drawBoard 使用的正方形 CSS 座標。
   const localX=(e.clientX-rect.left)*(css/rect.width);
   const localY=(e.clientY-rect.top)*(css/rect.height);
-  const pad=css*.055,step=(css-pad*2)/(state.size-1);
+  // 必須和 drawBoard 完全一致：顯示座標時外邊距為 8.5%，關閉時為 5.5%。
+  const pad=css*(state.showCoords?0.085:0.055);
+  const step=(css-pad*2)/(state.size-1);
+  if(!Number.isFinite(step)||step<=0)return null;
   let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step);
-  const edgeTolerance=step*.62;
+  const edgeTolerance=step*.55;
   if(localX<pad-edgeTolerance||localX>css-pad+edgeTolerance||localY<pad-edgeTolerance||localY>css-pad+edgeTolerance)return null;
   x=Math.max(0,Math.min(state.size-1,x));
   y=Math.max(0,Math.min(state.size-1,y));
-  return {x,y,rect,css};
+  return {x,y,rect,css,pad,step};
 }
 function handleBoardInput(e){
   if(state.scoringMode){handleScoringBoardInput(e);return;}
