@@ -2294,7 +2294,10 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 .qb-star{font-size:20px;line-height:1;background:transparent;border:0;color:#d8c08c;min-width:36px;padding:6px}.qb-star.on{color:#ffd75e}
 .qb-badge{display:inline-block;padding:2px 7px;border-radius:999px;background:#3c2818;color:#ffe9c0;margin-right:5px;font-size:12px}
 .qb-recent{margin-top:10px;padding:10px;border:1px solid #5f4025;border-radius:12px;background:#080604}.qb-recent button{margin:3px;padding:7px 10px;min-width:auto}
-.qb-list{margin-top:12px;display:grid;gap:10px;max-height:520px;overflow:auto;padding:2px}
+.qb-list{margin-top:12px;display:grid;gap:10px;padding:2px;overflow:visible;contain:layout style}
+.qb-item{content-visibility:auto;contain-intrinsic-size:320px 420px;will-change:auto}
+.qb-thumb-wrap{contain:strict}
+.qb-thumb{background:#d89a3d}
 .qb-list.grid-view{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
 .qb-list.list-view{grid-template-columns:1fr}
 .qb-item{position:relative;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px;border:1px solid #5f4025;border-radius:14px;background:#080604}
@@ -2309,6 +2312,16 @@ body.scoring-verify .board-wrap{outline-color:#3d9cff}
 #lifeDeathVerifyPanel{display:none!important}
 @media(max-width:700px){.qb-grid{grid-template-columns:1fr}.qb-actions,.qb-nav{grid-template-columns:1fr 1fr}.qb-list.grid-view{grid-template-columns:repeat(2,minmax(0,1fr))}.qb-item{grid-template-columns:1fr}.qb-item-actions{justify-content:flex-end}.qb-list.grid-view .qb-item-actions{gap:5px}.qb-list.grid-view .qb-item-actions button{padding:7px 8px;font-size:13px}}
 @media(max-width:430px){.qb-list.grid-view{grid-template-columns:1fr 1fr}.qb-title{font-size:14px}.qb-meta{font-size:11px}}
+</style>
+<style id="build02822-scroll-performance">
+/* Build 028.2.2：題庫縮圖滑動效能優化 */
+.question-bank-panel,.qb-list,.qb-item,.qb-thumb-wrap{scroll-behavior:auto!important}
+.qb-item,.qb-thumb-wrap,.qb-thumb{animation:none!important;transition:none!important}
+.qb-item{box-shadow:none!important;backface-visibility:hidden}
+.question-bank-panel{-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.qb-thumb[data-loaded="0"]{opacity:.01}
+.qb-thumb[data-loaded="1"]{opacity:1}
+@media(max-width:900px){.qb-list.grid-view{gap:8px}.qb-list.grid-view .qb-item{padding:7px}.qb-list.grid-view .qb-meta{min-height:30px}}
 </style>
 
 <style id="build02816-floating-control-fix">
@@ -2713,7 +2726,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.2.1｜縮圖滑動穩定修正</h3>
+    <h3>Build 028.2.2｜縮圖滑動穩定修正</h3>
     <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
@@ -4071,7 +4084,7 @@ const qbThumbCache=new Map();
 function qbThumbnailKey(r){return JSON.stringify([r?.id,r?.updatedAt,r?.size,r?.setupB,r?.setupW])}
 function qbThumbnailDataURL(r){
   const key=qbThumbnailKey(r);if(qbThumbCache.has(key))return qbThumbCache.get(key);
-  const css=420,canvas=document.createElement("canvas");canvas.width=css;canvas.height=css;
+  const css=180,canvas=document.createElement("canvas");canvas.width=css;canvas.height=css;
   const c=canvas.getContext("2d",{alpha:false});
   const size=Math.max(2,Number(r.size)||19),pad=css*.105,step=(css-pad*2)/(size-1);
   const bg=c.createLinearGradient(0,0,css,css);bg.addColorStop(0,"#efbd63");bg.addColorStop(1,"#cf8730");c.fillStyle=bg;c.fillRect(0,0,css,css);
@@ -4085,15 +4098,32 @@ function qbThumbnailDataURL(r){
   if(qbThumbCache.size>300)qbThumbCache.delete(qbThumbCache.keys().next().value);
   return url;
 }
+let qbThumbObserver=null;
+function qbEnsureThumbObserver(){
+  if(qbThumbObserver)qbThumbObserver.disconnect();
+  const rootMargin="500px 0px";
+  qbThumbObserver=new IntersectionObserver(entries=>{
+    const all=qbRead();
+    for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      const img=entry.target,r=all.find(x=>x.id===img.dataset.qbThumb);
+      if(r&&img.dataset.loaded!=="1"){
+        img.src=qbThumbnailDataURL(r);img.dataset.loaded="1";
+      }
+      qbThumbObserver.unobserve(img);
+    }
+  },{root:null,rootMargin,threshold:0.01});
+  document.querySelectorAll("img[data-qb-thumb]").forEach(img=>qbThumbObserver.observe(img));
+}
 function qbRefreshVisibleThumbs(){
-  const all=qbRead();document.querySelectorAll("img[data-qb-thumb]").forEach(img=>{const r=all.find(x=>x.id===img.dataset.qbThumb);if(r&&(!img.complete||!img.naturalWidth||!img.src))img.src=qbThumbnailDataURL(r)});
+  requestAnimationFrame(qbEnsureThumbObserver);
 }
 
 function qbRender(){
   const all=qbRead(),rows=qbVisibleRows(),view=$("qbViewMode")?.value||"grid",list=$("qbList");
   $("qbStatus").textContent=`題庫共 ${all.length} 題｜目前顯示 ${rows.length} 題`;
   list.className=`qb-list ${view==="grid"?"grid-view":"list-view"}`;
-  list.innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><div class="qb-thumb-wrap" data-qb-load="${r.id}" title="點擊縮圖載入"><img class="qb-thumb" data-qb-thumb="${r.id}" alt="第 ${escapeHtml(r.number||"")} 題棋盤縮圖" src="${qbThumbnailDataURL(r)}"></div><div class="qb-card-info"><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}・${qbHasAnswer(r)?`答案已建立（${Math.max(r.moves?.length||0,r.sequence?.length||0)}手）`:"尚未建立答案"}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
+  list.innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><div class="qb-thumb-wrap" data-qb-load="${r.id}" title="點擊縮圖載入"><img class="qb-thumb" data-qb-thumb="${r.id}" data-loaded="0" loading="lazy" decoding="async" alt="第 ${escapeHtml(r.number||"")} 題棋盤縮圖" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="></div><div class="qb-card-info"><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}・${qbHasAnswer(r)?`答案已建立（${Math.max(r.moves?.length||0,r.sequence?.length||0)}手）`:"尚未建立答案"}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
   list.querySelectorAll("[data-qb-load]").forEach(b=>b.onclick=()=>{const r=qbRead().find(x=>x.id===b.dataset.qbLoad);if(r)qbLoadRecord(r)});
   list.querySelectorAll("[data-qb-star]").forEach(b=>b.onclick=e=>{e.stopPropagation();const items=qbRead(),r=items.find(x=>x.id===b.dataset.qbStar);if(!r)return;r.favorite=!r.favorite;r.updatedAt=new Date().toISOString();qbWrite(items);qbRender();toast(r.favorite?"已加入收藏":"已取消收藏")});
   list.querySelectorAll("[data-qb-delete]").forEach(b=>b.onclick=e=>{e.stopPropagation();qbDeleteById(b.dataset.qbDelete)});
@@ -4146,7 +4176,7 @@ $("qbDeleteCurrent").onclick=()=>{if(!qbEditingId){toast("目前尚未載入已�
 $("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);$("qbToggleAnswer").onclick=qbToggleAnswer;
 $("qbEditQuestion").onclick=()=>{if(!qbEditingId){toast("請先載入題目");return;}state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingSequence=[];state.teachingAnswerMode=false;state.teachingInteractionMode="edit";state.teachingShowNumbers=false;qbAnswerVisible=false;qbUpdateAnswerButton();syncUI();updateTeachingUI();closeModal("teachModal");toast("已進入題目編輯模式");};
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;$("qbViewMode").onchange=qbRender;
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.2",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.2.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.2.2",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.2.2.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 qbRender();
 let qbThumbRefreshTimer=0;
@@ -6228,6 +6258,10 @@ if(state.engineVerified&&state.rendererVerified){
  byId('apiInspectorClear')?.addEventListener('click',()=>inspectorSet('', '尚未執行分析', ''));
  syncFloatingControls();
 })();
+
+// Build 028.2.2：只在需要時補載可見縮圖，避免滑動期間重繪
+window.addEventListener("orientationchange",()=>setTimeout(qbRefreshVisibleThumbs,180),{passive:true});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(qbRefreshVisibleThumbs,80)});
 </script>
 </body>
 </html>
