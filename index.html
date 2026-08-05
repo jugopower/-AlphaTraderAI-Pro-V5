@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.2.3 全部縮圖瀏覽模式</title>
+<title>AlphaTrader AI Pro V5｜Build028.3.1 啟動修正版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -476,6 +476,20 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   flex:1 1 100%;padding:8px 12px;border:1px solid rgba(255,255,255,.22);border-radius:10px;
   background:rgba(0,0,0,.24);color:#fff4d5;font-weight:700;line-height:1.35;
 }
+
+/* Build 028.3：拍照匯入題目（第一版） */
+.photo-import-panel{margin:12px 0;padding:14px;border:1px solid #7a542d;border-radius:16px;background:#120d09}
+.photo-import-head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.photo-import-workspace{margin-top:12px;display:grid;grid-template-columns:minmax(220px,1fr) minmax(220px,.8fr);gap:12px}
+.photo-preview-wrap{min-height:220px;max-height:430px;border:1px solid #7a542d;border-radius:14px;background:#050403;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.photo-preview-wrap img{max-width:100%;max-height:430px;object-fit:contain;transform-origin:center;transition:transform .15s ease,opacity .15s ease}
+.photo-controls{display:grid;gap:10px;align-content:start}
+.photo-reference{position:fixed;left:14px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:1800;width:min(36vw,360px);background:#0b0806;border:2px solid #d29a3f;border-radius:16px;box-shadow:0 12px 34px #000b;padding:8px}
+.photo-reference[hidden]{display:none!important}.photo-reference-head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#ffd36c;font-weight:800;padding:2px 4px 8px}
+.photo-reference img{display:block;width:100%;max-height:42vh;object-fit:contain;border-radius:10px;background:#000}
+.photo-reference-actions{display:flex;gap:8px;margin-top:8px}.photo-reference-actions button{flex:1}
+@media(max-width:700px){.photo-import-workspace{grid-template-columns:1fr}.photo-reference{width:min(58vw,300px);left:8px;bottom:calc(10px + env(safe-area-inset-bottom))}}
+
 </style>
 
 <style id="build0214-fix">
@@ -2744,7 +2758,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.2.3｜全部縮圖瀏覽模式</h3>
+    <h3>Build 028.3.1｜拍照匯入啟動修正版</h3>
     <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
@@ -2754,6 +2768,24 @@ body.api-inspector-open #teachBarToggle{display:none!important}
       <label>難度<select id="qbDifficulty"><option>初級</option><option selected>中級</option><option>高級</option><option>高段</option></select></label>
       <label>標籤<input id="qbTags" placeholder="例如 淨殺、角部、手筋"></label>
     </div>
+    <section class="photo-import-panel" id="photoImportPanel">
+      <div class="photo-import-head">
+        <div><b>📷 拍照匯入題目</b><div class="teach-hint">可直接拍照或從相簿選圖，先作為擺題參考；第一版不自動辨識棋子。</div></div>
+        <button class="action" id="photoChooseBtn" type="button">拍照／選照片</button>
+      </div>
+      <input id="photoFileInput" type="file" accept="image/*" capture="environment" hidden>
+      <div id="photoImportWorkspace" class="photo-import-workspace" hidden>
+        <div class="photo-preview-wrap"><img id="photoPreview" alt="題目照片預覽"></div>
+        <div class="photo-controls">
+          <label>棋盤路數<select id="photoBoardSize"><option value="9">9 路</option><option value="13">13 路</option><option value="19" selected>19 路</option></select></label>
+          <label>旋轉<select id="photoRotation"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
+          <label>照片透明度<input id="photoOpacity" type="range" min="35" max="100" value="100"></label>
+          <button class="action" id="photoStartSetup" type="button">套用棋盤並開始擺題</button>
+          <button class="secondary" id="photoClear" type="button">移除照片</button>
+        </div>
+        <div class="teach-hint">操作方式：先調整照片方向與棋盤路數，再按「套用棋盤並開始擺題」。照片會保留在浮動參考窗，可邊看邊擺黑白棋。</div>
+      </div>
+    </section>
     <div id="qbCurrent" class="qb-current">目前：新題目（尚未儲存）</div>
     <div class="qb-actions">
       <button class="action" id="qbSaveCurrent" type="button">儲存／更新</button>
@@ -2853,6 +2885,12 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 </div>
 
 <div id="toast" class="toast"></div>
+
+<div id="photoReference" class="photo-reference" hidden>
+  <div class="photo-reference-head"><span>📷 題目照片參考</span><button class="secondary" id="photoReferenceClose" type="button">收合</button></div>
+  <img id="photoReferenceImg" alt="浮動題目照片">
+  <div class="photo-reference-actions"><button class="secondary" id="photoReferenceShow" type="button">回教學視窗</button><button class="secondary" id="photoReferenceRemove" type="button">移除</button></div>
+</div>
 
 <script>
 "use strict";
@@ -4195,8 +4233,45 @@ $("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);$("
 $("qbEditQuestion").onclick=()=>{if(!qbEditingId){toast("請先載入題目");return;}state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingSequence=[];state.teachingAnswerMode=false;state.teachingInteractionMode="edit";state.teachingShowNumbers=false;qbAnswerVisible=false;qbUpdateAnswerButton();syncUI();updateTeachingUI();closeModal("teachModal");toast("已進入題目編輯模式");};
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;$("qbViewMode").onchange=()=>{localStorage.setItem("joygo_qb_view_mode",$("qbViewMode").value);qbRender()};
 try{const savedView=localStorage.getItem("joygo_qb_view_mode");if(["grid","compact","list"].includes(savedView))$("qbViewMode").value=savedView}catch{}
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.2.2",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.2.2.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.3.1",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.3.1.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
+// Build 028.3：拍照匯入題目（第一版）
+let photoImportUrl="";
+function photoApplyVisual(){
+  const rotation=Number($("photoRotation")?.value||0),opacity=Number($("photoOpacity")?.value||100)/100;
+  if($("photoPreview")){$("photoPreview").style.transform=`rotate(${rotation}deg)`;$("photoPreview").style.opacity=String(opacity)}
+  if($("photoReferenceImg")){$("photoReferenceImg").style.transform=`rotate(${rotation}deg)`;$("photoReferenceImg").style.opacity=String(opacity)}
+}
+function photoRemove(){
+  if(photoImportUrl){URL.revokeObjectURL(photoImportUrl);photoImportUrl=""}
+  if($("photoFileInput"))$("photoFileInput").value="";
+  if($("photoPreview"))$("photoPreview").removeAttribute("src");
+  if($("photoReferenceImg"))$("photoReferenceImg").removeAttribute("src");
+  if($("photoImportWorkspace"))$("photoImportWorkspace").hidden=true;
+  if($("photoReference"))$("photoReference").hidden=true;
+  toast("已移除題目照片");
+}
+$("photoChooseBtn")?.addEventListener("click",()=>$("photoFileInput")?.click());
+$("photoFileInput")?.addEventListener("change",e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(photoImportUrl)URL.revokeObjectURL(photoImportUrl);
+  photoImportUrl=URL.createObjectURL(file);
+  $("photoPreview").src=photoImportUrl;$("photoReferenceImg").src=photoImportUrl;
+  $("photoImportWorkspace").hidden=false;photoApplyVisual();toast("照片已載入，請選路數與方向");
+ });
+$("photoRotation")?.addEventListener("change",photoApplyVisual);$("photoOpacity")?.addEventListener("input",photoApplyVisual);
+$("photoClear")?.addEventListener("click",photoRemove);$("photoReferenceRemove")?.addEventListener("click",photoRemove);
+$("photoStartSetup")?.addEventListener("click",()=>{
+  if(!photoImportUrl){toast("請先拍照或選擇照片");return}
+  const size=Number($("photoBoardSize").value||19);
+  if(![9,13,19].includes(size))return;
+  if(!confirm(`確定切換為 ${size} 路並清空目前棋盤，開始依照片擺題？`))return;
+  qbClearBoardOnly();state.size=size;state.teachingMode=true;state.teachingInteractionMode="edit";state.teachingTool="alternate";state.teachingNext=state.teachingFirstPlayer||"B";
+  $("photoReference").hidden=false;photoApplyVisual();syncUI();updateTeachingUI();closeModal("teachModal");toast(`已進入 ${size} 路照片擺題模式`);
+ });
+$("photoReferenceClose")?.addEventListener("click",()=>{if($("photoReference"))$("photoReference").hidden=true;toast("照片參考窗已收合")});
+$("photoReferenceShow")?.addEventListener("click",()=>{openModal("teachModal");setTimeout(()=>$("photoImportPanel")?.scrollIntoView({behavior:"smooth",block:"center"}),80)});
+
 qbRender();
 let qbThumbRefreshTimer=0;
 function qbScheduleThumbRefresh(){clearTimeout(qbThumbRefreshTimer);qbThumbRefreshTimer=setTimeout(qbRefreshVisibleThumbs,80)}
@@ -6282,5 +6357,7 @@ if(state.engineVerified&&state.rendererVerified){
 window.addEventListener("orientationchange",()=>setTimeout(qbRefreshVisibleThumbs,180),{passive:true});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(qbRefreshVisibleThumbs,80)});
 </script>
+
+
 </body>
 </html>
