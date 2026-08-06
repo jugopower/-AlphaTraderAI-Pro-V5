@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.3.2 照片裁切與浮動參考</title>
+<title>AlphaTrader AI Pro V5｜Build028.3.3 KataGo 思考提示優化</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -1445,24 +1445,31 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build02113-katago">
+/* Build028.3.3：KataGo 思考提示改為不遮棋盤的小型狀態膠囊 */
 .ai-thinking-overlay{
-  position:fixed;inset:0;z-index:400;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.58);backdrop-filter:blur(2px);
+  position:fixed;z-index:400;
+  top:calc(86px + env(safe-area-inset-top,0px));right:170px;
+  display:block;pointer-events:none;background:transparent;
 }
 .ai-thinking-overlay[hidden]{display:none!important}
 .ai-thinking-card{
-  width:min(82vw,340px);padding:24px 22px;border-radius:20px;
-  border:1px solid #a77735;background:#1b100a;color:#f7e8c7;
-  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.55);
+  min-width:172px;max-width:min(72vw,250px);padding:9px 12px;border-radius:999px;
+  border:1px solid rgba(229,180,72,.72);background:rgba(27,16,10,.88);color:#f7e8c7;
+  display:grid;grid-template-columns:20px 1fr;column-gap:8px;align-items:center;
+  text-align:left;box-shadow:0 8px 24px rgba(0,0,0,.28);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
 }
 .ai-thinking-spinner{
-  width:46px;height:46px;margin:0 auto 14px;border-radius:50%;
-  border:5px solid rgba(245,196,76,.22);border-top-color:#f5c44c;
+  grid-row:1 / span 2;width:17px;height:17px;margin:0;border-radius:50%;
+  border:2px solid rgba(245,196,76,.25);border-top-color:#f5c44c;
   animation:katagoSpin .9s linear infinite;
 }
-.ai-thinking-title{font-size:24px;font-weight:900}
-.ai-thinking-sub{margin-top:8px;font-size:14px;opacity:.78}
+.ai-thinking-title{font-size:13px;font-weight:900;line-height:1.2;white-space:nowrap}
+.ai-thinking-sub{margin-top:2px;font-size:10px;line-height:1.2;opacity:.78;white-space:nowrap}
+@media (max-width:900px){
+  .ai-thinking-overlay{top:calc(78px + env(safe-area-inset-top,0px));right:10px}
+  .ai-thinking-card{min-width:156px;padding:8px 10px}
+}
 @keyframes katagoSpin{to{transform:rotate(360deg)}}
 
 /* Build024.8 API Inspector：時鐘固定於右側工具欄，任何棋盤尺寸都不覆蓋棋盤 */
@@ -4236,7 +4243,7 @@ $("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);$("
 $("qbEditQuestion").onclick=()=>{if(!qbEditingId){toast("請先載入題目");return;}state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingSequence=[];state.teachingAnswerMode=false;state.teachingInteractionMode="edit";state.teachingShowNumbers=false;qbAnswerVisible=false;qbUpdateAnswerButton();syncUI();updateTeachingUI();closeModal("teachModal");toast("已進入題目編輯模式");};
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;$("qbViewMode").onchange=()=>{localStorage.setItem("joygo_qb_view_mode",$("qbViewMode").value);qbRender()};
 try{const savedView=localStorage.getItem("joygo_qb_view_mode");if(["grid","compact","list"].includes(savedView))$("qbViewMode").value=savedView}catch{}
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.3.2a",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.3.2a.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.3.2a",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.3.3.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 // Build 028.3.2：照片裁切、縮放、拖曳與浮動參考
 let photoImportUrl="",photoDrag=null,photoPinch=null;
@@ -5236,10 +5243,28 @@ function completeTurnClock(color){
   state.lastClockAnnounce=null;updateClockUI();
 }
 
+let aiThinkingStartedAt=0;
+let aiThinkingTimer=null;
+function updateAiThinkingStatus(){
+  const sub=$("aiThinkingSub");
+  if(!sub||!state.aiThinking)return;
+  const sec=Math.max(0,(performance.now()-aiThinkingStartedAt)/1000);
+  sub.textContent=sec>=2?`已等待 ${sec.toFixed(1)} 秒`:`正在計算最佳落點…`;
+}
 function setAiThinking(show){
   state.aiThinking=!!show;
   const el=$("aiThinkingOverlay");
-  if(el)el.hidden=!show;
+  if(aiThinkingTimer){clearInterval(aiThinkingTimer);aiThinkingTimer=null;}
+  if(show){
+    aiThinkingStartedAt=performance.now();
+    if(el)el.hidden=false;
+    updateAiThinkingStatus();
+    aiThinkingTimer=setInterval(updateAiThinkingStatus,200);
+  }else{
+    if(el)el.hidden=true;
+    const sub=$("aiThinkingSub");
+    if(sub)sub.textContent="正在計算最佳落點…";
+  }
 }
 
 async function refreshGameHints(){
@@ -6346,11 +6371,11 @@ if(state.engineVerified&&state.rendererVerified){
 
 </script>
 
-<div id="aiThinkingOverlay" class="ai-thinking-overlay" hidden>
+<div id="aiThinkingOverlay" class="ai-thinking-overlay" hidden aria-live="polite">
   <div class="ai-thinking-card">
     <div class="ai-thinking-spinner"></div>
-    <div class="ai-thinking-title">KataGo 思考中</div>
-    <div class="ai-thinking-sub">伺服器休眠時會自動重試，請稍候</div>
+    <div class="ai-thinking-title">KataGo 思考中…</div>
+    <div class="ai-thinking-sub" id="aiThinkingSub">正在計算最佳落點…</div>
   </div>
 </div>
 
