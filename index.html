@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.3.3 KataGo 思考提示優化</title>
+<title>AlphaTrader AI Pro V5｜Build028.3.4 KataGo 思考提示優化</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -1445,7 +1445,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 
 <style id="build02113-katago">
-/* Build028.3.3：KataGo 思考提示改為不遮棋盤的小型狀態膠囊 */
+/* Build028.3.4：KataGo 思考提示改為不遮棋盤的小型狀態膠囊 */
 .ai-thinking-overlay{
   position:fixed;z-index:400;
   top:calc(86px + env(safe-area-inset-top,0px));right:170px;
@@ -2418,6 +2418,17 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 @media(max-width:599px){.qb-list.compact-view{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}}
 @media(max-width:380px){.qb-list.compact-view{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+
+<style id="build02834-photo-workflow">
+.photo-reference{--photo-ref-width:min(36vw,360px);width:var(--photo-ref-width)!important;resize:both;overflow:auto;min-width:220px;min-height:180px;max-width:70vw;max-height:78vh}
+.photo-reference.collapsed .photo-reference-view,.photo-reference.collapsed .photo-reference-actions{display:none}
+.photo-reference.collapsed{min-height:0!important;height:auto!important;resize:none}
+.photo-reference-head{cursor:move;touch-action:none}.photo-reference-head button{cursor:pointer}
+.photo-reference-actions{display:grid!important;grid-template-columns:repeat(3,1fr)}
+.photo-save-option{display:flex!important;align-items:center;gap:8px;padding:8px 10px;border:1px solid #5a452d;border-radius:10px;background:#0b0806}
+.photo-save-option input{width:auto!important}
+@media(max-width:700px){.photo-reference{--photo-ref-width:min(68vw,320px);max-width:88vw}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2795,7 +2806,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
           <label>放大倍率 <span id="photoZoomValue">100%</span><input id="photoZoom" type="range" min="100" max="400" value="100" step="5"></label>
           <div class="photo-crop-grid"><label>水平位置<input id="photoPanX" type="range" min="-100" max="100" value="0"></label><label>垂直位置<input id="photoPanY" type="range" min="-100" max="100" value="0"></label></div>
           <div class="photo-source-actions"><button class="secondary" id="photoCropReset" type="button">重設裁切</button><button class="secondary" id="photoFitQuestion" type="button">放大題目區</button></div>
-          <div class="photo-crop-note">可用滑桿裁切；也可在照片上拖曳移動。雙指縮放會同步更新放大倍率。</div>
+          <div class="photo-crop-note">可用滑桿裁切；也可在照片上拖曳移動。雙指縮放會同步更新放大倍率。</div><label class="photo-save-option"><input id="photoKeepWithQuestion" type="checkbox"> 儲存題目時保留壓縮參考照片</label><div id="photoDraftStatus" class="photo-crop-note">尚未建立照片題目草稿</div>
           <button class="action" id="photoStartSetup" type="button">套用裁切並開始擺題</button>
           <button class="secondary" id="photoClear" type="button">移除照片</button>
         </div>
@@ -4093,7 +4104,7 @@ function qbCurrentRecord(forceNew=false){
     setupB:JSON.parse(JSON.stringify(state.setupB||[])),setupW:JSON.parse(JSON.stringify(state.setupW||[])),
     moves:storedMoves,
     marks:JSON.parse(JSON.stringify(state.teachingMarks||[])),sequence:storedSequence,
-    sgf:buildTeachingSgf(),updatedAt:new Date().toISOString(),createdAt:old?.createdAt||new Date().toISOString()
+    sgf:buildTeachingSgf(),photoRef:((document.getElementById("photoKeepWithQuestion")?.checked&&window.photoImportDataUrl)?window.photoImportDataUrl:(old?.photoRef||"")),photoTransform:(window.photoImportDataUrl?photoTransformValues():(old?.photoTransform||null)),photoImported:!!(window.photoImportDataUrl||old?.photoRef),updatedAt:new Date().toISOString(),createdAt:old?.createdAt||new Date().toISOString()
   };
 }
 function qbUpdateCurrentLabel(){
@@ -4112,7 +4123,9 @@ function qbLoadRecord(r){
   qbEditingId=r.id;qbLoadedAnswer=JSON.parse(JSON.stringify(r));qbAnswerVisible=false;
   $("qbNumber").value=r.number||"";$("qbTitle").value=r.title||"";$("qbType").value=r.type||"死活";$("qbFirst").value=r.first||"B";$("qbDifficulty").value=r.difficulty||"中級";$("qbTags").value=r.tags||"";
   state.size=r.size||19;state.setupB=JSON.parse(JSON.stringify(r.setupB||[]));state.setupW=JSON.parse(JSON.stringify(r.setupW||[]));state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingMarks=JSON.parse(JSON.stringify(r.marks||[]));state.teachingSequence=[];state.teachingComment=r.comment||"";state.teachingFirstPlayer=r.first||"B";state.teachingNext=state.teachingFirstPlayer;state.teachingAnswerMode=false;state.teachingInteractionMode="view";state.teachingShowNumbers=false;
-  if($("teachComment"))$("teachComment").value=state.teachingComment;syncUI();updateTeachingUI();qbUpdateAnswerButton();qbTouchRecent(r.id);qbUpdateCurrentLabel();qbRender();toast(`已載入第 ${r.number||"未編號"} 題（答案已隱藏）`);
+  if($("teachComment"))$("teachComment").value=state.teachingComment;
+  if(r.photoRef){window.photoImportDataUrl=r.photoRef;photoImportUrl=r.photoRef;$("photoPreview").src=r.photoRef;$("photoReferenceImg").src=r.photoRef;$("photoImportWorkspace").hidden=false;if($("photoKeepWithQuestion"))$("photoKeepWithQuestion").checked=true;const t=r.photoTransform||{};if($("photoRotation"))$("photoRotation").value=String(t.rotation||0);if($("photoOpacity"))$("photoOpacity").value=String(Math.round((t.opacity||1)*100));if($("photoZoom"))$("photoZoom").value=String(Math.round((t.zoom||1)*100));if($("photoPanX"))$("photoPanX").value=String(t.panX||0);if($("photoPanY"))$("photoPanY").value=String(t.panY||0);photoApplyVisual();}
+  syncUI();updateTeachingUI();qbUpdateAnswerButton();qbTouchRecent(r.id);qbUpdateCurrentLabel();qbRender();toast(`已載入第 ${r.number||"未編號"} 題（答案已隱藏）`);
 }
 function qbToggleAnswer(){
   if(!qbEditingId){toast("請先載入題目");return}
@@ -4189,7 +4202,7 @@ function qbRender(){
   const all=qbRead(),rows=qbVisibleRows(),view=$("qbViewMode")?.value||"grid",list=$("qbList");
   $("qbStatus").textContent=`題庫共 ${all.length} 題｜目前顯示 ${rows.length} 題`;
   list.className=`qb-list ${view==="grid"?"grid-view":view==="compact"?"compact-view":"list-view"}`;
-  list.innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><span class="qb-compact-number">${escapeHtml(r.number||"?")}</span><span class="qb-compact-answer">${qbHasAnswer(r)?"✓":""}</span><div class="qb-thumb-wrap" data-qb-load="${r.id}" title="點擊縮圖載入"><img class="qb-thumb" data-qb-thumb="${r.id}" data-loaded="0" loading="lazy" decoding="async" alt="第 ${escapeHtml(r.number||"")} 題棋盤縮圖" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="></div><div class="qb-card-info"><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}・${qbHasAnswer(r)?`答案已建立（${Math.max(r.moves?.length||0,r.sequence?.length||0)}手）`:"尚未建立答案"}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
+  list.innerHTML=rows.length?rows.map(r=>`<div class="qb-item"><button class="qb-star ${r.favorite?"on":""}" data-qb-star="${r.id}" title="收藏">${r.favorite?"★":"☆"}</button><span class="qb-compact-number">${escapeHtml(r.number||"?")}</span><span class="qb-compact-answer">${qbHasAnswer(r)?"✓":""}</span><div class="qb-thumb-wrap" data-qb-load="${r.id}" title="點擊縮圖載入"><img class="qb-thumb" data-qb-thumb="${r.id}" data-loaded="0" loading="lazy" decoding="async" alt="第 ${escapeHtml(r.number||"")} 題棋盤縮圖" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="></div><div class="qb-card-info"><div class="qb-title">第 ${escapeHtml(r.number||"未編號")} 題｜${escapeHtml(r.title||"未命名")}</div><div class="qb-meta"><span class="qb-badge">${escapeHtml(r.type||"")}</span>${r.first==="W"?"白先":"黑先"}・${escapeHtml(r.difficulty||"")}${r.tags?"・"+escapeHtml(r.tags):""}${r.photoRef?"・📷照片匯入":""}・${qbHasAnswer(r)?`答案已建立（${Math.max(r.moves?.length||0,r.sequence?.length||0)}手）`:"尚未建立答案"}</div></div><div class="qb-item-actions"><button class="action" data-qb-load="${r.id}">載入</button><button class="secondary" data-qb-delete="${r.id}">刪除</button></div></div>`).join(""):"<div class='teach-hint'>尚無符合的題目。若搜尋後顯示 0 題，請清除搜尋文字或分類篩選。</div>";
   list.querySelectorAll("[data-qb-load]").forEach(b=>b.onclick=()=>{const r=qbRead().find(x=>x.id===b.dataset.qbLoad);if(r)qbLoadRecord(r)});
   list.querySelectorAll("[data-qb-star]").forEach(b=>b.onclick=e=>{e.stopPropagation();const items=qbRead(),r=items.find(x=>x.id===b.dataset.qbStar);if(!r)return;r.favorite=!r.favorite;r.updatedAt=new Date().toISOString();qbWrite(items);qbRender();toast(r.favorite?"已加入收藏":"已取消收藏")});
   list.querySelectorAll("[data-qb-delete]").forEach(b=>b.onclick=e=>{e.stopPropagation();qbDeleteById(b.dataset.qbDelete)});
@@ -4243,10 +4256,10 @@ $("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);$("
 $("qbEditQuestion").onclick=()=>{if(!qbEditingId){toast("請先載入題目");return;}state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingSequence=[];state.teachingAnswerMode=false;state.teachingInteractionMode="edit";state.teachingShowNumbers=false;qbAnswerVisible=false;qbUpdateAnswerButton();syncUI();updateTeachingUI();closeModal("teachModal");toast("已進入題目編輯模式");};
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;$("qbViewMode").onchange=()=>{localStorage.setItem("joygo_qb_view_mode",$("qbViewMode").value);qbRender()};
 try{const savedView=localStorage.getItem("joygo_qb_view_mode");if(["grid","compact","list"].includes(savedView))$("qbViewMode").value=savedView}catch{}
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.3.2a",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.3.3.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.3.4",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.3.4.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 // Build 028.3.2：照片裁切、縮放、拖曳與浮動參考
-let photoImportUrl="",photoDrag=null,photoPinch=null;
+let photoImportUrl="",photoDrag=null,photoPinch=null;window.photoImportDataUrl="";let photoDraftDirty=false;
 function photoTransformValues(){return{rotation:Number($("photoRotation")?.value||0),opacity:Number($("photoOpacity")?.value||100)/100,zoom:Number($("photoZoom")?.value||100)/100,panX:Number($("photoPanX")?.value||0),panY:Number($("photoPanY")?.value||0)}}
 function photoApplyVisual(){
   const v=photoTransformValues(),transform=`translate(${v.panX}%,${v.panY}%) rotate(${v.rotation}deg) scale(${v.zoom})`;
@@ -4255,14 +4268,25 @@ function photoApplyVisual(){
 }
 function photoResetCrop(){if($("photoZoom"))$("photoZoom").value="100";if($("photoPanX"))$("photoPanX").value="0";if($("photoPanY"))$("photoPanY").value="0";photoApplyVisual()}
 function photoRemove(){
-  if(photoImportUrl){URL.revokeObjectURL(photoImportUrl);photoImportUrl=""}
+  if(photoImportUrl&&photoImportUrl.startsWith("blob:")){URL.revokeObjectURL(photoImportUrl)}photoImportUrl="";window.photoImportDataUrl="";photoDraftDirty=false
   for(const id of ["photoCameraInput","photoLibraryInput"]){if($(id))$(id).value=""}
   if($("photoPreview"))$("photoPreview").removeAttribute("src");
   if($("photoReferenceImg"))$("photoReferenceImg").removeAttribute("src");
   if($("photoImportWorkspace"))$("photoImportWorkspace").hidden=true;
   if($("photoReference"))$("photoReference").hidden=true;photoResetCrop();toast("已移除題目照片");
 }
-function photoLoadFile(file){if(!file)return;if(!file.type?.startsWith("image/")){toast("請選擇照片檔");return}if(photoImportUrl)URL.revokeObjectURL(photoImportUrl);photoImportUrl=URL.createObjectURL(file);$("photoPreview").src=photoImportUrl;$("photoReferenceImg").src=photoImportUrl;$("photoImportWorkspace").hidden=false;photoResetCrop();photoApplyVisual();toast("照片已載入，可裁切、放大與拖曳") }
+async function photoLoadFile(file){
+  if(!file)return;if(!file.type?.startsWith("image/")){toast("請選擇照片檔");return}
+  try{
+    const raw=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=reject;fr.readAsDataURL(file)});
+    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=raw});
+    const max=1200,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    window.photoImportDataUrl=c.toDataURL("image/jpeg",.78);photoImportUrl=window.photoImportDataUrl;
+    $("photoPreview").src=photoImportUrl;$("photoReferenceImg").src=photoImportUrl;$("photoImportWorkspace").hidden=false;photoResetCrop();photoApplyVisual();photoDraftDirty=true;
+    if($("photoDraftStatus"))$("photoDraftStatus").textContent="照片已載入，尚未套用到新題";
+    toast("照片已載入並壓縮，可裁切、放大與拖曳");
+  }catch(err){console.error(err);toast("照片載入失敗")}
+}
 function photoBindControls(){
   const cameraBtn=$("photoCameraBtn"),libraryBtn=$("photoLibraryBtn"),cameraInput=$("photoCameraInput"),libraryInput=$("photoLibraryInput");
   if(cameraBtn&&cameraInput)cameraBtn.onclick=()=>cameraInput.click();
@@ -4288,11 +4312,11 @@ function photoInitSafe(){
       const size=Number($("photoBoardSize")?.value||19);
       if(![9,13,19].includes(size))return;
       if(!confirm(`確定切換為 ${size} 路並清空目前棋盤，開始依照片擺題？`))return;
-      qbClearBoardOnly();state.size=size;state.teachingMode=true;state.teachingInteractionMode="edit";state.teachingTool="alternate";state.teachingNext=state.teachingFirstPlayer||"B";
+      qbClearBoardOnly();state.size=size;state.teachingMode=true;state.teachingInteractionMode="edit";state.teachingTool="alternate";state.teachingNext=state.teachingFirstPlayer||"B";if(!$("qbNumber").value.trim())$("qbNumber").value=qbNextNumber();qbEditingId=null;photoDraftDirty=true;if($("photoDraftStatus"))$("photoDraftStatus").textContent=`照片題目草稿：第 ${$("qbNumber").value} 題（尚未儲存）`;qbUpdateCurrentLabel();
       const ref=$("photoReference");if(ref)ref.hidden=false;
       photoApplyVisual();syncUI();updateTeachingUI();closeModal("teachModal");toast(`已進入 ${size} 路照片擺題模式`);
     };
-    if(closeBtn)closeBtn.onclick=()=>{const ref=$("photoReference");if(ref)ref.hidden=true;toast("照片參考窗已收合")};
+    if(closeBtn)closeBtn.onclick=()=>{const ref=$("photoReference");if(!ref)return;ref.classList.toggle("collapsed");closeBtn.textContent=ref.classList.contains("collapsed")?"展開":"收合";toast(ref.classList.contains("collapsed")?"照片參考窗已收合":"照片參考窗已展開")};
     if(showBtn)showBtn.onclick=()=>{openModal("teachModal");setTimeout(()=>$("photoImportPanel")?.scrollIntoView({behavior:"smooth",block:"center"}),80)};
   }catch(err){console.error("Photo module init failed",err)}
 }
@@ -6403,10 +6427,28 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout
 </script>
 
 <div id="photoReference" class="photo-reference" hidden>
-  <div class="photo-reference-head"><span>📷 題目照片參考</span><button class="secondary" id="photoReferenceClose" type="button">收合</button></div>
+  <div class="photo-reference-head" id="photoReferenceDrag"><span>📷 題目照片參考</span><button class="secondary" id="photoReferenceClose" type="button">收合</button></div>
   <div class="photo-reference-view"><img id="photoReferenceImg" alt="浮動題目照片"></div>
-  <div class="photo-reference-actions"><button class="secondary" id="photoReferenceShow" type="button">回教學視窗</button><button class="secondary" id="photoReferenceRemove" type="button">移除</button></div>
+  <div class="photo-reference-actions"><button class="secondary" id="photoReferenceSmaller" type="button">縮小</button><button class="secondary" id="photoReferenceLarger" type="button">放大</button><button class="secondary" id="photoReferenceShow" type="button">回教學</button><button class="secondary" id="photoReferenceRemove" type="button">移除</button><button class="secondary" id="photoReferenceHide" type="button">關閉</button></div>
 </div>
 
+
+<script id="build02834-photo-workflow-js">
+(()=>{
+ const $=id=>document.getElementById(id),ref=$("photoReference"),head=$("photoReferenceDrag");
+ if(!ref||!head)return;
+ let drag=null;
+ head.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;const r=ref.getBoundingClientRect();drag={dx:e.clientX-r.left,dy:e.clientY-r.top};head.setPointerCapture?.(e.pointerId);e.preventDefault()});
+ head.addEventListener("pointermove",e=>{if(!drag)return;const x=Math.max(0,Math.min(innerWidth-ref.offsetWidth,e.clientX-drag.dx)),y=Math.max(0,Math.min(innerHeight-ref.offsetHeight,e.clientY-drag.dy));ref.style.left=x+"px";ref.style.top=y+"px";ref.style.right="auto";ref.style.bottom="auto"});
+ const end=()=>drag=null;head.addEventListener("pointerup",end);head.addEventListener("pointercancel",end);
+ $("photoReferenceHide")?.addEventListener("click",()=>{ref.hidden=true;toast("照片參考窗已關閉，可從教學視窗再次開啟")});
+ $("photoReferenceSmaller")?.addEventListener("click",()=>{ref.style.width=Math.max(220,ref.getBoundingClientRect().width*.82)+"px"});
+ $("photoReferenceLarger")?.addEventListener("click",()=>{ref.style.width=Math.min(innerWidth*.75,ref.getBoundingClientRect().width*1.2)+"px"});
+ const oldSave=window.qbSave;
+ window.addEventListener("beforeunload",e=>{if(photoDraftDirty&&!qbEditingId){e.preventDefault();e.returnValue=""}});
+ document.getElementById("qbSaveCurrent")?.addEventListener("click",()=>{photoDraftDirty=false;if($("photoDraftStatus"))$("photoDraftStatus").textContent="照片題目已儲存"},{capture:true});
+ document.getElementById("qbSaveAs")?.addEventListener("click",()=>{photoDraftDirty=false},{capture:true});
+})();
+</script>
 </body>
 </html>
