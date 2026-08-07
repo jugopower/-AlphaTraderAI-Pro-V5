@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260807-1334-Build028.3.7">
-<title>AlphaTrader AI Pro V5｜Build028.3.7 部署恢復穩定版</title>
+<meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
+<title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2435,14 +2435,48 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 .photo-reference-actions{grid-template-columns:repeat(3,1fr)!important}
 @media(max-width:700px){.photo-reference-actions{grid-template-columns:repeat(2,1fr)!important}}
 </style>
+
+<style id="joygo-beta-shell-css">
+#joygoBetaGate{position:fixed;inset:0;z-index:100000;background:linear-gradient(145deg,#081b22,#10333b 55%,#173d37);display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f5f7f7}
+#joygoBetaGate[hidden]{display:none!important}.jg-card{width:min(760px,94vw);background:rgba(8,26,31,.94);border:1px solid rgba(255,255,255,.16);border-radius:28px;padding:38px;box-shadow:0 24px 80px rgba(0,0,0,.4);text-align:center}.jg-mark{font-size:13px;letter-spacing:.18em;color:#a8d7cd}.jg-card h1{font-size:clamp(32px,6vw,58px);margin:8px 0 4px}.jg-card h2{font-size:clamp(18px,3vw,28px);font-weight:600;margin:0 0 10px}.jg-beta{display:inline-block;padding:7px 14px;border-radius:999px;background:#d9b15f;color:#10252a;font-weight:800;margin:8px 0 24px}.jg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:12px 0 24px}.jg-feature{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px;border-radius:16px;font-size:16px}.jg-login{display:flex;gap:10px;max-width:480px;margin:0 auto}.jg-login input{flex:1;min-width:0;border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 16px;font-size:18px;background:#fff;color:#111}.jg-login button{border:0;border-radius:14px;padding:14px 20px;font-size:17px;font-weight:800;background:#d9b15f;color:#10252a}.jg-msg{min-height:22px;margin:10px 0 0;color:#ffd2a1}.jg-note{font-size:12px;color:#9db1b4;margin-top:18px}.jg-exit{position:fixed;right:12px;bottom:12px;z-index:99999;border:0;border-radius:999px;padding:8px 12px;background:rgba(7,30,36,.82);color:white;font-size:12px}
+@media(max-width:620px){.jg-card{padding:26px 18px}.jg-grid{grid-template-columns:1fr}.jg-login{flex-direction:column}}
+</style>
 </head>
 <body>
+<div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
+  <div class="jg-card">
+    <div class="jg-mark">JOY GO PLATFORM</div>
+    <h1>Joy Go Platform</h1>
+    <h2>朱老師圍棋 AI 教學平台</h2>
+    <div class="jg-beta">V1.0 Beta 1｜測試版</div>
+    <div class="jg-grid">
+      <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
+      <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
+    </div>
+    <div class="jg-login"><input id="joygoBetaCode" type="password" inputmode="text" autocomplete="off" placeholder="輸入 Beta 測試碼"><button id="joygoBetaEnter" type="button">進入 V1.0 Beta</button></div>
+    <div class="jg-msg" id="joygoBetaMsg"></div>
+    <div class="jg-note">Beta 測試版｜核心：Build 028.3.7 Stable</div>
+  </div>
+</div>
+<button id="joygoBetaExit" class="jg-exit" type="button" hidden>🔒 離開 Beta</button>
+<script id="joygo-beta-shell-js">
+(()=>{
+ const gate=document.getElementById('joygoBetaGate'),input=document.getElementById('joygoBetaCode'),enter=document.getElementById('joygoBetaEnter'),msg=document.getElementById('joygoBetaMsg'),exit=document.getElementById('joygoBetaExit');
+ const CODE='JOYGO10', KEY='joygo_beta_v1_session';
+ function open(){gate.hidden=true;exit.hidden=false;try{sessionStorage.setItem(KEY,'1')}catch{}}
+ function lock(){gate.hidden=false;exit.hidden=true;input.value='';msg.textContent='';try{sessionStorage.removeItem(KEY)}catch{};setTimeout(()=>input.focus(),80)}
+ function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='測試碼不正確，請重新輸入。';input.select()}}
+ enter.addEventListener('click',check);input.addEventListener('keydown',e=>{if(e.key==='Enter')check()});exit.addEventListener('click',lock);
+ try{if(sessionStorage.getItem(KEY)==='1')open();else setTimeout(()=>input.focus(),120)}catch{}
+})();
+</script>
+
 <div class="app">
 <button id="infoCollapseBtn" class="info-collapse" type="button" aria-label="收合資訊欄">‹</button>
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">AlphaTrader AI Pro V5<br><small>Build024.8 Real KataGo · KataGo Core</small></div>
+    <div class="brand">Joy Go Platform V1.0 Beta<br><small>Build 028.3.7 Stable · KataGo Core</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
