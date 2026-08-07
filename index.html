@@ -2448,7 +2448,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1｜測試版</div>
+    <div class="jg-beta">V1.0 Beta 1.1.1｜iPad Rotation Fix</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -6420,6 +6420,27 @@ window.addEventListener("orientationchange",()=>{
   setTimeout(()=>forceBoardRebuild("orientation-2"),520);
 },{passive:true});
 window.addEventListener("load",()=>setTimeout(()=>forceBoardRebuild("load"),120),{once:true});
+
+// V1.0 Beta 1.1: robust iPad rotation refresh.
+let beta11RotateTimer=0;
+function beta11RefreshAfterRotation(){
+  clearTimeout(beta11RotateTimer);
+  const run=()=>{
+    try{
+      document.documentElement.style.setProperty('--joygo-vw',(window.innerWidth||document.documentElement.clientWidth)+'px');
+      document.documentElement.style.setProperty('--joygo-vh',(window.innerHeight||document.documentElement.clientHeight)+'px');
+      forceBoardRebuild('beta11-rotation');
+      syncUI();
+    }catch(e){console.warn('beta11 rotation refresh',e)}
+  };
+  [60,220,520,900].forEach(ms=>setTimeout(run,ms));
+}
+window.addEventListener('orientationchange',beta11RefreshAfterRotation,{passive:true});
+window.addEventListener('resize',()=>{clearTimeout(beta11RotateTimer);beta11RotateTimer=setTimeout(beta11RefreshAfterRotation,100)},{passive:true});
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',()=>{clearTimeout(beta11RotateTimer);beta11RotateTimer=setTimeout(beta11RefreshAfterRotation,100)},{passive:true});
+}
+
 
 state.engineVerified=verifyRulesEngine();
 forceBoardRebuild("startup");syncUI();
