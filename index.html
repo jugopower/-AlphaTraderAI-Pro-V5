@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260728-0224-RC5">
-<title>AlphaTrader AI Pro V5｜Build028.3.6 照片參考窗介面微調</title>
+<meta name="app-version" content="20260807-1334-Build028.3.7">
+<title>AlphaTrader AI Pro V5｜Build028.3.7 部署恢復穩定版</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -2428,7 +2428,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 .photo-save-option{display:flex!important;align-items:center;gap:8px;padding:8px 10px;border:1px solid #5a452d;border-radius:10px;background:#0b0806}
 .photo-save-option input{width:auto!important}
 @media(max-width:700px){.photo-reference{--photo-ref-width:min(68vw,320px);max-width:88vw}}
-/* Build 028.3.6：照片參考窗介面微調、固定 10% 倍率與狀態記憶 */
+/* Build 028.3.7：部署恢復穩定版；保留 028.3.6 功能並更新版本標記 */
 .photo-reference{--photo-ref-opacity:1;opacity:var(--photo-ref-opacity);transition:width .16s ease,opacity .16s ease}
 .photo-reference.is-locked .photo-reference-head{cursor:default}
 .photo-reference-status{grid-column:1/-1;text-align:center;color:#ffd36c;font-weight:800;font-size:13px;padding:2px 4px}
@@ -2786,7 +2786,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.3.2a｜穩定修正版</h3>
+    <h3>Build 028.3.7｜部署恢復穩定版</h3>
     <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
@@ -4262,7 +4262,7 @@ $("qbPrev").onclick=()=>qbNavigate(-1);$("qbNext").onclick=()=>qbNavigate(1);$("
 $("qbEditQuestion").onclick=()=>{if(!qbEditingId){toast("請先載入題目");return;}state.moves=[];state.index=0;state.actions=[];state.replayCache=[];state.teachingSequence=[];state.teachingAnswerMode=false;state.teachingInteractionMode="edit";state.teachingShowNumbers=false;qbAnswerVisible=false;qbUpdateAnswerButton();syncUI();updateTeachingUI();closeModal("teachModal");toast("已進入題目編輯模式");};
 $("qbSearch").oninput=qbRender;$("qbFilter").onchange=qbRender;$("qbSort").onchange=qbRender;$("qbFavoriteFilter").onchange=qbRender;$("qbViewMode").onchange=()=>{localStorage.setItem("joygo_qb_view_mode",$("qbViewMode").value);qbRender()};
 try{const savedView=localStorage.getItem("joygo_qb_view_mode");if(["grid","compact","list"].includes(savedView))$("qbViewMode").value=savedView}catch{}
-$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.3.4",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.3.6.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
+$("qbExportAll").onclick=()=>{const data=JSON.stringify({app:"Joy Go Platform",build:"028.3.7",exportedAt:new Date().toISOString(),questions:qbRead()},null,2),blob=new Blob([data],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="JoyGo-QuestionBank-Backup-Build028.3.7.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("題庫備份已匯出")};
 $("qbImportAll").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.questions;if(!Array.isArray(incoming))throw new Error("格式錯誤");const mode=confirm(`將匯入 ${incoming.length} 題。按「確定」與現有題庫合併；按「取消」停止匯入。`);if(!mode){e.target.value="";return}const map=new Map(qbRead().map(x=>[x.id,x]));for(const r of incoming){const id=r.id||qbId();map.set(id,{...r,id})}qbWrite([...map.values()]);qbRender();toast(`已匯入 ${incoming.length} 題`)}catch(err){alert("無法匯入："+(err?.message||err))}finally{e.target.value=""}};
 // Build 028.3.2：照片裁切、縮放、拖曳與浮動參考
 let photoImportUrl="",photoDrag=null,photoPinch=null;window.photoImportDataUrl="";let photoDraftDirty=false;
@@ -6439,7 +6439,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout
 </div>
 
 
-<script id="build02836-photo-reference-js">
+<script id="build02837-photo-reference-js">
 (()=>{
  const $=id=>document.getElementById(id),ref=$("photoReference"),head=$("photoReferenceDrag"),status=$("photoReferenceStatus");
  if(!ref||!head)return;
