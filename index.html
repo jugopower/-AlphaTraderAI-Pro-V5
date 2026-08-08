@@ -2451,7 +2451,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.3a｜Mobile Touch Fix</div>
+    <div class="jg-beta">V1.0 Beta 1.4｜Admin Monitor</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2486,8 +2486,8 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   const sid=(()=>{try{let x=localStorage.getItem(KEY);if(!x){x=(crypto.randomUUID?crypto.randomUUID():('jg-'+Date.now()+'-'+Math.random().toString(36).slice(2)));localStorage.setItem(KEY,x)}return x}catch{return 'jg-'+Math.random().toString(36).slice(2)}})();
   function base(){try{const raw=(localStorage.getItem('katagoApiUrl')||'https://alphatrader-katago-server-v2.onrender.com/analyze').trim();const u=new URL(raw);return u.origin}catch{return 'https://alphatrader-katago-server-v2.onrender.com'}}
   async function post(path,body={},keepalive=false){const r=await fetch(base()+path,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({session_id:sid,...body}),cache:'no-store',keepalive});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
-  async function getStatus(){try{const r=await fetch(base()+'/monitor/status',{cache:'no-store',headers:{'Accept':'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status);render(await r.json(),true)}catch{render(null,false)}}
-  function render(d,ok){const set=(id,v)=>{const b=document.querySelector('#'+id+' b');if(b)b.textContent=v};set('jmOnline',ok?Number(d.online||0):'—');set('jmAI',ok?Number(d.katago_active||0):'—');set('jmToday',ok?Number(d.today_visitors||0):'—');set('jmQueue',ok?Number(d.queue_estimate||0):'—');const dot=document.getElementById('jmDot');dot?.classList.toggle('off',!ok);for(const id of ['jmOnline','jmAI','jmToday','jmQueue'])document.getElementById(id)?.classList.toggle('jm-off',!ok);document.getElementById('joygoLiveMonitor')?.setAttribute('title',ok?'匿名多人測試監控｜每 25 秒更新':'監控後端尚未啟用；不影響棋盤與 KataGo 功能')}
+  async function getStatus(){try{const r=await fetch(base()+'/monitor/stats',{cache:'no-store',headers:{'Accept':'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status);render(await r.json(),true)}catch{render(null,false)}}
+  function render(d,ok){const set=(id,v)=>{const b=document.querySelector('#'+id+' b');if(b)b.textContent=v};set('jmOnline',ok?Number(d.online||0):'—');set('jmAI',ok?Number(d.katago||0):'—');set('jmToday',ok?Number(d.today||0):'—');set('jmQueue',ok?Number(d.queue||0):'—');const dot=document.getElementById('jmDot');dot?.classList.toggle('off',!ok);for(const id of ['jmOnline','jmAI','jmToday','jmQueue'])document.getElementById(id)?.classList.toggle('jm-off',!ok);document.getElementById('joygoLiveMonitor')?.setAttribute('title',ok?'匿名多人測試監控｜每 25 秒更新':'監控後端尚未啟用；不影響棋盤與 KataGo 功能')}
   async function heartbeat(){try{await post('/monitor/heartbeat',{page:location.pathname})}catch{} }
   async function setAI(busy){if(aiBusy===busy)return;aiBusy=busy;try{await post('/monitor/ai',{busy})}catch{};setTimeout(getStatus,80)}
   function start(){if(started)return;started=true;heartbeat();getStatus();timerHeartbeat=setInterval(heartbeat,25000);timerStatus=setInterval(getStatus,10000)}
@@ -2502,7 +2502,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">Joy Go Platform V1.0 Beta 1.3a<br><small>Build 028.3.7 Stable · Mobile Touch Fix</small></div>
+    <div class="brand">Joy Go Platform V1.0 Beta 1.4<br><small>Build 028.3.7 Stable · Admin Monitor</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
