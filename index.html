@@ -2440,6 +2440,9 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 #joygoBetaGate{position:fixed;inset:0;z-index:100000;background:linear-gradient(145deg,#081b22,#10333b 55%,#173d37);display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f5f7f7}
 #joygoBetaGate[hidden]{display:none!important}.jg-card{width:min(760px,94vw);background:rgba(8,26,31,.94);border:1px solid rgba(255,255,255,.16);border-radius:28px;padding:38px;box-shadow:0 24px 80px rgba(0,0,0,.4);text-align:center}.jg-mark{font-size:13px;letter-spacing:.18em;color:#a8d7cd}.jg-card h1{font-size:clamp(32px,6vw,58px);margin:8px 0 4px}.jg-card h2{font-size:clamp(18px,3vw,28px);font-weight:600;margin:0 0 10px}.jg-beta{display:inline-block;padding:7px 14px;border-radius:999px;background:#d9b15f;color:#10252a;font-weight:800;margin:8px 0 24px}.jg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:12px 0 24px}.jg-feature{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px;border-radius:16px;font-size:16px}.jg-login{display:flex;gap:10px;max-width:480px;margin:0 auto}.jg-login input{flex:1;min-width:0;border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 16px;font-size:18px;background:#fff;color:#111}.jg-login button{border:0;border-radius:14px;padding:14px 20px;font-size:17px;font-weight:800;background:#d9b15f;color:#10252a}.jg-msg{min-height:22px;margin:10px 0 0;color:#ffd2a1}.jg-note{font-size:12px;color:#9db1b4;margin-top:18px}.jg-exit{position:fixed;right:12px;bottom:12px;z-index:99999;border:0;border-radius:999px;padding:8px 12px;background:rgba(7,30,36,.82);color:white;font-size:12px}
 @media(max-width:620px){.jg-card{padding:26px 18px}.jg-grid{grid-template-columns:1fr}.jg-login{flex-direction:column}}
+#joygoLiveMonitor{position:fixed;left:12px;top:10px;z-index:99998;display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:min(94vw,720px);font:600 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;pointer-events:auto}
+#joygoLiveMonitor[hidden]{display:none!important}.jm-chip{background:rgba(7,30,36,.88);border:1px solid rgba(255,255,255,.16);color:#f7f7f7;border-radius:999px;padding:7px 10px;box-shadow:0 4px 16px rgba(0,0,0,.18);backdrop-filter:blur(10px)}.jm-chip b{color:#f4c96a}.jm-off{opacity:.72}.jm-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5ed487;margin-right:5px}.jm-dot.off{background:#999}
+@media(max-width:700px){#joygoLiveMonitor{top:6px;left:6px;right:6px;gap:4px}.jm-chip{padding:6px 8px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -2448,7 +2451,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.1.1｜iPad Rotation Fix</div>
+    <div class="jg-beta">V1.0 Beta 1.2｜多人測試監控版</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2459,15 +2462,38 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   </div>
 </div>
 <button id="joygoBetaExit" class="jg-exit" type="button" hidden>🔒 離開 Beta</button>
+<div id="joygoLiveMonitor" hidden aria-label="多人測試監控">
+  <span class="jm-chip" id="jmOnline"><i class="jm-dot off" id="jmDot"></i>在線 <b>—</b></span>
+  <span class="jm-chip" id="jmAI">🤖 KataGo <b>—</b></span>
+  <span class="jm-chip" id="jmToday">📊 今日 <b>—</b></span>
+  <span class="jm-chip" id="jmQueue">⏳ 排隊 <b>—</b></span>
+</div>
 <script id="joygo-beta-shell-js">
 (()=>{
  const gate=document.getElementById('joygoBetaGate'),input=document.getElementById('joygoBetaCode'),enter=document.getElementById('joygoBetaEnter'),msg=document.getElementById('joygoBetaMsg'),exit=document.getElementById('joygoBetaExit');
  const CODE='JOYGO10', KEY='joygo_beta_v1_session';
- function open(){gate.hidden=true;exit.hidden=false;try{sessionStorage.setItem(KEY,'1')}catch{}}
- function lock(){gate.hidden=false;exit.hidden=true;input.value='';msg.textContent='';try{sessionStorage.removeItem(KEY)}catch{};setTimeout(()=>input.focus(),80)}
+ function open(){gate.hidden=true;exit.hidden=false;document.getElementById('joygoLiveMonitor').hidden=false;try{sessionStorage.setItem(KEY,'1')}catch{};setTimeout(()=>window.joygoMonitorStart?.(),50)}
+ function lock(){gate.hidden=false;exit.hidden=true;document.getElementById('joygoLiveMonitor').hidden=true;window.joygoMonitorStop?.();input.value='';msg.textContent='';try{sessionStorage.removeItem(KEY)}catch{};setTimeout(()=>input.focus(),80)}
  function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='測試碼不正確，請重新輸入。';input.select()}}
  enter.addEventListener('click',check);input.addEventListener('keydown',e=>{if(e.key==='Enter')check()});exit.addEventListener('click',lock);
  try{if(sessionStorage.getItem(KEY)==='1')open();else setTimeout(()=>input.focus(),120)}catch{}
+})();
+</script>
+<script id="joygo-beta12-monitor-js">
+(()=>{
+  const KEY='joygo_monitor_session_v1';
+  let timerHeartbeat=null,timerStatus=null,started=false,aiBusy=false;
+  const sid=(()=>{try{let x=localStorage.getItem(KEY);if(!x){x=(crypto.randomUUID?crypto.randomUUID():('jg-'+Date.now()+'-'+Math.random().toString(36).slice(2)));localStorage.setItem(KEY,x)}return x}catch{return 'jg-'+Math.random().toString(36).slice(2)}})();
+  function base(){try{const raw=(localStorage.getItem('katagoApiUrl')||'https://alphatrader-katago-server-v2.onrender.com/analyze').trim();const u=new URL(raw);return u.origin}catch{return 'https://alphatrader-katago-server-v2.onrender.com'}}
+  async function post(path,body={},keepalive=false){const r=await fetch(base()+path,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({session_id:sid,...body}),cache:'no-store',keepalive});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+  async function getStatus(){try{const r=await fetch(base()+'/monitor/status',{cache:'no-store',headers:{'Accept':'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status);render(await r.json(),true)}catch{render(null,false)}}
+  function render(d,ok){const set=(id,v)=>{const b=document.querySelector('#'+id+' b');if(b)b.textContent=v};set('jmOnline',ok?Number(d.online||0):'—');set('jmAI',ok?Number(d.katago_active||0):'—');set('jmToday',ok?Number(d.today_visitors||0):'—');set('jmQueue',ok?Number(d.queue_estimate||0):'—');const dot=document.getElementById('jmDot');dot?.classList.toggle('off',!ok);for(const id of ['jmOnline','jmAI','jmToday','jmQueue'])document.getElementById(id)?.classList.toggle('jm-off',!ok);document.getElementById('joygoLiveMonitor')?.setAttribute('title',ok?'匿名多人測試監控｜每 25 秒更新':'監控後端尚未啟用；不影響棋盤與 KataGo 功能')}
+  async function heartbeat(){try{await post('/monitor/heartbeat',{page:location.pathname})}catch{} }
+  async function setAI(busy){if(aiBusy===busy)return;aiBusy=busy;try{await post('/monitor/ai',{busy})}catch{};setTimeout(getStatus,80)}
+  function start(){if(started)return;started=true;heartbeat();getStatus();timerHeartbeat=setInterval(heartbeat,25000);timerStatus=setInterval(getStatus,10000)}
+  function stop(){if(!started)return;started=false;clearInterval(timerHeartbeat);clearInterval(timerStatus);timerHeartbeat=timerStatus=null;try{post('/monitor/leave',{},true)}catch{}}
+  window.joygoMonitorStart=start;window.joygoMonitorStop=stop;window.joygoMonitorSetAI=setAI;
+  addEventListener('pagehide',()=>{try{post('/monitor/leave',{},true)}catch{}},{capture:true});
 })();
 </script>
 
@@ -2476,7 +2502,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">Joy Go Platform V1.0 Beta<br><small>Build 028.3.7 Stable · KataGo Core</small></div>
+    <div class="brand">Joy Go Platform V1.0 Beta 1.2<br><small>Build 028.3.7 Stable · Multi-user Monitor</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -3313,6 +3339,7 @@ async function requestCloudAnalysis(options={}){
   const t0=performance.now();
   const payload=currentPositionPayload();
   inspectorSet("wait","正在等待 Render 回應；棋盤不會被鎖住…",{request:payload});
+  window.joygoMonitorSetAI?.(true);
   try{
     const response=await fetch(s.url,{
       method:"POST",
@@ -3356,6 +3383,7 @@ async function requestCloudAnalysis(options={}){
     throw new Error(state.connector.lastError);
   }finally{
     clearTimeout(timer);
+    window.joygoMonitorSetAI?.(false);
   }
 }
 
