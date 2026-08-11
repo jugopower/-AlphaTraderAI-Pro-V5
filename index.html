@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6b.3 Top Status Bar Layout Fix -->
+<!-- Joy Go Platform V1.0 Beta 1.6b.4 Bottom Right Button Spacing Fix -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2590,6 +2590,44 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+
+<style id="bottomRightButtonsFix16b4">
+/* Beta 1.6b.4：右下角「API 資料」與「離開 Beta」分開，不再重疊 */
+#joygoBetaExit{
+  right:12px !important;
+  bottom:max(12px,env(safe-area-inset-bottom)) !important;
+  z-index:99999 !important;
+}
+
+#apiInspectorToggle{
+  right:12px !important;
+  bottom:58px !important;
+  z-index:99998 !important;
+}
+
+/* API 面板展開時，也從兩個按鈕上方開始 */
+#apiInspectorPanel{
+  right:12px !important;
+  bottom:108px !important;
+}
+
+/* iPad / 手機：保留安全區與更清楚的間距 */
+@media(max-width:700px){
+  #joygoBetaExit{
+    right:9px !important;
+    bottom:max(9px,env(safe-area-inset-bottom)) !important;
+  }
+  #apiInspectorToggle{
+    right:9px !important;
+    bottom:55px !important;
+  }
+  #apiInspectorPanel{
+    right:8px !important;
+    bottom:102px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2597,7 +2635,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.3｜狀態列遮擋修正</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.4｜右下按鈕重疊修正</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
