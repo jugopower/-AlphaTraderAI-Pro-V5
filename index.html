@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6a Classic Game Library -->
+<!-- Joy Go Platform V1.0 Beta 1.6b Classic Game Database -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2489,6 +2489,40 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+
+<style id="classicGameDatabase16bStyle">
+.classic-db-filters{
+  display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr;gap:8px;margin:10px 0 12px
+}
+.classic-db-filters input,.classic-db-filters select{width:100%}
+.classic-db-count{font-size:12px;color:var(--muted);margin:4px 0 10px}
+.classic-db-badge{
+  display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;
+  border:1px solid #6c4b2c;background:#18100b;color:#f5d68a;font-size:11px;margin-right:4px
+}
+.classic-db-badge.official{border-color:#6e9958;color:#cbe8bc}
+.classic-db-badge.demo{border-color:#8f713e;color:#e4c98d}
+.classic-db-actions{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}
+.classic-db-actions button{flex:1;min-width:140px}
+.classic-db-card-note{font-size:12px;color:#d7c6a8;line-height:1.45;margin-top:5px}
+.classic-db-card-result{font-weight:800;color:#f4d06c}
+.classic-import-form{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.classic-import-form label{min-width:0}
+.classic-import-form .wide{grid-column:1 / -1}
+.classic-import-form input,.classic-import-form select,.classic-import-form textarea{width:100%}
+.classic-import-file{
+  padding:12px;border:1px dashed #81603a;border-radius:12px;background:#0b0705;color:#d8c3a0
+}
+.classic-db-empty{
+  padding:18px;border:1px dashed #ffffff22;border-radius:12px;color:var(--muted);text-align:center
+}
+@media(max-width:760px){
+  .classic-db-filters{grid-template-columns:1fr 1fr}
+  .classic-import-form{grid-template-columns:1fr}
+  .classic-import-form .wide{grid-column:auto}
+}
+</style>
+
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2496,7 +2530,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6a｜名局館</div>
+    <div class="jg-beta">V1.0 Beta 1.6b｜正式名局資料庫</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2797,24 +2831,106 @@ body.spectator-viewing #statusText{font-weight:800}
 </div></div>
 
 
+
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6a｜名局館</h2>
-  <p class="classic-library-note">第一版先完成「名局列表 → 載入 SGF → 棋盤播放」。內建 3 盤為功能測試棋譜，不冒充真實歷史名局；之後可換成朱老師指定的正式名局 SGF。</p>
+  <h2>🏛️ Beta 1.6b｜正式名局資料庫</h2>
+  <p class="classic-library-note">
+    本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
+    內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
+  </p>
 
-  <div class="classic-library-toolbar">
-    <label>搜尋棋譜
-      <input id="classicGameSearch" placeholder="輸入棋手、賽事或名稱">
-    </label>
-    <button class="secondary" id="classicImportSgfBtn">＋ 匯入我的 SGF</button>
+  <div class="classic-db-actions">
+    <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
+    <button class="secondary" id="classicImportSgfBtn">📂 單次開啟 SGF</button>
+    <button class="secondary" id="classicClearUserDbBtn">清除我加入的名局</button>
   </div>
 
+  <div class="classic-db-filters">
+    <label>搜尋
+      <input id="classicGameSearch" placeholder="棋手、賽事、名稱">
+    </label>
+    <label>分類
+      <select id="classicCategoryFilter">
+        <option value="">全部分類</option>
+        <option value="布局">布局</option>
+        <option value="中盤">中盤</option>
+        <option value="官子">官子</option>
+        <option value="攻防">攻防</option>
+        <option value="名人名局">名人名局</option>
+        <option value="AI名局">AI名局</option>
+        <option value="其他">其他</option>
+      </select>
+    </label>
+    <label>棋手
+      <input id="classicPlayerFilter" placeholder="例如：吳清源">
+    </label>
+    <label>年份
+      <input id="classicYearFilter" inputmode="numeric" placeholder="例如：1988">
+    </label>
+  </div>
+
+  <div id="classicGameCount" class="classic-db-count"></div>
   <div id="classicGameList" class="classic-game-list"></div>
 
   <div class="classic-library-tip">
-    載入後可直接使用平台原有的 ⏮ ◀ ▶ ▶ ⏭、指定手數與棋號顯示功能。按「載入並播放」會從第 0 手開始自動播放。
+    載入後可使用平台原有的第一手、上一手、播放／暫停、下一手、最後一手、指定手數與棋號顯示。
+    您自己加入的正式名局會保存在這台裝置的瀏覽器資料中。
   </div>
 </div></div>
+
+<div id="classicImportModal" class="modal-backdrop"><div class="modal">
+  <button class="close" data-close="classicImportModal">✕</button>
+  <h2>＋ 加入正式名局 SGF</h2>
+  <p class="classic-library-note">先選 SGF，再補上資料。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
+
+  <div class="classic-import-file">
+    <input id="classicOfficialFile" type="file" accept=".sgf,application/x-go-sgf,text/plain">
+    <div id="classicOfficialFileName" style="margin-top:6px">尚未選擇 SGF</div>
+  </div>
+
+  <div class="classic-import-form" style="margin-top:12px">
+    <label class="wide">名局名稱
+      <input id="classicTitleInput" placeholder="例如：第 1 屆○○盃決賽">
+    </label>
+    <label>黑方
+      <input id="classicBlackInput">
+    </label>
+    <label>白方
+      <input id="classicWhiteInput">
+    </label>
+    <label>賽事
+      <input id="classicEventInput">
+    </label>
+    <label>日期
+      <input id="classicDateInput" placeholder="YYYY-MM-DD">
+    </label>
+    <label>結果
+      <input id="classicResultInput" placeholder="例如：B+R / W+2.5">
+    </label>
+    <label>分類
+      <select id="classicCategoryInput">
+        <option value="名人名局">名人名局</option>
+        <option value="布局">布局</option>
+        <option value="中盤">中盤</option>
+        <option value="官子">官子</option>
+        <option value="攻防">攻防</option>
+        <option value="AI名局">AI名局</option>
+        <option value="其他">其他</option>
+      </select>
+    </label>
+    <label class="wide">朱老師註記
+      <textarea id="classicNoteInput" rows="3" placeholder="例如：本局重點看右上角攻防。"></textarea>
+    </label>
+  </div>
+
+  <div class="grid2" style="margin-top:12px">
+    <button class="action" id="classicSaveOfficialBtn">儲存到名局館</button>
+    <button class="secondary" data-close="classicImportModal">取消</button>
+  </div>
+  <div id="classicImportMessage" class="connector-status warn" style="margin-top:10px">尚未選擇 SGF。</div>
+</div></div>
+
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
@@ -4105,33 +4221,78 @@ if($('spectatorRoomInput')){
 window.addEventListener('pagehide',()=>{spectatorClearTimer()},{passive:true});
 
 
-// ===== Joy Go Platform Beta 1.6a: Classic Game Library =====
-// 內建 3 盤為功能測試棋譜，不宣稱為真實歷史名局。
-const CLASSIC_GAME_LIBRARY=[
+// ===== Joy Go Platform Beta 1.6b: Classic Game Database =====
+const CLASSIC_DEMO_GAMES=[
   {
-    id:"demo-1", title:"測試棋譜 1｜星位布局", black:"測試黑方", white:"測試白方",
-    event:"Beta 1.6a 功能測試", date:"2026-08-11", note:"測試名局館載入、手順與自動播放。",
-    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6a]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6a 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dd];B[qp];W[dq];B[cf];W[fc];B[pp];W[dc];B[ce];W[ed];B[nc];W[qf];B[qn];W[oq];B[oc];W[nd];B[md];W[ne])"
+    id:"demo-1", source:"demo", title:"測試棋譜 1｜星位布局", black:"測試黑方", white:"測試白方",
+    event:"Beta 1.6 功能測試", date:"2026-08-11", result:"", category:"布局",
+    note:"功能測試棋譜，不是真實歷史名局。",
+    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6b]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dd];B[qp];W[dq];B[cf];W[fc];B[pp];W[dc];B[ce];W[ed];B[nc];W[qf];B[qn];W[oq];B[oc];W[nd];B[md];W[ne])"
   },
   {
-    id:"demo-2", title:"測試棋譜 2｜三連星", black:"測試黑方", white:"測試白方",
-    event:"Beta 1.6a 功能測試", date:"2026-08-11", note:"測試較長手順的前進、後退與指定手數。",
-    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6a]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6a 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[pj];W[fc];B[cn];W[qf];B[nc];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[pe];B[qe];W[rf];B[qg];W[of];B[pg];W[ng];B[nf];W[mg])"
+    id:"demo-2", source:"demo", title:"測試棋譜 2｜三連星", black:"測試黑方", white:"測試白方",
+    event:"Beta 1.6 功能測試", date:"2026-08-11", result:"", category:"布局",
+    note:"功能測試棋譜，用於測試較長手順。",
+    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6b]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[pj];W[fc];B[cn];W[qf];B[nc];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[pe];B[qe];W[rf];B[qg];W[of];B[pg];W[ng];B[nf];W[mg])"
   },
   {
-    id:"demo-3", title:"測試棋譜 3｜中國流", black:"測試黑方", white:"測試白方",
-    event:"Beta 1.6a 功能測試", date:"2026-08-11", note:"測試載入後直接自動播放。",
-    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6a]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6a 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[qn];W[nc];B[rd];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[mc];B[md];W[lc];B[ne];W[of];B[pf];W[pg];B[qg];W[rf])"
+    id:"demo-3", source:"demo", title:"測試棋譜 3｜中國流", black:"測試黑方", white:"測試白方",
+    event:"Beta 1.6 功能測試", date:"2026-08-11", result:"", category:"布局",
+    note:"功能測試棋譜，用於測試自動播放。",
+    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6b]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[qn];W[nc];B[rd];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[mc];B[md];W[lc];B[ne];W[of];B[pf];W[pg];B[qg];W[rf])"
   }
 ];
+let classicPendingSgf="";
 
+function classicDbKey(){return "joygo-classic-db-v1";}
+function classicLoadUserGames(){
+  try{
+    const v=JSON.parse(localStorage.getItem(classicDbKey())||"[]");
+    return Array.isArray(v)?v:[];
+  }catch{return []}
+}
+function classicSaveUserGames(games){
+  localStorage.setItem(classicDbKey(),JSON.stringify(games));
+}
+function classicAllGames(){
+  return [...classicLoadUserGames(),...CLASSIC_DEMO_GAMES];
+}
+function classicSgfProp(text,key){
+  const m=String(text||"").match(new RegExp(key+"\\[((?:\\\\.|[^\\]])*)\\]","i"));
+  return m?m[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\").trim():"";
+}
+function classicNormalizeDate(v){
+  const s=String(v||"").trim().replace(/\./g,"-").replace(/\//g,"-");
+  return s;
+}
+function classicAutoFillFromSgf(text){
+  const pb=classicSgfProp(text,"PB"), pw=classicSgfProp(text,"PW"), ev=classicSgfProp(text,"EV");
+  const dt=classicSgfProp(text,"DT"), re=classicSgfProp(text,"RE"), gn=classicSgfProp(text,"GN");
+  if($("classicBlackInput"))$("classicBlackInput").value=pb;
+  if($("classicWhiteInput"))$("classicWhiteInput").value=pw;
+  if($("classicEventInput"))$("classicEventInput").value=ev;
+  if($("classicDateInput"))$("classicDateInput").value=classicNormalizeDate(dt);
+  if($("classicResultInput"))$("classicResultInput").value=re;
+  if($("classicTitleInput"))$("classicTitleInput").value=gn||[pb,pw].filter(Boolean).join(" vs ");
+}
 function classicGameCard(game){
   const card=document.createElement("div");card.className="classic-game-card";
   const info=document.createElement("div");
-  const title=document.createElement("div");title.className="classic-game-title";title.textContent=game.title;
+  const title=document.createElement("div");title.className="classic-game-title";title.textContent=game.title||"未命名棋譜";
   const meta=document.createElement("div");meta.className="classic-game-meta";
-  meta.textContent=`${game.black} vs ${game.white}｜${game.event}｜${game.date}｜${game.note}`;
-  info.append(title,meta);
+  const result=game.result?`｜結果 ${game.result}`:"";
+  meta.textContent=`${game.black||"黑方"} vs ${game.white||"白方"}｜${game.event||"未填賽事"}｜${game.date||"未填日期"}${result}`;
+  const badges=document.createElement("div");badges.style.marginTop="6px";
+  const sourceBadge=document.createElement("span");
+  sourceBadge.className="classic-db-badge "+(game.source==="official"?"official":"demo");
+  sourceBadge.textContent=game.source==="official"?"正式匯入":"功能測試";
+  const cat=document.createElement("span");cat.className="classic-db-badge";cat.textContent=game.category||"其他";
+  badges.append(sourceBadge,cat);
+  if(game.note){
+    const note=document.createElement("div");note.className="classic-db-card-note";note.textContent=game.note;
+    info.append(title,meta,badges,note);
+  }else info.append(title,meta,badges);
+
   const actions=document.createElement("div");actions.className="classic-game-actions";
   const loadBtn=document.createElement("button");loadBtn.className="action";loadBtn.textContent="載入";
   loadBtn.onclick=()=>loadClassicGame(game,false);
@@ -4144,12 +4305,28 @@ function classicGameCard(game){
 function renderClassicGameLibrary(){
   const box=$("classicGameList");if(!box)return;
   const q=String($("classicGameSearch")?.value||"").trim().toLowerCase();
-  const games=CLASSIC_GAME_LIBRARY.filter(g=>{
-    const hay=[g.title,g.black,g.white,g.event,g.date,g.note].join(" ").toLowerCase();
-    return !q||hay.includes(q);
+  const category=String($("classicCategoryFilter")?.value||"").trim();
+  const player=String($("classicPlayerFilter")?.value||"").trim().toLowerCase();
+  const year=String($("classicYearFilter")?.value||"").trim();
+
+  const games=classicAllGames().filter(g=>{
+    const hay=[g.title,g.black,g.white,g.event,g.date,g.result,g.category,g.note].join(" ").toLowerCase();
+    const playerHay=[g.black,g.white].join(" ").toLowerCase();
+    return (!q||hay.includes(q))
+      &&(!category||g.category===category)
+      &&(!player||playerHay.includes(player))
+      &&(!year||String(g.date||"").startsWith(year));
   });
+
   box.innerHTML="";
-  if(!games.length){box.innerHTML='<div class="classic-library-empty">找不到符合條件的棋譜。</div>';return}
+  if($("classicGameCount")){
+    const officialCount=classicLoadUserGames().length;
+    $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜已加入正式棋譜 ${officialCount} 盤｜功能測試棋譜 ${CLASSIC_DEMO_GAMES.length} 盤`;
+  }
+  if(!games.length){
+    box.innerHTML='<div class="classic-db-empty">沒有符合目前搜尋條件的棋譜。</div>';
+    return;
+  }
   games.forEach(g=>box.appendChild(classicGameCard(g)));
 }
 function openClassicGameLibrary(){
@@ -4157,20 +4334,82 @@ function openClassicGameLibrary(){
   openModal("classicGameModal");
 }
 function loadClassicGame(game,autoPlay=false){
-  const ok=loadSGFText(game.sgf,game.title+".sgf");
+  const ok=loadSGFText(game.sgf,(game.title||"名局")+".sgf");
   if(!ok)return;
   closeModal("classicGameModal");
-  state.index=0; syncUI(); goTo(0);
-  toast("已載入："+game.title);
+  state.index=0;syncUI();goTo(0);
+  toast("已載入："+(game.title||"名局"));
   if(autoPlay){
-    setTimeout(()=>{ if(!state.playing) $("playBtn")?.click(); },250);
+    setTimeout(()=>{if(!state.playing)$("playBtn")?.click()},250);
   }
 }
-if($("classicGameSearch"))$("classicGameSearch").addEventListener("input",renderClassicGameLibrary);
-if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{
-  closeModal("classicGameModal");
-  $("sgfFile")?.click();
-};
+function classicResetImportForm(){
+  classicPendingSgf="";
+  ["classicTitleInput","classicBlackInput","classicWhiteInput","classicEventInput","classicDateInput","classicResultInput","classicNoteInput"].forEach(id=>{if($(id))$(id).value=""});
+  if($("classicCategoryInput"))$("classicCategoryInput").value="名人名局";
+  if($("classicOfficialFile"))$("classicOfficialFile").value="";
+  if($("classicOfficialFileName"))$("classicOfficialFileName").textContent="尚未選擇 SGF";
+  if($("classicImportMessage")){$("classicImportMessage").className="connector-status warn";$("classicImportMessage").textContent="尚未選擇 SGF。"}
+}
+function classicOpenImportModal(){
+  classicResetImportForm();
+  openModal("classicImportModal");
+}
+async function classicReadOfficialFile(file){
+  if(!file)return;
+  const text=await file.text();
+  if(!text.includes("(;")||!/\bSZ\[\d+\]/i.test(text)){
+    classicPendingSgf="";
+    if($("classicImportMessage")){$("classicImportMessage").className="connector-status bad";$("classicImportMessage").textContent="這個檔案看起來不是有效的 SGF。"}
+    return;
+  }
+  classicPendingSgf=text;
+  if($("classicOfficialFileName"))$("classicOfficialFileName").textContent=file.name;
+  classicAutoFillFromSgf(text);
+  if($("classicImportMessage")){$("classicImportMessage").className="connector-status ok";$("classicImportMessage").textContent="SGF 已讀取，可以補充資料後儲存。"}
+}
+function classicSaveOfficial(){
+  if(!classicPendingSgf){
+    if($("classicImportMessage")){$("classicImportMessage").className="connector-status bad";$("classicImportMessage").textContent="請先選擇 SGF。"}
+    return;
+  }
+  const game={
+    id:"official-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7),
+    source:"official",
+    title:String($("classicTitleInput")?.value||"").trim()||"未命名名局",
+    black:String($("classicBlackInput")?.value||"").trim(),
+    white:String($("classicWhiteInput")?.value||"").trim(),
+    event:String($("classicEventInput")?.value||"").trim(),
+    date:String($("classicDateInput")?.value||"").trim(),
+    result:String($("classicResultInput")?.value||"").trim(),
+    category:String($("classicCategoryInput")?.value||"其他"),
+    note:String($("classicNoteInput")?.value||"").trim(),
+    sgf:classicPendingSgf
+  };
+  const games=classicLoadUserGames();games.unshift(game);classicSaveUserGames(games);
+  closeModal("classicImportModal");
+  renderClassicGameLibrary();
+  toast("已加入名局資料庫："+game.title);
+}
+function classicClearUserDb(){
+  const count=classicLoadUserGames().length;
+  if(!count){toast("目前沒有自己加入的名局");return}
+  if(confirm(`確定清除這台裝置中自己加入的 ${count} 盤名局嗎？`)){
+    localStorage.removeItem(classicDbKey());
+    renderClassicGameLibrary();
+    toast("已清除自己加入的名局");
+  }
+}
+
+["classicGameSearch","classicPlayerFilter","classicYearFilter"].forEach(id=>{
+  if($(id))$(id).addEventListener("input",renderClassicGameLibrary);
+});
+if($("classicCategoryFilter"))$("classicCategoryFilter").addEventListener("change",renderClassicGameLibrary);
+if($("classicAddOfficialBtn"))$("classicAddOfficialBtn").onclick=classicOpenImportModal;
+if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{closeModal("classicGameModal");$("sgfFile")?.click()};
+if($("classicClearUserDbBtn"))$("classicClearUserDbBtn").onclick=classicClearUserDb;
+if($("classicOfficialFile"))$("classicOfficialFile").addEventListener("change",e=>classicReadOfficialFile(e.target.files?.[0]));
+if($("classicSaveOfficialBtn"))$("classicSaveOfficialBtn").onclick=classicSaveOfficial;
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
