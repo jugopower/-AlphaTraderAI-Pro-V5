@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.5b Multi-room Spectator Lobby -->
+<!-- Joy Go Platform V1.0 Beta 1.6a Classic Game Library -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -125,7 +125,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     gap:8px;padding:8px;
   }
   .topbar{
-    grid-column:1;grid-row:1;display:grid;grid-template-columns:repeat(7,1fr);gap:5px;
+    grid-column:1;grid-row:1;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;
     background:linear-gradient(180deg,#1c120c,#100b08);border:1px solid #6c4b2c;border-radius:18px;padding:6px
   }
   .topbar .tool{min-height:60px;font-size:11px}
@@ -2468,6 +2468,27 @@ body.spectator-viewing #statusText{font-weight:800}
   .spectator-game-card button{width:100%}
 }
 </style>
+
+<style id="classicGameLibrary16aStyle">
+.classic-library-note{font-size:12px;line-height:1.55;color:var(--muted);margin-bottom:10px}
+.classic-library-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:10px 0 12px}
+.classic-library-toolbar input{width:100%}
+.classic-game-list{display:grid;gap:9px}
+.classic-game-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px;border:1px solid #ffffff18;border-radius:13px;background:#0b0705}
+.classic-game-title{font-weight:900;color:var(--gold);font-size:15px}
+.classic-game-meta{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px}
+.classic-game-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.classic-game-actions button{padding:8px 10px}
+.classic-library-empty{padding:14px;border:1px dashed #ffffff22;border-radius:12px;color:var(--muted);text-align:center}
+.classic-library-tip{margin-top:10px;padding:9px 11px;border:1px solid #6c4b2c;border-radius:10px;background:#100b08;color:#e9d8bb;font-size:12px;line-height:1.55}
+@media(max-width:650px){
+  .classic-library-toolbar{grid-template-columns:1fr}
+  .classic-game-card{grid-template-columns:1fr}
+  .classic-game-actions{justify-content:stretch}
+  .classic-game-actions button{flex:1}
+}
+</style>
+
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2475,7 +2496,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.5b｜多盤觀戰大廳</div>
+    <div class="jg-beta">V1.0 Beta 1.6a｜名局館</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2773,6 +2794,26 @@ body.spectator-viewing #statusText{font-weight:800}
   </div>
 
   <div id="spectatorMessage" class="connector-status warn" style="margin-top:12px">尚未開始觀戰或轉播。</div>
+</div></div>
+
+
+<div id="classicGameModal" class="modal-backdrop"><div class="modal">
+  <button class="close" data-close="classicGameModal">✕</button>
+  <h2>🏛️ Beta 1.6a｜名局館</h2>
+  <p class="classic-library-note">第一版先完成「名局列表 → 載入 SGF → 棋盤播放」。內建 3 盤為功能測試棋譜，不冒充真實歷史名局；之後可換成朱老師指定的正式名局 SGF。</p>
+
+  <div class="classic-library-toolbar">
+    <label>搜尋棋譜
+      <input id="classicGameSearch" placeholder="輸入棋手、賽事或名稱">
+    </label>
+    <button class="secondary" id="classicImportSgfBtn">＋ 匯入我的 SGF</button>
+  </div>
+
+  <div id="classicGameList" class="classic-game-list"></div>
+
+  <div class="classic-library-tip">
+    載入後可直接使用平台原有的 ⏮ ◀ ▶ ▶ ⏭、指定手數與棋號顯示功能。按「載入並播放」會從第 0 手開始自動播放。
+  </div>
 </div></div>
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
@@ -4063,11 +4104,80 @@ if($('spectatorRoomInput')){
 }
 window.addEventListener('pagehide',()=>{spectatorClearTimer()},{passive:true});
 
+
+// ===== Joy Go Platform Beta 1.6a: Classic Game Library =====
+// 內建 3 盤為功能測試棋譜，不宣稱為真實歷史名局。
+const CLASSIC_GAME_LIBRARY=[
+  {
+    id:"demo-1", title:"測試棋譜 1｜星位布局", black:"測試黑方", white:"測試白方",
+    event:"Beta 1.6a 功能測試", date:"2026-08-11", note:"測試名局館載入、手順與自動播放。",
+    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6a]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6a 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dd];B[qp];W[dq];B[cf];W[fc];B[pp];W[dc];B[ce];W[ed];B[nc];W[qf];B[qn];W[oq];B[oc];W[nd];B[md];W[ne])"
+  },
+  {
+    id:"demo-2", title:"測試棋譜 2｜三連星", black:"測試黑方", white:"測試白方",
+    event:"Beta 1.6a 功能測試", date:"2026-08-11", note:"測試較長手順的前進、後退與指定手數。",
+    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6a]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6a 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[pj];W[fc];B[cn];W[qf];B[nc];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[pe];B[qe];W[rf];B[qg];W[of];B[pg];W[ng];B[nf];W[mg])"
+  },
+  {
+    id:"demo-3", title:"測試棋譜 3｜中國流", black:"測試黑方", white:"測試白方",
+    event:"Beta 1.6a 功能測試", date:"2026-08-11", note:"測試載入後直接自動播放。",
+    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6a]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6a 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[qn];W[nc];B[rd];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[mc];B[md];W[lc];B[ne];W[of];B[pf];W[pg];B[qg];W[rf])"
+  }
+];
+
+function classicGameCard(game){
+  const card=document.createElement("div");card.className="classic-game-card";
+  const info=document.createElement("div");
+  const title=document.createElement("div");title.className="classic-game-title";title.textContent=game.title;
+  const meta=document.createElement("div");meta.className="classic-game-meta";
+  meta.textContent=`${game.black} vs ${game.white}｜${game.event}｜${game.date}｜${game.note}`;
+  info.append(title,meta);
+  const actions=document.createElement("div");actions.className="classic-game-actions";
+  const loadBtn=document.createElement("button");loadBtn.className="action";loadBtn.textContent="載入";
+  loadBtn.onclick=()=>loadClassicGame(game,false);
+  const playBtn=document.createElement("button");playBtn.className="secondary";playBtn.textContent="載入並播放";
+  playBtn.onclick=()=>loadClassicGame(game,true);
+  actions.append(loadBtn,playBtn);
+  card.append(info,actions);
+  return card;
+}
+function renderClassicGameLibrary(){
+  const box=$("classicGameList");if(!box)return;
+  const q=String($("classicGameSearch")?.value||"").trim().toLowerCase();
+  const games=CLASSIC_GAME_LIBRARY.filter(g=>{
+    const hay=[g.title,g.black,g.white,g.event,g.date,g.note].join(" ").toLowerCase();
+    return !q||hay.includes(q);
+  });
+  box.innerHTML="";
+  if(!games.length){box.innerHTML='<div class="classic-library-empty">找不到符合條件的棋譜。</div>';return}
+  games.forEach(g=>box.appendChild(classicGameCard(g)));
+}
+function openClassicGameLibrary(){
+  renderClassicGameLibrary();
+  openModal("classicGameModal");
+}
+function loadClassicGame(game,autoPlay=false){
+  const ok=loadSGFText(game.sgf,game.title+".sgf");
+  if(!ok)return;
+  closeModal("classicGameModal");
+  state.index=0; syncUI(); goTo(0);
+  toast("已載入："+game.title);
+  if(autoPlay){
+    setTimeout(()=>{ if(!state.playing) $("playBtn")?.click(); },250);
+  }
+}
+if($("classicGameSearch"))$("classicGameSearch").addEventListener("input",renderClassicGameLibrary);
+if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{
+  closeModal("classicGameModal");
+  $("sgfFile")?.click();
+};
+
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
   ["teachBtn","▣","教學",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>openModal("humanModal")],
+  ["classicGameBtn","🏛️","名局館",()=>openClassicGameLibrary()],
   ["spectatorBtn","👁","觀戰",()=>openSpectatorLobby()],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
   ["zoomBtn","⛶","放大",()=>toggleFullscreen()],
