@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6b Classic Game Database -->
+<!-- Joy Go Platform V1.0 Beta 1.6b.1 SGF File Picker Fix -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2530,7 +2530,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b｜正式名局資料庫</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.1｜SGF 選檔修正</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2834,7 +2834,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b｜正式名局資料庫</h2>
+  <h2>🏛️ Beta 1.6b.1｜正式名局資料庫</h2>
   <p class="classic-library-note">
     本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
     內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
@@ -2882,10 +2882,10 @@ body.spectator-viewing #statusText{font-weight:800}
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicImportModal">✕</button>
   <h2>＋ 加入正式名局 SGF</h2>
-  <p class="classic-library-note">先選 SGF，再補上資料。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
+  <p class="classic-library-note">先選 SGF，再補上資料。Beta 1.6b.1 已取消 iPad 檔案選擇器的副檔名限制；選檔後仍會檢查內容是否為有效 SGF。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
 
   <div class="classic-import-file">
-    <input id="classicOfficialFile" type="file" accept=".sgf,application/x-go-sgf,text/plain">
+    <input id="classicOfficialFile" type="file">
     <div id="classicOfficialFileName" style="margin-top:6px">尚未選擇 SGF</div>
   </div>
 
