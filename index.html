@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6b.2 iPad SGF Reader Fix -->
+<!-- Joy Go Platform V1.0 Beta 1.6b.3 Top Status Bar Layout Fix -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2523,6 +2523,73 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+
+<style id="statusStripFix16b3">
+/* Beta 1.6b.3：避免「在線 / KataGo / 今日訪客 / 排隊」遮住上方功能鍵 */
+.top-metrics,
+#topMetrics,
+.metrics-strip,
+.status-strip{
+  position:static !important;
+  z-index:auto !important;
+  width:100%;
+  max-width:100%;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding:4px 6px 6px;
+  margin:0 0 4px 0;
+  box-sizing:border-box;
+}
+.top-metrics::-webkit-scrollbar,
+#topMetrics::-webkit-scrollbar,
+.metrics-strip::-webkit-scrollbar,
+.status-strip::-webkit-scrollbar{display:none}
+
+.top-metrics > *,
+#topMetrics > *,
+.metrics-strip > *,
+.status-strip > *{
+  flex:0 0 auto;
+}
+
+/* 上方功能列一定保持在狀態列下方，不被覆蓋 */
+.toolbar,
+#toolbar,
+.tools,
+.tool-grid,
+.top-tools{
+  position:relative !important;
+  z-index:1 !important;
+  clear:both;
+}
+
+/* iPad / 手機較窄時把狀態膠囊再縮一點 */
+@media(max-width:1100px){
+  .top-metrics,
+  #topMetrics,
+  .metrics-strip,
+  .status-strip{
+    gap:4px;
+    padding-left:4px;
+    padding-right:4px;
+  }
+  .top-metrics > *,
+  #topMetrics > *,
+  .metrics-strip > *,
+  .status-strip > *{
+    font-size:12px !important;
+    padding-top:5px !important;
+    padding-bottom:5px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2530,7 +2597,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.2｜iPad SGF 讀取修正</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.3｜狀態列遮擋修正</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -7209,5 +7276,22 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout
  document.getElementById('qbSaveAs')?.addEventListener('click',()=>{photoDraftDirty=false},{capture:true});
 })();
 </script>
+
+<script id="statusStripFix16b3Script">
+window.addEventListener("DOMContentLoaded",()=>{
+  const texts=["在線","KataGo","今日訪客","排隊"];
+  const candidates=[...document.querySelectorAll("div,section,header")];
+  const metric=candidates.find(el=>{
+    const t=(el.innerText||"");
+    return texts.every(x=>t.includes(x)) && el.children.length<=12;
+  });
+  if(metric) metric.classList.add("status-strip");
+
+  const toolButtons=[...document.querySelectorAll("button")];
+  const toolParent=toolButtons.find(b=>(b.innerText||"").includes("資訊"))?.parentElement;
+  if(toolParent) toolParent.classList.add("top-tools");
+});
+</script>
+
 </body>
 </html>
