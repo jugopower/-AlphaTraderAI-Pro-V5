@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6b.1 SGF File Picker Fix -->
+<!-- Joy Go Platform V1.0 Beta 1.6b.2 iPad SGF Reader Fix -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2530,7 +2530,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.1｜SGF 選檔修正</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.2｜iPad SGF 讀取修正</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2834,7 +2834,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.1｜正式名局資料庫</h2>
+  <h2>🏛️ Beta 1.6b.2｜正式名局資料庫</h2>
   <p class="classic-library-note">
     本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
     內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
@@ -2882,11 +2882,12 @@ body.spectator-viewing #statusText{font-weight:800}
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicImportModal">✕</button>
   <h2>＋ 加入正式名局 SGF</h2>
-  <p class="classic-library-note">先選 SGF，再補上資料。Beta 1.6b.1 已取消 iPad 檔案選擇器的副檔名限制；選檔後仍會檢查內容是否為有效 SGF。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
+  <p class="classic-library-note">先選 SGF，再補上資料。Beta 1.6b.2 已加強 iPad／Safari 的 SGF 讀取流程；選檔後會立即顯示讀取狀態，並檢查內容是否為有效 SGF。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
 
   <div class="classic-import-file">
     <input id="classicOfficialFile" type="file">
     <div id="classicOfficialFileName" style="margin-top:6px">尚未選擇 SGF</div>
+    <div style="margin-top:5px;font-size:12px;color:var(--muted)">支援 iPad「檔案」中的 .sgf；選取後請等候約 1 秒完成讀取。</div>
   </div>
 
   <div class="classic-import-form" style="margin-top:12px">
@@ -4356,17 +4357,67 @@ function classicOpenImportModal(){
   openModal("classicImportModal");
 }
 async function classicReadOfficialFile(file){
-  if(!file)return;
-  const text=await file.text();
-  if(!text.includes("(;")||!/\bSZ\[\d+\]/i.test(text)){
+  if(!file){
     classicPendingSgf="";
-    if($("classicImportMessage")){$("classicImportMessage").className="connector-status bad";$("classicImportMessage").textContent="這個檔案看起來不是有效的 SGF。"}
+    if($("classicOfficialFileName"))$("classicOfficialFileName").textContent="尚未選擇 SGF";
+    if($("classicImportMessage")){
+      $("classicImportMessage").className="connector-status warn";
+      $("classicImportMessage").textContent="尚未選擇 SGF。";
+    }
     return;
   }
-  classicPendingSgf=text;
-  if($("classicOfficialFileName"))$("classicOfficialFileName").textContent=file.name;
-  classicAutoFillFromSgf(text);
-  if($("classicImportMessage")){$("classicImportMessage").className="connector-status ok";$("classicImportMessage").textContent="SGF 已讀取，可以補充資料後儲存。"}
+
+  if($("classicOfficialFileName"))$("classicOfficialFileName").textContent=file.name||"已選擇 SGF";
+  if($("classicImportMessage")){
+    $("classicImportMessage").className="connector-status warn";
+    $("classicImportMessage").textContent="正在讀取 SGF…";
+  }
+
+  try{
+    let text="";
+
+    // iPad / Safari 優先使用 FileReader；部分版本對 file.text() 行為不一致。
+    if(typeof FileReader!=="undefined"){
+      text=await new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve(String(reader.result||""));
+        reader.onerror=()=>reject(reader.error||new Error("FileReader 讀取失敗"));
+        reader.onabort=()=>reject(new Error("檔案讀取已取消"));
+        reader.readAsText(file,"UTF-8");
+      });
+    }else if(typeof file.text==="function"){
+      text=await file.text();
+    }else{
+      throw new Error("此瀏覽器無法讀取檔案內容");
+    }
+
+    // 去除 BOM / 前置空白，並採較寬鬆但安全的 SGF 判斷。
+    text=String(text||"").replace(/^\uFEFF/,"").trim();
+    const looksLikeSgf=/^\(\s*;/.test(text) && /(?:^|[\s;(])(?:GM|FF|SZ|B|W)\s*\[/i.test(text);
+
+    if(!looksLikeSgf){
+      classicPendingSgf="";
+      if($("classicImportMessage")){
+        $("classicImportMessage").className="connector-status bad";
+        $("classicImportMessage").textContent="已選到檔案，但內容不像有效 SGF。請換另一個 .sgf 檔。";
+      }
+      return;
+    }
+
+    classicPendingSgf=text;
+    classicAutoFillFromSgf(text);
+
+    if($("classicImportMessage")){
+      $("classicImportMessage").className="connector-status ok";
+      $("classicImportMessage").textContent="✅ SGF 已成功讀取，可以補充資料後按「儲存到名局館」。";
+    }
+  }catch(err){
+    classicPendingSgf="";
+    if($("classicImportMessage")){
+      $("classicImportMessage").className="connector-status bad";
+      $("classicImportMessage").textContent="SGF 讀取失敗："+(err?.message||String(err));
+    }
+  }
 }
 function classicSaveOfficial(){
   if(!classicPendingSgf){
@@ -4408,7 +4459,13 @@ if($("classicCategoryFilter"))$("classicCategoryFilter").addEventListener("chang
 if($("classicAddOfficialBtn"))$("classicAddOfficialBtn").onclick=classicOpenImportModal;
 if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{closeModal("classicGameModal");$("sgfFile")?.click()};
 if($("classicClearUserDbBtn"))$("classicClearUserDbBtn").onclick=classicClearUserDb;
-if($("classicOfficialFile"))$("classicOfficialFile").addEventListener("change",e=>classicReadOfficialFile(e.target.files?.[0]));
+// iPad / Safari：使用 delegated change，避免 modal / input 生命週期造成 listener 漏接。
+document.addEventListener("change",e=>{
+  if(e.target && e.target.id==="classicOfficialFile"){
+    const file=e.target.files && e.target.files.length ? e.target.files[0] : null;
+    classicReadOfficialFile(file);
+  }
+});
 if($("classicSaveOfficialBtn"))$("classicSaveOfficialBtn").onclick=classicSaveOfficial;
 
 const tools=[
