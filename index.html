@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
+<!-- Joy Go Platform V1.0 Beta 1.5a Spectator Mode -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2444,6 +2445,10 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 #joygoLiveMonitor[hidden]{display:none!important}.jm-chip{background:rgba(7,30,36,.88);border:1px solid rgba(255,255,255,.16);color:#f7f7f7;border-radius:999px;padding:7px 10px;box-shadow:0 4px 16px rgba(0,0,0,.18);backdrop-filter:blur(10px)}.jm-chip b{color:#f4c96a}.jm-off{opacity:.72}.jm-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5ed487;margin-right:5px}.jm-dot.off{background:#999}
 @media(max-width:700px){#joygoLiveMonitor{position:relative;left:auto;right:auto;top:auto;z-index:1;width:100%;max-width:100%;padding:4px 6px 0;gap:3px;justify-content:center;pointer-events:none}.jm-chip{padding:4px 6px;font-size:10px;box-shadow:none;backdrop-filter:none}}
 </style>
+
+<style id="spectatorBeta15aStyle">
+.spectator-status{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.spectator-pill{padding:7px 10px;border:1px solid rgba(127,127,127,.35);border-radius:999px;font-size:12px}.spectator-live{font-weight:800}.spectator-note{font-size:12px;line-height:1.55;color:var(--muted)}body.spectator-viewing #board{cursor:not-allowed}body.spectator-viewing #statusText{font-weight:800}
+</style>
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2465,7 +2470,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 <div id="joygoLiveMonitor" hidden aria-label="多人測試監控">
   <span class="jm-chip" id="jmOnline"><i class="jm-dot off" id="jmDot"></i>在線 <b>—</b></span>
   <span class="jm-chip" id="jmAI">🤖 KataGo <b>—</b></span>
-  <span class="jm-chip" id="jmToday">📊 今日 <b>—</b></span>
+  <span class="jm-chip" id="jmToday">📊 今日訪客 <b>—</b></span>
   <span class="jm-chip" id="jmQueue">⏳ 排隊 <b>—</b></span>
 </div>
 <script id="joygo-beta-shell-js">
@@ -2485,9 +2490,9 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   let timerHeartbeat=null,timerStatus=null,started=false,aiBusy=false;
   const sid=(()=>{try{let x=localStorage.getItem(KEY);if(!x){x=(crypto.randomUUID?crypto.randomUUID():('jg-'+Date.now()+'-'+Math.random().toString(36).slice(2)));localStorage.setItem(KEY,x)}return x}catch{return 'jg-'+Math.random().toString(36).slice(2)}})();
   function base(){try{const raw=(localStorage.getItem('katagoApiUrl')||'https://alphatrader-katago-server-v2.onrender.com/analyze').trim();const u=new URL(raw);return u.origin}catch{return 'https://alphatrader-katago-server-v2.onrender.com'}}
-  async function post(path,body={},keepalive=false){const r=await fetch(base()+path,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({session_id:sid,...body}),cache:'no-store',keepalive});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+  async function post(path,body={},keepalive=false){const r=await fetch(base()+path,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({client_id:sid,...body}),cache:'no-store',keepalive});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
   async function getStatus(){try{const r=await fetch(base()+'/monitor/stats',{cache:'no-store',headers:{'Accept':'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status);render(await r.json(),true)}catch{render(null,false)}}
-  function render(d,ok){const set=(id,v)=>{const b=document.querySelector('#'+id+' b');if(b)b.textContent=v};set('jmOnline',ok?Number(d.online||0):'—');set('jmAI',ok?Number(d.katago||0):'—');set('jmToday',ok?Number(d.today||0):'—');set('jmQueue',ok?Number(d.queue||0):'—');const dot=document.getElementById('jmDot');dot?.classList.toggle('off',!ok);for(const id of ['jmOnline','jmAI','jmToday','jmQueue'])document.getElementById(id)?.classList.toggle('jm-off',!ok);document.getElementById('joygoLiveMonitor')?.setAttribute('title',ok?'匿名多人測試監控｜每 25 秒更新':'監控後端尚未啟用；不影響棋盤與 KataGo 功能')}
+  function render(d,ok){const set=(id,v)=>{const b=document.querySelector('#'+id+' b');if(b)b.textContent=v};set('jmOnline',ok?Number(d.online||0):'—');set('jmAI',ok?Number(d.katago||0):'—');set('jmToday',ok?Number(d.today||0):'—');set('jmQueue',ok?Number(d.queue||0):'—');const dot=document.getElementById('jmDot');dot?.classList.toggle('off',!ok);for(const id of ['jmOnline','jmAI','jmToday','jmQueue'])document.getElementById(id)?.classList.toggle('jm-off',!ok);document.getElementById('joygoLiveMonitor')?.setAttribute('title',ok?'匿名多人測試監控｜今日訪客以同一瀏覽器裝置去重｜每 25 秒更新':'監控後端尚未啟用；不影響棋盤與 KataGo 功能')}
   async function heartbeat(){try{await post('/monitor/heartbeat',{page:location.pathname})}catch{} }
   async function setAI(busy){if(aiBusy===busy)return;aiBusy=busy;try{await post('/monitor/ai',{busy})}catch{};setTimeout(getStatus,80)}
   function start(){if(started)return;started=true;heartbeat();getStatus();timerHeartbeat=setInterval(heartbeat,25000);timerStatus=setInterval(getStatus,10000)}
@@ -2714,6 +2719,25 @@ body.api-inspector-open #teachBarToggle{display:none!important}
   </div>
   <p id="humanGameHint" style="color:var(--muted);margin:10px 0 0">分先：貼目 7.5。讓子局固定人類執黑、AI 執白。</p>
   <button class="action" id="startHumanBtn" style="width:100%;margin-top:12px">開始新對局</button>
+</div></div>
+
+
+<div id="spectatorModal" class="modal-backdrop"><div class="modal">
+  <button class="close" data-close="spectatorModal">✕</button>
+  <h2>👁 Beta 1.5a｜單盤觀戰</h2>
+  <p class="spectator-note">第一版只有一個公開測試棋局 <b>main</b>。棋手可轉播目前棋局；觀戰者只能看棋步同步，不會啟動 KataGo，因此不增加 AI 計算負擔。</p>
+  <div class="spectator-status">
+    <span class="spectator-pill">房間：<b>main</b></span>
+    <span class="spectator-pill">狀態：<b id="spectatorStatus">待命</b></span>
+    <span class="spectator-pill">手數：<b id="spectatorMoveCount">0</b></span>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <button class="action" id="spectatorBroadcastBtn">📡 轉播我的棋局</button>
+    <button class="action" id="spectatorWatchBtn">👁 觀看目前棋局</button>
+    <button class="secondary" id="spectatorStopBtn">停止轉播／觀戰</button>
+    <button class="secondary" id="spectatorRefreshBtn">立即同步</button>
+  </div>
+  <div id="spectatorMessage" class="connector-status warn" style="margin-top:12px">尚未開始觀戰或轉播。</div>
 </div></div>
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
@@ -3000,7 +3024,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingWasClockRunning:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingInteractionMode:"edit",teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
+  spectatorMode:false,spectatorRole:"",spectatorTimer:null,spectatorLastHash:"",humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingWasClockRunning:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingInteractionMode:"edit",teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -3832,11 +3856,81 @@ function leaveTeachingMode(){
   }
 }
 
+
+// ===== Joy Go Platform Beta 1.5a: single-game spectator mode =====
+const SPECTATOR_GAME_ID="main";
+function spectatorApiBase(){
+  try{const u=new URL(getApiSettings().url);u.pathname=u.pathname.replace(/\/analyze\/?$/,'');u.search='';u.hash='';return u.toString().replace(/\/$/,'')}catch{return 'https://alphatrader-katago-server-v2.onrender.com'}
+}
+function spectatorClientId(){
+  let id=localStorage.getItem('joygo-spectator-client-id');
+  if(!id){id='sp-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);localStorage.setItem('joygo-spectator-client-id',id)}
+  return id;
+}
+async function spectatorFetch(path,options={}){
+  const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),7000);
+  try{return await fetch(spectatorApiBase()+path,{cache:'no-store',signal:ctl.signal,...options})}finally{clearTimeout(timer)}
+}
+function spectatorMessage(text,type='warn'){
+  const el=$('spectatorMessage');if(el){el.className='connector-status '+type;el.textContent=text}
+}
+function spectatorSetStatus(text,count){
+  if($('spectatorStatus'))$('spectatorStatus').textContent=text;
+  if($('spectatorMoveCount'))$('spectatorMoveCount').textContent=String(count??state.moves.length);
+}
+function spectatorPayload(){
+  return {game_id:SPECTATOR_GAME_ID,broadcaster_id:spectatorClientId(),board_size:state.size,
+    moves:(state.moves||[]).map(m=>({c:m.c,x:Number(m.x),y:Number(m.y),pass:!!m.pass})),
+    setup_b:(state.setupB||[]).map(p=>({x:Number(p.x),y:Number(p.y)})),setup_w:(state.setupW||[]).map(p=>({x:Number(p.x),y:Number(p.y)})),
+    index:state.index,black_name:$('blackName')?.textContent||'黑方',white_name:$('whiteName')?.textContent||'白方',status:state.gameEnded?'ended':'playing'};
+}
+async function spectatorPublish(force=false){
+  if(state.spectatorRole!=='broadcast')return;
+  const payload=spectatorPayload();const hash=JSON.stringify([payload.board_size,payload.moves,payload.setup_b,payload.setup_w,payload.index,payload.status]);
+  if(!force&&hash===state.spectatorLastHash)return;
+  const r=await spectatorFetch('/spectator/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  if(!r.ok)throw new Error('HTTP '+r.status);state.spectatorLastHash=hash;spectatorSetStatus('轉播中',payload.moves.length);spectatorMessage('📡 棋局正在轉播；觀戰者只接收棋步，不呼叫 KataGo。','ok');
+}
+async function spectatorPull(){
+  if(state.spectatorRole!=='watch')return;
+  const r=await spectatorFetch('/spectator/game/'+encodeURIComponent(SPECTATOR_GAME_ID));
+  if(r.status===404){spectatorSetStatus('等待棋局',0);spectatorMessage('目前沒有正在轉播的棋局。','warn');return}
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const data=await r.json(),g=data.game||{};
+  state.spectatorMode=true;document.body.classList.add('spectator-viewing');
+  state.humanMode=false;state.aiThinking=false;state.playing=false;
+  state.size=Number(g.board_size||19);state.moves=Array.isArray(g.moves)?g.moves.map(m=>({c:m.c,x:Number(m.x),y:Number(m.y),pass:!!m.pass})):[];
+  state.setupB=Array.isArray(g.setup_b)?g.setup_b.map(p=>({x:Number(p.x),y:Number(p.y)})):[];state.setupW=Array.isArray(g.setup_w)?g.setup_w.map(p=>({x:Number(p.x),y:Number(p.y)})):[];
+  state.actions=[];state.replayCache=[];state.index=Math.min(Number(g.index??state.moves.length),state.moves.length);state.turn=state.moves.length%2===0?'B':'W';
+  if($('blackName'))$('blackName').textContent=g.black_name||'黑方';if($('whiteName'))$('whiteName').textContent=g.white_name||'白方';
+  syncUI();if($('statusText'))$('statusText').textContent='觀戰中';spectatorSetStatus(g.status==='ended'?'已結束':'觀戰中',state.moves.length);spectatorMessage(`👁 已同步第 ${state.moves.length} 手｜最後更新 ${g.updated_at_iso||'—'}`,'ok');
+}
+function spectatorClearTimer(){if(state.spectatorTimer){clearInterval(state.spectatorTimer);state.spectatorTimer=null}}
+async function startSpectatorBroadcast(){
+  spectatorClearTimer();state.spectatorMode=false;state.spectatorRole='broadcast';state.spectatorLastHash='';document.body.classList.remove('spectator-viewing');
+  try{await spectatorPublish(true);state.spectatorTimer=setInterval(()=>spectatorPublish(false).catch(e=>spectatorMessage('轉播暫時失敗：'+e.message,'err')),1000);toast('已開始轉播目前棋局')}catch(e){state.spectatorRole='';spectatorMessage('無法開始轉播：'+e.message,'err')}
+}
+async function startSpectatorWatch(){
+  spectatorClearTimer();state.spectatorRole='watch';state.spectatorMode=true;document.body.classList.add('spectator-viewing');
+  try{await spectatorPull();state.spectatorTimer=setInterval(()=>spectatorPull().catch(e=>spectatorMessage('同步暫時失敗：'+e.message,'err')),1000);toast('已進入觀戰模式')}catch(e){spectatorMessage('無法觀戰：'+e.message,'err')}
+}
+async function stopSpectator(){
+  const wasBroadcast=state.spectatorRole==='broadcast';spectatorClearTimer();
+  if(wasBroadcast){try{await spectatorFetch('/spectator/stop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game_id:SPECTATOR_GAME_ID,broadcaster_id:spectatorClientId()})})}catch{}}
+  state.spectatorRole='';state.spectatorMode=false;state.spectatorLastHash='';document.body.classList.remove('spectator-viewing');spectatorSetStatus('待命',state.moves.length);spectatorMessage('已停止觀戰／轉播。','warn');syncUI();toast('觀戰功能已停止');
+}
+if($('spectatorBroadcastBtn'))$('spectatorBroadcastBtn').onclick=startSpectatorBroadcast;
+if($('spectatorWatchBtn'))$('spectatorWatchBtn').onclick=startSpectatorWatch;
+if($('spectatorStopBtn'))$('spectatorStopBtn').onclick=stopSpectator;
+if($('spectatorRefreshBtn'))$('spectatorRefreshBtn').onclick=()=>state.spectatorRole==='watch'?spectatorPull():spectatorPublish(true);
+window.addEventListener('pagehide',()=>{spectatorClearTimer()},{passive:true});
+
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
   ["teachBtn","▣","教學",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>openModal("humanModal")],
+  ["spectatorBtn","👁","觀戰",()=>openModal("spectatorModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
   ["zoomBtn","⛶","放大",()=>toggleFullscreen()],
   ["resetBtn","↺","還原",()=>resetView()]
@@ -5016,7 +5110,7 @@ function syncUI(){
   $("boardSizeText").textContent=`${state.size}路`;
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
-  $("statusText").textContent=state.trialMode?"試下中":(state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命"));
+  $("statusText").textContent=state.spectatorMode?"觀戰中":(state.trialMode?"試下中":(state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命")));
   document.body.classList.toggle("trial-mode",!!state.trialMode);
   const trialBtn=$("trialModeBtn");if(trialBtn)trialBtn.textContent=state.trialMode?"試下中":"🧪 試下";
   const branchInfo=$("trialBranchInfo");
@@ -6255,6 +6349,7 @@ function boardInputPointFromEvent(e){
   return {x,y,rect,css,pad,step};
 }
 function handleBoardInput(e){
+  if(state.spectatorMode){toast("觀戰模式只能觀看，不能落子");return;}
   if(state.scoringMode){handleScoringBoardInput(e);return;}
   if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
   if(state.aiThinking||(!state.trialMode&&state.gameEnded)||boardInputBusy)return;
