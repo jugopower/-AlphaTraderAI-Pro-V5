@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.5a Spectator Mode -->
+<!-- Joy Go Platform V1.0 Beta 1.5b Multi-room Spectator Lobby -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2446,8 +2446,27 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 @media(max-width:700px){#joygoLiveMonitor{position:relative;left:auto;right:auto;top:auto;z-index:1;width:100%;max-width:100%;padding:4px 6px 0;gap:3px;justify-content:center;pointer-events:none}.jm-chip{padding:4px 6px;font-size:10px;box-shadow:none;backdrop-filter:none}}
 </style>
 
-<style id="spectatorBeta15aStyle">
-.spectator-status{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.spectator-pill{padding:7px 10px;border:1px solid rgba(127,127,127,.35);border-radius:999px;font-size:12px}.spectator-live{font-weight:800}.spectator-note{font-size:12px;line-height:1.55;color:var(--muted)}body.spectator-viewing #board{cursor:not-allowed}body.spectator-viewing #statusText{font-weight:800}
+<style id="spectatorBeta15bStyle">
+.spectator-status{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.spectator-pill{padding:7px 10px;border:1px solid rgba(127,127,127,.35);border-radius:999px;font-size:12px}
+.spectator-live{font-weight:800}
+.spectator-note{font-size:12px;line-height:1.55;color:var(--muted)}
+.spectator-room-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin:10px 0}
+.spectator-room-row label{min-width:0}
+.spectator-room-row input{width:100%}
+.spectator-lobby-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin:14px 0 8px}
+.spectator-lobby{display:grid;gap:8px;max-height:34vh;overflow:auto;padding-right:2px}
+.spectator-game-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid #ffffff18;border-radius:12px;background:#0b0705}
+.spectator-game-title{font-weight:900;color:var(--gold);word-break:break-word}
+.spectator-game-meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+.spectator-empty{padding:14px;border:1px dashed #ffffff22;border-radius:12px;color:var(--muted);text-align:center}
+body.spectator-viewing #board{cursor:not-allowed}
+body.spectator-viewing #statusText{font-weight:800}
+@media(max-width:620px){
+  .spectator-room-row{grid-template-columns:1fr}
+  .spectator-game-card{grid-template-columns:1fr}
+  .spectator-game-card button{width:100%}
+}
 </style>
 </head>
 <body>
@@ -2456,7 +2475,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.4｜Admin Monitor</div>
+    <div class="jg-beta">V1.0 Beta 1.5b｜多盤觀戰大廳</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2724,19 +2743,35 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 
 <div id="spectatorModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="spectatorModal">✕</button>
-  <h2>👁 Beta 1.5a｜單盤觀戰</h2>
-  <p class="spectator-note">第一版只有一個公開測試棋局 <b>main</b>。棋手可轉播目前棋局；觀戰者只能看棋步同步，不會啟動 KataGo，因此不增加 AI 計算負擔。</p>
+  <h2>👁 Beta 1.5b｜多盤觀戰大廳</h2>
+  <p class="spectator-note">每位棋手可建立自己的轉播房間；觀戰者從大廳選擇棋局觀看。觀戰只同步棋步，不呼叫 KataGo，因此不增加 AI 分析負擔。測試版大廳先顯示最多 8 盤。</p>
+
+  <div class="spectator-room-row">
+    <label>我的房間名稱
+      <input id="spectatorRoomInput" maxlength="40" placeholder="例如：朱老師-1">
+    </label>
+    <button class="action" id="spectatorBroadcastBtn">📡 轉播我的棋局</button>
+  </div>
+
   <div class="spectator-status">
-    <span class="spectator-pill">房間：<b>main</b></span>
+    <span class="spectator-pill">目前房間：<b id="spectatorRoomLabel">—</b></span>
     <span class="spectator-pill">狀態：<b id="spectatorStatus">待命</b></span>
     <span class="spectator-pill">手數：<b id="spectatorMoveCount">0</b></span>
   </div>
-  <div class="grid2" style="margin-top:12px">
-    <button class="action" id="spectatorBroadcastBtn">📡 轉播我的棋局</button>
-    <button class="action" id="spectatorWatchBtn">👁 觀看目前棋局</button>
-    <button class="secondary" id="spectatorStopBtn">停止轉播／觀戰</button>
-    <button class="secondary" id="spectatorRefreshBtn">立即同步</button>
+
+  <div class="grid2" style="margin-top:10px">
+    <button class="action" id="spectatorWatchBtn">👁 觀看輸入的房間</button>
+    <button class="secondary" id="spectatorStopBtn">← 離開觀戰／停止轉播</button>
   </div>
+
+  <div class="spectator-lobby-head">
+    <b>🎥 正在轉播</b>
+    <button class="secondary" id="spectatorRefreshBtn" style="padding:8px 10px">重新整理大廳</button>
+  </div>
+  <div id="spectatorLobbyList" class="spectator-lobby">
+    <div class="spectator-empty">正在讀取觀戰大廳…</div>
+  </div>
+
   <div id="spectatorMessage" class="connector-status warn" style="margin-top:12px">尚未開始觀戰或轉播。</div>
 </div></div>
 
@@ -3857,8 +3892,8 @@ function leaveTeachingMode(){
 }
 
 
-// ===== Joy Go Platform Beta 1.5a: single-game spectator mode =====
-const SPECTATOR_GAME_ID="main";
+// ===== Joy Go Platform Beta 1.5b: multi-room spectator lobby =====
+let spectatorCurrentGameId="";
 function spectatorApiBase(){
   try{const u=new URL(getApiSettings().url);u.pathname=u.pathname.replace(/\/analyze\/?$/,'');u.search='';u.hash='';return u.toString().replace(/\/$/,'')}catch{return 'https://alphatrader-katago-server-v2.onrender.com'}
 }
@@ -3866,6 +3901,29 @@ function spectatorClientId(){
   let id=localStorage.getItem('joygo-spectator-client-id');
   if(!id){id='sp-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);localStorage.setItem('joygo-spectator-client-id',id)}
   return id;
+}
+function spectatorDefaultRoomId(){
+  return 'room-'+spectatorClientId().slice(-5);
+}
+function spectatorNormalizeRoomId(raw){
+  const v=String(raw||'').trim().replace(/\s+/g,'-').slice(0,40);
+  return v||spectatorDefaultRoomId();
+}
+function spectatorRoomId(){
+  const input=$('spectatorRoomInput');
+  const id=spectatorNormalizeRoomId(input?.value||spectatorCurrentGameId||localStorage.getItem('joygo-spectator-room-id')||spectatorDefaultRoomId());
+  spectatorCurrentGameId=id;
+  localStorage.setItem('joygo-spectator-room-id',id);
+  if(input && input.value!==id)input.value=id;
+  if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=id;
+  return id;
+}
+function spectatorSelectRoom(id){
+  spectatorCurrentGameId=spectatorNormalizeRoomId(id);
+  localStorage.setItem('joygo-spectator-room-id',spectatorCurrentGameId);
+  if($('spectatorRoomInput'))$('spectatorRoomInput').value=spectatorCurrentGameId;
+  if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=spectatorCurrentGameId;
+  return spectatorCurrentGameId;
 }
 async function spectatorFetch(path,options={}){
   const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),7000);
@@ -3877,24 +3935,30 @@ function spectatorMessage(text,type='warn'){
 function spectatorSetStatus(text,count){
   if($('spectatorStatus'))$('spectatorStatus').textContent=text;
   if($('spectatorMoveCount'))$('spectatorMoveCount').textContent=String(count??state.moves.length);
+  if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=spectatorCurrentGameId||'—';
 }
 function spectatorPayload(){
-  return {game_id:SPECTATOR_GAME_ID,broadcaster_id:spectatorClientId(),board_size:state.size,
+  const gameId=spectatorRoomId();
+  return {game_id:gameId,broadcaster_id:spectatorClientId(),board_size:state.size,
     moves:(state.moves||[]).map(m=>({c:m.c,x:Number(m.x),y:Number(m.y),pass:!!m.pass})),
     setup_b:(state.setupB||[]).map(p=>({x:Number(p.x),y:Number(p.y)})),setup_w:(state.setupW||[]).map(p=>({x:Number(p.x),y:Number(p.y)})),
     index:state.index,black_name:$('blackName')?.textContent||'黑方',white_name:$('whiteName')?.textContent||'白方',status:state.gameEnded?'ended':'playing'};
 }
 async function spectatorPublish(force=false){
   if(state.spectatorRole!=='broadcast')return;
-  const payload=spectatorPayload();const hash=JSON.stringify([payload.board_size,payload.moves,payload.setup_b,payload.setup_w,payload.index,payload.status]);
+  const payload=spectatorPayload();const hash=JSON.stringify([payload.game_id,payload.board_size,payload.moves,payload.setup_b,payload.setup_w,payload.index,payload.status]);
   if(!force&&hash===state.spectatorLastHash)return;
   const r=await spectatorFetch('/spectator/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  if(!r.ok)throw new Error('HTTP '+r.status);state.spectatorLastHash=hash;spectatorSetStatus('轉播中',payload.moves.length);spectatorMessage('📡 棋局正在轉播；觀戰者只接收棋步，不呼叫 KataGo。','ok');
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  state.spectatorLastHash=hash;
+  spectatorSetStatus('轉播中',payload.moves.length);
+  spectatorMessage(`📡 房間 ${payload.game_id} 正在轉播；觀戰者只接收棋步，不呼叫 KataGo。`,'ok');
 }
 async function spectatorPull(){
   if(state.spectatorRole!=='watch')return;
-  const r=await spectatorFetch('/spectator/game/'+encodeURIComponent(SPECTATOR_GAME_ID));
-  if(r.status===404){spectatorSetStatus('等待棋局',0);spectatorMessage('目前沒有正在轉播的棋局。','warn');return}
+  const gameId=spectatorCurrentGameId||spectatorRoomId();
+  const r=await spectatorFetch('/spectator/game/'+encodeURIComponent(gameId));
+  if(r.status===404){spectatorSetStatus('等待棋局',0);spectatorMessage(`房間 ${gameId} 目前沒有正在轉播的棋局。`,'warn');return}
   if(!r.ok)throw new Error('HTTP '+r.status);
   const data=await r.json(),g=data.game||{};
   state.spectatorMode=true;document.body.classList.add('spectator-viewing');
@@ -3903,26 +3967,100 @@ async function spectatorPull(){
   state.setupB=Array.isArray(g.setup_b)?g.setup_b.map(p=>({x:Number(p.x),y:Number(p.y)})):[];state.setupW=Array.isArray(g.setup_w)?g.setup_w.map(p=>({x:Number(p.x),y:Number(p.y)})):[];
   state.actions=[];state.replayCache=[];state.index=Math.min(Number(g.index??state.moves.length),state.moves.length);state.turn=state.moves.length%2===0?'B':'W';
   if($('blackName'))$('blackName').textContent=g.black_name||'黑方';if($('whiteName'))$('whiteName').textContent=g.white_name||'白方';
-  syncUI();if($('statusText'))$('statusText').textContent='觀戰中';spectatorSetStatus(g.status==='ended'?'已結束':'觀戰中',state.moves.length);spectatorMessage(`👁 已同步第 ${state.moves.length} 手｜最後更新 ${g.updated_at_iso||'—'}`,'ok');
+  syncUI();
+  if($('statusText'))$('statusText').textContent='觀戰中';
+  spectatorSetStatus(g.status==='ended'?'已結束':'觀戰中',state.moves.length);
+  spectatorMessage(`👁 ${gameId}｜已同步第 ${state.moves.length} 手｜最後更新 ${g.updated_at_iso||'—'}`,'ok');
 }
 function spectatorClearTimer(){if(state.spectatorTimer){clearInterval(state.spectatorTimer);state.spectatorTimer=null}}
 async function startSpectatorBroadcast(){
-  spectatorClearTimer();state.spectatorMode=false;state.spectatorRole='broadcast';state.spectatorLastHash='';document.body.classList.remove('spectator-viewing');
-  try{await spectatorPublish(true);state.spectatorTimer=setInterval(()=>spectatorPublish(false).catch(e=>spectatorMessage('轉播暫時失敗：'+e.message,'err')),1000);toast('已開始轉播目前棋局')}catch(e){state.spectatorRole='';spectatorMessage('無法開始轉播：'+e.message,'err')}
+  spectatorClearTimer();
+  spectatorSelectRoom(spectatorRoomId());
+  state.spectatorMode=false;state.spectatorRole='broadcast';state.spectatorLastHash='';
+  document.body.classList.remove('spectator-viewing');
+  try{
+    await spectatorPublish(true);
+    state.spectatorTimer=setInterval(()=>spectatorPublish(false).catch(e=>spectatorMessage('轉播暫時失敗：'+e.message,'err')),1000);
+    loadSpectatorLobby().catch(()=>{});
+    toast('已開始轉播：'+spectatorCurrentGameId);
+  }catch(e){
+    state.spectatorRole='';
+    spectatorMessage('無法開始轉播：'+e.message,'err');
+  }
 }
-async function startSpectatorWatch(){
-  spectatorClearTimer();state.spectatorRole='watch';state.spectatorMode=true;document.body.classList.add('spectator-viewing');
-  try{await spectatorPull();state.spectatorTimer=setInterval(()=>spectatorPull().catch(e=>spectatorMessage('同步暫時失敗：'+e.message,'err')),1000);toast('已進入觀戰模式')}catch(e){spectatorMessage('無法觀戰：'+e.message,'err')}
+async function startSpectatorWatch(gameId){
+  spectatorClearTimer();
+  spectatorSelectRoom(gameId||spectatorRoomId());
+  state.spectatorRole='watch';state.spectatorMode=true;document.body.classList.add('spectator-viewing');
+  try{
+    await spectatorPull();
+    state.spectatorTimer=setInterval(()=>spectatorPull().catch(e=>spectatorMessage('同步暫時失敗：'+e.message,'err')),1000);
+    toast('正在觀看：'+spectatorCurrentGameId);
+  }catch(e){
+    spectatorMessage('無法觀戰：'+e.message,'err');
+  }
 }
 async function stopSpectator(){
-  const wasBroadcast=state.spectatorRole==='broadcast';spectatorClearTimer();
-  if(wasBroadcast){try{await spectatorFetch('/spectator/stop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game_id:SPECTATOR_GAME_ID,broadcaster_id:spectatorClientId()})})}catch{}}
-  state.spectatorRole='';state.spectatorMode=false;state.spectatorLastHash='';document.body.classList.remove('spectator-viewing');spectatorSetStatus('待命',state.moves.length);spectatorMessage('已停止觀戰／轉播。','warn');syncUI();toast('觀戰功能已停止');
+  const wasBroadcast=state.spectatorRole==='broadcast';
+  const gameId=spectatorCurrentGameId||spectatorRoomId();
+  spectatorClearTimer();
+  if(wasBroadcast){
+    try{await spectatorFetch('/spectator/stop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game_id:gameId,broadcaster_id:spectatorClientId()})})}catch{}
+  }
+  state.spectatorRole='';state.spectatorMode=false;state.spectatorLastHash='';
+  document.body.classList.remove('spectator-viewing');
+  spectatorSetStatus('待命',state.moves.length);
+  spectatorMessage(wasBroadcast?'已停止轉播。':'已離開觀戰，可以繼續操作自己的棋局。','warn');
+  syncUI();
+  loadSpectatorLobby().catch(()=>{});
+  toast(wasBroadcast?'轉播已停止':'已離開觀戰');
+}
+function spectatorGameCard(game){
+  const card=document.createElement('div');card.className='spectator-game-card';
+  const info=document.createElement('div');
+  const title=document.createElement('div');title.className='spectator-game-title';title.textContent=game.game_id||'未命名房間';
+  const meta=document.createElement('div');meta.className='spectator-game-meta';
+  meta.textContent=`${game.black_name||'黑方'} vs ${game.white_name||'白方'}｜${game.board_size||19}路｜${game.move_count||0}手｜${game.status==='ended'?'已結束':'進行中'}`;
+  info.append(title,meta);
+  const btn=document.createElement('button');btn.className='action';btn.textContent='👁 觀戰';
+  btn.onclick=()=>startSpectatorWatch(game.game_id);
+  card.append(info,btn);
+  return card;
+}
+async function loadSpectatorLobby(){
+  const box=$('spectatorLobbyList');if(!box)return;
+  box.innerHTML='<div class="spectator-empty">正在更新觀戰大廳…</div>';
+  try{
+    const r=await spectatorFetch('/spectator/games');
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    const games=(Array.isArray(data.games)?data.games:[])
+      .sort((a,b)=>String(b.updated_at||'').localeCompare(String(a.updated_at||'')))
+      .slice(0,8);
+    box.innerHTML='';
+    if(!games.length){
+      box.innerHTML='<div class="spectator-empty">目前沒有棋局正在轉播。請先由棋手按「📡 轉播我的棋局」。</div>';
+      return;
+    }
+    games.forEach(g=>box.appendChild(spectatorGameCard(g)));
+  }catch(e){
+    box.innerHTML='';
+    const d=document.createElement('div');d.className='spectator-empty';d.textContent='大廳讀取失敗：'+e.message;box.appendChild(d);
+  }
+}
+function openSpectatorLobby(){
+  spectatorSelectRoom(localStorage.getItem('joygo-spectator-room-id')||spectatorDefaultRoomId());
+  openModal('spectatorModal');
+  loadSpectatorLobby();
 }
 if($('spectatorBroadcastBtn'))$('spectatorBroadcastBtn').onclick=startSpectatorBroadcast;
-if($('spectatorWatchBtn'))$('spectatorWatchBtn').onclick=startSpectatorWatch;
+if($('spectatorWatchBtn'))$('spectatorWatchBtn').onclick=()=>startSpectatorWatch(spectatorRoomId());
 if($('spectatorStopBtn'))$('spectatorStopBtn').onclick=stopSpectator;
-if($('spectatorRefreshBtn'))$('spectatorRefreshBtn').onclick=()=>state.spectatorRole==='watch'?spectatorPull():spectatorPublish(true);
+if($('spectatorRefreshBtn'))$('spectatorRefreshBtn').onclick=loadSpectatorLobby;
+if($('spectatorRoomInput')){
+  $('spectatorRoomInput').value=localStorage.getItem('joygo-spectator-room-id')||spectatorDefaultRoomId();
+  $('spectatorRoomInput').addEventListener('change',()=>spectatorSelectRoom($('spectatorRoomInput').value));
+}
 window.addEventListener('pagehide',()=>{spectatorClearTimer()},{passive:true});
 
 const tools=[
@@ -3930,7 +4068,7 @@ const tools=[
   ["teachBtn","▣","教學",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>openModal("humanModal")],
-  ["spectatorBtn","👁","觀戰",()=>openModal("spectatorModal")],
+  ["spectatorBtn","👁","觀戰",()=>openSpectatorLobby()],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
   ["zoomBtn","⛶","放大",()=>toggleFullscreen()],
   ["resetBtn","↺","還原",()=>resetView()]
