@@ -2688,7 +2688,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.6｜名局一鍵播放流程</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.7｜名局永久資料庫</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3002,7 +3002,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.6｜名局館</h2>
+  <h2>🏛️ Beta 1.6b.7｜名局永久資料庫</h2>
   <p class="classic-library-note">
     本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
     內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
@@ -3046,6 +3046,9 @@ body.spectator-viewing #statusText{font-weight:800}
   </div>
 
   <div id="classicGameCount" class="classic-db-count"></div>
+<div class="classic-db-note" style="margin:6px 0 10px;color:#c9b28c;font-size:12px">
+正式 SGF 儲存後會保留在這台 iPad 的 Safari；每盤可個別刪除並更換新譜。
+</div>
   <div id="classicGameList" class="classic-game-list"></div>
 
   <div class="classic-library-tip">
@@ -4431,7 +4434,7 @@ function classicSaveUserGames(games){
   localStorage.setItem(classicDbKey(),JSON.stringify(games));
 }
 function classicAllGames(){
-  return [...classicLoadUserGames(),...CLASSIC_DEMO_GAMES];
+  return [...classicLoadUserGames()];
 }
 function classicSgfProp(text,key){
   const m=String(text||"").match(new RegExp(key+"\\[((?:\\\\.|[^\\]])*)\\]","i"));
@@ -4481,8 +4484,8 @@ function classicGameCard(game){
 
   const badges=document.createElement("div");badges.style.marginTop="6px";
   const sourceBadge=document.createElement("span");
-  sourceBadge.className="classic-db-badge "+(game.source==="official"?"official":"demo");
-  sourceBadge.textContent=game.source==="official"?"正式匯入":"功能測試";
+  sourceBadge.className="classic-db-badge official";
+  sourceBadge.textContent="已保存";
   const cat=document.createElement("span");cat.className="classic-db-badge";cat.textContent=game.category||"其他";
   badges.append(sourceBadge,cat);
 
@@ -4504,6 +4507,13 @@ function classicGameCard(game){
   playBtn.onclick=()=>loadClassicGame(game,true);
 
   actions.append(loadBtn,playBtn);
+  if(game.source==="official"){
+    const deleteBtn=document.createElement("button");
+    deleteBtn.className="danger";
+    deleteBtn.textContent="刪除";
+    deleteBtn.onclick=()=>classicDeleteOne(game);
+    actions.append(deleteBtn);
+  }
   card.append(info,actions);
   return card;
 }
@@ -4527,10 +4537,10 @@ function renderClassicGameLibrary(){
   box.innerHTML="";
   if($("classicGameCount")){
     const officialCount=classicLoadUserGames().length;
-    $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜已加入正式棋譜 ${officialCount} 盤｜功能測試棋譜 ${CLASSIC_DEMO_GAMES.length} 盤`;
+    $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜已保存正式棋譜 ${officialCount} 盤`;
   }
   if(!games.length){
-    box.innerHTML='<div class="classic-db-empty">沒有符合目前搜尋條件的棋譜。</div>';
+    box.innerHTML='<div class="classic-db-empty">目前沒有棋譜。請按「加入正式名局」匯入 SGF；儲存後下次開啟仍會保留。</div>';
     return;
   }
   games.forEach(g=>box.appendChild(classicGameCard(g)));
@@ -4664,12 +4674,26 @@ function classicSaveOfficial(){
     result:String($("classicResultInput")?.value||"").trim(),
     category:String($("classicCategoryInput")?.value||"其他"),
     note:String($("classicNoteInput")?.value||"").trim(),
-    sgf:classicPendingSgf
+    sgf:classicPendingSgf,
+    savedAt:new Date().toISOString()
   };
   const games=classicLoadUserGames();games.unshift(game);classicSaveUserGames(games);
   closeModal("classicImportModal");
   renderClassicGameLibrary();
   toast("已加入名局資料庫："+game.title);
+}
+function classicDeleteOne(game){
+  if(!game||game.source!=="official")return;
+  const name=game.title||`${game.black||"黑方"} vs ${game.white||"白方"}`;
+  if(!confirm(`確定刪除「${name}」？\n只會刪除這一盤棋譜。`))return;
+  const games=classicLoadUserGames().filter(g=>g.id!==game.id);
+  classicSaveUserGames(games);
+  if(classicCurrentGameId===String(game.id)){
+    classicCurrentGameId="";
+    try{sessionStorage.removeItem("joygo-classic-current")}catch{}
+  }
+  renderClassicGameLibrary();
+  toast("已刪除："+name);
 }
 function classicClearUserDb(){
   const count=classicLoadUserGames().length;
@@ -4677,7 +4701,7 @@ function classicClearUserDb(){
   if(confirm(`確定清除這台裝置中自己加入的 ${count} 盤名局嗎？`)){
     localStorage.removeItem(classicDbKey());
     renderClassicGameLibrary();
-    toast("已清除自己加入的名局");
+    toast("已清除全部已保存名局");
   }
 }
 
