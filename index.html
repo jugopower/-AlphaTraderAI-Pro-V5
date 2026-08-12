@@ -2688,7 +2688,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.7｜名局永久資料庫</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.7a｜名局永久保存修正版</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3002,7 +3002,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.7｜名局永久資料庫</h2>
+  <h2>🏛️ Beta 1.6b.7a｜名局永久保存修正版</h2>
   <p class="classic-library-note">
     本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
     內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
@@ -3018,7 +3018,10 @@ body.spectator-viewing #statusText{font-weight:800}
   <div class="classic-db-actions">
     <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
     <button class="secondary" id="classicImportSgfBtn">📂 單次開啟 SGF</button>
-    <button class="secondary" id="classicClearUserDbBtn">清除我加入的名局</button>
+    <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
+<button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
+<input id="classicRestoreFile" type="file" accept=".json,application/json" hidden>
+<button class="secondary" id="classicClearUserDbBtn">清除全部已保存名局</button>
   </div>
 
   <div class="classic-db-filters">
@@ -3047,7 +3050,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
   <div id="classicGameCount" class="classic-db-count"></div>
 <div class="classic-db-note" style="margin:6px 0 10px;color:#c9b28c;font-size:12px">
-正式 SGF 儲存後會保留在這台 iPad 的 Safari；每盤可個別刪除並更換新譜。
+正式 SGF 改用 IndexedDB 保存；儲存後會立即重新讀取驗證。另可整批備份／還原。
 </div>
   <div id="classicGameList" class="classic-game-list"></div>
 
@@ -4423,19 +4426,100 @@ const CLASSIC_DEMO_GAMES=[
 ];
 let classicPendingSgf="";
 
+const CLASSIC_IDB_NAME="JoyGoClassicGames";
+const CLASSIC_IDB_STORE="games";
+const CLASSIC_IDB_VERSION=1;
+let classicGameCache=[];
+
 function classicDbKey(){return "joygo-classic-db-v1";}
-function classicLoadUserGames(){
+
+function classicOpenDb(){
+  return new Promise((resolve,reject)=>{
+    if(!("indexedDB" in window)){reject(new Error("此瀏覽器不支援 IndexedDB"));return;}
+    const req=indexedDB.open(CLASSIC_IDB_NAME,CLASSIC_IDB_VERSION);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains(CLASSIC_IDB_STORE)){
+        db.createObjectStore(CLASSIC_IDB_STORE,{keyPath:"id"});
+      }
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error||new Error("IndexedDB 開啟失敗"));
+    req.onblocked=()=>reject(new Error("資料庫被其他分頁占用，請關閉其他 Joy Go 分頁後再試"));
+  });
+}
+async function classicDbGetAll(){
+  const db=await classicOpenDb();
   try{
-    const v=JSON.parse(localStorage.getItem(classicDbKey())||"[]");
-    return Array.isArray(v)?v:[];
-  }catch{return []}
+    return await new Promise((resolve,reject)=>{
+      const tx=db.transaction(CLASSIC_IDB_STORE,"readonly");
+      const req=tx.objectStore(CLASSIC_IDB_STORE).getAll();
+      req.onsuccess=()=>resolve(Array.isArray(req.result)?req.result:[]);
+      req.onerror=()=>reject(req.error||new Error("讀取名局失敗"));
+    });
+  }finally{db.close();}
 }
-function classicSaveUserGames(games){
-  localStorage.setItem(classicDbKey(),JSON.stringify(games));
+async function classicDbPut(game){
+  const db=await classicOpenDb();
+  try{
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(CLASSIC_IDB_STORE,"readwrite");
+      tx.objectStore(CLASSIC_IDB_STORE).put(game);
+      tx.oncomplete=resolve;
+      tx.onerror=()=>reject(tx.error||new Error("寫入名局失敗"));
+      tx.onabort=()=>reject(tx.error||new Error("寫入名局中止"));
+    });
+  }finally{db.close();}
 }
-function classicAllGames(){
-  return [...classicLoadUserGames()];
+async function classicDbDelete(id){
+  const db=await classicOpenDb();
+  try{
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(CLASSIC_IDB_STORE,"readwrite");
+      tx.objectStore(CLASSIC_IDB_STORE).delete(id);
+      tx.oncomplete=resolve;
+      tx.onerror=()=>reject(tx.error||new Error("刪除名局失敗"));
+    });
+  }finally{db.close();}
 }
+async function classicDbClear(){
+  const db=await classicOpenDb();
+  try{
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(CLASSIC_IDB_STORE,"readwrite");
+      tx.objectStore(CLASSIC_IDB_STORE).clear();
+      tx.oncomplete=resolve;
+      tx.onerror=()=>reject(tx.error||new Error("清除名局失敗"));
+    });
+  }finally{db.close();}
+}
+async function classicRequestPersistence(){
+  try{
+    if(navigator.storage?.persist){
+      await navigator.storage.persist();
+      return navigator.storage.persisted ? await navigator.storage.persisted() : false;
+    }
+  }catch(e){console.warn("persistent storage request:",e)}
+  return false;
+}
+function classicLoadUserGames(){return classicGameCache.slice();}
+async function classicRefreshCache(){
+  classicGameCache=await classicDbGetAll();
+  classicGameCache.sort((a,b)=>String(b.savedAt||"").localeCompare(String(a.savedAt||"")));
+  return classicGameCache;
+}
+async function classicMigrateLegacyLocalStorage(){
+  try{
+    const raw=localStorage.getItem(classicDbKey());
+    if(!raw)return 0;
+    const old=JSON.parse(raw);
+    if(!Array.isArray(old)||!old.length){localStorage.removeItem(classicDbKey());return 0;}
+    for(const g of old){if(g?.id&&g?.sgf)await classicDbPut(g);}
+    localStorage.removeItem(classicDbKey());
+    return old.length;
+  }catch(e){console.warn("legacy migration:",e);return 0;}
+}
+function classicAllGames(){return classicGameCache.slice();}
 function classicSgfProp(text,key){
   const m=String(text||"").match(new RegExp(key+"\\[((?:\\\\.|[^\\]])*)\\]","i"));
   return m?m[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\").trim():"";
@@ -4545,10 +4629,17 @@ function renderClassicGameLibrary(){
   }
   games.forEach(g=>box.appendChild(classicGameCard(g)));
 }
-function openClassicGameLibrary(){
-  try{classicCurrentGameId=sessionStorage.getItem("joygo-classic-current")||classicCurrentGameId||""}catch{}
-  renderClassicGameLibrary();
-  openModal("classicGameModal");
+async function openClassicGameLibrary(){
+  try{
+    classicCurrentGameId=sessionStorage.getItem("joygo-classic-current")||classicCurrentGameId||"";
+    await classicMigrateLegacyLocalStorage();
+    await classicRefreshCache();
+    renderClassicGameLibrary();
+    openModal("classicGameModal");
+  }catch(err){
+    console.error(err);
+    toast("名局資料庫讀取失敗："+(err?.message||String(err)));
+  }
 }
 function loadClassicGame(game,autoPlay=false){
   classicStopPlayback();
@@ -4658,7 +4749,7 @@ async function classicReadOfficialFile(file){
     }
   }
 }
-function classicSaveOfficial(){
+async function classicSaveOfficial(){
   if(!classicPendingSgf){
     if($("classicImportMessage")){$("classicImportMessage").className="connector-status bad";$("classicImportMessage").textContent="請先選擇 SGF。"}
     return;
@@ -4677,32 +4768,72 @@ function classicSaveOfficial(){
     sgf:classicPendingSgf,
     savedAt:new Date().toISOString()
   };
-  const games=classicLoadUserGames();games.unshift(game);classicSaveUserGames(games);
-  closeModal("classicImportModal");
-  renderClassicGameLibrary();
-  toast("已加入名局資料庫："+game.title);
+  try{
+    await classicRequestPersistence();
+    await classicDbPut(game);
+    await classicRefreshCache();
+    const verified=classicGameCache.some(g=>g.id===game.id && g.sgf===game.sgf);
+    if(!verified)throw new Error("寫入後驗證失敗");
+    closeModal("classicImportModal");
+    renderClassicGameLibrary();
+    toast("✅ 已永久保存並驗證："+game.title);
+  }catch(err){
+    console.error(err);
+    if($("classicImportMessage")){
+      $("classicImportMessage").className="connector-status bad";
+      $("classicImportMessage").textContent="❌ 保存失敗："+(err?.message||String(err));
+    }
+    toast("❌ 棋譜沒有保存成功");
+  }
 }
-function classicDeleteOne(game){
+async function classicDeleteOne(game){
   if(!game||game.source!=="official")return;
   const name=game.title||`${game.black||"黑方"} vs ${game.white||"白方"}`;
   if(!confirm(`確定刪除「${name}」？\n只會刪除這一盤棋譜。`))return;
-  const games=classicLoadUserGames().filter(g=>g.id!==game.id);
-  classicSaveUserGames(games);
-  if(classicCurrentGameId===String(game.id)){
-    classicCurrentGameId="";
-    try{sessionStorage.removeItem("joygo-classic-current")}catch{}
-  }
-  renderClassicGameLibrary();
-  toast("已刪除："+name);
-}
-function classicClearUserDb(){
-  const count=classicLoadUserGames().length;
-  if(!count){toast("目前沒有自己加入的名局");return}
-  if(confirm(`確定清除這台裝置中自己加入的 ${count} 盤名局嗎？`)){
-    localStorage.removeItem(classicDbKey());
+  try{
+    await classicDbDelete(game.id);
+    await classicRefreshCache();
+    if(classicCurrentGameId===String(game.id)){
+      classicCurrentGameId="";
+      try{sessionStorage.removeItem("joygo-classic-current")}catch{}
+    }
     renderClassicGameLibrary();
-    toast("已清除全部已保存名局");
+    toast("已刪除："+name);
+  }catch(err){toast("刪除失敗："+(err?.message||String(err)))}
+}
+async function classicClearUserDb(){
+  const count=classicGameCache.length;
+  if(!count){toast("目前沒有已保存名局");return}
+  if(confirm(`確定清除這台裝置中已保存的 ${count} 盤名局嗎？`)){
+    try{
+      await classicDbClear();
+      await classicRefreshCache();
+      renderClassicGameLibrary();
+      toast("已清除全部已保存名局");
+    }catch(err){toast("清除失敗："+(err?.message||String(err)))}
   }
+}
+
+
+function classicBackupAll(){
+  if(!classicGameCache.length){toast("目前沒有棋譜可備份");return;}
+  const payload={format:"JoyGoClassicBackup",version:"1.6b.7a",exportedAt:new Date().toISOString(),games:classicGameCache};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="JoyGo-名局備份-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast("已產生名局備份檔");
+}
+async function classicRestoreBackup(file){
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const data=JSON.parse(text);
+    if(data?.format!=="JoyGoClassicBackup"||!Array.isArray(data.games))throw new Error("不是 Joy Go 名局備份檔");
+    for(const g of data.games){if(g?.id&&g?.sgf)await classicDbPut(g);}
+    await classicRefreshCache();renderClassicGameLibrary();
+    toast(`✅ 已還原 ${data.games.length} 盤名局`);
+  }catch(err){toast("還原失敗："+(err?.message||String(err)))}
 }
 
 ["classicGameSearch","classicPlayerFilter","classicYearFilter"].forEach(id=>{
@@ -4711,6 +4842,9 @@ function classicClearUserDb(){
 if($("classicCategoryFilter"))$("classicCategoryFilter").addEventListener("change",renderClassicGameLibrary);
 if($("classicAddOfficialBtn"))$("classicAddOfficialBtn").onclick=classicOpenImportModal;
 if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{closeModal("classicGameModal");$("sgfFile")?.click()};
+if($("classicBackupBtn"))$("classicBackupBtn").onclick=classicBackupAll;
+if($("classicRestoreBtn"))$("classicRestoreBtn").onclick=()=>$("classicRestoreFile")?.click();
+if($("classicRestoreFile"))$("classicRestoreFile").addEventListener("change",e=>classicRestoreBackup(e.target.files?.[0]));
 if($("classicClearUserDbBtn"))$("classicClearUserDbBtn").onclick=classicClearUserDb;
 // iPad / Safari：使用 delegated change，避免 modal / input 生命週期造成 listener 漏接。
 document.addEventListener("change",e=>{
@@ -7539,5 +7673,14 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 </script>
 
+<script>
+window.addEventListener("DOMContentLoaded",async()=>{
+  try{
+    await classicMigrateLegacyLocalStorage();
+    await classicRefreshCache();
+    renderClassicGameLibrary();
+  }catch(e){console.warn("Classic DB startup:",e)}
+});
+</script>
 </body>
 </html>
