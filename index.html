@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6b.4 Bottom Right Button Spacing Fix -->
+<!-- Joy Go Platform V1.0 Beta 1.6b.5 Famous Game Info Sync -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2628,6 +2628,31 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+
+<style id="famousGameInfo16b5Style">
+#famousGameInfoBar{
+  position:relative;z-index:5;display:none;align-items:center;gap:8px;width:100%;
+  padding:6px 10px;margin:0;border-bottom:1px solid #6c4b2c;
+  background:linear-gradient(180deg,#1a120d,#100b08);color:#fff5df;
+  font-size:12px;line-height:1.3;overflow-x:auto;overflow-y:hidden;white-space:nowrap;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none
+}
+#famousGameInfoBar::-webkit-scrollbar{display:none}
+#famousGameInfoBar.show{display:flex}
+#famousGameInfoBar .fg-chip{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;padding:4px 7px;
+  border:1px solid #6c4b2c;border-radius:999px;background:#17100c
+}
+#famousGameInfoBar .fg-label{color:#c9b696}
+#famousGameInfoBar .fg-value{color:#efc45f;font-weight:800}
+#famousGameInfoBar .fg-title{max-width:280px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){
+  #famousGameInfoBar{font-size:11px;padding:5px 7px;gap:5px}
+  #famousGameInfoBar .fg-chip{padding:4px 6px}
+  #famousGameInfoBar .fg-title{max-width:190px}
+}
+</style>
+
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2635,7 +2660,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.4｜右下按鈕重疊修正</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.5｜名局資訊同步顯示</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2680,6 +2705,16 @@ body.spectator-viewing #statusText{font-weight:800}
   addEventListener('pagehide',()=>{try{post('/monitor/leave',{},true)}catch{}},{capture:true});
 })();
 </script>
+
+
+<div id="famousGameInfoBar" aria-live="polite">
+  <span class="fg-chip"><span class="fg-label">棋局</span><span id="fgTitle" class="fg-value fg-title">—</span></span>
+  <span class="fg-chip"><span class="fg-label">黑</span><span id="fgBlack" class="fg-value">—</span></span>
+  <span class="fg-chip"><span class="fg-label">白</span><span id="fgWhite" class="fg-value">—</span></span>
+  <span class="fg-chip"><span class="fg-label">賽事</span><span id="fgEvent" class="fg-value">—</span></span>
+  <span class="fg-chip"><span class="fg-label">日期</span><span id="fgDate" class="fg-value">—</span></span>
+  <span class="fg-chip"><span class="fg-label">結果</span><span id="fgResult" class="fg-value">—</span></span>
+</div>
 
 <div class="app">
 <button id="infoCollapseBtn" class="info-collapse" type="button" aria-label="收合資訊欄">‹</button>
@@ -4443,6 +4478,14 @@ function loadClassicGame(game,autoPlay=false){
   const ok=loadSGFText(game.sgf,(game.title||"名局")+".sgf");
   if(!ok)return;
   closeModal("classicGameModal");
+  showFamousGameInfo({
+    title:game.title||fgSgfProp(game.sgf,"GN")||"",
+    black:game.black||fgSgfProp(game.sgf,"PB")||"",
+    white:game.white||fgSgfProp(game.sgf,"PW")||"",
+    event:game.event||fgSgfProp(game.sgf,"EV")||"",
+    date:game.date||fgSgfProp(game.sgf,"DT")||"",
+    result:game.result||fgSgfProp(game.sgf,"RE")||""
+  });
   state.index=0;syncUI();goTo(0);
   toast("已載入："+(game.title||"名局"));
   if(autoPlay){
@@ -4572,6 +4615,52 @@ document.addEventListener("change",e=>{
   }
 });
 if($("classicSaveOfficialBtn"))$("classicSaveOfficialBtn").onclick=classicSaveOfficial;
+
+
+// ===== Joy Go Platform Beta 1.6b.5: Famous Game Info Sync =====
+function fgSgfProp(text,key){
+  const m=String(text||"").match(new RegExp(key+"\\[((?:\\\\.|[^\\]])*)\\]","i"));
+  return m?m[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\").trim():"";
+}
+function showFamousGameInfo(meta={}){
+  const bar=document.getElementById("famousGameInfoBar");
+  if(!bar)return;
+  const set=(id,val)=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent=(val&&String(val).trim())?String(val).trim():"—";
+  };
+  set("fgTitle",meta.title||meta.gameName||"");
+  set("fgBlack",meta.black||"");
+  set("fgWhite",meta.white||"");
+  set("fgEvent",meta.event||"");
+  set("fgDate",meta.date||"");
+  set("fgResult",meta.result||"");
+  bar.classList.add("show");
+  try{sessionStorage.setItem("joygo-fg-info",JSON.stringify(meta))}catch{}
+}
+function hideFamousGameInfo(){
+  const bar=document.getElementById("famousGameInfoBar");
+  if(bar)bar.classList.remove("show");
+  try{sessionStorage.removeItem("joygo-fg-info")}catch{}
+}
+function syncFamousGameInfoFromSgf(sgfText,fallbackTitle=""){
+  const meta={
+    title:fgSgfProp(sgfText,"GN")||fallbackTitle||"",
+    black:fgSgfProp(sgfText,"PB"),
+    white:fgSgfProp(sgfText,"PW"),
+    event:fgSgfProp(sgfText,"EV"),
+    date:fgSgfProp(sgfText,"DT"),
+    result:fgSgfProp(sgfText,"RE")
+  };
+  showFamousGameInfo(meta);
+  return meta;
+}
+window.addEventListener("DOMContentLoaded",()=>{
+  try{
+    const raw=sessionStorage.getItem("joygo-fg-info");
+    if(raw)showFamousGameInfo(JSON.parse(raw));
+  }catch{}
+});
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
@@ -5307,7 +5396,21 @@ function loadSGFText(text,name){
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
     $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build024.8 API Inspector 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
-    return true;
+    
+  try{
+    const _fgMeta={
+      title:fgSgfProp(text,"GN")||String(fileName||"").replace(/\.sgf$/i,""),
+      black:fgSgfProp(text,"PB"),
+      white:fgSgfProp(text,"PW"),
+      event:fgSgfProp(text,"EV"),
+      date:fgSgfProp(text,"DT"),
+      result:fgSgfProp(text,"RE")
+    };
+    if(_fgMeta.black||_fgMeta.white||_fgMeta.event||_fgMeta.date||_fgMeta.result||fgSgfProp(text,"GN")){
+      showFamousGameInfo(_fgMeta);
+    }
+  }catch{}
+return true;
   }catch(err){
     console.error(err);
     $("fileInfo").textContent="棋譜載入失敗。";
