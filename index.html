@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6b.5 Famous Game Info Sync -->
+<!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -2653,6 +2653,34 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+
+<style id="classicPlaybackFlow16b6Style">
+.classic-now-playing{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;align-items:center;
+  margin:8px 0 12px;padding:10px 12px;border:1px solid #6c4b2c;border-radius:12px;
+  background:linear-gradient(180deg,#17100c,#0e0907)
+}
+.classic-now-label{
+  grid-row:1 / span 2;display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;
+  border:1px solid #8b683c;color:#f2c96d;font-size:11px;font-weight:800
+}
+#classicNowTitle{color:#fff3d3;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#classicNowMeta{color:#bfae90;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.classic-game-card.is-current{
+  border-color:#d3a43d !important;
+  box-shadow:0 0 0 1px #d3a43d55 inset,0 0 14px #d3a43d22
+}
+.classic-game-card.is-current .classic-game-title::before{content:"▶ ";color:#efc45f}
+.classic-game-actions .classic-play-now{
+  background:linear-gradient(180deg,#f0c65c,#d9a936);
+  color:#1b1208;border-color:#efc45f;font-weight:900
+}
+@media(max-width:650px){
+  .classic-now-playing{grid-template-columns:1fr}
+  .classic-now-label{grid-row:auto;width:max-content}
+}
+</style>
+
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2660,7 +2688,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.5｜名局資訊同步顯示</div>
+    <div class="jg-beta">V1.0 Beta 1.6b.6｜名局一鍵播放流程</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2974,11 +3002,18 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.2｜正式名局資料庫</h2>
+  <h2>🏛️ Beta 1.6b.6｜名局館</h2>
   <p class="classic-library-note">
     本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
     內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
   </p>
+
+
+  <div id="classicNowPlaying" class="classic-now-playing">
+    <span class="classic-now-label">目前棋局</span>
+    <strong id="classicNowTitle">尚未選擇</strong>
+    <span id="classicNowMeta">可選擇「載入」或「一鍵播放」</span>
+  </div>
 
   <div class="classic-db-actions">
     <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
@@ -3014,7 +3049,7 @@ body.spectator-viewing #statusText{font-weight:800}
   <div id="classicGameList" class="classic-game-list"></div>
 
   <div class="classic-library-tip">
-    載入後可使用平台原有的第一手、上一手、播放／暫停、下一手、最後一手、指定手數與棋號顯示。
+    「一鍵播放」會自動從第 1 手開始播放；「載入」則停在第 0 手，方便先看棋局資料。載入後仍可使用第一手、上一手、播放／暫停、下一手、最後一手、指定手數與棋號顯示。
     您自己加入的正式名局會保存在這台裝置的瀏覽器資料中。
   </div>
 </div></div>
@@ -4416,34 +4451,64 @@ function classicAutoFillFromSgf(text){
   if($("classicResultInput"))$("classicResultInput").value=re;
   if($("classicTitleInput"))$("classicTitleInput").value=gn||[pb,pw].filter(Boolean).join(" vs ");
 }
+
+let classicCurrentGameId="";
+function classicSetNowPlaying(game){
+  classicCurrentGameId=String(game?.id||game?.title||"");
+  const title=$("classicNowTitle"), meta=$("classicNowMeta");
+  if(title)title.textContent=game?.title||"未命名棋譜";
+  if(meta){
+    const result=game?.result?`｜${game.result}`:"";
+    meta.textContent=`${game?.black||"黑方"} vs ${game?.white||"白方"}｜${game?.event||"未填賽事"}｜${game?.date||"未填日期"}${result}`;
+  }
+  try{sessionStorage.setItem("joygo-classic-current",classicCurrentGameId)}catch{}
+}
+function classicStopPlayback(){
+  try{
+    if(state?.playing && $("playBtn"))$("playBtn").click();
+  }catch{}
+}
+
 function classicGameCard(game){
   const card=document.createElement("div");card.className="classic-game-card";
+  if(String(game.id||game.title||"")===classicCurrentGameId)card.classList.add("is-current");
+
   const info=document.createElement("div");
   const title=document.createElement("div");title.className="classic-game-title";title.textContent=game.title||"未命名棋譜";
   const meta=document.createElement("div");meta.className="classic-game-meta";
   const result=game.result?`｜結果 ${game.result}`:"";
   meta.textContent=`${game.black||"黑方"} vs ${game.white||"白方"}｜${game.event||"未填賽事"}｜${game.date||"未填日期"}${result}`;
+
   const badges=document.createElement("div");badges.style.marginTop="6px";
   const sourceBadge=document.createElement("span");
   sourceBadge.className="classic-db-badge "+(game.source==="official"?"official":"demo");
   sourceBadge.textContent=game.source==="official"?"正式匯入":"功能測試";
   const cat=document.createElement("span");cat.className="classic-db-badge";cat.textContent=game.category||"其他";
   badges.append(sourceBadge,cat);
+
   if(game.note){
     const note=document.createElement("div");note.className="classic-db-card-note";note.textContent=game.note;
     info.append(title,meta,badges,note);
   }else info.append(title,meta,badges);
 
   const actions=document.createElement("div");actions.className="classic-game-actions";
-  const loadBtn=document.createElement("button");loadBtn.className="action";loadBtn.textContent="載入";
+
+  const loadBtn=document.createElement("button");
+  loadBtn.className="secondary";
+  loadBtn.textContent="載入";
   loadBtn.onclick=()=>loadClassicGame(game,false);
-  const playBtn=document.createElement("button");playBtn.className="secondary";playBtn.textContent="載入並播放";
+
+  const playBtn=document.createElement("button");
+  playBtn.className="action classic-play-now";
+  playBtn.textContent="▶ 一鍵播放";
   playBtn.onclick=()=>loadClassicGame(game,true);
+
   actions.append(loadBtn,playBtn);
   card.append(info,actions);
   return card;
 }
 function renderClassicGameLibrary(){
+  try{classicCurrentGameId=sessionStorage.getItem("joygo-classic-current")||classicCurrentGameId||""}catch{}
   const box=$("classicGameList");if(!box)return;
   const q=String($("classicGameSearch")?.value||"").trim().toLowerCase();
   const category=String($("classicCategoryFilter")?.value||"").trim();
@@ -4471,13 +4536,18 @@ function renderClassicGameLibrary(){
   games.forEach(g=>box.appendChild(classicGameCard(g)));
 }
 function openClassicGameLibrary(){
+  try{classicCurrentGameId=sessionStorage.getItem("joygo-classic-current")||classicCurrentGameId||""}catch{}
   renderClassicGameLibrary();
   openModal("classicGameModal");
 }
 function loadClassicGame(game,autoPlay=false){
+  classicStopPlayback();
+
   const ok=loadSGFText(game.sgf,(game.title||"名局")+".sgf");
   if(!ok)return;
-  closeModal("classicGameModal");
+
+  classicSetNowPlaying(game);
+
   showFamousGameInfo({
     title:game.title||fgSgfProp(game.sgf,"GN")||"",
     black:game.black||fgSgfProp(game.sgf,"PB")||"",
@@ -4486,10 +4556,21 @@ function loadClassicGame(game,autoPlay=false){
     date:game.date||fgSgfProp(game.sgf,"DT")||"",
     result:game.result||fgSgfProp(game.sgf,"RE")||""
   });
-  state.index=0;syncUI();goTo(0);
-  toast("已載入："+(game.title||"名局"));
+
+  state.index=0;
+  syncUI();
+  goTo(0);
+  closeModal("classicGameModal");
+
+  toast(autoPlay?("▶ 開始播放："+(game.title||"名局")):("已載入："+(game.title||"名局")));
+
   if(autoPlay){
-    setTimeout(()=>{if(!state.playing)$("playBtn")?.click()},250);
+    setTimeout(()=>{
+      try{
+        if(state.index!==0)goTo(0);
+        if(!state.playing)$("playBtn")?.click();
+      }catch{}
+    },350);
   }
 }
 function classicResetImportForm(){
