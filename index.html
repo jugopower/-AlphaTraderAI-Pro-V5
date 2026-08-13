@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
-<!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
+<!-- Joy Go Platform V1.0 Beta 1.5a Spectator Mode -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
@@ -125,7 +125,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     gap:8px;padding:8px;
   }
   .topbar{
-    grid-column:1;grid-row:1;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;
+    grid-column:1;grid-row:1;display:grid;grid-template-columns:repeat(7,1fr);gap:5px;
     background:linear-gradient(180deg,#1c120c,#100b08);border:1px solid #6c4b2c;border-radius:18px;padding:6px
   }
   .topbar .tool{min-height:60px;font-size:11px}
@@ -2447,241 +2447,9 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 @media(max-width:700px){#joygoLiveMonitor{position:relative;left:auto;right:auto;top:auto;z-index:1;width:100%;max-width:100%;padding:4px 6px 0;gap:3px;justify-content:center;pointer-events:none}.jm-chip{padding:4px 6px;font-size:10px;box-shadow:none;backdrop-filter:none}}
 </style>
 
-<style id="spectatorBeta15bStyle">
-.spectator-status{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.spectator-pill{padding:7px 10px;border:1px solid rgba(127,127,127,.35);border-radius:999px;font-size:12px}
-.spectator-live{font-weight:800}
-.spectator-note{font-size:12px;line-height:1.55;color:var(--muted)}
-.spectator-room-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin:10px 0}
-.spectator-room-row label{min-width:0}
-.spectator-room-row input{width:100%}
-.spectator-lobby-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin:14px 0 8px}
-.spectator-lobby{display:grid;gap:8px;max-height:34vh;overflow:auto;padding-right:2px}
-.spectator-game-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid #ffffff18;border-radius:12px;background:#0b0705}
-.spectator-game-title{font-weight:900;color:var(--gold);word-break:break-word}
-.spectator-game-meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
-.spectator-empty{padding:14px;border:1px dashed #ffffff22;border-radius:12px;color:var(--muted);text-align:center}
-body.spectator-viewing #board{cursor:not-allowed}
-body.spectator-viewing #statusText{font-weight:800}
-@media(max-width:620px){
-  .spectator-room-row{grid-template-columns:1fr}
-  .spectator-game-card{grid-template-columns:1fr}
-  .spectator-game-card button{width:100%}
-}
+<style id="spectatorBeta15aStyle">
+.spectator-status{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.spectator-pill{padding:7px 10px;border:1px solid rgba(127,127,127,.35);border-radius:999px;font-size:12px}.spectator-live{font-weight:800}.spectator-note{font-size:12px;line-height:1.55;color:var(--muted)}body.spectator-viewing #board{cursor:not-allowed}body.spectator-viewing #statusText{font-weight:800}
 </style>
-
-<style id="classicGameLibrary16aStyle">
-.classic-library-note{font-size:12px;line-height:1.55;color:var(--muted);margin-bottom:10px}
-.classic-library-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:10px 0 12px}
-.classic-library-toolbar input{width:100%}
-.classic-game-list{display:grid;gap:9px}
-.classic-game-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px;border:1px solid #ffffff18;border-radius:13px;background:#0b0705}
-.classic-game-title{font-weight:900;color:var(--gold);font-size:15px}
-.classic-game-meta{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px}
-.classic-game-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.classic-game-actions button{padding:8px 10px}
-.classic-library-empty{padding:14px;border:1px dashed #ffffff22;border-radius:12px;color:var(--muted);text-align:center}
-.classic-library-tip{margin-top:10px;padding:9px 11px;border:1px solid #6c4b2c;border-radius:10px;background:#100b08;color:#e9d8bb;font-size:12px;line-height:1.55}
-@media(max-width:650px){
-  .classic-library-toolbar{grid-template-columns:1fr}
-  .classic-game-card{grid-template-columns:1fr}
-  .classic-game-actions{justify-content:stretch}
-  .classic-game-actions button{flex:1}
-}
-</style>
-
-
-<style id="classicGameDatabase16bStyle">
-.classic-db-filters{
-  display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr;gap:8px;margin:10px 0 12px
-}
-.classic-db-filters input,.classic-db-filters select{width:100%}
-.classic-db-count{font-size:12px;color:var(--muted);margin:4px 0 10px}
-.classic-db-badge{
-  display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;
-  border:1px solid #6c4b2c;background:#18100b;color:#f5d68a;font-size:11px;margin-right:4px
-}
-.classic-db-badge.official{border-color:#6e9958;color:#cbe8bc}
-.classic-db-badge.demo{border-color:#8f713e;color:#e4c98d}
-.classic-db-actions{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}
-.classic-db-actions button{flex:1;min-width:140px}
-.classic-db-card-note{font-size:12px;color:#d7c6a8;line-height:1.45;margin-top:5px}
-.classic-db-card-result{font-weight:800;color:#f4d06c}
-.classic-import-form{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.classic-import-form label{min-width:0}
-.classic-import-form .wide{grid-column:1 / -1}
-.classic-import-form input,.classic-import-form select,.classic-import-form textarea{width:100%}
-.classic-import-file{
-  padding:12px;border:1px dashed #81603a;border-radius:12px;background:#0b0705;color:#d8c3a0
-}
-.classic-db-empty{
-  padding:18px;border:1px dashed #ffffff22;border-radius:12px;color:var(--muted);text-align:center
-}
-@media(max-width:760px){
-  .classic-db-filters{grid-template-columns:1fr 1fr}
-  .classic-import-form{grid-template-columns:1fr}
-  .classic-import-form .wide{grid-column:auto}
-}
-</style>
-
-
-<style id="statusStripFix16b3">
-/* Beta 1.6b.3：避免「在線 / KataGo / 今日訪客 / 排隊」遮住上方功能鍵 */
-.top-metrics,
-#topMetrics,
-.metrics-strip,
-.status-strip{
-  position:static !important;
-  z-index:auto !important;
-  width:100%;
-  max-width:100%;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  flex-wrap:nowrap;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  padding:4px 6px 6px;
-  margin:0 0 4px 0;
-  box-sizing:border-box;
-}
-.top-metrics::-webkit-scrollbar,
-#topMetrics::-webkit-scrollbar,
-.metrics-strip::-webkit-scrollbar,
-.status-strip::-webkit-scrollbar{display:none}
-
-.top-metrics > *,
-#topMetrics > *,
-.metrics-strip > *,
-.status-strip > *{
-  flex:0 0 auto;
-}
-
-/* 上方功能列一定保持在狀態列下方，不被覆蓋 */
-.toolbar,
-#toolbar,
-.tools,
-.tool-grid,
-.top-tools{
-  position:relative !important;
-  z-index:1 !important;
-  clear:both;
-}
-
-/* iPad / 手機較窄時把狀態膠囊再縮一點 */
-@media(max-width:1100px){
-  .top-metrics,
-  #topMetrics,
-  .metrics-strip,
-  .status-strip{
-    gap:4px;
-    padding-left:4px;
-    padding-right:4px;
-  }
-  .top-metrics > *,
-  #topMetrics > *,
-  .metrics-strip > *,
-  .status-strip > *{
-    font-size:12px !important;
-    padding-top:5px !important;
-    padding-bottom:5px !important;
-  }
-}
-</style>
-
-
-<style id="bottomRightButtonsFix16b4">
-/* Beta 1.6b.4：右下角「API 資料」與「離開 Beta」分開，不再重疊 */
-#joygoBetaExit{
-  right:12px !important;
-  bottom:max(12px,env(safe-area-inset-bottom)) !important;
-  z-index:99999 !important;
-}
-
-#apiInspectorToggle{
-  right:12px !important;
-  bottom:58px !important;
-  z-index:99998 !important;
-}
-
-/* API 面板展開時，也從兩個按鈕上方開始 */
-#apiInspectorPanel{
-  right:12px !important;
-  bottom:108px !important;
-}
-
-/* iPad / 手機：保留安全區與更清楚的間距 */
-@media(max-width:700px){
-  #joygoBetaExit{
-    right:9px !important;
-    bottom:max(9px,env(safe-area-inset-bottom)) !important;
-  }
-  #apiInspectorToggle{
-    right:9px !important;
-    bottom:55px !important;
-  }
-  #apiInspectorPanel{
-    right:8px !important;
-    bottom:102px !important;
-  }
-}
-</style>
-
-
-<style id="famousGameInfo16b5Style">
-#famousGameInfoBar{
-  position:relative;z-index:5;display:none;align-items:center;gap:8px;width:100%;
-  padding:6px 10px;margin:0;border-bottom:1px solid #6c4b2c;
-  background:linear-gradient(180deg,#1a120d,#100b08);color:#fff5df;
-  font-size:12px;line-height:1.3;overflow-x:auto;overflow-y:hidden;white-space:nowrap;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none
-}
-#famousGameInfoBar::-webkit-scrollbar{display:none}
-#famousGameInfoBar.show{display:flex}
-#famousGameInfoBar .fg-chip{
-  flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;padding:4px 7px;
-  border:1px solid #6c4b2c;border-radius:999px;background:#17100c
-}
-#famousGameInfoBar .fg-label{color:#c9b696}
-#famousGameInfoBar .fg-value{color:#efc45f;font-weight:800}
-#famousGameInfoBar .fg-title{max-width:280px;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:900px){
-  #famousGameInfoBar{font-size:11px;padding:5px 7px;gap:5px}
-  #famousGameInfoBar .fg-chip{padding:4px 6px}
-  #famousGameInfoBar .fg-title{max-width:190px}
-}
-</style>
-
-
-<style id="classicPlaybackFlow16b6Style">
-.classic-now-playing{
-  display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;align-items:center;
-  margin:8px 0 12px;padding:10px 12px;border:1px solid #6c4b2c;border-radius:12px;
-  background:linear-gradient(180deg,#17100c,#0e0907)
-}
-.classic-now-label{
-  grid-row:1 / span 2;display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;
-  border:1px solid #8b683c;color:#f2c96d;font-size:11px;font-weight:800
-}
-#classicNowTitle{color:#fff3d3;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#classicNowMeta{color:#bfae90;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.classic-game-card.is-current{
-  border-color:#d3a43d !important;
-  box-shadow:0 0 0 1px #d3a43d55 inset,0 0 14px #d3a43d22
-}
-.classic-game-card.is-current .classic-game-title::before{content:"▶ ";color:#efc45f}
-.classic-game-actions .classic-play-now{
-  background:linear-gradient(180deg,#f0c65c,#d9a936);
-  color:#1b1208;border-color:#efc45f;font-weight:900
-}
-@media(max-width:650px){
-  .classic-now-playing{grid-template-columns:1fr}
-  .classic-now-label{grid-row:auto;width:max-content}
-}
-</style>
-
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2689,7 +2457,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.6b.7a｜名局永久保存修正版</div>
+    <div class="jg-beta">V1.0 Beta 1.4｜Admin Monitor</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2713,10 +2481,12 @@ body.spectator-viewing #statusText{font-weight:800}
  const CODE='JOYGO10', KEY='joygo_beta_v1_session';
  function open(){gate.hidden=true;exit.hidden=false;document.getElementById('joygoLiveMonitor').hidden=false;try{sessionStorage.setItem(KEY,'1')}catch{};setTimeout(()=>window.joygoMonitorStart?.(),50)}
  window.joygoOpenForMember=()=>{exit.dataset.member='1';exit.textContent='👤 會員中心';open()};
+ window.joygoInitVisitor=()=>{try{if(sessionStorage.getItem(KEY)==='1')open();else setTimeout(()=>input.focus(),120)}catch{setTimeout(()=>input.focus(),120)}};
+ window.joygoDenyMember=(reason)=>{try{sessionStorage.removeItem(KEY)}catch{};gate.hidden=false;exit.hidden=true;document.getElementById('joygoLiveMonitor').hidden=true;input.disabled=true;enter.disabled=true;msg.textContent=reason+'，請返回會員中心。'};
  function lock(){if(exit.dataset.member==='1'){location.href='joygo-auth.html';return}gate.hidden=false;exit.hidden=true;document.getElementById('joygoLiveMonitor').hidden=true;window.joygoMonitorStop?.();input.value='';msg.textContent='';try{sessionStorage.removeItem(KEY)}catch{};setTimeout(()=>input.focus(),80)}
  function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='測試碼不正確，請重新輸入。';input.select()}}
  enter.addEventListener('click',check);input.addEventListener('keydown',e=>{if(e.key==='Enter')check()});exit.addEventListener('click',lock);
- try{if(sessionStorage.getItem(KEY)==='1')open();else setTimeout(()=>input.focus(),120)}catch{}
+ // 等待會員資格檢查完成，再開啟會員或訪客入口。
 })();
 </script>
 <script type="module" id="joygo-member-access-js">
@@ -2725,7 +2495,14 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "./joygo-s
 if(isSupabaseConfigured()){
   const supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   const {data}=await supabase.auth.getSession();
-  if(data.session?.user)window.joygoOpenForMember?.();
+  const user=data.session?.user;
+  if(!user)window.joygoInitVisitor?.();
+  else{
+    const {data:profile,error}=await supabase.from('profiles').select('role,status,expires_at').eq('id',user.id).single();
+    const expired=profile?.role!=='admin'&&profile?.expires_at&&new Date(profile.expires_at).getTime()<Date.now();
+    if(!error&&profile?.status==='active'&&!expired)window.joygoOpenForMember?.();
+    else window.joygoDenyMember?.(profile?.status==='suspended'?'帳號已停用':expired?'會員資格已到期':'無法確認會員資格');
+  }
 }
 </script>
 <script id="joygo-beta12-monitor-js">
@@ -2745,16 +2522,6 @@ if(isSupabaseConfigured()){
   addEventListener('pagehide',()=>{try{post('/monitor/leave',{},true)}catch{}},{capture:true});
 })();
 </script>
-
-
-<div id="famousGameInfoBar" aria-live="polite">
-  <span class="fg-chip"><span class="fg-label">棋局</span><span id="fgTitle" class="fg-value fg-title">—</span></span>
-  <span class="fg-chip"><span class="fg-label">黑</span><span id="fgBlack" class="fg-value">—</span></span>
-  <span class="fg-chip"><span class="fg-label">白</span><span id="fgWhite" class="fg-value">—</span></span>
-  <span class="fg-chip"><span class="fg-label">賽事</span><span id="fgEvent" class="fg-value">—</span></span>
-  <span class="fg-chip"><span class="fg-label">日期</span><span id="fgDate" class="fg-value">—</span></span>
-  <span class="fg-chip"><span class="fg-label">結果</span><span id="fgResult" class="fg-value">—</span></span>
-</div>
 
 <div class="app">
 <button id="infoCollapseBtn" class="info-collapse" type="button" aria-label="收合資訊欄">‹</button>
@@ -2978,153 +2745,21 @@ if(isSupabaseConfigured()){
 
 <div id="spectatorModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="spectatorModal">✕</button>
-  <h2>👁 Beta 1.5b｜多盤觀戰大廳</h2>
-  <p class="spectator-note">每位棋手可建立自己的轉播房間；觀戰者從大廳選擇棋局觀看。觀戰只同步棋步，不呼叫 KataGo，因此不增加 AI 分析負擔。測試版大廳先顯示最多 8 盤。</p>
-
-  <div class="spectator-room-row">
-    <label>我的房間名稱
-      <input id="spectatorRoomInput" maxlength="40" placeholder="例如：朱老師-1">
-    </label>
-    <button class="action" id="spectatorBroadcastBtn">📡 轉播我的棋局</button>
-  </div>
-
+  <h2>👁 Beta 1.5a｜單盤觀戰</h2>
+  <p class="spectator-note">第一版只有一個公開測試棋局 <b>main</b>。棋手可轉播目前棋局；觀戰者只能看棋步同步，不會啟動 KataGo，因此不增加 AI 計算負擔。</p>
   <div class="spectator-status">
-    <span class="spectator-pill">目前房間：<b id="spectatorRoomLabel">—</b></span>
+    <span class="spectator-pill">房間：<b>main</b></span>
     <span class="spectator-pill">狀態：<b id="spectatorStatus">待命</b></span>
     <span class="spectator-pill">手數：<b id="spectatorMoveCount">0</b></span>
   </div>
-
-  <div class="grid2" style="margin-top:10px">
-    <button class="action" id="spectatorWatchBtn">👁 觀看輸入的房間</button>
-    <button class="secondary" id="spectatorStopBtn">← 離開觀戰／停止轉播</button>
+  <div class="grid2" style="margin-top:12px">
+    <button class="action" id="spectatorBroadcastBtn">📡 轉播我的棋局</button>
+    <button class="action" id="spectatorWatchBtn">👁 觀看目前棋局</button>
+    <button class="secondary" id="spectatorStopBtn">停止轉播／觀戰</button>
+    <button class="secondary" id="spectatorRefreshBtn">立即同步</button>
   </div>
-
-  <div class="spectator-lobby-head">
-    <b>🎥 正在轉播</b>
-    <button class="secondary" id="spectatorRefreshBtn" style="padding:8px 10px">重新整理大廳</button>
-  </div>
-  <div id="spectatorLobbyList" class="spectator-lobby">
-    <div class="spectator-empty">正在讀取觀戰大廳…</div>
-  </div>
-
   <div id="spectatorMessage" class="connector-status warn" style="margin-top:12px">尚未開始觀戰或轉播。</div>
 </div></div>
-
-
-
-<div id="classicGameModal" class="modal-backdrop"><div class="modal">
-  <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.7a｜名局永久保存修正版</h2>
-  <p class="classic-library-note">
-    本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
-    內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
-  </p>
-
-
-  <div id="classicNowPlaying" class="classic-now-playing">
-    <span class="classic-now-label">目前棋局</span>
-    <strong id="classicNowTitle">尚未選擇</strong>
-    <span id="classicNowMeta">可選擇「載入」或「一鍵播放」</span>
-  </div>
-
-  <div class="classic-db-actions">
-    <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
-    <button class="secondary" id="classicImportSgfBtn">📂 單次開啟 SGF</button>
-    <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
-<button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
-<input id="classicRestoreFile" type="file" accept=".json,application/json" hidden>
-<button class="secondary" id="classicClearUserDbBtn">清除全部已保存名局</button>
-  </div>
-
-  <div class="classic-db-filters">
-    <label>搜尋
-      <input id="classicGameSearch" placeholder="棋手、賽事、名稱">
-    </label>
-    <label>分類
-      <select id="classicCategoryFilter">
-        <option value="">全部分類</option>
-        <option value="布局">布局</option>
-        <option value="中盤">中盤</option>
-        <option value="官子">官子</option>
-        <option value="攻防">攻防</option>
-        <option value="名人名局">名人名局</option>
-        <option value="AI名局">AI名局</option>
-        <option value="其他">其他</option>
-      </select>
-    </label>
-    <label>棋手
-      <input id="classicPlayerFilter" placeholder="例如：吳清源">
-    </label>
-    <label>年份
-      <input id="classicYearFilter" inputmode="numeric" placeholder="例如：1988">
-    </label>
-  </div>
-
-  <div id="classicGameCount" class="classic-db-count"></div>
-<div class="classic-db-note" style="margin:6px 0 10px;color:#c9b28c;font-size:12px">
-正式 SGF 改用 IndexedDB 保存；儲存後會立即重新讀取驗證。另可整批備份／還原。
-</div>
-  <div id="classicGameList" class="classic-game-list"></div>
-
-  <div class="classic-library-tip">
-    「一鍵播放」會自動從第 1 手開始播放；「載入」則停在第 0 手，方便先看棋局資料。載入後仍可使用第一手、上一手、播放／暫停、下一手、最後一手、指定手數與棋號顯示。
-    您自己加入的正式名局會保存在這台裝置的瀏覽器資料中。
-  </div>
-</div></div>
-
-<div id="classicImportModal" class="modal-backdrop"><div class="modal">
-  <button class="close" data-close="classicImportModal">✕</button>
-  <h2>＋ 加入正式名局 SGF</h2>
-  <p class="classic-library-note">先選 SGF，再補上資料。Beta 1.6b.2 已加強 iPad／Safari 的 SGF 讀取流程；選檔後會立即顯示讀取狀態，並檢查內容是否為有效 SGF。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
-
-  <div class="classic-import-file">
-    <input id="classicOfficialFile" type="file">
-    <div id="classicOfficialFileName" style="margin-top:6px">尚未選擇 SGF</div>
-    <div style="margin-top:5px;font-size:12px;color:var(--muted)">支援 iPad「檔案」中的 .sgf；選取後請等候約 1 秒完成讀取。</div>
-  </div>
-
-  <div class="classic-import-form" style="margin-top:12px">
-    <label class="wide">名局名稱
-      <input id="classicTitleInput" placeholder="例如：第 1 屆○○盃決賽">
-    </label>
-    <label>黑方
-      <input id="classicBlackInput">
-    </label>
-    <label>白方
-      <input id="classicWhiteInput">
-    </label>
-    <label>賽事
-      <input id="classicEventInput">
-    </label>
-    <label>日期
-      <input id="classicDateInput" placeholder="YYYY-MM-DD">
-    </label>
-    <label>結果
-      <input id="classicResultInput" placeholder="例如：B+R / W+2.5">
-    </label>
-    <label>分類
-      <select id="classicCategoryInput">
-        <option value="名人名局">名人名局</option>
-        <option value="布局">布局</option>
-        <option value="中盤">中盤</option>
-        <option value="官子">官子</option>
-        <option value="攻防">攻防</option>
-        <option value="AI名局">AI名局</option>
-        <option value="其他">其他</option>
-      </select>
-    </label>
-    <label class="wide">朱老師註記
-      <textarea id="classicNoteInput" rows="3" placeholder="例如：本局重點看右上角攻防。"></textarea>
-    </label>
-  </div>
-
-  <div class="grid2" style="margin-top:12px">
-    <button class="action" id="classicSaveOfficialBtn">儲存到名局館</button>
-    <button class="secondary" data-close="classicImportModal">取消</button>
-  </div>
-  <div id="classicImportMessage" class="connector-status warn" style="margin-top:10px">尚未選擇 SGF。</div>
-</div></div>
-
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
@@ -4243,8 +3878,8 @@ function leaveTeachingMode(){
 }
 
 
-// ===== Joy Go Platform Beta 1.5b: multi-room spectator lobby =====
-let spectatorCurrentGameId="";
+// ===== Joy Go Platform Beta 1.5a: single-game spectator mode =====
+const SPECTATOR_GAME_ID="main";
 function spectatorApiBase(){
   try{const u=new URL(getApiSettings().url);u.pathname=u.pathname.replace(/\/analyze\/?$/,'');u.search='';u.hash='';return u.toString().replace(/\/$/,'')}catch{return 'https://alphatrader-katago-server-v2.onrender.com'}
 }
@@ -4252,29 +3887,6 @@ function spectatorClientId(){
   let id=localStorage.getItem('joygo-spectator-client-id');
   if(!id){id='sp-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);localStorage.setItem('joygo-spectator-client-id',id)}
   return id;
-}
-function spectatorDefaultRoomId(){
-  return 'room-'+spectatorClientId().slice(-5);
-}
-function spectatorNormalizeRoomId(raw){
-  const v=String(raw||'').trim().replace(/\s+/g,'-').slice(0,40);
-  return v||spectatorDefaultRoomId();
-}
-function spectatorRoomId(){
-  const input=$('spectatorRoomInput');
-  const id=spectatorNormalizeRoomId(input?.value||spectatorCurrentGameId||localStorage.getItem('joygo-spectator-room-id')||spectatorDefaultRoomId());
-  spectatorCurrentGameId=id;
-  localStorage.setItem('joygo-spectator-room-id',id);
-  if(input && input.value!==id)input.value=id;
-  if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=id;
-  return id;
-}
-function spectatorSelectRoom(id){
-  spectatorCurrentGameId=spectatorNormalizeRoomId(id);
-  localStorage.setItem('joygo-spectator-room-id',spectatorCurrentGameId);
-  if($('spectatorRoomInput'))$('spectatorRoomInput').value=spectatorCurrentGameId;
-  if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=spectatorCurrentGameId;
-  return spectatorCurrentGameId;
 }
 async function spectatorFetch(path,options={}){
   const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),7000);
@@ -4286,30 +3898,24 @@ function spectatorMessage(text,type='warn'){
 function spectatorSetStatus(text,count){
   if($('spectatorStatus'))$('spectatorStatus').textContent=text;
   if($('spectatorMoveCount'))$('spectatorMoveCount').textContent=String(count??state.moves.length);
-  if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=spectatorCurrentGameId||'—';
 }
 function spectatorPayload(){
-  const gameId=spectatorRoomId();
-  return {game_id:gameId,broadcaster_id:spectatorClientId(),board_size:state.size,
+  return {game_id:SPECTATOR_GAME_ID,broadcaster_id:spectatorClientId(),board_size:state.size,
     moves:(state.moves||[]).map(m=>({c:m.c,x:Number(m.x),y:Number(m.y),pass:!!m.pass})),
     setup_b:(state.setupB||[]).map(p=>({x:Number(p.x),y:Number(p.y)})),setup_w:(state.setupW||[]).map(p=>({x:Number(p.x),y:Number(p.y)})),
     index:state.index,black_name:$('blackName')?.textContent||'黑方',white_name:$('whiteName')?.textContent||'白方',status:state.gameEnded?'ended':'playing'};
 }
 async function spectatorPublish(force=false){
   if(state.spectatorRole!=='broadcast')return;
-  const payload=spectatorPayload();const hash=JSON.stringify([payload.game_id,payload.board_size,payload.moves,payload.setup_b,payload.setup_w,payload.index,payload.status]);
+  const payload=spectatorPayload();const hash=JSON.stringify([payload.board_size,payload.moves,payload.setup_b,payload.setup_w,payload.index,payload.status]);
   if(!force&&hash===state.spectatorLastHash)return;
   const r=await spectatorFetch('/spectator/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  if(!r.ok)throw new Error('HTTP '+r.status);
-  state.spectatorLastHash=hash;
-  spectatorSetStatus('轉播中',payload.moves.length);
-  spectatorMessage(`📡 房間 ${payload.game_id} 正在轉播；觀戰者只接收棋步，不呼叫 KataGo。`,'ok');
+  if(!r.ok)throw new Error('HTTP '+r.status);state.spectatorLastHash=hash;spectatorSetStatus('轉播中',payload.moves.length);spectatorMessage('📡 棋局正在轉播；觀戰者只接收棋步，不呼叫 KataGo。','ok');
 }
 async function spectatorPull(){
   if(state.spectatorRole!=='watch')return;
-  const gameId=spectatorCurrentGameId||spectatorRoomId();
-  const r=await spectatorFetch('/spectator/game/'+encodeURIComponent(gameId));
-  if(r.status===404){spectatorSetStatus('等待棋局',0);spectatorMessage(`房間 ${gameId} 目前沒有正在轉播的棋局。`,'warn');return}
+  const r=await spectatorFetch('/spectator/game/'+encodeURIComponent(SPECTATOR_GAME_ID));
+  if(r.status===404){spectatorSetStatus('等待棋局',0);spectatorMessage('目前沒有正在轉播的棋局。','warn');return}
   if(!r.ok)throw new Error('HTTP '+r.status);
   const data=await r.json(),g=data.game||{};
   state.spectatorMode=true;document.body.classList.add('spectator-viewing');
@@ -4318,608 +3924,34 @@ async function spectatorPull(){
   state.setupB=Array.isArray(g.setup_b)?g.setup_b.map(p=>({x:Number(p.x),y:Number(p.y)})):[];state.setupW=Array.isArray(g.setup_w)?g.setup_w.map(p=>({x:Number(p.x),y:Number(p.y)})):[];
   state.actions=[];state.replayCache=[];state.index=Math.min(Number(g.index??state.moves.length),state.moves.length);state.turn=state.moves.length%2===0?'B':'W';
   if($('blackName'))$('blackName').textContent=g.black_name||'黑方';if($('whiteName'))$('whiteName').textContent=g.white_name||'白方';
-  syncUI();
-  if($('statusText'))$('statusText').textContent='觀戰中';
-  spectatorSetStatus(g.status==='ended'?'已結束':'觀戰中',state.moves.length);
-  spectatorMessage(`👁 ${gameId}｜已同步第 ${state.moves.length} 手｜最後更新 ${g.updated_at_iso||'—'}`,'ok');
+  syncUI();if($('statusText'))$('statusText').textContent='觀戰中';spectatorSetStatus(g.status==='ended'?'已結束':'觀戰中',state.moves.length);spectatorMessage(`👁 已同步第 ${state.moves.length} 手｜最後更新 ${g.updated_at_iso||'—'}`,'ok');
 }
 function spectatorClearTimer(){if(state.spectatorTimer){clearInterval(state.spectatorTimer);state.spectatorTimer=null}}
 async function startSpectatorBroadcast(){
-  spectatorClearTimer();
-  spectatorSelectRoom(spectatorRoomId());
-  state.spectatorMode=false;state.spectatorRole='broadcast';state.spectatorLastHash='';
-  document.body.classList.remove('spectator-viewing');
-  try{
-    await spectatorPublish(true);
-    state.spectatorTimer=setInterval(()=>spectatorPublish(false).catch(e=>spectatorMessage('轉播暫時失敗：'+e.message,'err')),1000);
-    loadSpectatorLobby().catch(()=>{});
-    toast('已開始轉播：'+spectatorCurrentGameId);
-  }catch(e){
-    state.spectatorRole='';
-    spectatorMessage('無法開始轉播：'+e.message,'err');
-  }
+  spectatorClearTimer();state.spectatorMode=false;state.spectatorRole='broadcast';state.spectatorLastHash='';document.body.classList.remove('spectator-viewing');
+  try{await spectatorPublish(true);state.spectatorTimer=setInterval(()=>spectatorPublish(false).catch(e=>spectatorMessage('轉播暫時失敗：'+e.message,'err')),1000);toast('已開始轉播目前棋局')}catch(e){state.spectatorRole='';spectatorMessage('無法開始轉播：'+e.message,'err')}
 }
-async function startSpectatorWatch(gameId){
-  spectatorClearTimer();
-  spectatorSelectRoom(gameId||spectatorRoomId());
-  state.spectatorRole='watch';state.spectatorMode=true;document.body.classList.add('spectator-viewing');
-  try{
-    await spectatorPull();
-    state.spectatorTimer=setInterval(()=>spectatorPull().catch(e=>spectatorMessage('同步暫時失敗：'+e.message,'err')),1000);
-    toast('正在觀看：'+spectatorCurrentGameId);
-  }catch(e){
-    spectatorMessage('無法觀戰：'+e.message,'err');
-  }
+async function startSpectatorWatch(){
+  spectatorClearTimer();state.spectatorRole='watch';state.spectatorMode=true;document.body.classList.add('spectator-viewing');
+  try{await spectatorPull();state.spectatorTimer=setInterval(()=>spectatorPull().catch(e=>spectatorMessage('同步暫時失敗：'+e.message,'err')),1000);toast('已進入觀戰模式')}catch(e){spectatorMessage('無法觀戰：'+e.message,'err')}
 }
 async function stopSpectator(){
-  const wasBroadcast=state.spectatorRole==='broadcast';
-  const gameId=spectatorCurrentGameId||spectatorRoomId();
-  spectatorClearTimer();
-  if(wasBroadcast){
-    try{await spectatorFetch('/spectator/stop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game_id:gameId,broadcaster_id:spectatorClientId()})})}catch{}
-  }
-  state.spectatorRole='';state.spectatorMode=false;state.spectatorLastHash='';
-  document.body.classList.remove('spectator-viewing');
-  spectatorSetStatus('待命',state.moves.length);
-  spectatorMessage(wasBroadcast?'已停止轉播。':'已離開觀戰，可以繼續操作自己的棋局。','warn');
-  syncUI();
-  loadSpectatorLobby().catch(()=>{});
-  toast(wasBroadcast?'轉播已停止':'已離開觀戰');
-}
-function spectatorGameCard(game){
-  const card=document.createElement('div');card.className='spectator-game-card';
-  const info=document.createElement('div');
-  const title=document.createElement('div');title.className='spectator-game-title';title.textContent=game.game_id||'未命名房間';
-  const meta=document.createElement('div');meta.className='spectator-game-meta';
-  meta.textContent=`${game.black_name||'黑方'} vs ${game.white_name||'白方'}｜${game.board_size||19}路｜${game.move_count||0}手｜${game.status==='ended'?'已結束':'進行中'}`;
-  info.append(title,meta);
-  const btn=document.createElement('button');btn.className='action';btn.textContent='👁 觀戰';
-  btn.onclick=()=>startSpectatorWatch(game.game_id);
-  card.append(info,btn);
-  return card;
-}
-async function loadSpectatorLobby(){
-  const box=$('spectatorLobbyList');if(!box)return;
-  box.innerHTML='<div class="spectator-empty">正在更新觀戰大廳…</div>';
-  try{
-    const r=await spectatorFetch('/spectator/games');
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const data=await r.json();
-    const games=(Array.isArray(data.games)?data.games:[])
-      .sort((a,b)=>String(b.updated_at||'').localeCompare(String(a.updated_at||'')))
-      .slice(0,8);
-    box.innerHTML='';
-    if(!games.length){
-      box.innerHTML='<div class="spectator-empty">目前沒有棋局正在轉播。請先由棋手按「📡 轉播我的棋局」。</div>';
-      return;
-    }
-    games.forEach(g=>box.appendChild(spectatorGameCard(g)));
-  }catch(e){
-    box.innerHTML='';
-    const d=document.createElement('div');d.className='spectator-empty';d.textContent='大廳讀取失敗：'+e.message;box.appendChild(d);
-  }
-}
-function openSpectatorLobby(){
-  spectatorSelectRoom(localStorage.getItem('joygo-spectator-room-id')||spectatorDefaultRoomId());
-  openModal('spectatorModal');
-  loadSpectatorLobby();
+  const wasBroadcast=state.spectatorRole==='broadcast';spectatorClearTimer();
+  if(wasBroadcast){try{await spectatorFetch('/spectator/stop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game_id:SPECTATOR_GAME_ID,broadcaster_id:spectatorClientId()})})}catch{}}
+  state.spectatorRole='';state.spectatorMode=false;state.spectatorLastHash='';document.body.classList.remove('spectator-viewing');spectatorSetStatus('待命',state.moves.length);spectatorMessage('已停止觀戰／轉播。','warn');syncUI();toast('觀戰功能已停止');
 }
 if($('spectatorBroadcastBtn'))$('spectatorBroadcastBtn').onclick=startSpectatorBroadcast;
-if($('spectatorWatchBtn'))$('spectatorWatchBtn').onclick=()=>startSpectatorWatch(spectatorRoomId());
+if($('spectatorWatchBtn'))$('spectatorWatchBtn').onclick=startSpectatorWatch;
 if($('spectatorStopBtn'))$('spectatorStopBtn').onclick=stopSpectator;
-if($('spectatorRefreshBtn'))$('spectatorRefreshBtn').onclick=loadSpectatorLobby;
-if($('spectatorRoomInput')){
-  $('spectatorRoomInput').value=localStorage.getItem('joygo-spectator-room-id')||spectatorDefaultRoomId();
-  $('spectatorRoomInput').addEventListener('change',()=>spectatorSelectRoom($('spectatorRoomInput').value));
-}
+if($('spectatorRefreshBtn'))$('spectatorRefreshBtn').onclick=()=>state.spectatorRole==='watch'?spectatorPull():spectatorPublish(true);
 window.addEventListener('pagehide',()=>{spectatorClearTimer()},{passive:true});
-
-
-// ===== Joy Go Platform Beta 1.6b: Classic Game Database =====
-const CLASSIC_DEMO_GAMES=[
-  {
-    id:"demo-1", source:"demo", title:"測試棋譜 1｜星位布局", black:"測試黑方", white:"測試白方",
-    event:"Beta 1.6 功能測試", date:"2026-08-11", result:"", category:"布局",
-    note:"功能測試棋譜，不是真實歷史名局。",
-    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6b]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dd];B[qp];W[dq];B[cf];W[fc];B[pp];W[dc];B[ce];W[ed];B[nc];W[qf];B[qn];W[oq];B[oc];W[nd];B[md];W[ne])"
-  },
-  {
-    id:"demo-2", source:"demo", title:"測試棋譜 2｜三連星", black:"測試黑方", white:"測試白方",
-    event:"Beta 1.6 功能測試", date:"2026-08-11", result:"", category:"布局",
-    note:"功能測試棋譜，用於測試較長手順。",
-    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6b]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[pj];W[fc];B[cn];W[qf];B[nc];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[pe];B[qe];W[rf];B[qg];W[of];B[pg];W[ng];B[nf];W[mg])"
-  },
-  {
-    id:"demo-3", source:"demo", title:"測試棋譜 3｜中國流", black:"測試黑方", white:"測試白方",
-    event:"Beta 1.6 功能測試", date:"2026-08-11", result:"", category:"布局",
-    note:"功能測試棋譜，用於測試自動播放。",
-    sgf:"(;GM[1]FF[4]CA[UTF-8]AP[JoyGo:Beta1.6b]SZ[19]KM[6.5]PB[測試黑方]PW[測試白方]EV[Beta 1.6 功能測試]DT[2026-08-11]C[此為功能測試棋譜，不是真實歷史名局。];B[pd];W[dp];B[pp];W[dd];B[qn];W[nc];B[rd];W[qc];B[qd];W[pc];B[oc];W[od];B[nd];W[mc];B[md];W[lc];B[ne];W[of];B[pf];W[pg];B[qg];W[rf])"
-  }
-];
-let classicPendingSgf="";
-
-const CLASSIC_IDB_NAME="JoyGoClassicGames";
-const CLASSIC_IDB_STORE="games";
-const CLASSIC_IDB_VERSION=1;
-let classicGameCache=[];
-
-function classicDbKey(){return "joygo-classic-db-v1";}
-
-function classicOpenDb(){
-  return new Promise((resolve,reject)=>{
-    if(!("indexedDB" in window)){reject(new Error("此瀏覽器不支援 IndexedDB"));return;}
-    const req=indexedDB.open(CLASSIC_IDB_NAME,CLASSIC_IDB_VERSION);
-    req.onupgradeneeded=()=>{
-      const db=req.result;
-      if(!db.objectStoreNames.contains(CLASSIC_IDB_STORE)){
-        db.createObjectStore(CLASSIC_IDB_STORE,{keyPath:"id"});
-      }
-    };
-    req.onsuccess=()=>resolve(req.result);
-    req.onerror=()=>reject(req.error||new Error("IndexedDB 開啟失敗"));
-    req.onblocked=()=>reject(new Error("資料庫被其他分頁占用，請關閉其他 Joy Go 分頁後再試"));
-  });
-}
-async function classicDbGetAll(){
-  const db=await classicOpenDb();
-  try{
-    return await new Promise((resolve,reject)=>{
-      const tx=db.transaction(CLASSIC_IDB_STORE,"readonly");
-      const req=tx.objectStore(CLASSIC_IDB_STORE).getAll();
-      req.onsuccess=()=>resolve(Array.isArray(req.result)?req.result:[]);
-      req.onerror=()=>reject(req.error||new Error("讀取名局失敗"));
-    });
-  }finally{db.close();}
-}
-async function classicDbPut(game){
-  const db=await classicOpenDb();
-  try{
-    await new Promise((resolve,reject)=>{
-      const tx=db.transaction(CLASSIC_IDB_STORE,"readwrite");
-      tx.objectStore(CLASSIC_IDB_STORE).put(game);
-      tx.oncomplete=resolve;
-      tx.onerror=()=>reject(tx.error||new Error("寫入名局失敗"));
-      tx.onabort=()=>reject(tx.error||new Error("寫入名局中止"));
-    });
-  }finally{db.close();}
-}
-async function classicDbDelete(id){
-  const db=await classicOpenDb();
-  try{
-    await new Promise((resolve,reject)=>{
-      const tx=db.transaction(CLASSIC_IDB_STORE,"readwrite");
-      tx.objectStore(CLASSIC_IDB_STORE).delete(id);
-      tx.oncomplete=resolve;
-      tx.onerror=()=>reject(tx.error||new Error("刪除名局失敗"));
-    });
-  }finally{db.close();}
-}
-async function classicDbClear(){
-  const db=await classicOpenDb();
-  try{
-    await new Promise((resolve,reject)=>{
-      const tx=db.transaction(CLASSIC_IDB_STORE,"readwrite");
-      tx.objectStore(CLASSIC_IDB_STORE).clear();
-      tx.oncomplete=resolve;
-      tx.onerror=()=>reject(tx.error||new Error("清除名局失敗"));
-    });
-  }finally{db.close();}
-}
-async function classicRequestPersistence(){
-  try{
-    if(navigator.storage?.persist){
-      await navigator.storage.persist();
-      return navigator.storage.persisted ? await navigator.storage.persisted() : false;
-    }
-  }catch(e){console.warn("persistent storage request:",e)}
-  return false;
-}
-function classicLoadUserGames(){return classicGameCache.slice();}
-async function classicRefreshCache(){
-  classicGameCache=await classicDbGetAll();
-  classicGameCache.sort((a,b)=>String(b.savedAt||"").localeCompare(String(a.savedAt||"")));
-  return classicGameCache;
-}
-async function classicMigrateLegacyLocalStorage(){
-  try{
-    const raw=localStorage.getItem(classicDbKey());
-    if(!raw)return 0;
-    const old=JSON.parse(raw);
-    if(!Array.isArray(old)||!old.length){localStorage.removeItem(classicDbKey());return 0;}
-    for(const g of old){if(g?.id&&g?.sgf)await classicDbPut(g);}
-    localStorage.removeItem(classicDbKey());
-    return old.length;
-  }catch(e){console.warn("legacy migration:",e);return 0;}
-}
-function classicAllGames(){return classicGameCache.slice();}
-function classicSgfProp(text,key){
-  const m=String(text||"").match(new RegExp(key+"\\[((?:\\\\.|[^\\]])*)\\]","i"));
-  return m?m[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\").trim():"";
-}
-function classicNormalizeDate(v){
-  const s=String(v||"").trim().replace(/\./g,"-").replace(/\//g,"-");
-  return s;
-}
-function classicAutoFillFromSgf(text){
-  const pb=classicSgfProp(text,"PB"), pw=classicSgfProp(text,"PW"), ev=classicSgfProp(text,"EV");
-  const dt=classicSgfProp(text,"DT"), re=classicSgfProp(text,"RE"), gn=classicSgfProp(text,"GN");
-  if($("classicBlackInput"))$("classicBlackInput").value=pb;
-  if($("classicWhiteInput"))$("classicWhiteInput").value=pw;
-  if($("classicEventInput"))$("classicEventInput").value=ev;
-  if($("classicDateInput"))$("classicDateInput").value=classicNormalizeDate(dt);
-  if($("classicResultInput"))$("classicResultInput").value=re;
-  if($("classicTitleInput"))$("classicTitleInput").value=gn||[pb,pw].filter(Boolean).join(" vs ");
-}
-
-let classicCurrentGameId="";
-function classicSetNowPlaying(game){
-  classicCurrentGameId=String(game?.id||game?.title||"");
-  const title=$("classicNowTitle"), meta=$("classicNowMeta");
-  if(title)title.textContent=game?.title||"未命名棋譜";
-  if(meta){
-    const result=game?.result?`｜${game.result}`:"";
-    meta.textContent=`${game?.black||"黑方"} vs ${game?.white||"白方"}｜${game?.event||"未填賽事"}｜${game?.date||"未填日期"}${result}`;
-  }
-  try{sessionStorage.setItem("joygo-classic-current",classicCurrentGameId)}catch{}
-}
-function classicStopPlayback(){
-  try{
-    if(state?.playing && $("playBtn"))$("playBtn").click();
-  }catch{}
-}
-
-function classicGameCard(game){
-  const card=document.createElement("div");card.className="classic-game-card";
-  if(String(game.id||game.title||"")===classicCurrentGameId)card.classList.add("is-current");
-
-  const info=document.createElement("div");
-  const title=document.createElement("div");title.className="classic-game-title";title.textContent=game.title||"未命名棋譜";
-  const meta=document.createElement("div");meta.className="classic-game-meta";
-  const result=game.result?`｜結果 ${game.result}`:"";
-  meta.textContent=`${game.black||"黑方"} vs ${game.white||"白方"}｜${game.event||"未填賽事"}｜${game.date||"未填日期"}${result}`;
-
-  const badges=document.createElement("div");badges.style.marginTop="6px";
-  const sourceBadge=document.createElement("span");
-  sourceBadge.className="classic-db-badge official";
-  sourceBadge.textContent="已保存";
-  const cat=document.createElement("span");cat.className="classic-db-badge";cat.textContent=game.category||"其他";
-  badges.append(sourceBadge,cat);
-
-  if(game.note){
-    const note=document.createElement("div");note.className="classic-db-card-note";note.textContent=game.note;
-    info.append(title,meta,badges,note);
-  }else info.append(title,meta,badges);
-
-  const actions=document.createElement("div");actions.className="classic-game-actions";
-
-  const loadBtn=document.createElement("button");
-  loadBtn.className="secondary";
-  loadBtn.textContent="載入";
-  loadBtn.onclick=()=>loadClassicGame(game,false);
-
-  const playBtn=document.createElement("button");
-  playBtn.className="action classic-play-now";
-  playBtn.textContent="▶ 一鍵播放";
-  playBtn.onclick=()=>loadClassicGame(game,true);
-
-  actions.append(loadBtn,playBtn);
-  if(game.source==="official"){
-    const deleteBtn=document.createElement("button");
-    deleteBtn.className="danger";
-    deleteBtn.textContent="刪除";
-    deleteBtn.onclick=()=>classicDeleteOne(game);
-    actions.append(deleteBtn);
-  }
-  card.append(info,actions);
-  return card;
-}
-function renderClassicGameLibrary(){
-  try{classicCurrentGameId=sessionStorage.getItem("joygo-classic-current")||classicCurrentGameId||""}catch{}
-  const box=$("classicGameList");if(!box)return;
-  const q=String($("classicGameSearch")?.value||"").trim().toLowerCase();
-  const category=String($("classicCategoryFilter")?.value||"").trim();
-  const player=String($("classicPlayerFilter")?.value||"").trim().toLowerCase();
-  const year=String($("classicYearFilter")?.value||"").trim();
-
-  const games=classicAllGames().filter(g=>{
-    const hay=[g.title,g.black,g.white,g.event,g.date,g.result,g.category,g.note].join(" ").toLowerCase();
-    const playerHay=[g.black,g.white].join(" ").toLowerCase();
-    return (!q||hay.includes(q))
-      &&(!category||g.category===category)
-      &&(!player||playerHay.includes(player))
-      &&(!year||String(g.date||"").startsWith(year));
-  });
-
-  box.innerHTML="";
-  if($("classicGameCount")){
-    const officialCount=classicLoadUserGames().length;
-    $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜已保存正式棋譜 ${officialCount} 盤`;
-  }
-  if(!games.length){
-    box.innerHTML='<div class="classic-db-empty">目前沒有棋譜。請按「加入正式名局」匯入 SGF；儲存後下次開啟仍會保留。</div>';
-    return;
-  }
-  games.forEach(g=>box.appendChild(classicGameCard(g)));
-}
-async function openClassicGameLibrary(){
-  try{
-    classicCurrentGameId=sessionStorage.getItem("joygo-classic-current")||classicCurrentGameId||"";
-    await classicMigrateLegacyLocalStorage();
-    await classicRefreshCache();
-    renderClassicGameLibrary();
-    openModal("classicGameModal");
-  }catch(err){
-    console.error(err);
-    toast("名局資料庫讀取失敗："+(err?.message||String(err)));
-  }
-}
-function loadClassicGame(game,autoPlay=false){
-  classicStopPlayback();
-
-  const ok=loadSGFText(game.sgf,(game.title||"名局")+".sgf");
-  if(!ok)return;
-
-  classicSetNowPlaying(game);
-
-  showFamousGameInfo({
-    title:game.title||fgSgfProp(game.sgf,"GN")||"",
-    black:game.black||fgSgfProp(game.sgf,"PB")||"",
-    white:game.white||fgSgfProp(game.sgf,"PW")||"",
-    event:game.event||fgSgfProp(game.sgf,"EV")||"",
-    date:game.date||fgSgfProp(game.sgf,"DT")||"",
-    result:game.result||fgSgfProp(game.sgf,"RE")||""
-  });
-
-  state.index=0;
-  syncUI();
-  goTo(0);
-  closeModal("classicGameModal");
-
-  toast(autoPlay?("▶ 開始播放："+(game.title||"名局")):("已載入："+(game.title||"名局")));
-
-  if(autoPlay){
-    setTimeout(()=>{
-      try{
-        if(state.index!==0)goTo(0);
-        if(!state.playing)$("playBtn")?.click();
-      }catch{}
-    },350);
-  }
-}
-function classicResetImportForm(){
-  classicPendingSgf="";
-  ["classicTitleInput","classicBlackInput","classicWhiteInput","classicEventInput","classicDateInput","classicResultInput","classicNoteInput"].forEach(id=>{if($(id))$(id).value=""});
-  if($("classicCategoryInput"))$("classicCategoryInput").value="名人名局";
-  if($("classicOfficialFile"))$("classicOfficialFile").value="";
-  if($("classicOfficialFileName"))$("classicOfficialFileName").textContent="尚未選擇 SGF";
-  if($("classicImportMessage")){$("classicImportMessage").className="connector-status warn";$("classicImportMessage").textContent="尚未選擇 SGF。"}
-}
-function classicOpenImportModal(){
-  classicResetImportForm();
-  openModal("classicImportModal");
-}
-async function classicReadOfficialFile(file){
-  if(!file){
-    classicPendingSgf="";
-    if($("classicOfficialFileName"))$("classicOfficialFileName").textContent="尚未選擇 SGF";
-    if($("classicImportMessage")){
-      $("classicImportMessage").className="connector-status warn";
-      $("classicImportMessage").textContent="尚未選擇 SGF。";
-    }
-    return;
-  }
-
-  if($("classicOfficialFileName"))$("classicOfficialFileName").textContent=file.name||"已選擇 SGF";
-  if($("classicImportMessage")){
-    $("classicImportMessage").className="connector-status warn";
-    $("classicImportMessage").textContent="正在讀取 SGF…";
-  }
-
-  try{
-    let text="";
-
-    // iPad / Safari 優先使用 FileReader；部分版本對 file.text() 行為不一致。
-    if(typeof FileReader!=="undefined"){
-      text=await new Promise((resolve,reject)=>{
-        const reader=new FileReader();
-        reader.onload=()=>resolve(String(reader.result||""));
-        reader.onerror=()=>reject(reader.error||new Error("FileReader 讀取失敗"));
-        reader.onabort=()=>reject(new Error("檔案讀取已取消"));
-        reader.readAsText(file,"UTF-8");
-      });
-    }else if(typeof file.text==="function"){
-      text=await file.text();
-    }else{
-      throw new Error("此瀏覽器無法讀取檔案內容");
-    }
-
-    // 去除 BOM / 前置空白，並採較寬鬆但安全的 SGF 判斷。
-    text=String(text||"").replace(/^\uFEFF/,"").trim();
-    const looksLikeSgf=/^\(\s*;/.test(text) && /(?:^|[\s;(])(?:GM|FF|SZ|B|W)\s*\[/i.test(text);
-
-    if(!looksLikeSgf){
-      classicPendingSgf="";
-      if($("classicImportMessage")){
-        $("classicImportMessage").className="connector-status bad";
-        $("classicImportMessage").textContent="已選到檔案，但內容不像有效 SGF。請換另一個 .sgf 檔。";
-      }
-      return;
-    }
-
-    classicPendingSgf=text;
-    classicAutoFillFromSgf(text);
-
-    if($("classicImportMessage")){
-      $("classicImportMessage").className="connector-status ok";
-      $("classicImportMessage").textContent="✅ SGF 已成功讀取，可以補充資料後按「儲存到名局館」。";
-    }
-  }catch(err){
-    classicPendingSgf="";
-    if($("classicImportMessage")){
-      $("classicImportMessage").className="connector-status bad";
-      $("classicImportMessage").textContent="SGF 讀取失敗："+(err?.message||String(err));
-    }
-  }
-}
-async function classicSaveOfficial(){
-  if(!classicPendingSgf){
-    if($("classicImportMessage")){$("classicImportMessage").className="connector-status bad";$("classicImportMessage").textContent="請先選擇 SGF。"}
-    return;
-  }
-  const game={
-    id:"official-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7),
-    source:"official",
-    title:String($("classicTitleInput")?.value||"").trim()||"未命名名局",
-    black:String($("classicBlackInput")?.value||"").trim(),
-    white:String($("classicWhiteInput")?.value||"").trim(),
-    event:String($("classicEventInput")?.value||"").trim(),
-    date:String($("classicDateInput")?.value||"").trim(),
-    result:String($("classicResultInput")?.value||"").trim(),
-    category:String($("classicCategoryInput")?.value||"其他"),
-    note:String($("classicNoteInput")?.value||"").trim(),
-    sgf:classicPendingSgf,
-    savedAt:new Date().toISOString()
-  };
-  try{
-    await classicRequestPersistence();
-    await classicDbPut(game);
-    await classicRefreshCache();
-    const verified=classicGameCache.some(g=>g.id===game.id && g.sgf===game.sgf);
-    if(!verified)throw new Error("寫入後驗證失敗");
-    closeModal("classicImportModal");
-    renderClassicGameLibrary();
-    toast("✅ 已永久保存並驗證："+game.title);
-  }catch(err){
-    console.error(err);
-    if($("classicImportMessage")){
-      $("classicImportMessage").className="connector-status bad";
-      $("classicImportMessage").textContent="❌ 保存失敗："+(err?.message||String(err));
-    }
-    toast("❌ 棋譜沒有保存成功");
-  }
-}
-async function classicDeleteOne(game){
-  if(!game||game.source!=="official")return;
-  const name=game.title||`${game.black||"黑方"} vs ${game.white||"白方"}`;
-  if(!confirm(`確定刪除「${name}」？\n只會刪除這一盤棋譜。`))return;
-  try{
-    await classicDbDelete(game.id);
-    await classicRefreshCache();
-    if(classicCurrentGameId===String(game.id)){
-      classicCurrentGameId="";
-      try{sessionStorage.removeItem("joygo-classic-current")}catch{}
-    }
-    renderClassicGameLibrary();
-    toast("已刪除："+name);
-  }catch(err){toast("刪除失敗："+(err?.message||String(err)))}
-}
-async function classicClearUserDb(){
-  const count=classicGameCache.length;
-  if(!count){toast("目前沒有已保存名局");return}
-  if(confirm(`確定清除這台裝置中已保存的 ${count} 盤名局嗎？`)){
-    try{
-      await classicDbClear();
-      await classicRefreshCache();
-      renderClassicGameLibrary();
-      toast("已清除全部已保存名局");
-    }catch(err){toast("清除失敗："+(err?.message||String(err)))}
-  }
-}
-
-
-function classicBackupAll(){
-  if(!classicGameCache.length){toast("目前沒有棋譜可備份");return;}
-  const payload={format:"JoyGoClassicBackup",version:"1.6b.7a",exportedAt:new Date().toISOString(),games:classicGameCache};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-  a.download="JoyGo-名局備份-"+new Date().toISOString().slice(0,10)+".json";
-  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  toast("已產生名局備份檔");
-}
-async function classicRestoreBackup(file){
-  if(!file)return;
-  try{
-    const text=await file.text();
-    const data=JSON.parse(text);
-    if(data?.format!=="JoyGoClassicBackup"||!Array.isArray(data.games))throw new Error("不是 Joy Go 名局備份檔");
-    for(const g of data.games){if(g?.id&&g?.sgf)await classicDbPut(g);}
-    await classicRefreshCache();renderClassicGameLibrary();
-    toast(`✅ 已還原 ${data.games.length} 盤名局`);
-  }catch(err){toast("還原失敗："+(err?.message||String(err)))}
-}
-
-["classicGameSearch","classicPlayerFilter","classicYearFilter"].forEach(id=>{
-  if($(id))$(id).addEventListener("input",renderClassicGameLibrary);
-});
-if($("classicCategoryFilter"))$("classicCategoryFilter").addEventListener("change",renderClassicGameLibrary);
-if($("classicAddOfficialBtn"))$("classicAddOfficialBtn").onclick=classicOpenImportModal;
-if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{closeModal("classicGameModal");$("sgfFile")?.click()};
-if($("classicBackupBtn"))$("classicBackupBtn").onclick=classicBackupAll;
-if($("classicRestoreBtn"))$("classicRestoreBtn").onclick=()=>$("classicRestoreFile")?.click();
-if($("classicRestoreFile"))$("classicRestoreFile").addEventListener("change",e=>classicRestoreBackup(e.target.files?.[0]));
-if($("classicClearUserDbBtn"))$("classicClearUserDbBtn").onclick=classicClearUserDb;
-// iPad / Safari：使用 delegated change，避免 modal / input 生命週期造成 listener 漏接。
-document.addEventListener("change",e=>{
-  if(e.target && e.target.id==="classicOfficialFile"){
-    const file=e.target.files && e.target.files.length ? e.target.files[0] : null;
-    classicReadOfficialFile(file);
-  }
-});
-if($("classicSaveOfficialBtn"))$("classicSaveOfficialBtn").onclick=classicSaveOfficial;
-
-
-// ===== Joy Go Platform Beta 1.6b.5: Famous Game Info Sync =====
-function fgSgfProp(text,key){
-  const m=String(text||"").match(new RegExp(key+"\\[((?:\\\\.|[^\\]])*)\\]","i"));
-  return m?m[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\").trim():"";
-}
-function showFamousGameInfo(meta={}){
-  const bar=document.getElementById("famousGameInfoBar");
-  if(!bar)return;
-  const set=(id,val)=>{
-    const el=document.getElementById(id);
-    if(el)el.textContent=(val&&String(val).trim())?String(val).trim():"—";
-  };
-  set("fgTitle",meta.title||meta.gameName||"");
-  set("fgBlack",meta.black||"");
-  set("fgWhite",meta.white||"");
-  set("fgEvent",meta.event||"");
-  set("fgDate",meta.date||"");
-  set("fgResult",meta.result||"");
-  bar.classList.add("show");
-  try{sessionStorage.setItem("joygo-fg-info",JSON.stringify(meta))}catch{}
-}
-function hideFamousGameInfo(){
-  const bar=document.getElementById("famousGameInfoBar");
-  if(bar)bar.classList.remove("show");
-  try{sessionStorage.removeItem("joygo-fg-info")}catch{}
-}
-function syncFamousGameInfoFromSgf(sgfText,fallbackTitle=""){
-  const meta={
-    title:fgSgfProp(sgfText,"GN")||fallbackTitle||"",
-    black:fgSgfProp(sgfText,"PB"),
-    white:fgSgfProp(sgfText,"PW"),
-    event:fgSgfProp(sgfText,"EV"),
-    date:fgSgfProp(sgfText,"DT"),
-    result:fgSgfProp(sgfText,"RE")
-  };
-  showFamousGameInfo(meta);
-  return meta;
-}
-window.addEventListener("DOMContentLoaded",()=>{
-  try{
-    const raw=sessionStorage.getItem("joygo-fg-info");
-    if(raw)showFamousGameInfo(JSON.parse(raw));
-  }catch{}
-});
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
   ["teachBtn","▣","教學",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")}],
   ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>openModal("humanModal")],
-  ["classicGameBtn","🏛️","名局館",()=>openClassicGameLibrary()],
-  ["spectatorBtn","👁","觀戰",()=>openSpectatorLobby()],
+  ["spectatorBtn","👁","觀戰",()=>openModal("spectatorModal")],
   ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
   ["zoomBtn","⛶","放大",()=>toggleFullscreen()],
   ["resetBtn","↺","還原",()=>resetView()]
@@ -5647,21 +4679,7 @@ function loadSGFText(text,name){
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
     $("parseInfo").textContent=`解析成功：${g.nodes} 個節點，${g.moves.length} 手，黑設定子 ${g.setupB.length}，白設定子 ${g.setupW.length}。Build024.8 API Inspector 已啟用；可連接 HTTPS 分析後端，失敗時自動回退示範資料。結果：${g.result}`;
     resizeBoard(true); syncUI(); toast("棋譜完整載入");
-    
-  try{
-    const _fgMeta={
-      title:fgSgfProp(text,"GN")||String(fileName||"").replace(/\.sgf$/i,""),
-      black:fgSgfProp(text,"PB"),
-      white:fgSgfProp(text,"PW"),
-      event:fgSgfProp(text,"EV"),
-      date:fgSgfProp(text,"DT"),
-      result:fgSgfProp(text,"RE")
-    };
-    if(_fgMeta.black||_fgMeta.white||_fgMeta.event||_fgMeta.date||_fgMeta.result||fgSgfProp(text,"GN")){
-      showFamousGameInfo(_fgMeta);
-    }
-  }catch{}
-return true;
+    return true;
   }catch(err){
     console.error(err);
     $("fileInfo").textContent="棋譜載入失敗。";
@@ -7667,32 +6685,6 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout
  document.getElementById('qbSaveCurrent')?.addEventListener('click',()=>{photoDraftDirty=false;if($("photoDraftStatus"))$("photoDraftStatus").textContent='照片題目已儲存'},{capture:true});
  document.getElementById('qbSaveAs')?.addEventListener('click',()=>{photoDraftDirty=false},{capture:true});
 })();
-</script>
-
-<script id="statusStripFix16b3Script">
-window.addEventListener("DOMContentLoaded",()=>{
-  const texts=["在線","KataGo","今日訪客","排隊"];
-  const candidates=[...document.querySelectorAll("div,section,header")];
-  const metric=candidates.find(el=>{
-    const t=(el.innerText||"");
-    return texts.every(x=>t.includes(x)) && el.children.length<=12;
-  });
-  if(metric) metric.classList.add("status-strip");
-
-  const toolButtons=[...document.querySelectorAll("button")];
-  const toolParent=toolButtons.find(b=>(b.innerText||"").includes("資訊"))?.parentElement;
-  if(toolParent) toolParent.classList.add("top-tools");
-});
-</script>
-
-<script>
-window.addEventListener("DOMContentLoaded",async()=>{
-  try{
-    await classicMigrateLegacyLocalStorage();
-    await classicRefreshCache();
-    renderClassicGameLibrary();
-  }catch(e){console.warn("Classic DB startup:",e)}
-});
 </script>
 </body>
 </html>
