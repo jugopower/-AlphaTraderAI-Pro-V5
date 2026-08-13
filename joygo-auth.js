@@ -27,6 +27,7 @@ if (!isSupabaseConfigured()) {
     const loggedIn = Boolean(user);
     form.hidden = loggedIn;
     account.hidden = !loggedIn;
+    $("platformLink").textContent = loggedIn ? "進入會員平台" : "訪客直接試玩";
     if (user) {
       $("memberEmail").textContent = user.email || "會員";
       $("memberName").textContent = user.user_metadata?.display_name || "Joy Go 棋友";
@@ -46,7 +47,10 @@ if (!isSupabaseConfigured()) {
         const { data: result, error } = await supabase.auth.signUp({
           email: email.value.trim(),
           password: password.value,
-          options: { data: { display_name: name.value.trim() || "Joy Go 棋友" } }
+          options: {
+            data: { display_name: name.value.trim() || "Joy Go 棋友" },
+            emailRedirectTo: new URL("joygo-auth.html", window.location.href).href
+          }
         });
         if (error) throw error;
         say(result.session ? "註冊完成，已登入。" : "註冊完成，請到信箱點選驗證連結。", "success");

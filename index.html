@@ -2480,11 +2480,21 @@ body.api-inspector-open #teachBarToggle{display:none!important}
  const gate=document.getElementById('joygoBetaGate'),input=document.getElementById('joygoBetaCode'),enter=document.getElementById('joygoBetaEnter'),msg=document.getElementById('joygoBetaMsg'),exit=document.getElementById('joygoBetaExit');
  const CODE='JOYGO10', KEY='joygo_beta_v1_session';
  function open(){gate.hidden=true;exit.hidden=false;document.getElementById('joygoLiveMonitor').hidden=false;try{sessionStorage.setItem(KEY,'1')}catch{};setTimeout(()=>window.joygoMonitorStart?.(),50)}
- function lock(){gate.hidden=false;exit.hidden=true;document.getElementById('joygoLiveMonitor').hidden=true;window.joygoMonitorStop?.();input.value='';msg.textContent='';try{sessionStorage.removeItem(KEY)}catch{};setTimeout(()=>input.focus(),80)}
+ window.joygoOpenForMember=()=>{exit.dataset.member='1';exit.textContent='👤 會員中心';open()};
+ function lock(){if(exit.dataset.member==='1'){location.href='joygo-auth.html';return}gate.hidden=false;exit.hidden=true;document.getElementById('joygoLiveMonitor').hidden=true;window.joygoMonitorStop?.();input.value='';msg.textContent='';try{sessionStorage.removeItem(KEY)}catch{};setTimeout(()=>input.focus(),80)}
  function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='測試碼不正確，請重新輸入。';input.select()}}
  enter.addEventListener('click',check);input.addEventListener('keydown',e=>{if(e.key==='Enter')check()});exit.addEventListener('click',lock);
  try{if(sessionStorage.getItem(KEY)==='1')open();else setTimeout(()=>input.focus(),120)}catch{}
 })();
+</script>
+<script type="module" id="joygo-member-access-js">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "./joygo-supabase-config.js";
+if(isSupabaseConfigured()){
+  const supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  const {data}=await supabase.auth.getSession();
+  if(data.session?.user)window.joygoOpenForMember?.();
+}
 </script>
 <script id="joygo-beta12-monitor-js">
 (()=>{
