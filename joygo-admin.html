@@ -1,37 +1,40 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>會員管理｜Joy Go Platform</title>
-<style>
-:root{--ink:#123d38;--jade:#087f68;--jade2:#18a986;--gold:#f5b942;--red:#d95050;--line:#c6d9d2}
-*{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;color:var(--ink);background:linear-gradient(145deg,#e9fff7 0%,#fff8e8 48%,#eaf5ff 100%);min-height:100vh}
-header{padding:22px max(22px,calc((100% - 1180px)/2));background:linear-gradient(110deg,#063f39,#087563 62%,#0ba982);color:white;display:flex;justify-content:space-between;align-items:center;gap:12px;box-shadow:0 5px 18px #075b4d45}
-header h1{margin:0;font-size:28px;letter-spacing:1px;text-shadow:0 2px 4px #003c32}
-header a{color:#3c2a00;background:linear-gradient(135deg,#ffe49b,#f4b93f);padding:12px 17px;border-radius:12px;text-decoration:none;font-weight:900;box-shadow:0 4px 10px #002d2650}
-main{max-width:1180px;margin:26px auto;padding:0 20px}
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}
-.card{color:white;border:0;border-radius:18px;padding:18px 20px;box-shadow:0 8px 20px #28574c2b;font-weight:800}
-.card:nth-child(1){background:linear-gradient(135deg,#087d69,#13b28d)}
-.card:nth-child(2){background:linear-gradient(135deg,#1674c8,#36a9ef)}
-.card:nth-child(3){background:linear-gradient(135deg,#e69218,#ffc64a);color:#442d00}
-.card:nth-child(4){background:linear-gradient(135deg,#d84354,#ff7770)}
-.card b{display:block;font-size:35px;margin-top:7px}
-.toolbar{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
-.toolbar input{flex:1;min-width:220px;padding:14px 16px;border:2px solid #94c8ba;border-radius:13px;font-size:17px;background:#ffffffdd;box-shadow:0 3px 10px #27615218}
-.toolbar input:focus{outline:3px solid #24b99442;border-color:#159878}
-.toolbar button,button.save{border:0;border-radius:11px;padding:12px 18px;background:linear-gradient(135deg,#087866,#13aa86);color:white;font-weight:900;box-shadow:0 4px 9px #075a4b35}
-.toolbar button:active,button.save:active{transform:translateY(1px)}
-.message{min-height:25px;margin:10px 2px;color:#21665a;font-weight:700}.message.error{color:var(--red)}
-.table-wrap{overflow:auto;background:white;border:1px solid #aad0c5;border-radius:18px;box-shadow:0 10px 28px #275b4e24}
-table{width:100%;border-collapse:collapse;min-width:860px}th,td{padding:14px 12px;border-bottom:1px solid #dcebe6;text-align:left;vertical-align:middle}
-th{background:linear-gradient(110deg,#07594e,#098c74);color:white;position:sticky;top:0;font-size:16px;letter-spacing:.5px}
-tbody tr:nth-child(even){background:#effbf7}tbody tr:hover{background:#fff7dd}
-td b{font-size:17px}td small{color:#477069}
-select,input[type=date]{padding:10px;border:2px solid #91beb3;border-radius:10px;background:white;color:#173f39;font-size:15px}
-select:focus,input[type=date]:focus{outline:3px solid #23b79138;border-color:#159878}
-.role{font-weight:800}.empty{text-align:center;padding:38px}.danger{color:var(--red)}
-@media(max-width:700px){.summary{grid-template-columns:1fr 1fr;gap:10px}header h1{font-size:21px}.card{padding:14px}.card b{font-size:29px}}
-</style></head>
-<body><header><h1>Joy Go 會員管理</h1><a href="joygo-auth.html">返回會員中心</a></header><main>
-<section class="summary"><div class="card">全部會員<b id="total">—</b></div><div class="card">正式會員<b id="members">—</b></div><div class="card">試用會員<b id="trials">—</b></div><div class="card">停用會員<b id="suspended">—</b></div></section>
-<div class="toolbar"><input id="search" type="search" placeholder="搜尋姓名或 Email"><button id="refresh" type="button">重新整理</button></div><p id="message" class="message" aria-live="polite">正在確認管理員權限…</p>
-<div class="table-wrap"><table><thead><tr><th>會員</th><th>角色</th><th>狀態</th><th>到期日</th><th>操作</th></tr></thead><tbody id="rows"><tr><td colspan="5" class="empty">載入中…</td></tr></tbody></table></div>
-</main><script type="module" src="joygo-admin.js"></script></body></html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>會員管理｜Joy Go Platform</title>
+  <style>
+    :root{color-scheme:dark;--bg:#080b0d;--panel:#15110e;--panel2:#21170f;--gold:#f2bd43;--gold2:#ffd871;--ink:#fff8e8;--muted:#c8b99c;--line:#76501f;--green:#4ed19a;--red:#ff7979;--blue:#70b7ff}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;color:var(--ink);background:radial-gradient(circle at 80% 0,#3a210d 0,transparent 35%),linear-gradient(145deg,#07090b,#130d08)}button,select,input{font:inherit}.shell{width:min(1180px,100%);margin:auto;padding:22px}.top{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}.title h1{margin:0;font-size:clamp(25px,4vw,38px);color:var(--gold2)}.title p{margin:6px 0 0;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.button{border:1px solid var(--line);border-radius:13px;padding:11px 15px;background:#1b130e;color:var(--ink);font-weight:800;text-decoration:none}.button.gold{background:linear-gradient(135deg,var(--gold2),#d89418);color:#211300;border:0}.button:disabled{opacity:.45}.notice{margin:12px 0;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:#17100b;color:var(--muted)}.notice.error{border-color:#8e3535;color:#ffaaaa}.notice.success{border-color:#297657;color:#9af0c8}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(160deg,#24170d,#120e0b)}.stat span{display:block;color:var(--muted);font-size:13px}.stat b{display:block;margin-top:5px;color:var(--gold2);font-size:28px}.card{overflow:hidden;border:1px solid var(--line);border-radius:20px;background:#100d0b;box-shadow:0 20px 50px #0007}.toolbar{display:flex;gap:10px;padding:14px;border-bottom:1px solid #4f381d}.toolbar input{flex:1;min-width:0;border:1px solid #60431f;border-radius:12px;padding:11px 13px;background:#070707;color:var(--ink)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:13px 12px;text-align:left;border-bottom:1px solid #332719;vertical-align:middle}th{position:sticky;top:0;background:#21170f;color:var(--gold2);font-size:13px}td{font-size:14px}.member-name{font-weight:850}.email{color:var(--muted)}.me{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:#62420f;color:#ffe09a;font-size:11px}.role,.status,.date{width:100%;border:1px solid #684820;border-radius:9px;padding:8px;background:#090909;color:var(--ink)}.save{border:0;border-radius:10px;padding:9px 13px;background:var(--gold);color:#231400;font-weight:900}.save:disabled{opacity:.4}.pill{display:inline-block;padding:5px 9px;border-radius:999px;font-weight:800;font-size:12px}.pill.admin{background:#694915;color:#ffe39d}.pill.active{background:#123f31;color:#76e4b7}.pill.suspended{background:#512323;color:#ffaaaa}.empty{text-align:center;padding:38px;color:var(--muted)}footer{padding:16px 3px;color:#8e806a;font-size:12px}@media(max-width:720px){.shell{padding:14px}.top{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr 1fr}.stat b{font-size:23px}.toolbar{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div class="title"><h1>👑 會員管理中心</h1><p>Joy Go Platform｜朱老師管理員專用</p></div>
+      <div class="actions"><button id="refresh" class="button" type="button">重新整理</button><a class="button" href="./joygo-auth.html">會員中心</a><a class="button gold" href="./index.html">返回棋盤</a></div>
+    </header>
+    <div id="notice" class="notice">正在確認管理員身分…</div>
+    <section id="content" hidden>
+      <div class="stats">
+        <div class="stat"><span>全部會員</span><b id="total">0</b></div>
+        <div class="stat"><span>正式會員</span><b id="members">0</b></div>
+        <div class="stat"><span>試用會員</span><b id="trials">0</b></div>
+        <div class="stat"><span>停權會員</span><b id="suspended">0</b></div>
+      </div>
+      <section class="card">
+        <div class="toolbar"><input id="search" type="search" placeholder="搜尋姓名或 Email"><button id="clearSearch" class="button" type="button">清除</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>會員</th><th>身分</th><th>狀態</th><th>到期日</th><th>建立日期</th><th>操作</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <div id="empty" class="empty" hidden>目前沒有符合的會員。</div>
+        </div>
+      </section>
+    </section>
+    <footer>安全設計：一般會員無法讀取此名單；變更由 Supabase RLS 管理員政策保護。</footer>
+  </main>
+  <script type="module" src="./joygo-admin.js"></script>
+</body>
+</html>
