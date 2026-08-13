@@ -2725,7 +2725,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.7.0｜Member Login Basic</div>
+    <div class="jg-beta">V1.0 Beta 1.7.1｜會員自動連線修正版</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3046,7 +3046,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.7.0｜會員登入</h2>
+  <h2>👤 Beta 1.7.1｜會員登入</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     第一版先完成 Email 註冊、登入、登出、忘記密碼與保持登入。會員權限與付費功能下一版再做。
   </p>
@@ -3088,7 +3088,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
   <div id="memberStatus" class="member-status">尚未連接會員服務。</div>
 
-  <details class="member-config" id="memberConfigPanel">
+  <details class="member-config" id="memberConfigPanel" hidden>
     <summary>⚙️ Supabase 會員設定（管理員）</summary>
     <div class="member-grid" style="margin-top:10px">
       <label>Project URL
@@ -5005,10 +5005,14 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-// ===== Joy Go Platform Beta 1.7.0: Member Login Basic (Supabase Auth) =====
+// ===== Joy Go Platform Beta 1.7.1: Member Auto Connect (Supabase Auth) =====
 let memberSupabase=null;
 let memberSession=null;
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
+const MEMBER_DEFAULT_CONFIG={
+  url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",
+  key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"
+};
 
 function memberSetStatus(text,type=""){
   const el=$("memberStatus"); if(!el)return;
@@ -5018,10 +5022,14 @@ function memberSetStatus(text,type=""){
 function memberLoadConfig(){
   try{
     const c=JSON.parse(localStorage.getItem(MEMBER_CONFIG_KEY)||"{}");
-    if($("memberSupabaseUrl"))$("memberSupabaseUrl").value=c.url||"";
-    if($("memberSupabaseKey"))$("memberSupabaseKey").value=c.key||"";
-    return c;
-  }catch{return {}}
+    const config={
+      url:c.url||MEMBER_DEFAULT_CONFIG.url,
+      key:c.key||MEMBER_DEFAULT_CONFIG.key
+    };
+    if($("memberSupabaseUrl"))$("memberSupabaseUrl").value=config.url;
+    if($("memberSupabaseKey"))$("memberSupabaseKey").value=config.key;
+    return config;
+  }catch{return {...MEMBER_DEFAULT_CONFIG}}
 }
 function memberSaveConfig(){
   const url=String($("memberSupabaseUrl")?.value||"").trim();
@@ -5036,7 +5044,7 @@ async function memberInitClient(showMessage=false){
   if(!c.url||!c.key){
     memberSupabase=null;memberSession=null;
     memberRenderSession();
-    memberSetStatus("尚未設定 Supabase。請展開下方「Supabase 會員設定」。");
+    memberSetStatus("會員服務設定尚未完成，請通知朱老師。","bad");
     return false;
   }
   if(!window.supabase?.createClient){
@@ -7943,7 +7951,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
 });
 </script>
 
-<!-- Beta 1.7.0 security note: browser code may contain only a Supabase publishable/anon key.
+<!-- Beta 1.7.1 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 </body>
 </html>
