@@ -1,5 +1,35 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>會員管理｜Joy Go Platform</title>
-<style>:root{--ink:#173b38;--jade:#277568;--paper:#f6f1e7;--line:#cfd9d5;--red:#a33434}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:#edf4f0;color:var(--ink)}header{padding:20px max(18px,calc((100% - 1080px)/2));background:#153f3a;color:white;display:flex;justify-content:space-between;align-items:center;gap:12px}header h1{margin:0;font-size:25px}header a{color:#173b38;background:#f0dba8;padding:10px 13px;border-radius:10px;text-decoration:none;font-weight:800}main{max-width:1080px;margin:24px auto;padding:0 18px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}.card{background:white;border:1px solid var(--line);border-radius:15px;padding:15px}.card b{display:block;font-size:27px;margin-top:5px}.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}.toolbar input{flex:1;min-width:220px;padding:12px;border:1px solid var(--line);border-radius:11px;font-size:16px}.toolbar button,button.save{border:0;border-radius:10px;padding:11px 15px;background:var(--jade);color:white;font-weight:800}.message{min-height:24px;margin:8px 0;color:#47655f}.message.error{color:var(--red)}.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:860px}th,td{padding:12px 10px;border-bottom:1px solid #e5ebe8;text-align:left;vertical-align:middle}th{background:#f7f4eb;position:sticky;top:0}select,input[type=date]{padding:9px;border:1px solid #bacbc5;border-radius:9px;background:white}.role{font-weight:800}.empty{text-align:center;padding:35px}.danger{color:var(--red)}@media(max-width:700px){.summary{grid-template-columns:1fr 1fr}header h1{font-size:20px}}</style></head>
+<style>
+:root{--ink:#123d38;--jade:#087f68;--jade2:#18a986;--gold:#f5b942;--red:#d95050;--line:#c6d9d2}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;color:var(--ink);background:linear-gradient(145deg,#e9fff7 0%,#fff8e8 48%,#eaf5ff 100%);min-height:100vh}
+header{padding:22px max(22px,calc((100% - 1180px)/2));background:linear-gradient(110deg,#063f39,#087563 62%,#0ba982);color:white;display:flex;justify-content:space-between;align-items:center;gap:12px;box-shadow:0 5px 18px #075b4d45}
+header h1{margin:0;font-size:28px;letter-spacing:1px;text-shadow:0 2px 4px #003c32}
+header a{color:#3c2a00;background:linear-gradient(135deg,#ffe49b,#f4b93f);padding:12px 17px;border-radius:12px;text-decoration:none;font-weight:900;box-shadow:0 4px 10px #002d2650}
+main{max-width:1180px;margin:26px auto;padding:0 20px}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}
+.card{color:white;border:0;border-radius:18px;padding:18px 20px;box-shadow:0 8px 20px #28574c2b;font-weight:800}
+.card:nth-child(1){background:linear-gradient(135deg,#087d69,#13b28d)}
+.card:nth-child(2){background:linear-gradient(135deg,#1674c8,#36a9ef)}
+.card:nth-child(3){background:linear-gradient(135deg,#e69218,#ffc64a);color:#442d00}
+.card:nth-child(4){background:linear-gradient(135deg,#d84354,#ff7770)}
+.card b{display:block;font-size:35px;margin-top:7px}
+.toolbar{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:220px;padding:14px 16px;border:2px solid #94c8ba;border-radius:13px;font-size:17px;background:#ffffffdd;box-shadow:0 3px 10px #27615218}
+.toolbar input:focus{outline:3px solid #24b99442;border-color:#159878}
+.toolbar button,button.save{border:0;border-radius:11px;padding:12px 18px;background:linear-gradient(135deg,#087866,#13aa86);color:white;font-weight:900;box-shadow:0 4px 9px #075a4b35}
+.toolbar button:active,button.save:active{transform:translateY(1px)}
+.message{min-height:25px;margin:10px 2px;color:#21665a;font-weight:700}.message.error{color:var(--red)}
+.table-wrap{overflow:auto;background:white;border:1px solid #aad0c5;border-radius:18px;box-shadow:0 10px 28px #275b4e24}
+table{width:100%;border-collapse:collapse;min-width:860px}th,td{padding:14px 12px;border-bottom:1px solid #dcebe6;text-align:left;vertical-align:middle}
+th{background:linear-gradient(110deg,#07594e,#098c74);color:white;position:sticky;top:0;font-size:16px;letter-spacing:.5px}
+tbody tr:nth-child(even){background:#effbf7}tbody tr:hover{background:#fff7dd}
+td b{font-size:17px}td small{color:#477069}
+select,input[type=date]{padding:10px;border:2px solid #91beb3;border-radius:10px;background:white;color:#173f39;font-size:15px}
+select:focus,input[type=date]:focus{outline:3px solid #23b79138;border-color:#159878}
+.role{font-weight:800}.empty{text-align:center;padding:38px}.danger{color:var(--red)}
+@media(max-width:700px){.summary{grid-template-columns:1fr 1fr;gap:10px}header h1{font-size:21px}.card{padding:14px}.card b{font-size:29px}}
+</style></head>
 <body><header><h1>Joy Go 會員管理</h1><a href="joygo-auth.html">返回會員中心</a></header><main>
 <section class="summary"><div class="card">全部會員<b id="total">—</b></div><div class="card">正式會員<b id="members">—</b></div><div class="card">試用會員<b id="trials">—</b></div><div class="card">停用會員<b id="suspended">—</b></div></section>
 <div class="toolbar"><input id="search" type="search" placeholder="搜尋姓名或 Email"><button id="refresh" type="button">重新整理</button></div><p id="message" class="message" aria-live="polite">正在確認管理員權限…</p>
