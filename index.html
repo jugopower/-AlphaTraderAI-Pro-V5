@@ -2734,7 +2734,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.9.1｜真人終局通知</div>
+    <div class="jg-beta">V1.0 Beta 1.9.2｜對局姓名顯示</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2823,9 +2823,9 @@ body.spectator-viewing #statusText{font-weight:800}
 
   <aside class="right" id="rightTools">
     <div class="game-clock-panel" id="gameClockPanel">
-      <div class="clock-side" id="blackClockBox"><i class="clock-stone black"></i><span class="clock-name">黑方</span><strong class="clock-time" id="blackClock">30:00</strong><small class="clock-byo" id="blackByo">讀秒 30秒 × 3</small></div>
+      <div class="clock-side" id="blackClockBox"><i class="clock-stone black"></i><span class="clock-name" id="blackClockName">黑方</span><strong class="clock-time" id="blackClock">30:00</strong><small class="clock-byo" id="blackByo">讀秒 30秒 × 3</small></div>
       <span class="clock-sound" id="clockSoundIcon">🔊</span>
-      <div class="clock-side" id="whiteClockBox"><i class="clock-stone white"></i><span class="clock-name">白方</span><strong class="clock-time" id="whiteClock">30:00</strong><small class="clock-byo" id="whiteByo">讀秒 30秒 × 3</small></div>
+      <div class="clock-side" id="whiteClockBox"><i class="clock-stone white"></i><span class="clock-name" id="whiteClockName">白方</span><strong class="clock-time" id="whiteClock">30:00</strong><small class="clock-byo" id="whiteByo">讀秒 30秒 × 3</small></div>
     </div>
 <button class="tool" id="redrawBtn" type="button"><span>↻</span>重繪</button>
     <section class="ai-hint-panel" id="aiHintPanel" aria-live="polite">
@@ -3017,7 +3017,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="onlineModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.9.1｜真人即時對弈</h2>
+  <h2>⚔️ Beta 1.9.2｜真人即時對弈</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
   <div id="onlineLobbyPanel" class="online-grid">
     <section class="online-panel">
@@ -3088,7 +3088,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.9.1｜會員中心</h2>
+  <h2>👤 Beta 1.9.2｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3524,7 +3524,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script>
 "use strict";
-const APP_VERSION="20260815-032.0";
+const APP_VERSION="20260815-033.0";
 
 const $=id=>document.getElementById(id);
 
@@ -5368,6 +5368,8 @@ async function onlineSyncRoom(){
     state.gameEnded=room.status==="ended";
     $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
     $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
+    $("blackClockName").textContent="黑方｜"+(room.black_name||"等待加入")+(state.onlineColor==="B"?"（我）":"");
+    $("whiteClockName").textContent="白方｜"+(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
