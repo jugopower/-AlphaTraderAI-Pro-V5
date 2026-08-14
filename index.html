@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260814-JoyGo-V1.0-Beta1.8.2">
+<meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
@@ -2713,8 +2713,16 @@ body.spectator-viewing #statusText{font-weight:800}
 .member-account-box{
   display:grid;gap:8px;padding:10px;border:1px solid #6c4b2c;border-radius:12px;background:#0b0705
 }
+.online-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.online-panel{padding:12px;border:1px solid #6c4b2c;border-radius:12px;background:#0b0705}
+.online-code{font-size:30px;letter-spacing:6px;color:#ffd970;font-weight:900;text-align:center;margin:8px 0}
+.online-status{margin-top:10px;padding:10px;border:1px solid #6c4b2c;border-radius:10px;color:#d9c5a4;line-height:1.5}
+.online-status.ok{border-color:#4f8e5e;color:#bfe8c9}.online-status.bad{border-color:#9f4e45;color:#f0b4ae}
+.online-player-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #3d2b1e}
+.online-player-row:last-child{border-bottom:0}
 @media(max-width:650px){
   .member-grid{grid-template-columns:1fr}
+  .online-grid{grid-template-columns:1fr}
   .member-chip{top:8px;right:8px;max-width:72vw}
 }
 </style>
@@ -2726,7 +2734,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.8.1｜訪客自由對弈</div>
+    <div class="jg-beta">V1.0 Beta 1.8.2｜雙人真人對弈</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3007,6 +3015,39 @@ body.spectator-viewing #statusText{font-weight:800}
   <button class="action" id="startHumanBtn" style="width:100%;margin-top:12px">開始新對局</button>
 </div></div>
 
+<div id="onlineModal" class="modal-backdrop"><div class="modal">
+  <button class="close" data-close="onlineModal">✕</button>
+  <h2>⚔️ Beta 1.8.2｜真人即時對弈</h2>
+  <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
+  <div id="onlineLobbyPanel" class="online-grid">
+    <section class="online-panel">
+      <h3>建立新房間</h3>
+      <label>棋盤
+        <select id="onlineBoardSize"><option value="19">19路</option><option value="13">13路</option><option value="9">9路</option></select>
+      </label>
+      <label>貼目<input id="onlineKomi" type="number" step="0.5" value="7.5"></label>
+      <button id="onlineCreateBtn" class="action" type="button" style="width:100%;margin-top:10px">建立房間（我執黑）</button>
+    </section>
+    <section class="online-panel">
+      <h3>加入房間</h3>
+      <label>六碼房間號碼<input id="onlineJoinCode" maxlength="6" autocapitalize="characters" placeholder="例如 ABC234"></label>
+      <button id="onlineJoinBtn" class="action" type="button" style="width:100%;margin-top:10px">加入房間（我執白）</button>
+      <button id="onlineResumeBtn" class="secondary" type="button" style="width:100%;margin-top:8px">重新進入上次房間</button>
+    </section>
+  </div>
+  <section id="onlineRoomPanel" class="online-panel" style="display:none;margin-top:10px">
+    <div style="text-align:center;color:var(--muted)">請將房間號碼告訴另一位棋友</div>
+    <div id="onlineRoomCode" class="online-code">——</div>
+    <div class="online-player-row"><span>⚫ 黑方</span><b id="onlineBlackName">等待</b></div>
+    <div class="online-player-row"><span>⚪ 白方</span><b id="onlineWhiteName">等待加入</b></div>
+    <div class="online-player-row"><span>目前手數</span><b id="onlineMoveCount">0</b></div>
+    <div class="online-player-row"><span>輪到</span><b id="onlineTurnText">黑方</b></div>
+    <button id="onlineCopyCodeBtn" class="secondary" type="button" style="width:100%;margin-top:10px">複製房間號碼</button>
+    <button id="onlineLeaveBtn" class="secondary" type="button" style="width:100%;margin-top:8px">離開真人對弈</button>
+  </section>
+  <div id="onlineStatus" class="online-status">請先登入會員，再建立或加入房間。</div>
+</div></div>
+
 
 <div id="spectatorModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="spectatorModal">✕</button>
@@ -3075,16 +3116,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div id="memberResetForm" class="member-form">
       <label>Email<input id="memberResetEmail" type="email" autocomplete="email" placeholder="name@example.com"></label>
       <button id="memberResetBtn" class="action" type="button">寄送重設密碼信</button>
-      <small>系統會寄出重設連結；若收件匣沒有，請檢查垃圾郵件。</small>
     </div>
-  </div>
-
-  <div id="memberRecoveryForm" class="member-form">
-    <h3 style="margin:0">設定新密碼</h3>
-    <p style="margin:0;color:var(--muted);font-size:13px">請輸入兩次新密碼，完成後會保持登入。</p>
-    <label>新密碼<input id="memberNewPassword" type="password" autocomplete="new-password" placeholder="至少 8 個字元"></label>
-    <label>再次輸入<input id="memberConfirmPassword" type="password" autocomplete="new-password" placeholder="再次輸入新密碼"></label>
-    <button id="memberUpdatePasswordBtn" class="action" type="button">儲存新密碼</button>
   </div>
 
   <div id="memberSignedIn" style="display:none">
@@ -3492,7 +3524,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script>
 "use strict";
-const APP_VERSION="20260802-027.0";
+const APP_VERSION="20260814-028.0";
 
 const $=id=>document.getElementById(id);
 
@@ -3511,7 +3543,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  spectatorMode:false,spectatorRole:"",spectatorTimer:null,spectatorLastHash:"",humanMode:false,casualMode:true,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingWasClockRunning:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingInteractionMode:"edit",teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
+  spectatorMode:false,spectatorRole:"",spectatorTimer:null,spectatorLastHash:"",humanMode:false,casualMode:true,onlineMode:false,onlineRoom:null,onlineColor:"",onlineChannel:null,onlineSyncing:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingWasClockRunning:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingInteractionMode:"edit",teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -5015,10 +5047,9 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-// ===== Joy Go Platform Beta 1.8.1: Guest Free Play + Four-level Member Access =====
+// ===== Joy Go Platform Beta 1.8.2: Online Play + Four-level Member Access =====
 let memberSupabase=null;
 let memberSession=null;
-let memberRecovering=new URLSearchParams(location.search).get("mode")==="recovery";
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
@@ -5074,13 +5105,9 @@ async function memberInitClient(showMessage=false){
     memberRenderSession();
     memberSupabase.auth.onAuthStateChange((event,session)=>{
       memberSession=session||null;
+      if(!session&&state.onlineMode)onlineLeaveRoom();
       memberRefreshAccess().then(memberRenderSession);
-      if(event==="PASSWORD_RECOVERY"){
-        memberRecovering=true;
-        memberRenderSession();
-        openMemberModal();
-        memberSetStatus("請設定您的新密碼。","ok");
-      }
+      if(event==="PASSWORD_RECOVERY")memberPromptNewPassword();
     });
     if(showMessage)memberSetStatus("✅ 會員服務已連接。","ok");
     else memberSetStatus(memberSession?"✅ 已恢復登入狀態。":"會員服務已連接，尚未登入。","ok");
@@ -5124,11 +5151,11 @@ async function memberRefreshAccess(){
 function memberCan(feature){
   if(["info","member","board"].includes(feature))return true;
   if(memberAccess.role==="admin"||memberAccess.role==="member")return true;
-  if(memberAccess.role==="trial")return ["teach","ai","human"].includes(feature);
+  if(memberAccess.role==="trial")return ["teach","ai","human","online"].includes(feature);
   return false;
 }
 function memberRequiredLabel(feature){
-  return ["teach","ai","human"].includes(feature)?"試用會員":"正式會員";
+  return ["teach","ai","human","online"].includes(feature)?"試用會員":"正式會員";
 }
 function memberGuard(feature,action){
   if(memberCan(feature)){action();return}
@@ -5138,7 +5165,7 @@ function memberGuard(feature,action){
   memberSetStatus(`🔒 ${reason}。`,"bad");
 }
 function memberUpdateToolAccess(){
-  const featureById={teachBtn:"teach",aiBtn:"ai",humanBtn:"human",classicGameBtn:"classic",spectatorBtn:"spectator",cloudBtn:"cloud"};
+  const featureById={teachBtn:"teach",aiBtn:"ai",humanBtn:"human",onlineBtn:"online",classicGameBtn:"classic",spectatorBtn:"spectator",cloudBtn:"cloud"};
   Object.entries(featureById).forEach(([id,feature])=>{
     document.querySelectorAll(`[id^="${id}_"]`).forEach(button=>{
       const locked=!memberCan(feature);
@@ -5149,9 +5176,8 @@ function memberUpdateToolAccess(){
 }
 function memberRenderSession(){
   const signed=!!memberSession?.user;
-  if($("memberSignedOut"))$("memberSignedOut").style.display=(!signed&&!memberRecovering)?"block":"none";
-  if($("memberSignedIn"))$("memberSignedIn").style.display=(signed&&!memberRecovering)?"block":"none";
-  if($("memberRecoveryForm"))$("memberRecoveryForm").classList.toggle("active",memberRecovering);
+  if($("memberSignedOut"))$("memberSignedOut").style.display=signed?"none":"block";
+  if($("memberSignedIn"))$("memberSignedIn").style.display=signed?"block":"none";
   if(signed){
     const u=memberSession.user;
     if($("memberAccountName"))$("memberAccountName").textContent=memberDisplayName(u);
@@ -5210,24 +5236,20 @@ async function memberResetPassword(){
   if(!email){memberSetStatus("請輸入 Email。","bad");return}
   memberSetStatus("寄送中…");
   const {error}=await memberSupabase.auth.resetPasswordForEmail(email,{
-    redirectTo:location.origin+location.pathname+"?mode=recovery"
+    redirectTo:location.origin+location.pathname
   });
   if(error){memberSetStatus("寄送失敗："+error.message,"bad");return}
   memberSetStatus("✅ 已寄出重設密碼信，請查看 Email。","ok");
 }
-async function memberUpdatePassword(){
-  if(!await memberEnsureClient())return;
-  const pw=String($("memberNewPassword")?.value||"");
-  const confirm=String($("memberConfirmPassword")?.value||"");
-  if(pw.length<8){memberSetStatus("新密碼至少需要 8 個字元。","bad");return}
-  if(pw!==confirm){memberSetStatus("兩次輸入的密碼不相同。","bad");return}
-  memberSetStatus("正在更新密碼…");
-  const {error}=await memberSupabase.auth.updateUser({password:pw});
-  if(error){memberSetStatus("更新失敗："+error.message,"bad");return}
-  memberRecovering=false;
-  history.replaceState({},"",location.pathname);
-  memberRenderSession();
-  memberSetStatus("✅ 密碼更新成功，您已安全登入。","ok");
+async function memberPromptNewPassword(){
+  setTimeout(async()=>{
+    if(!memberSupabase)return;
+    const pw=prompt("請輸入新密碼（至少 6 碼）：");
+    if(!pw)return;
+    if(pw.length<6){alert("密碼至少 6 碼");return}
+    const {error}=await memberSupabase.auth.updateUser({password:pw});
+    alert(error?("更新密碼失敗："+error.message):"密碼更新成功");
+  },200);
 }
 async function memberLogout(){
   if(!memberSupabase)return;
@@ -5240,11 +5262,138 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("memberLoginBtn")?.addEventListener("click",memberLogin);
   $("memberSignupBtn")?.addEventListener("click",memberSignup);
   $("memberResetBtn")?.addEventListener("click",memberResetPassword);
-  $("memberUpdatePasswordBtn")?.addEventListener("click",memberUpdatePassword);
   $("memberLogoutBtn")?.addEventListener("click",memberLogout);
   $("memberSaveConfigBtn")?.addEventListener("click",memberSaveConfig);
   $("memberChipBtn")?.addEventListener("click",openMemberModal);
   memberInitClient(false);
+});
+
+// ===== Joy Go Platform Beta 1.8.2: two-player Supabase Realtime prototype =====
+function onlineSetStatus(text,type=""){
+  const el=$("onlineStatus");if(!el)return;
+  el.className="online-status"+(type?(" "+type):"");el.textContent=text;
+}
+function onlineNormalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6)}
+function onlineRpcRow(data){return Array.isArray(data)?(data[0]||null):data}
+function onlineMemberName(){return memberDisplayName(memberSession?.user)}
+async function onlineReady(){
+  if(!await memberEnsureClient())return false;
+  if(!memberSession?.user){onlineSetStatus("請先登入會員，再使用真人對弈。","bad");openMemberModal();return false}
+  if(memberAccess.role==="blocked"){onlineSetStatus("目前會員狀態無法使用真人對弈："+memberAccess.label,"bad");return false}
+  return true;
+}
+function openOnlineLobby(){
+  if(!memberSession?.user){openMemberModal();memberSetStatus("請先登入，再進入真人對弈。","bad");return}
+  onlineRenderRoom();openModal("onlineModal");
+}
+function onlineRenderRoom(){
+  const r=state.onlineRoom,active=!!r;
+  if($("onlineLobbyPanel"))$("onlineLobbyPanel").style.display=active?"none":"grid";
+  if($("onlineRoomPanel"))$("onlineRoomPanel").style.display=active?"block":"none";
+  if(!active)return;
+  $("onlineRoomCode").textContent=r.room_code||"——";
+  $("onlineBlackName").textContent=r.black_name||"黑方";
+  $("onlineWhiteName").textContent=r.white_name||"等待加入";
+  $("onlineMoveCount").textContent=String(r.move_count||0);
+  $("onlineTurnText").textContent=r.status==="waiting"?"等待白方加入":(r.status==="ended"?"對局結束":(r.turn==="B"?"黑方":"白方"));
+}
+async function onlineUnsubscribe(){
+  if(state.onlineChannel&&memberSupabase){try{await memberSupabase.removeChannel(state.onlineChannel)}catch(_){}}
+  state.onlineChannel=null;
+}
+async function onlineSubscribe(roomId){
+  await onlineUnsubscribe();
+  state.onlineChannel=memberSupabase.channel("joygo-online-"+roomId)
+    .on("postgres_changes",{event:"*",schema:"public",table:"online_rooms",filter:"id=eq."+roomId},()=>onlineSyncRoom())
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"online_moves",filter:"room_id=eq."+roomId},()=>onlineSyncRoom())
+    .subscribe(status=>{if(status==="SUBSCRIBED")onlineSetStatus("✅ 即時連線成功，等待棋步。","ok")});
+}
+async function onlineSyncRoom(){
+  const roomId=state.onlineRoom?.id;if(!roomId||!memberSupabase||state.onlineSyncing)return;
+  state.onlineSyncing=true;
+  try{
+    const [{data:room,error:roomError},{data:moves,error:movesError}]=await Promise.all([
+      memberSupabase.from("online_rooms").select("*").eq("id",roomId).single(),
+      memberSupabase.from("online_moves").select("move_no,color,x,y,is_pass").eq("room_id",roomId).order("move_no")
+    ]);
+    if(roomError)throw roomError;if(movesError)throw movesError;
+    state.onlineRoom=room;
+    state.onlineColor=room.black_id===memberSession.user.id?"B":(room.white_id===memberSession.user.id?"W":"");
+    state.onlineMode=true;state.casualMode=false;state.humanMode=false;state.teachingMode=false;state.trialMode=false;state.spectatorMode=false;
+    state.size=Number(room.board_size||19);state.komi=Number(room.komi||7.5);
+    state.moves=(moves||[]).map(m=>m.is_pass?{c:m.color,pass:true}:{c:m.color,x:Number(m.x),y:Number(m.y)});
+    state.index=state.moves.length;state.turn=room.turn||((state.moves.length%2)?"W":"B");
+    state.setupB=[];state.setupW=[];state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";
+    state.gameEnded=room.status==="ended";
+    $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
+    $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
+    onlineRenderRoom();syncUI();
+    const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
+    onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"),myTurn?"ok":"");
+  }catch(err){console.error(err);onlineSetStatus("同步失敗："+(err?.message||err),"bad")}
+  finally{state.onlineSyncing=false}
+}
+async function onlineEnterRoom(room){
+  state.onlineRoom=room;state.onlineMode=true;state.casualMode=false;
+  localStorage.setItem("joygo-online-room-code",room.room_code);
+  await onlineSubscribe(room.id);await onlineSyncRoom();
+  openModal("onlineModal");
+}
+async function onlineCreateRoom(){
+  if(!await onlineReady())return;
+  onlineSetStatus("正在建立房間…");
+  const {data,error}=await memberSupabase.rpc("joygo_create_room",{
+    p_name:onlineMemberName(),p_board_size:Number($("onlineBoardSize").value||19),p_komi:Number($("onlineKomi").value||7.5)
+  });
+  if(error){onlineSetStatus("建立失敗："+error.message,"bad");return}
+  await onlineEnterRoom(onlineRpcRow(data));
+}
+async function onlineJoinRoom(codeValue){
+  if(!await onlineReady())return;
+  const code=onlineNormalizeCode(codeValue||$("onlineJoinCode").value);
+  if(code.length!==6){onlineSetStatus("請輸入六碼房間號碼。","bad");return}
+  onlineSetStatus("正在加入房間…");
+  const {data,error}=await memberSupabase.rpc("joygo_join_room",{p_code:code,p_name:onlineMemberName()});
+  if(error){onlineSetStatus("加入失敗："+error.message,"bad");return}
+  await onlineEnterRoom(onlineRpcRow(data));
+}
+async function onlineResumeRoom(){
+  if(!await onlineReady())return;
+  const code=onlineNormalizeCode($("onlineJoinCode").value||localStorage.getItem("joygo-online-room-code"));
+  if(code.length!==6){onlineSetStatus("這台裝置沒有上次房間紀錄。","bad");return}
+  const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:code});
+  const room=onlineRpcRow(data);
+  if(error||!room){onlineSetStatus("無法重新進入："+(error?.message||"找不到您的房間"),"bad");return}
+  await onlineEnterRoom(room);
+}
+async function onlinePlayAt(x,y,isPass=false){
+  const r=state.onlineRoom;if(!state.onlineMode||!r||state.onlineSyncing)return;
+  if(r.status!=="playing"){toast("等待另一位棋友加入");return}
+  if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
+  if(!isPass){
+    const current=positionAtMove(state.index).board,prev=state.index>0?positionAtMove(state.index-1).board:null;
+    const result=executeMove(current,emptyProvenance(state.size),{c:r.turn,x,y},state.index+1,{rejectSuicide:true,koHash:prev?positionHash(prev):null});
+    if(!result.ok){toast(result.error);return}
+  }
+  state.onlineSyncing=true;onlineSetStatus("正在送出棋步…");
+  const {error}=await memberSupabase.rpc("joygo_play_move",{
+    p_room_id:r.id,p_expected_move:Number(r.move_count||0),p_x:isPass?null:x,p_y:isPass?null:y,p_pass:!!isPass
+  });
+  state.onlineSyncing=false;
+  if(error){onlineSetStatus("落子失敗："+error.message,"bad");await onlineSyncRoom();return}
+  await onlineSyncRoom();
+}
+async function onlineLeaveRoom(){
+  await onlineUnsubscribe();state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";state.casualMode=true;
+  onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  $("onlineCreateBtn")?.addEventListener("click",onlineCreateRoom);
+  $("onlineJoinBtn")?.addEventListener("click",()=>onlineJoinRoom($("onlineJoinCode").value));
+  $("onlineResumeBtn")?.addEventListener("click",onlineResumeRoom);
+  $("onlineCopyCodeBtn")?.addEventListener("click",async()=>{const c=state.onlineRoom?.room_code||"";try{await navigator.clipboard.writeText(c);toast("房間號碼已複製") }catch(_){prompt("請複製房間號碼：",c)}});
+  $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
+  $("onlineJoinCode")?.addEventListener("input",e=>{e.target.value=onlineNormalizeCode(e.target.value)});
 });
 
 const tools=[
@@ -5252,6 +5401,7 @@ const tools=[
   ["teachBtn","▣","教學",()=>memberGuard("teach",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")})],
   ["aiBtn","AI","分析總覽",()=>memberGuard("ai",()=>{updateProfessionalDashboard();openModal("aiModal")})],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>memberGuard("human",()=>openModal("humanModal"))],
+  ["onlineBtn","⚔️","真人",()=>memberGuard("online",openOnlineLobby)],
   ["memberBtn","👤","會員",()=>openMemberModal()],
   ["classicGameBtn","🏛️","名局館",()=>memberGuard("classic",()=>openClassicGameLibrary())],
   ["spectatorBtn","👁","觀戰",()=>memberGuard("spectator",()=>openSpectatorLobby())],
@@ -6449,7 +6599,7 @@ function syncUI(){
   $("boardSizeText").textContent=`${state.size}路`;
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
-  $("statusText").textContent=state.spectatorMode?"觀戰中":(state.trialMode?"試下中":(state.teachingMode?"教學中":(state.humanMode?"對弈中":(state.casualMode?"自由對弈":"待命"))));
+  $("statusText").textContent=state.onlineMode?"真人對弈":(state.spectatorMode?"觀戰中":(state.trialMode?"試下中":(state.teachingMode?"教學中":(state.humanMode?"對弈中":(state.casualMode?"自由對弈":"待命")))));
   document.body.classList.toggle("trial-mode",!!state.trialMode);
   const trialBtn=$("trialModeBtn");if(trialBtn)trialBtn.textContent=state.trialMode?"試下中":"🧪 試下";
   const branchInfo=$("trialBranchInfo");
@@ -6590,6 +6740,7 @@ $("loadPasteBtn").onclick=()=>{
   loadSGFText(text,"貼上的 SGF");
 };
 $("newGameBtn").onclick=()=>{
+  if(state.onlineMode){toast("請先離開真人對弈房間");return;}
   stopGameClock();state.aiRequestToken++;setAiThinking(false);
   state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.casualMode=true;state.turn="B";state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
@@ -7517,6 +7668,7 @@ $("trialBranchLoadBtn").onclick=loadTrialBranch;
 $("trialBranchDeleteBtn").onclick=deleteTrialBranch;
 
 function undoGameMove(){
+  if(state.onlineMode){toast("真人對弈測試版暫不開放悔棋");return;}
   if(state.aiThinking){
     toast("KataGo 思考中，暫時不能悔棋");
     return;
@@ -7578,8 +7730,8 @@ $("undoGameBtn").onclick=undoGameMove;
 }
 $("resultOkBtn").onclick=()=>closeModal("resultModal");
 $("resultDetailBtn").onclick=()=>{const d=$("resultDetail");d.classList.toggle("open");$("resultDetailBtn").textContent=d.classList.contains("open")?"收起詳細計算":"查看詳細計算";};
-$("passGameBtn").onclick=humanGamePass;
-$("resignGameBtn").onclick=humanGameResign;
+$("passGameBtn").onclick=()=>state.onlineMode?onlinePlayAt(null,null,true):humanGamePass();
+$("resignGameBtn").onclick=()=>state.onlineMode?toast("投降與終局功能將於第二階段加入"):humanGameResign();
 
 function saveClockPreferences(){
   const prefs={
@@ -7617,6 +7769,7 @@ document.querySelectorAll(".clock-preset").forEach(btn=>btn.addEventListener("cl
 $("byoTime").addEventListener("change",()=>{$("customByoWrap").hidden=$("byoTime").value!=="custom";});
 
 $("startHumanBtn").onclick=()=>{
+  if(state.onlineMode){toast("請先離開真人對弈房間");return;}
   state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.teachingInteractionMode="edit"; state.teachingFirstPlayer="B"; state.teachingNext="B"; state.variationBackup=null;
   state.casualMode=false;
   state.handicap=Number($("handicapCount").value||0);
@@ -7691,7 +7844,7 @@ function boardInputPointFromEvent(e){
 function handleBoardInput(e){
   if(state.spectatorMode){toast("觀戰模式只能觀看，不能落子");return;}
   if(state.scoringMode){handleScoringBoardInput(e);return;}
-  if(!state.humanMode && !state.teachingMode && !state.trialMode && !state.casualMode)return;
+  if(!state.humanMode && !state.teachingMode && !state.trialMode && !state.casualMode && !state.onlineMode)return;
   if(state.aiThinking||(!state.trialMode&&!state.casualMode&&state.gameEnded)||boardInputBusy)return;
   if(e.cancelable)e.preventDefault();
   const point=boardInputPointFromEvent(e);if(!point)return;
@@ -7701,7 +7854,7 @@ function handleBoardInput(e){
   boardInputBusy=true;lastBoardInputAt=now;lastBoardInputPoint=pointKey;
   window.setTimeout(()=>{boardInputBusy=false;},BOARD_INPUT_LOCK_MS);
 
-  if(!state.humanMode && !state.teachingMode && !state.trialMode && !state.casualMode)return;
+  if(!state.humanMode && !state.teachingMode && !state.trialMode && !state.casualMode && !state.onlineMode)return;
   const x=point.x,y=point.y;
   if(state.teachingMode && !state.trialMode && state.verificationSelectingTarget){
     const snap=positionAtMove(state.index);
@@ -7717,6 +7870,10 @@ function handleBoardInput(e){
   }
   if(state.teachingMode && !state.trialMode){
     teachingPlaceAt(x,y);
+    return;
+  }
+  if(state.onlineMode){
+    onlinePlayAt(x,y,false);
     return;
   }
 
@@ -8034,7 +8191,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
 });
 </script>
 
-<!-- Beta 1.8.1 security note: browser code may contain only a Supabase publishable/anon key.
+<!-- Beta 1.8.2 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 </body>
 </html>
