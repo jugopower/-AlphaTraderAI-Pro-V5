@@ -2726,7 +2726,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.8.0｜四級會員權限</div>
+    <div class="jg-beta">V1.0 Beta 1.8.1｜訪客自由對弈</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3047,7 +3047,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.8.0｜會員中心</h2>
+  <h2>👤 Beta 1.8.1｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3502,7 +3502,7 @@ if(localStorage.getItem("at-info-collapsed")==="1" && window.matchMedia("(orient
 
 const state={
   size:19,moves:[],index:0,playing:false,timer:null,fileName:"",moveNumberMode:"recent10",
-  spectatorMode:false,spectatorRole:"",spectatorTimer:null,spectatorLastHash:"",humanMode:false,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingWasClockRunning:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingInteractionMode:"edit",teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
+  spectatorMode:false,spectatorRole:"",spectatorTimer:null,spectatorLastHash:"",humanMode:false,casualMode:true,humanColor:"B",turn:"B",sound:true,handicap:0,komi:7.5,aiLevel:"dan1",aiVisits:12,bestPoint:null,setupB:[],setupW:[],gameInfo:{},blackCaptures:0,whiteCaptures:0,koHash:null,actions:[],replayCache:[],illegalCount:0,lastCapture:0,engineVerified:false,captureEvents:[],currentSnapshot:null,renderedHash:"",rendererVerified:false,boardCssSize:0,sliderRAF:0,isSliderDragging:false,bookmarks:[],analysis:null,connector:{online:false,lastLatency:null,lastError:"",source:"idle",model:"",visits:0,nps:0,lastSuccess:""},teachingMode:false,teachingWasClockRunning:false,teachingTool:"alternate",teachingNext:"B",teachingMarks:[],teachingComment:"",variationBackup:null,teachingBarCollapsed:false,teachingBarSuppressed:false,teachingSequence:[],teachingShowNumbers:false,teachingAnswerMode:false,teachingInteractionMode:"edit",teachingFirstPlayer:"B",katagoRetryCount:0,hintEnabled:false,hintPoints:[],hintBadPoint:null,hintBaseBlackWin:null,hintLoading:false,showCoords:true,clockRunning:false,clockTimer:null,clockLastTick:0,clockPausedForReplay:false,mainTimeSec:1800,byoTimeSec:30,byoCount:3,blackTimeSec:1800,whiteTimeSec:1800,blackByoLeft:30,whiteByoLeft:30,blackPeriods:3,whitePeriods:3,lastClockAnnounce:null,voiceCountdown:true,aiThinking:false,aiRequestToken:0,gameEnded:false,consecutivePasses:0,hintDisplayMode:"all",trialMode:false,trialBackup:null,trialBaseIndex:0,trialWasClockRunning:false,trialOriginalMovesJSON:"",trialBranches:{A:null,B:null,C:null},trialBranchBaseKey:"",scoringMode:false,scoringDead:new Set(),scoringBackup:null,scoringWasClockRunning:false,scoringVerify:false,scoringTerritoryMap:null,verificationTarget:"",verificationSelectingTarget:false,aiSolutionLine:[],aiSolutionBackup:null,aiSolutionPlaying:false
 };
 
 const coordLetters="ABCDEFGHJKLMNOPQRSTUVWXYZ";
@@ -5006,7 +5006,7 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-// ===== Joy Go Platform Beta 1.8.0: Four-level Member Access (Supabase Auth) =====
+// ===== Joy Go Platform Beta 1.8.1: Guest Free Play + Four-level Member Access =====
 let memberSupabase=null;
 let memberSession=null;
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
@@ -5956,7 +5956,7 @@ function loadSGFText(text,name){
     const g=parseSGF(text);
     state.size=g.size; state.moves=g.moves; state.index=0; state.fileName=name||"SGF";
     state.setupB=g.setupB; state.setupW=g.setupW; state.actions=g.actions||[]; state.gameInfo=g; state.replayCache=[]; state.illegalCount=0;
-    state.humanMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.teachingInteractionMode="edit"; state.teachingFirstPlayer="B"; state.teachingNext="B"; state.variationBackup=null;
+    state.humanMode=false; state.casualMode=false; state.bestPoint=null; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.teachingInteractionMode="edit"; state.teachingFirstPlayer="B"; state.teachingNext="B"; state.variationBackup=null;
     $("blackName").textContent=g.pb+(g.br?" "+g.br:"");
     $("whiteName").textContent=g.pw+(g.wr?" "+g.wr:"");
     $("fileInfo").textContent=`已載入：${state.fileName}｜${g.size}路｜${g.moves.length}手`;
@@ -6428,7 +6428,7 @@ function syncUI(){
   $("boardSizeText").textContent=`${state.size}路`;
   const mv=state.moves[state.index-1];
   $("lastCoord").textContent=mv&&!mv.pass?coordLabel(mv.x,mv.y):"—";
-  $("statusText").textContent=state.spectatorMode?"觀戰中":(state.trialMode?"試下中":(state.teachingMode?"教學中":(state.humanMode?"對弈中":"待命")));
+  $("statusText").textContent=state.spectatorMode?"觀戰中":(state.trialMode?"試下中":(state.teachingMode?"教學中":(state.humanMode?"對弈中":(state.casualMode?"自由對弈":"待命"))));
   document.body.classList.toggle("trial-mode",!!state.trialMode);
   const trialBtn=$("trialModeBtn");if(trialBtn)trialBtn.textContent=state.trialMode?"試下中":"🧪 試下";
   const branchInfo=$("trialBranchInfo");
@@ -6570,7 +6570,7 @@ $("loadPasteBtn").onclick=()=>{
 };
 $("newGameBtn").onclick=()=>{
   stopGameClock();state.aiRequestToken++;setAiThinking(false);
-  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";
+  state.size=19;state.moves=[];state.index=0;state.fileName="";state.humanMode=false;state.casualMode=true;state.turn="B";state.setupB=[];state.setupW=[];state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";
   $("blackName").textContent="人類";$("whiteName").textContent="AI";$("fileInfo").textContent="空棋盤";$("parseInfo").textContent="已清除棋譜。";
   syncUI();closeModal("infoModal");toast("已建立空棋盤");
 };
@@ -7597,6 +7597,7 @@ $("byoTime").addEventListener("change",()=>{$("customByoWrap").hidden=$("byoTime
 
 $("startHumanBtn").onclick=()=>{
   state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.teachingInteractionMode="edit"; state.teachingFirstPlayer="B"; state.teachingNext="B"; state.variationBackup=null;
+  state.casualMode=false;
   state.handicap=Number($("handicapCount").value||0);
   state.humanColor=state.handicap>0?"B":$("humanColor").value;
   state.komi=Number($("gameKomi").value||0);
@@ -7669,8 +7670,8 @@ function boardInputPointFromEvent(e){
 function handleBoardInput(e){
   if(state.spectatorMode){toast("觀戰模式只能觀看，不能落子");return;}
   if(state.scoringMode){handleScoringBoardInput(e);return;}
-  if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
-  if(state.aiThinking||(!state.trialMode&&state.gameEnded)||boardInputBusy)return;
+  if(!state.humanMode && !state.teachingMode && !state.trialMode && !state.casualMode)return;
+  if(state.aiThinking||(!state.trialMode&&!state.casualMode&&state.gameEnded)||boardInputBusy)return;
   if(e.cancelable)e.preventDefault();
   const point=boardInputPointFromEvent(e);if(!point)return;
   const now=Date.now(),pointKey=`${point.x},${point.y}`;
@@ -7679,7 +7680,7 @@ function handleBoardInput(e){
   boardInputBusy=true;lastBoardInputAt=now;lastBoardInputPoint=pointKey;
   window.setTimeout(()=>{boardInputBusy=false;},BOARD_INPUT_LOCK_MS);
 
-  if(!state.humanMode && !state.teachingMode && !state.trialMode)return;
+  if(!state.humanMode && !state.teachingMode && !state.trialMode && !state.casualMode)return;
   const x=point.x,y=point.y;
   if(state.teachingMode && !state.trialMode && state.verificationSelectingTarget){
     const snap=positionAtMove(state.index);
@@ -7710,7 +7711,7 @@ function handleBoardInput(e){
   state.moves=state.moves.slice(0,state.index);state.actions=[];state.replayCache=[];
   state.moves.push(move);state.index++;
   state.turn=state.turn==="B"?"W":"B";
-  if(!state.trialMode)completeTurnClock(movedColor);
+  if(!state.trialMode && !state.casualMode)completeTurnClock(movedColor);
   state.hintPoints=[];
   syncUI();
   if(state.sound){
@@ -7722,6 +7723,8 @@ function handleBoardInput(e){
 
   if(state.trialMode){
     toast(`試下第 ${state.index-state.trialBaseIndex} 手`);
+  }else if(state.casualMode){
+    toast(`${movedColor==="B"?"黑":"白"}棋：${coordLabel(x,y)}`);
   }else if(state.hintEnabled){
     evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
   }else scheduleLocalAiMove(350);
@@ -8010,7 +8013,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
 });
 </script>
 
-<!-- Beta 1.8.0 security note: browser code may contain only a Supabase publishable/anon key.
+<!-- Beta 1.8.1 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 </body>
 </html>
