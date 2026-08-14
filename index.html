@@ -2734,7 +2734,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.8.4｜雙人真人對弈</div>
+    <div class="jg-beta">V1.0 Beta 1.9.0｜真人同步計時</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3017,7 +3017,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="onlineModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.8.4｜真人即時對弈</h2>
+  <h2>⚔️ Beta 1.9.0｜真人即時對弈</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
   <div id="onlineLobbyPanel" class="online-grid">
     <section class="online-panel">
@@ -3088,7 +3088,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.8.4｜會員中心</h2>
+  <h2>👤 Beta 1.9.0｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3524,7 +3524,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script>
 "use strict";
-const APP_VERSION="20260814-030.0";
+const APP_VERSION="20260815-031.0";
 
 const $=id=>document.getElementById(id);
 
@@ -5051,6 +5051,8 @@ window.addEventListener("DOMContentLoaded",()=>{
 let memberSupabase=null;
 let memberSession=null;
 let onlineLastPassMove=0;
+let onlineClockTimer=null;
+let onlineTimeoutClaimed=false;
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
@@ -5277,6 +5279,33 @@ function onlineSetStatus(text,type=""){
 function onlineNormalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6)}
 function onlineRpcRow(data){return Array.isArray(data)?(data[0]||null):data}
 function onlineMemberName(){return memberDisplayName(memberSession?.user)}
+function onlineClockValues(){
+  const r=state.onlineRoom;if(!r)return null;
+  const elapsed=r.status==="playing"&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
+  const periodMs=Number(r.byo_seconds||30)*1000;
+  const one=color=>{
+    let main=Number(color==="B"?r.black_main_ms:r.white_main_ms)||0;
+    let periods=Number(color==="B"?r.black_periods_left:r.white_periods_left)||0;
+    let byo=Number(r.byo_seconds||30);
+    if(r.status==="playing"&&r.turn===color){
+      if(elapsed<main)main-=elapsed;
+      else{const overtime=Math.max(0,elapsed-main);main=0;const used=Math.floor(overtime/periodMs);periods=Math.max(0,periods-used);byo=periods>0?Math.max(0,(periodMs-(overtime%periodMs))/1000):0;}
+    }
+    return {main:main/1000,byo,periods};
+  };
+  return {B:one("B"),W:one("W")};
+}
+function startOnlineClockUI(){
+  if(onlineClockTimer)clearInterval(onlineClockTimer);onlineTimeoutClaimed=false;
+  onlineClockTimer=setInterval(async()=>{
+    if(!state.onlineMode||!state.onlineRoom){clearInterval(onlineClockTimer);onlineClockTimer=null;return}
+    updateClockUI();const v=onlineClockValues(),r=state.onlineRoom,active=v?.[r.turn];
+    if(r.status==="playing"&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
+      onlineTimeoutClaimed=true;const {data}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
+      if(data){state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom()}
+    }
+  },250);
+}
 async function onlineReady(){
   if(!await memberEnsureClient())return false;
   if(!memberSession?.user){
@@ -5335,6 +5364,7 @@ async function onlineSyncRoom(){
     $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
     $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
     onlineRenderRoom();syncUI();
+    startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
     onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"),myTurn?"ok":"");
     const lastMove=(moves||[]).at(-1);
@@ -5342,6 +5372,7 @@ async function onlineSyncRoom(){
       onlineLastPassMove=Number(lastMove.move_no);
       toast((lastMove.color==="B"?"⚫ 黑方":"⚪ 白方")+" Pass（虛手）");
     }
+    if(room.status==="ended")toast("🏁 對局結束："+(room.result||"已結束"));
   }catch(err){console.error(err);onlineSetStatus("同步失敗："+(err?.message||err),"bad")}
   finally{state.onlineSyncing=false}
 }
@@ -5396,8 +5427,15 @@ async function onlinePlayAt(x,y,isPass=false){
   await onlineSyncRoom();
 }
 async function onlineLeaveRoom(){
-  await onlineUnsubscribe();state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
+  await onlineUnsubscribe();if(onlineClockTimer)clearInterval(onlineClockTimer);onlineClockTimer=null;state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
   onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
+}
+async function onlineResign(){
+  const r=state.onlineRoom;if(!r||r.status!=="playing")return;
+  if(!confirm("確定要投降嗎？"))return;
+  const {data,error}=await memberSupabase.rpc("joygo_resign_room",{p_room_id:r.id});
+  if(error){toast("投降失敗："+error.message);return}
+  state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom();
 }
 document.addEventListener("DOMContentLoaded",()=>{
   $("onlineCreateBtn")?.addEventListener("click",onlineCreateRoom);
@@ -6854,6 +6892,16 @@ function updateClockUI(){
   const panel=$("gameClockPanel");if(!panel)return;
   panel.hidden=false;
   const data=[['B','blackClock','blackByo','blackClockBox'],['W','whiteClock','whiteByo','whiteClockBox']];
+  if(state.onlineMode&&state.onlineRoom){
+    const values=onlineClockValues();
+    for(const [c,timeId,byoId,boxId] of data){
+      const v=values[c],inByo=v.main<=0;
+      $(timeId).textContent=formatClock(inByo?v.byo:v.main);
+      $(byoId).textContent=inByo?`伺服器讀秒 ${Math.ceil(v.byo)}秒｜剩餘 ${v.periods} 次`:`網路同步｜讀秒 ${state.onlineRoom.byo_seconds||30}秒 × ${state.onlineRoom.byo_periods||3}次`;
+      const box=$(boxId);box.classList.toggle('active',state.onlineRoom.status==="playing"&&state.onlineRoom.turn===c);box.classList.toggle('danger',inByo&&v.byo<=10);
+    }
+    $("clockSoundIcon").textContent=state.sound?'🔊':'🔇';return;
+  }
   if(state.teachingMode){
     for(const [,timeId,byoId,boxId] of data){
       $(timeId).textContent="暫停";
@@ -7743,7 +7791,7 @@ $("undoGameBtn").onclick=undoGameMove;
 $("resultOkBtn").onclick=()=>closeModal("resultModal");
 $("resultDetailBtn").onclick=()=>{const d=$("resultDetail");d.classList.toggle("open");$("resultDetailBtn").textContent=d.classList.contains("open")?"收起詳細計算":"查看詳細計算";};
 $("passGameBtn").onclick=()=>state.onlineMode?onlinePlayAt(null,null,true):humanGamePass();
-$("resignGameBtn").onclick=()=>state.onlineMode?toast("投降與終局功能將於第二階段加入"):humanGameResign();
+$("resignGameBtn").onclick=()=>state.onlineMode?onlineResign():humanGameResign();
 
 function saveClockPreferences(){
   const prefs={
