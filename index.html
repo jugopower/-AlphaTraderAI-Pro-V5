@@ -2734,7 +2734,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.8.2｜雙人真人對弈</div>
+    <div class="jg-beta">V1.0 Beta 1.8.3｜雙人真人對弈</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3017,7 +3017,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="onlineModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.8.2｜真人即時對弈</h2>
+  <h2>⚔️ Beta 1.8.3｜真人即時對弈</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
   <div id="onlineLobbyPanel" class="online-grid">
     <section class="online-panel">
@@ -3088,7 +3088,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.8.2｜會員中心</h2>
+  <h2>👤 Beta 1.8.3｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3524,7 +3524,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script>
 "use strict";
-const APP_VERSION="20260814-028.0";
+const APP_VERSION="20260814-029.0";
 
 const $=id=>document.getElementById(id);
 
@@ -5047,7 +5047,7 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-// ===== Joy Go Platform Beta 1.8.2: Online Play + Four-level Member Access =====
+// ===== Joy Go Platform Beta 1.8.3: Online Play + Four-level Member Access =====
 let memberSupabase=null;
 let memberSession=null;
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
@@ -5268,7 +5268,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   memberInitClient(false);
 });
 
-// ===== Joy Go Platform Beta 1.8.2: two-player Supabase Realtime prototype =====
+// ===== Joy Go Platform Beta 1.8.3: two-player Supabase Realtime prototype =====
 function onlineSetStatus(text,type=""){
   const el=$("onlineStatus");if(!el)return;
   el.className="online-status"+(type?(" "+type):"");el.textContent=text;
@@ -5278,12 +5278,18 @@ function onlineRpcRow(data){return Array.isArray(data)?(data[0]||null):data}
 function onlineMemberName(){return memberDisplayName(memberSession?.user)}
 async function onlineReady(){
   if(!await memberEnsureClient())return false;
+  if(!memberSession?.user){
+    const {data,error}=await memberSupabase.auth.getSession();
+    if(error){onlineSetStatus("登入狀態讀取失敗："+error.message,"bad");return false}
+    memberSession=data.session||null;
+    if(memberSession?.user){await memberRefreshAccess();memberRenderSession()}
+  }
   if(!memberSession?.user){onlineSetStatus("請先登入會員，再使用真人對弈。","bad");openMemberModal();return false}
   if(memberAccess.role==="blocked"){onlineSetStatus("目前會員狀態無法使用真人對弈："+memberAccess.label,"bad");return false}
   return true;
 }
-function openOnlineLobby(){
-  if(!memberSession?.user){openMemberModal();memberSetStatus("請先登入，再進入真人對弈。","bad");return}
+async function openOnlineLobby(){
+  if(!await onlineReady())return;
   onlineRenderRoom();openModal("onlineModal");
 }
 function onlineRenderRoom(){
@@ -8191,7 +8197,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
 });
 </script>
 
-<!-- Beta 1.8.2 security note: browser code may contain only a Supabase publishable/anon key.
+<!-- Beta 1.8.3 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 </body>
 </html>
