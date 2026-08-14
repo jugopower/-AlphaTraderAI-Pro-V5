@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
-<meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
+<meta name="app-version" content="20260814-JoyGo-V1.0-Beta1.8.2">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
@@ -3047,7 +3047,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.8.1｜會員中心</h2>
+  <h2>👤 Beta 1.8.2｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3075,7 +3075,16 @@ body.spectator-viewing #statusText{font-weight:800}
     <div id="memberResetForm" class="member-form">
       <label>Email<input id="memberResetEmail" type="email" autocomplete="email" placeholder="name@example.com"></label>
       <button id="memberResetBtn" class="action" type="button">寄送重設密碼信</button>
+      <small>系統會寄出重設連結；若收件匣沒有，請檢查垃圾郵件。</small>
     </div>
+  </div>
+
+  <div id="memberRecoveryForm" class="member-form">
+    <h3 style="margin:0">設定新密碼</h3>
+    <p style="margin:0;color:var(--muted);font-size:13px">請輸入兩次新密碼，完成後會保持登入。</p>
+    <label>新密碼<input id="memberNewPassword" type="password" autocomplete="new-password" placeholder="至少 8 個字元"></label>
+    <label>再次輸入<input id="memberConfirmPassword" type="password" autocomplete="new-password" placeholder="再次輸入新密碼"></label>
+    <button id="memberUpdatePasswordBtn" class="action" type="button">儲存新密碼</button>
   </div>
 
   <div id="memberSignedIn" style="display:none">
@@ -5009,6 +5018,7 @@ window.addEventListener("DOMContentLoaded",()=>{
 // ===== Joy Go Platform Beta 1.8.1: Guest Free Play + Four-level Member Access =====
 let memberSupabase=null;
 let memberSession=null;
+let memberRecovering=new URLSearchParams(location.search).get("mode")==="recovery";
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
@@ -5065,7 +5075,12 @@ async function memberInitClient(showMessage=false){
     memberSupabase.auth.onAuthStateChange((event,session)=>{
       memberSession=session||null;
       memberRefreshAccess().then(memberRenderSession);
-      if(event==="PASSWORD_RECOVERY")memberPromptNewPassword();
+      if(event==="PASSWORD_RECOVERY"){
+        memberRecovering=true;
+        memberRenderSession();
+        openMemberModal();
+        memberSetStatus("請設定您的新密碼。","ok");
+      }
     });
     if(showMessage)memberSetStatus("✅ 會員服務已連接。","ok");
     else memberSetStatus(memberSession?"✅ 已恢復登入狀態。":"會員服務已連接，尚未登入。","ok");
@@ -5134,8 +5149,9 @@ function memberUpdateToolAccess(){
 }
 function memberRenderSession(){
   const signed=!!memberSession?.user;
-  if($("memberSignedOut"))$("memberSignedOut").style.display=signed?"none":"block";
-  if($("memberSignedIn"))$("memberSignedIn").style.display=signed?"block":"none";
+  if($("memberSignedOut"))$("memberSignedOut").style.display=(!signed&&!memberRecovering)?"block":"none";
+  if($("memberSignedIn"))$("memberSignedIn").style.display=(signed&&!memberRecovering)?"block":"none";
+  if($("memberRecoveryForm"))$("memberRecoveryForm").classList.toggle("active",memberRecovering);
   if(signed){
     const u=memberSession.user;
     if($("memberAccountName"))$("memberAccountName").textContent=memberDisplayName(u);
@@ -5194,20 +5210,24 @@ async function memberResetPassword(){
   if(!email){memberSetStatus("請輸入 Email。","bad");return}
   memberSetStatus("寄送中…");
   const {error}=await memberSupabase.auth.resetPasswordForEmail(email,{
-    redirectTo:location.origin+location.pathname
+    redirectTo:location.origin+location.pathname+"?mode=recovery"
   });
   if(error){memberSetStatus("寄送失敗："+error.message,"bad");return}
   memberSetStatus("✅ 已寄出重設密碼信，請查看 Email。","ok");
 }
-async function memberPromptNewPassword(){
-  setTimeout(async()=>{
-    if(!memberSupabase)return;
-    const pw=prompt("請輸入新密碼（至少 6 碼）：");
-    if(!pw)return;
-    if(pw.length<6){alert("密碼至少 6 碼");return}
-    const {error}=await memberSupabase.auth.updateUser({password:pw});
-    alert(error?("更新密碼失敗："+error.message):"密碼更新成功");
-  },200);
+async function memberUpdatePassword(){
+  if(!await memberEnsureClient())return;
+  const pw=String($("memberNewPassword")?.value||"");
+  const confirm=String($("memberConfirmPassword")?.value||"");
+  if(pw.length<8){memberSetStatus("新密碼至少需要 8 個字元。","bad");return}
+  if(pw!==confirm){memberSetStatus("兩次輸入的密碼不相同。","bad");return}
+  memberSetStatus("正在更新密碼…");
+  const {error}=await memberSupabase.auth.updateUser({password:pw});
+  if(error){memberSetStatus("更新失敗："+error.message,"bad");return}
+  memberRecovering=false;
+  history.replaceState({},"",location.pathname);
+  memberRenderSession();
+  memberSetStatus("✅ 密碼更新成功，您已安全登入。","ok");
 }
 async function memberLogout(){
   if(!memberSupabase)return;
@@ -5220,6 +5240,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("memberLoginBtn")?.addEventListener("click",memberLogin);
   $("memberSignupBtn")?.addEventListener("click",memberSignup);
   $("memberResetBtn")?.addEventListener("click",memberResetPassword);
+  $("memberUpdatePasswordBtn")?.addEventListener("click",memberUpdatePassword);
   $("memberLogoutBtn")?.addEventListener("click",memberLogout);
   $("memberSaveConfigBtn")?.addEventListener("click",memberSaveConfig);
   $("memberChipBtn")?.addEventListener("click",openMemberModal);

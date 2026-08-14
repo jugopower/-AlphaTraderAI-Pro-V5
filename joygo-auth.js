@@ -10,7 +10,13 @@ const message = $("message");
 const account = $("account");
 const signOutButton = $("signOut");
 const submitButton = $("submitButton");
+const forgotPasswordButton = $("forgotPassword");
+const recoveryForm = $("recoveryForm");
+const newPassword = $("newPassword");
+const confirmPassword = $("confirmPassword");
+const updatePasswordButton = $("updatePassword");
 let mode = "login";
+let recovering = new URLSearchParams(location.search).get("mode") === "recovery";
 
 const say = (text, type = "") => {
   message.textContent = text;
@@ -26,6 +32,12 @@ if (!isSupabaseConfigured()) {
   const roleNames = { admin: "管理員", member: "正式會員", trial: "試用會員" };
   const formatDate = (value) => value ? new Intl.DateTimeFormat("zh-TW", { dateStyle: "long" }).format(new Date(value)) : "永久";
   const renderUser = async (user) => {
+    if (recovering) {
+      form.hidden = true;
+      account.hidden = true;
+      recoveryForm.hidden = false;
+      return;
+    }
     const loggedIn = Boolean(user);
     form.hidden = loggedIn;
     account.hidden = !loggedIn;
@@ -56,7 +68,10 @@ if (!isSupabaseConfigured()) {
 
   const { data } = await supabase.auth.getSession();
   await renderUser(data.session?.user);
-  supabase.auth.onAuthStateChange((_event, session) => setTimeout(() => renderUser(session?.user), 0));
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") recovering = true;
+    setTimeout(() => renderUser(session?.user), 0);
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -91,6 +106,38 @@ if (!isSupabaseConfigured()) {
     await supabase.auth.signOut();
     say("已安全登出。", "success");
   });
+
+  forgotPasswordButton.addEventListener("click", async () => {
+    const address = email.value.trim();
+    if (!address) {
+      say("請先輸入註冊時使用的 Email。", "error");
+      email.focus();
+      return;
+    }
+    forgotPasswordButton.disabled = true;
+    say("正在寄送重設密碼信…", "notice");
+    const redirectTo = new URL("joygo-auth.html?mode=recovery", window.location.href).href;
+    const { error } = await supabase.auth.resetPasswordForEmail(address, { redirectTo });
+    forgotPasswordButton.disabled = false;
+    say(error ? `寄送失敗：${error.message}` : "重設信已寄出，請查看收件匣或垃圾郵件。", error ? "error" : "success");
+  });
+
+  updatePasswordButton.addEventListener("click", async () => {
+    const passwordValue = newPassword.value;
+    if (passwordValue.length < 8) return say("新密碼至少需要 8 個字元。", "error");
+    if (passwordValue !== confirmPassword.value) return say("兩次輸入的密碼不相同。", "error");
+    updatePasswordButton.disabled = true;
+    say("正在更新密碼…", "notice");
+    const { error } = await supabase.auth.updateUser({ password: passwordValue });
+    updatePasswordButton.disabled = false;
+    if (error) return say(`更新失敗：${error.message}`, "error");
+    recovering = false;
+    recoveryForm.hidden = true;
+    history.replaceState({}, "", "joygo-auth.html");
+    say("密碼更新成功，您已安全登入。", "success");
+    const { data: current } = await supabase.auth.getSession();
+    await renderUser(current.session?.user);
+  });
 }
 
 document.querySelectorAll("[data-mode]").forEach((button) => button.addEventListener("click", () => {
@@ -98,5 +145,7 @@ document.querySelectorAll("[data-mode]").forEach((button) => button.addEventList
   document.querySelectorAll("[data-mode]").forEach((item) => item.classList.toggle("active", item === button));
   name.closest("label").hidden = mode !== "register";
   submitButton.textContent = mode === "register" ? "建立會員帳號" : "登入";
+  forgotPasswordButton.hidden = mode !== "login";
+  password.autocomplete = mode === "register" ? "new-password" : "current-password";
   say("");
 }));
