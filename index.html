@@ -2734,7 +2734,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.8.3｜雙人真人對弈</div>
+    <div class="jg-beta">V1.0 Beta 1.8.4｜雙人真人對弈</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3017,7 +3017,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="onlineModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.8.3｜真人即時對弈</h2>
+  <h2>⚔️ Beta 1.8.4｜真人即時對弈</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
   <div id="onlineLobbyPanel" class="online-grid">
     <section class="online-panel">
@@ -3088,7 +3088,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.8.3｜會員中心</h2>
+  <h2>👤 Beta 1.8.4｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3524,7 +3524,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script>
 "use strict";
-const APP_VERSION="20260814-029.0";
+const APP_VERSION="20260814-030.0";
 
 const $=id=>document.getElementById(id);
 
@@ -5047,9 +5047,10 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-// ===== Joy Go Platform Beta 1.8.3: Online Play + Four-level Member Access =====
+// ===== Joy Go Platform Beta 1.8.4: Online Play + Four-level Member Access =====
 let memberSupabase=null;
 let memberSession=null;
+let onlineLastPassMove=0;
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
@@ -5268,7 +5269,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   memberInitClient(false);
 });
 
-// ===== Joy Go Platform Beta 1.8.3: two-player Supabase Realtime prototype =====
+// ===== Joy Go Platform Beta 1.8.4: two-player Supabase Realtime prototype =====
 function onlineSetStatus(text,type=""){
   const el=$("onlineStatus");if(!el)return;
   el.className="online-status"+(type?(" "+type):"");el.textContent=text;
@@ -5336,6 +5337,11 @@ async function onlineSyncRoom(){
     onlineRenderRoom();syncUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
     onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"),myTurn?"ok":"");
+    const lastMove=(moves||[]).at(-1);
+    if(lastMove?.is_pass&&Number(lastMove.move_no)!==onlineLastPassMove){
+      onlineLastPassMove=Number(lastMove.move_no);
+      toast((lastMove.color==="B"?"⚫ 黑方":"⚪ 白方")+" Pass（虛手）");
+    }
   }catch(err){console.error(err);onlineSetStatus("同步失敗："+(err?.message||err),"bad")}
   finally{state.onlineSyncing=false}
 }
@@ -5390,7 +5396,7 @@ async function onlinePlayAt(x,y,isPass=false){
   await onlineSyncRoom();
 }
 async function onlineLeaveRoom(){
-  await onlineUnsubscribe();state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";state.casualMode=true;
+  await onlineUnsubscribe();state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
   onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
 }
 document.addEventListener("DOMContentLoaded",()=>{
@@ -8197,7 +8203,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
 });
 </script>
 
-<!-- Beta 1.8.3 security note: browser code may contain only a Supabase publishable/anon key.
+<!-- Beta 1.8.4 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 </body>
 </html>
