@@ -2734,7 +2734,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.9.0｜真人同步計時</div>
+    <div class="jg-beta">V1.0 Beta 1.9.1｜真人終局通知</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3017,7 +3017,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="onlineModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.9.0｜真人即時對弈</h2>
+  <h2>⚔️ Beta 1.9.1｜真人即時對弈</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
   <div id="onlineLobbyPanel" class="online-grid">
     <section class="online-panel">
@@ -3088,7 +3088,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.9.0｜會員中心</h2>
+  <h2>👤 Beta 1.9.1｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3524,7 +3524,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script>
 "use strict";
-const APP_VERSION="20260815-031.0";
+const APP_VERSION="20260815-032.0";
 
 const $=id=>document.getElementById(id);
 
@@ -5053,6 +5053,7 @@ let memberSession=null;
 let onlineLastPassMove=0;
 let onlineClockTimer=null;
 let onlineTimeoutClaimed=false;
+let onlineLastResult="";
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
@@ -5279,6 +5280,10 @@ function onlineSetStatus(text,type=""){
 function onlineNormalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6)}
 function onlineRpcRow(data){return Array.isArray(data)?(data[0]||null):data}
 function onlineMemberName(){return memberDisplayName(memberSession?.user)}
+function onlineResultText(result){
+  const labels={"W+R":"黑方投降，白方勝","B+R":"白方投降，黑方勝","W+T":"黑方超時，白方勝","B+T":"白方超時，黑方勝"};
+  return labels[result]||result||"對局已結束";
+}
 function onlineClockValues(){
   const r=state.onlineRoom;if(!r)return null;
   const elapsed=r.status==="playing"&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
@@ -5372,12 +5377,16 @@ async function onlineSyncRoom(){
       onlineLastPassMove=Number(lastMove.move_no);
       toast((lastMove.color==="B"?"⚫ 黑方":"⚪ 白方")+" Pass（虛手）");
     }
-    if(room.status==="ended")toast("🏁 對局結束："+(room.result||"已結束"));
+    if(room.status==="ended"&&room.result&&room.result!==onlineLastResult){
+      onlineLastResult=room.result;
+      const message="🏁 對局結束\n"+onlineResultText(room.result);
+      toast(message.replace("\n","："));setTimeout(()=>alert(message),120);
+    }
   }catch(err){console.error(err);onlineSetStatus("同步失敗："+(err?.message||err),"bad")}
   finally{state.onlineSyncing=false}
 }
 async function onlineEnterRoom(room){
-  state.onlineRoom=room;state.onlineMode=true;state.casualMode=false;
+  onlineLastResult="";state.onlineRoom=room;state.onlineMode=true;state.casualMode=false;
   localStorage.setItem("joygo-online-room-code",room.room_code);
   await onlineSubscribe(room.id);await onlineSyncRoom();
   openModal("onlineModal");
@@ -5427,7 +5436,7 @@ async function onlinePlayAt(x,y,isPass=false){
   await onlineSyncRoom();
 }
 async function onlineLeaveRoom(){
-  await onlineUnsubscribe();if(onlineClockTimer)clearInterval(onlineClockTimer);onlineClockTimer=null;state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
+  await onlineUnsubscribe();if(onlineClockTimer)clearInterval(onlineClockTimer);onlineClockTimer=null;onlineLastResult="";state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
   onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
 }
 async function onlineResign(){
