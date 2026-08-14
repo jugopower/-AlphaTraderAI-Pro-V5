@@ -2704,6 +2704,7 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 .member-status.ok{border-color:#4f8e5e;color:#bfe8c9}
 .member-status.bad{border-color:#9f4e45;color:#f0b4ae}
+.tool.member-locked{opacity:.42;filter:grayscale(.7)}
 .member-config{
   border:1px dashed #6c4b2c;border-radius:12px;padding:10px;margin-top:12px;background:#0b0705
 }
@@ -2725,7 +2726,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.7.1｜會員自動連線修正版</div>
+    <div class="jg-beta">V1.0 Beta 1.8.0｜四級會員權限</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3046,9 +3047,9 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.7.1｜會員登入</h2>
+  <h2>👤 Beta 1.8.0｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
-    第一版先完成 Email 註冊、登入、登出、忘記密碼與保持登入。會員權限與付費功能下一版再做。
+    已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
 
   <div id="memberSignedOut">
@@ -3081,7 +3082,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="member-account-box">
       <div><b>會員名稱：</b><span id="memberAccountName">—</span></div>
       <div><b>Email：</b><span id="memberAccountEmail">—</span></div>
-      <div><b>狀態：</b><span>已登入</span></div>
+      <div><b>權限：</b><span id="memberAccessLabel">讀取中…</span></div>
       <button id="memberLogoutBtn" class="secondary" type="button">登出這台裝置</button>
     </div>
   </div>
@@ -5005,9 +5006,10 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-// ===== Joy Go Platform Beta 1.7.1: Member Auto Connect (Supabase Auth) =====
+// ===== Joy Go Platform Beta 1.8.0: Four-level Member Access (Supabase Auth) =====
 let memberSupabase=null;
 let memberSession=null;
+let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
   url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",
@@ -5058,10 +5060,11 @@ async function memberInitClient(showMessage=false){
     const {data,error}=await memberSupabase.auth.getSession();
     if(error)throw error;
     memberSession=data.session||null;
+    await memberRefreshAccess();
     memberRenderSession();
     memberSupabase.auth.onAuthStateChange((event,session)=>{
       memberSession=session||null;
-      memberRenderSession();
+      memberRefreshAccess().then(memberRenderSession);
       if(event==="PASSWORD_RECOVERY")memberPromptNewPassword();
     });
     if(showMessage)memberSetStatus("✅ 會員服務已連接。","ok");
@@ -5076,6 +5079,59 @@ async function memberInitClient(showMessage=false){
 function memberDisplayName(user){
   return user?.user_metadata?.display_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"會員";
 }
+async function memberRefreshAccess(){
+  const user=memberSession?.user;
+  if(!user||!memberSupabase){
+    memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
+    memberUpdateToolAccess();
+    return memberAccess;
+  }
+  try{
+    const {data,error}=await memberSupabase.from("profiles")
+      .select("role,status,expires_at").eq("id",user.id).single();
+    if(error)throw error;
+    const expired=data.role==="trial"&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
+    const blocked=data.status!=="active"||expired;
+    const labels={admin:"管理員",member:"正式會員",trial:"試用會員"};
+    memberAccess={
+      role:blocked?"blocked":data.role,
+      status:data.status,
+      expiresAt:data.expires_at||null,
+      label:blocked?(data.status==="suspended"?"已停權":"試用已到期"):(labels[data.role]||"會員")
+    };
+  }catch(err){
+    console.error(err);
+    memberAccess={role:"blocked",status:"error",expiresAt:null,label:"權限讀取失敗"};
+  }
+  memberUpdateToolAccess();
+  return memberAccess;
+}
+function memberCan(feature){
+  if(["info","member","board"].includes(feature))return true;
+  if(memberAccess.role==="admin"||memberAccess.role==="member")return true;
+  if(memberAccess.role==="trial")return ["teach","ai","human"].includes(feature);
+  return false;
+}
+function memberRequiredLabel(feature){
+  return ["teach","ai","human"].includes(feature)?"試用會員":"正式會員";
+}
+function memberGuard(feature,action){
+  if(memberCan(feature)){action();return}
+  const reason=memberAccess.role==="blocked"?memberAccess.label:`此功能需要${memberRequiredLabel(feature)}登入`;
+  toast(`🔒 ${reason}`);
+  openMemberModal();
+  memberSetStatus(`🔒 ${reason}。`,"bad");
+}
+function memberUpdateToolAccess(){
+  const featureById={teachBtn:"teach",aiBtn:"ai",humanBtn:"human",classicGameBtn:"classic",spectatorBtn:"spectator",cloudBtn:"cloud"};
+  Object.entries(featureById).forEach(([id,feature])=>{
+    document.querySelectorAll(`[id^="${id}_"]`).forEach(button=>{
+      const locked=!memberCan(feature);
+      button.classList.toggle("member-locked",locked);
+      button.setAttribute("aria-label",locked?`${button.textContent.trim()}（需${memberRequiredLabel(feature)}）`:button.textContent.trim());
+    });
+  });
+}
 function memberRenderSession(){
   const signed=!!memberSession?.user;
   if($("memberSignedOut"))$("memberSignedOut").style.display=signed?"none":"block";
@@ -5084,10 +5140,12 @@ function memberRenderSession(){
     const u=memberSession.user;
     if($("memberAccountName"))$("memberAccountName").textContent=memberDisplayName(u);
     if($("memberAccountEmail"))$("memberAccountEmail").textContent=u.email||"—";
+    if($("memberAccessLabel"))$("memberAccessLabel").textContent=memberAccess.label;
     if($("memberChipText"))$("memberChipText").textContent="👤 "+memberDisplayName(u);
   }else{
     if($("memberChipText"))$("memberChipText").textContent="👤 尚未登入";
   }
+  memberUpdateToolAccess();
 }
 function openMemberModal(){
   memberLoadConfig();
@@ -5170,13 +5228,13 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
-  ["teachBtn","▣","教學",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")}],
-  ["aiBtn","AI","分析總覽",()=>{updateProfessionalDashboard();openModal("aiModal")}],
-  ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>openModal("humanModal")],
+  ["teachBtn","▣","教學",()=>memberGuard("teach",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")})],
+  ["aiBtn","AI","分析總覽",()=>memberGuard("ai",()=>{updateProfessionalDashboard();openModal("aiModal")})],
+  ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>memberGuard("human",()=>openModal("humanModal"))],
   ["memberBtn","👤","會員",()=>openMemberModal()],
-  ["classicGameBtn","🏛️","名局館",()=>openClassicGameLibrary()],
-  ["spectatorBtn","👁","觀戰",()=>openSpectatorLobby()],
-  ["cloudBtn","◉","KataGo",()=>openModal("cloudModal")],
+  ["classicGameBtn","🏛️","名局館",()=>memberGuard("classic",()=>openClassicGameLibrary())],
+  ["spectatorBtn","👁","觀戰",()=>memberGuard("spectator",()=>openSpectatorLobby())],
+  ["cloudBtn","◉","KataGo",()=>memberGuard("cloud",()=>openModal("cloudModal"))],
   ["zoomBtn","⛶","放大",()=>toggleFullscreen()],
   ["resetBtn","↺","還原",()=>resetView()]
 ];
@@ -5192,6 +5250,7 @@ function buildTools(container){
   });
 }
 buildTools($("rightTools")); buildTools($("topbar"));
+memberUpdateToolAccess();
 
 function toggleFullscreen(){
   if(!document.fullscreenElement){ document.documentElement.requestFullscreen?.(); }
@@ -7951,7 +8010,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
 });
 </script>
 
-<!-- Beta 1.7.1 security note: browser code may contain only a Supabase publishable/anon key.
+<!-- Beta 1.8.0 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 </body>
 </html>
