@@ -8384,6 +8384,29 @@ window.addEventListener("DOMContentLoaded",async()=>{
       if(toggleBtn){toggleBtn.textContent="🎮 操作";toggleBtn.setAttribute("aria-expanded","false")}
     }
   });
+  // iPad Safari may calculate the canvas while the Beta gate is still visible.
+  // Rebuild it after entry/layout settles so the grid never remains a plain wood panel.
+  const redrawBoard=()=>{
+    try{
+      if(typeof forceBoardRebuild==="function") forceBoardRebuild("compact-layout");
+      else if(typeof resizeBoard==="function"&&typeof drawBoard==="function"){
+        resizeBoard(true);
+        drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+      }
+    }catch(error){console.warn("Joy Go board redraw:",error)}
+  };
+  window.addEventListener("load",()=>{
+    setTimeout(redrawBoard,80);
+    setTimeout(redrawBoard,450);
+  },{once:true});
+  window.addEventListener("resize",()=>setTimeout(redrawBoard,120),{passive:true});
+  document.getElementById("joygoBetaEnter")?.addEventListener("click",()=>{
+    setTimeout(redrawBoard,80);
+    setTimeout(redrawBoard,450);
+  });
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden)setTimeout(redrawBoard,100);
+  });
 })();
 </script>
 </body>
