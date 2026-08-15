@@ -2727,6 +2727,86 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+<style id="joygo-compact-right-controls">
+/* Beta 1.9.5：對局操作集中右側；棋盤尺寸與落子座標邏輯不變。 */
+.compact-action-panel{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  padding:7px;
+  border:1px solid #6c4825;
+  border-radius:13px;
+  background:rgba(8,8,8,.92);
+  flex:0 0 auto;
+}
+.compact-action-title{
+  grid-column:1/-1;
+  color:#bca98d;
+  font-size:11px;
+  text-align:left;
+  padding:0 2px 2px;
+}
+.compact-action-panel button{
+  min-width:0!important;
+  min-height:44px!important;
+  height:44px!important;
+  padding:3px 4px!important;
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1px;
+  border:1px solid #714b27;
+  border-radius:10px;
+  background:#1b120d;
+  color:#fff4df;
+  font-size:11px!important;
+  font-weight:800;
+  line-height:1.05;
+}
+.compact-action-panel .action-icon{font-size:17px;line-height:17px}
+.compact-action-panel #scoreGameBtn{
+  grid-column:1/-1;
+  background:linear-gradient(135deg,#153b69,#2467a9)!important;
+  border-color:#6ab6ff!important;
+  color:#fff!important;
+}
+.compact-action-panel #resignGameBtn{background:#261010!important;border-color:#884646!important}
+.compact-action-panel #saveSgfBtn{background:#10301f!important;border-color:#3a8156!important}
+.compact-actions-toggle{display:none}
+#gameActionRow{display:none!important}
+@media (orientation:landscape) and (min-width:901px){
+  .right .compact-action-panel{display:grid!important}
+}
+@media (orientation:portrait),(max-width:900px){
+  .right .compact-action-panel{
+    display:none!important;
+    position:fixed!important;
+    right:10px!important;
+    bottom:72px!important;
+    width:min(350px,calc(100vw - 20px))!important;
+    z-index:10020!important;
+    box-shadow:0 12px 36px rgba(0,0,0,.7);
+  }
+  .right .compact-action-panel.mobile-open{display:grid!important}
+  .compact-actions-toggle{
+    display:flex!important;
+    position:fixed!important;
+    right:12px!important;
+    bottom:14px!important;
+    z-index:10021!important;
+    min-width:88px!important;
+    height:46px!important;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #6ab6ff;
+    border-radius:23px;
+    background:#153b69;
+    color:#fff;
+    font-weight:900;
+  }
+}
+</style>
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2734,7 +2814,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.9.2｜對局姓名顯示</div>
+    <div class="jg-beta">V1.0 Beta 1.9.5｜精簡對局介面</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2801,7 +2881,7 @@ body.spectator-viewing #statusText{font-weight:800}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">Joy Go Platform V1.0 Beta 1.4<br><small>Build 028.3.7 Stable · Admin Monitor</small></div>
+    <div class="brand">Joy Go Platform V1.0 Beta 1.9.5<br><small>精簡對局介面 · Admin Monitor</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2827,6 +2907,17 @@ body.spectator-viewing #statusText{font-weight:800}
       <span class="clock-sound" id="clockSoundIcon">🔊</span>
       <div class="clock-side" id="whiteClockBox"><i class="clock-stone white"></i><span class="clock-name" id="whiteClockName">白方</span><strong class="clock-time" id="whiteClock">30:00</strong><small class="clock-byo" id="whiteByo">讀秒 30秒 × 3</small></div>
     </div>
+    <div class="compact-action-panel" id="compactActionPanel" aria-label="對局操作">
+      <div class="compact-action-title">對局操作</div>
+      <button id="undoGameBtn" type="button" aria-label="悔棋"><span class="action-icon">↶</span><span>悔棋</span></button>
+      <button id="trialModeBtn" type="button" aria-label="試下"><span class="action-icon">✎</span><span>試下</span></button>
+      <button id="scoreGameBtn" type="button" aria-label="數地判定"><span class="action-icon">◎</span><span>數地判定</span></button>
+      <button id="passGameBtn" type="button" aria-label="Pass"><span class="action-icon">⏭</span><span>Pass</span></button>
+      <button id="resignGameBtn" type="button" aria-label="投降"><span class="action-icon">⚑</span><span>投降</span></button>
+      <button id="saveSgfBtn" type="button" aria-label="儲存 SGF"><span class="action-icon">▣</span><span>SGF</span></button>
+      <button id="compactFullscreenBtn" type="button" aria-label="全螢幕"><span class="action-icon">⛶</span><span>全螢幕</span></button>
+    </div>
+    <button class="compact-actions-toggle" id="compactActionsToggle" type="button" aria-label="開啟對局操作">🎮 操作</button>
 <button class="tool" id="redrawBtn" type="button"><span>↻</span>重繪</button>
     <section class="ai-hint-panel" id="aiHintPanel" aria-live="polite">
       <strong>AI 推薦</strong>
@@ -2856,12 +2947,6 @@ body.spectator-viewing #statusText{font-weight:800}
       <button id="lastBtn">⏭</button>
     </div>
     <div class="game-action-row" id="gameActionRow">
-      <button id="undoGameBtn">悔棋</button>
-      <button id="scoreGameBtn">正式數地</button>
-      <button id="passGameBtn">Pass</button>
-      <button id="resignGameBtn">投降</button>
-      <button id="saveSgfBtn">存檔 SGF</button>
-      <button id="trialModeBtn">🧪 試下</button>
       <button id="firstChoiceBtn">第一選</button>
       <button id="secondChoiceBtn">第二選</button>
       <button id="badMoveBtn">惡手</button>
@@ -3017,7 +3102,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="onlineModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.9.2｜真人即時對弈</h2>
+  <h2>⚔️ Beta 1.9.5｜真人即時對弈</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
   <div id="onlineLobbyPanel" class="online-grid">
     <section class="online-panel">
@@ -3088,7 +3173,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.9.2｜會員中心</h2>
+  <h2>👤 Beta 1.9.5｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -3124,6 +3209,11 @@ body.spectator-viewing #statusText{font-weight:800}
       <div><b>會員名稱：</b><span id="memberAccountName">—</span></div>
       <div><b>Email：</b><span id="memberAccountEmail">—</span></div>
       <div><b>權限：</b><span id="memberAccessLabel">讀取中…</span></div>
+      <label style="display:block;margin-top:12px">更改 Email
+        <input id="memberNewEmail" type="email" autocomplete="email" placeholder="請輸入新的 Email">
+      </label>
+      <button id="memberChangeEmailBtn" class="secondary" type="button" style="width:100%;margin-top:8px">寄送 Email 更改驗證信</button>
+      <small style="display:block;margin-top:7px;color:var(--muted)">完成新信箱驗證後，Email 才會正式更改。</small>
       <button id="memberLogoutBtn" class="secondary" type="button">登出這台裝置</button>
     </div>
   </div>
@@ -3524,7 +3614,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script>
 "use strict";
-const APP_VERSION="20260815-033.0";
+const APP_VERSION="20260815-034.0";
 
 const $=id=>document.getElementById(id);
 
@@ -5054,7 +5144,7 @@ let onlineLastPassMove=0;
 let onlineClockTimer=null;
 let onlineTimeoutClaimed=false;
 let onlineLastResult="";
-let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
+let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:""};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
   url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",
@@ -5123,31 +5213,32 @@ async function memberInitClient(showMessage=false){
   }
 }
 function memberDisplayName(user){
-  return user?.user_metadata?.display_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"會員";
+  return memberAccess.displayName||user?.user_metadata?.display_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"會員";
 }
 async function memberRefreshAccess(){
   const user=memberSession?.user;
   if(!user||!memberSupabase){
-    memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客"};
+    memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:""};
     memberUpdateToolAccess();
     return memberAccess;
   }
   try{
     const {data,error}=await memberSupabase.from("profiles")
-      .select("role,status,expires_at").eq("id",user.id).single();
+      .select("role,status,expires_at,display_name").eq("id",user.id).single();
     if(error)throw error;
-    const expired=data.role==="trial"&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
+    const expired=data.role!=="admin"&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
     const blocked=data.status!=="active"||expired;
     const labels={admin:"管理員",member:"正式會員",trial:"試用會員"};
     memberAccess={
       role:blocked?"blocked":data.role,
       status:data.status,
       expiresAt:data.expires_at||null,
-      label:blocked?(data.status==="suspended"?"已停權":"試用已到期"):(labels[data.role]||"會員")
+      label:blocked?(data.status==="suspended"?"已停權":"會員已到期"):(labels[data.role]||"會員"),
+      displayName:data.display_name||""
     };
   }catch(err){
     console.error(err);
-    memberAccess={role:"blocked",status:"error",expiresAt:null,label:"權限讀取失敗"};
+    memberAccess={role:"blocked",status:"error",expiresAt:null,label:"權限讀取失敗",displayName:""};
   }
   memberUpdateToolAccess();
   return memberAccess;
@@ -5261,12 +5352,24 @@ async function memberLogout(){
   if(error){memberSetStatus("登出失敗："+error.message,"bad");return}
   memberSetStatus("已登出這台裝置。","ok");
 }
+async function memberChangeEmail(){
+  if(!await memberEnsureClient()||!memberSession?.user)return;
+  const newEmail=String($("memberNewEmail")?.value||"").trim().toLowerCase();
+  const currentEmail=String(memberSession.user.email||"").trim().toLowerCase();
+  if(!/^\S+@\S+\.\S+$/.test(newEmail)){memberSetStatus("請輸入正確的新 Email。","bad");return}
+  if(newEmail===currentEmail){memberSetStatus("新 Email 與目前 Email 相同。","bad");return}
+  memberSetStatus("正在寄送 Email 更改驗證信…");
+  const {error}=await memberSupabase.auth.updateUser({email:newEmail});
+  if(error){memberSetStatus("Email 更改失敗："+error.message,"bad");return}
+  memberSetStatus("✅ 已寄出驗證信。請依信件指示完成驗證；完成後新 Email 才會生效。","ok");
+}
 document.addEventListener("DOMContentLoaded",()=>{
   document.querySelectorAll(".member-tab").forEach(b=>b.addEventListener("click",()=>memberShowTab(b.dataset.memberTab)));
   $("memberLoginBtn")?.addEventListener("click",memberLogin);
   $("memberSignupBtn")?.addEventListener("click",memberSignup);
   $("memberResetBtn")?.addEventListener("click",memberResetPassword);
   $("memberLogoutBtn")?.addEventListener("click",memberLogout);
+  $("memberChangeEmailBtn")?.addEventListener("click",memberChangeEmail);
   $("memberSaveConfigBtn")?.addEventListener("click",memberSaveConfig);
   $("memberChipBtn")?.addEventListener("click",openMemberModal);
   memberInitClient(false);
@@ -8264,5 +8367,24 @@ window.addEventListener("DOMContentLoaded",async()=>{
 
 <!-- Beta 1.8.4 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
+<script id="joygo-compact-right-controls-js">
+(()=>{
+  const fullscreenBtn=document.getElementById("compactFullscreenBtn");
+  const toggleBtn=document.getElementById("compactActionsToggle");
+  const panel=document.getElementById("compactActionPanel");
+  fullscreenBtn?.addEventListener("click",()=>toggleFullscreen());
+  toggleBtn?.addEventListener("click",()=>{
+    const opened=panel?.classList.toggle("mobile-open");
+    toggleBtn.textContent=opened?"✕ 關閉":"🎮 操作";
+    toggleBtn.setAttribute("aria-expanded",opened?"true":"false");
+  });
+  panel?.addEventListener("click",event=>{
+    if(window.matchMedia("(orientation:portrait), (max-width:900px)").matches&&event.target.closest("button")){
+      panel.classList.remove("mobile-open");
+      if(toggleBtn){toggleBtn.textContent="🎮 操作";toggleBtn.setAttribute("aria-expanded","false")}
+    }
+  });
+})();
+</script>
 </body>
 </html>
