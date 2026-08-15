@@ -100,7 +100,7 @@ if (!isSupabaseConfigured()) {
     if (!id || id === currentUserId || !role || !status) return;
     button.disabled = true;
     button.textContent = "儲存中…";
-    const changes = { role, status, expires_at: role === "trial" && expires ? new Date(`${expires}T23:59:59`).toISOString() : null, updated_at: new Date().toISOString() };
+    const changes = { role, status, expires_at: expires ? new Date(`${expires}T23:59:59`).toISOString() : null, updated_at: new Date().toISOString() };
     const { error } = await supabase.from("profiles").update(changes).eq("id", id);
     if (error) {
       say(`儲存失敗：${error.message}`, "error");
