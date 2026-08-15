@@ -2727,86 +2727,6 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
-<style id="joygo-compact-right-controls">
-/* Beta 1.9.5：對局操作集中右側；棋盤尺寸與落子座標邏輯不變。 */
-.compact-action-panel{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  padding:7px;
-  border:1px solid #6c4825;
-  border-radius:13px;
-  background:rgba(8,8,8,.92);
-  flex:0 0 auto;
-}
-.compact-action-title{
-  grid-column:1/-1;
-  color:#bca98d;
-  font-size:11px;
-  text-align:left;
-  padding:0 2px 2px;
-}
-.compact-action-panel button{
-  min-width:0!important;
-  min-height:44px!important;
-  height:44px!important;
-  padding:3px 4px!important;
-  display:flex!important;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:1px;
-  border:1px solid #714b27;
-  border-radius:10px;
-  background:#1b120d;
-  color:#fff4df;
-  font-size:11px!important;
-  font-weight:800;
-  line-height:1.05;
-}
-.compact-action-panel .action-icon{font-size:17px;line-height:17px}
-.compact-action-panel #scoreGameBtn{
-  grid-column:1/-1;
-  background:linear-gradient(135deg,#153b69,#2467a9)!important;
-  border-color:#6ab6ff!important;
-  color:#fff!important;
-}
-.compact-action-panel #resignGameBtn{background:#261010!important;border-color:#884646!important}
-.compact-action-panel #saveSgfBtn{background:#10301f!important;border-color:#3a8156!important}
-.compact-actions-toggle{display:none}
-#gameActionRow{display:none!important}
-@media (orientation:landscape) and (min-width:901px){
-  .right .compact-action-panel{display:grid!important}
-}
-@media (orientation:portrait),(max-width:900px){
-  .right .compact-action-panel{
-    display:none!important;
-    position:fixed!important;
-    right:10px!important;
-    bottom:72px!important;
-    width:min(350px,calc(100vw - 20px))!important;
-    z-index:10020!important;
-    box-shadow:0 12px 36px rgba(0,0,0,.7);
-  }
-  .right .compact-action-panel.mobile-open{display:grid!important}
-  .compact-actions-toggle{
-    display:flex!important;
-    position:fixed!important;
-    right:12px!important;
-    bottom:14px!important;
-    z-index:10021!important;
-    min-width:88px!important;
-    height:46px!important;
-    align-items:center;
-    justify-content:center;
-    border:1px solid #6ab6ff;
-    border-radius:23px;
-    background:#153b69;
-    color:#fff;
-    font-weight:900;
-  }
-}
-</style>
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2814,7 +2734,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.9.5｜精簡對局介面</div>
+    <div class="jg-beta">V1.0 Beta 1.9.4｜會員資料編輯</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -2881,7 +2801,7 @@ body.spectator-viewing #statusText{font-weight:800}
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
-    <div class="brand">Joy Go Platform V1.0 Beta 1.9.5<br><small>精簡對局介面 · Admin Monitor</small></div>
+    <div class="brand">Joy Go Platform V1.0 Beta 1.4<br><small>Build 028.3.7 Stable · Admin Monitor</small></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot white"></i> 白方</span><b id="whiteName">AI</b></div></div>
     <div class="card"><div class="player-name"><span><i class="stone-dot black"></i> 黑方</span><b id="blackName">人類</b></div></div>
     <div class="stats">
@@ -2907,17 +2827,6 @@ body.spectator-viewing #statusText{font-weight:800}
       <span class="clock-sound" id="clockSoundIcon">🔊</span>
       <div class="clock-side" id="whiteClockBox"><i class="clock-stone white"></i><span class="clock-name" id="whiteClockName">白方</span><strong class="clock-time" id="whiteClock">30:00</strong><small class="clock-byo" id="whiteByo">讀秒 30秒 × 3</small></div>
     </div>
-    <div class="compact-action-panel" id="compactActionPanel" aria-label="對局操作">
-      <div class="compact-action-title">對局操作</div>
-      <button id="undoGameBtn" type="button" aria-label="悔棋"><span class="action-icon">↶</span><span>悔棋</span></button>
-      <button id="trialModeBtn" type="button" aria-label="試下"><span class="action-icon">✎</span><span>試下</span></button>
-      <button id="scoreGameBtn" type="button" aria-label="數地判定"><span class="action-icon">◎</span><span>數地判定</span></button>
-      <button id="passGameBtn" type="button" aria-label="Pass"><span class="action-icon">⏭</span><span>Pass</span></button>
-      <button id="resignGameBtn" type="button" aria-label="投降"><span class="action-icon">⚑</span><span>投降</span></button>
-      <button id="saveSgfBtn" type="button" aria-label="儲存 SGF"><span class="action-icon">▣</span><span>SGF</span></button>
-      <button id="compactFullscreenBtn" type="button" aria-label="全螢幕"><span class="action-icon">⛶</span><span>全螢幕</span></button>
-    </div>
-    <button class="compact-actions-toggle" id="compactActionsToggle" type="button" aria-label="開啟對局操作">🎮 操作</button>
 <button class="tool" id="redrawBtn" type="button"><span>↻</span>重繪</button>
     <section class="ai-hint-panel" id="aiHintPanel" aria-live="polite">
       <strong>AI 推薦</strong>
@@ -2947,6 +2856,12 @@ body.spectator-viewing #statusText{font-weight:800}
       <button id="lastBtn">⏭</button>
     </div>
     <div class="game-action-row" id="gameActionRow">
+      <button id="undoGameBtn">悔棋</button>
+      <button id="scoreGameBtn">正式數地</button>
+      <button id="passGameBtn">Pass</button>
+      <button id="resignGameBtn">投降</button>
+      <button id="saveSgfBtn">存檔 SGF</button>
+      <button id="trialModeBtn">🧪 試下</button>
       <button id="firstChoiceBtn">第一選</button>
       <button id="secondChoiceBtn">第二選</button>
       <button id="badMoveBtn">惡手</button>
@@ -3102,7 +3017,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="onlineModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.9.5｜真人即時對弈</h2>
+  <h2>⚔️ Beta 1.9.4｜真人即時對弈</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
   <div id="onlineLobbyPanel" class="online-grid">
     <section class="online-panel">
@@ -3173,7 +3088,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.9.5｜會員中心</h2>
+  <h2>👤 Beta 1.9.4｜會員中心</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -8367,47 +8282,5 @@ window.addEventListener("DOMContentLoaded",async()=>{
 
 <!-- Beta 1.8.4 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
-<script id="joygo-compact-right-controls-js">
-(()=>{
-  const fullscreenBtn=document.getElementById("compactFullscreenBtn");
-  const toggleBtn=document.getElementById("compactActionsToggle");
-  const panel=document.getElementById("compactActionPanel");
-  fullscreenBtn?.addEventListener("click",()=>toggleFullscreen());
-  toggleBtn?.addEventListener("click",()=>{
-    const opened=panel?.classList.toggle("mobile-open");
-    toggleBtn.textContent=opened?"✕ 關閉":"🎮 操作";
-    toggleBtn.setAttribute("aria-expanded",opened?"true":"false");
-  });
-  panel?.addEventListener("click",event=>{
-    if(window.matchMedia("(orientation:portrait), (max-width:900px)").matches&&event.target.closest("button")){
-      panel.classList.remove("mobile-open");
-      if(toggleBtn){toggleBtn.textContent="🎮 操作";toggleBtn.setAttribute("aria-expanded","false")}
-    }
-  });
-  // iPad Safari may calculate the canvas while the Beta gate is still visible.
-  // Rebuild it after entry/layout settles so the grid never remains a plain wood panel.
-  const redrawBoard=()=>{
-    try{
-      if(typeof forceBoardRebuild==="function") forceBoardRebuild("compact-layout");
-      else if(typeof resizeBoard==="function"&&typeof drawBoard==="function"){
-        resizeBoard(true);
-        drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-      }
-    }catch(error){console.warn("Joy Go board redraw:",error)}
-  };
-  window.addEventListener("load",()=>{
-    setTimeout(redrawBoard,80);
-    setTimeout(redrawBoard,450);
-  },{once:true});
-  window.addEventListener("resize",()=>setTimeout(redrawBoard,120),{passive:true});
-  document.getElementById("joygoBetaEnter")?.addEventListener("click",()=>{
-    setTimeout(redrawBoard,80);
-    setTimeout(redrawBoard,450);
-  });
-  document.addEventListener("visibilitychange",()=>{
-    if(!document.hidden)setTimeout(redrawBoard,100);
-  });
-})();
-</script>
 </body>
 </html>
