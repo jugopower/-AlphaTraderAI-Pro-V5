@@ -142,6 +142,9 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 /* Build024.8 API Inspector */
 @media (orientation:landscape) and (min-width:901px){
+  .app{grid-template-columns:minmax(112px,10vw) minmax(0,1fr) 230px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 230px!important}
+  .right{min-width:230px!important;max-width:230px!important}
   .app{
     grid-template-columns:minmax(118px,12vw) minmax(0,1fr) minmax(76px,8vw);
     grid-template-rows:minmax(0,1fr) 76px;
@@ -2681,6 +2684,74 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+<style id="joygo-compact-safe-layout">
+/* Beta 1.9.5：安全精簡版。只重新排列既有控制鍵，不複製功能與 ID。 */
+.compact-action-panel{display:none}
+@media (orientation:landscape) and (min-width:901px){
+  .right > .tool,.right > .ai-hint-panel{display:none!important}
+  .right{justify-content:flex-start!important}
+  .compact-action-panel{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:6px;
+    width:100%;
+    padding:8px 6px;
+    border:1px solid #5c3e25;
+    border-radius:13px;
+    background:#0b0908;
+    box-sizing:border-box;
+  }
+  .compact-action-title{
+    grid-column:1/-1;
+    color:#bca98b;
+    font-size:11px;
+    padding:0 2px 2px;
+  }
+  .compact-action-panel button{
+    display:flex!important;
+    align-items:center;
+    justify-content:center;
+    min-width:0!important;
+    width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:3px 4px!important;
+    border:1px solid #6c4b2c;
+    border-radius:9px;
+    background:#21150f;
+    color:#fff4dc;
+    font-size:12px!important;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .compact-action-panel #scoreGameBtn{
+    grid-column:1/-1;
+    background:linear-gradient(135deg,#4f8fca,#28669f)!important;
+    border-color:#6fa9dc!important;
+    color:#fff!important;
+  }
+  .compact-action-panel #resignGameBtn{border-color:#914747!important;background:#291112!important}
+  .compact-action-panel #saveSgfBtn{background:#132718!important;border-color:#4f8e5e!important}
+  #gameActionRow{display:none!important}
+  .player{
+    min-height:42px!important;
+    height:42px!important;
+    grid-template-columns:minmax(260px,1.2fr) minmax(340px,1.8fr)!important;
+    grid-template-rows:36px!important;
+  }
+  .move-tools{grid-column:1!important;grid-row:1!important}
+  .controls{grid-column:2!important;grid-row:1!important}
+  .app{grid-template-rows:minmax(0,1fr) 46px!important}
+  .board-wrap{height:calc(100dvh - 56px)!important;max-height:calc(100dvh - 56px)!important}
+  #board{width:min(calc(100dvh - 64px),calc(100vw - 126px))!important;max-height:calc(100dvh - 64px)!important}
+}
+@media (orientation:landscape) and (min-width:1180px){
+  .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 260px!important}
+  body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 260px!important}
+  .right{min-width:260px!important;max-width:260px!important}
+}
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style id="memberLogin170Style">
@@ -2734,7 +2805,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.9.4｜會員資料編輯</div>
+    <div class="jg-beta">V1.0 Beta 1.9.5｜精簡對局介面</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -5500,6 +5571,31 @@ function buildTools(container){
   });
 }
 buildTools($("rightTools")); buildTools($("topbar"));
+
+/* Beta 1.9.5 安全精簡版：工具列建立完成後，再搬移原有按鍵。
+   這些是同一批 DOM 節點，不會產生重複 ID，也不會改變既有事件功能。 */
+(()=>{
+  const right=$("rightTools"), row=$("gameActionRow");
+  if(!right||!row)return;
+  const panel=document.createElement("section");
+  panel.className="compact-action-panel";
+  panel.id="compactActionPanel";
+  panel.setAttribute("aria-label","對局快捷操作");
+  const title=document.createElement("div");
+  title.className="compact-action-title";
+  title.textContent="對局操作";
+  panel.appendChild(title);
+  ["undoGameBtn","trialModeBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
+    const button=$(id);if(button)panel.appendChild(button);
+  });
+  const fullscreen=document.createElement("button");
+  fullscreen.id="compactFullscreenBtn";
+  fullscreen.type="button";
+  fullscreen.textContent="⛶ 全螢幕";
+  fullscreen.addEventListener("click",toggleFullscreen);
+  panel.appendChild(fullscreen);
+  right.appendChild(panel);
+})();
 memberUpdateToolAccess();
 
 function toggleFullscreen(){
