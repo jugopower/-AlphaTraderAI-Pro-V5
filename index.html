@@ -3222,7 +3222,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.7a｜名局永久保存修正版</h2>
+  <h2>🏛️ Beta 1.6b.7b｜名局雙重保存修正版</h2>
   <p class="classic-library-note">
     本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
     內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
@@ -3270,7 +3270,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
   <div id="classicGameCount" class="classic-db-count"></div>
 <div class="classic-db-note" style="margin:6px 0 10px;color:#c9b28c;font-size:12px">
-正式 SGF 改用 IndexedDB 保存；儲存後會立即重新讀取驗證。另可整批備份／還原。
+正式 SGF 採 IndexedDB＋瀏覽器備援雙重保存；儲存後立即驗證。私密瀏覽結束仍可能被系統清除，重要棋譜請使用「備份名局」。
 </div>
   <div id="classicGameList" class="classic-game-list"></div>
 
@@ -4653,6 +4653,19 @@ let classicGameCache=[];
 
 function classicDbKey(){return "joygo-classic-db-v1";}
 
+function classicReadMirror(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(classicDbKey())||"[]");
+    return Array.isArray(parsed)?parsed.filter(g=>g&&g.id&&g.sgf):[];
+  }catch(e){console.warn("classic mirror read:",e);return [];}
+}
+function classicWriteMirror(games){
+  try{
+    localStorage.setItem(classicDbKey(),JSON.stringify((games||[]).filter(g=>g&&g.id&&g.sgf)));
+    return true;
+  }catch(e){console.warn("classic mirror write:",e);return false;}
+}
+
 function classicOpenDb(){
   return new Promise((resolve,reject)=>{
     if(!("indexedDB" in window)){reject(new Error("此瀏覽器不支援 IndexedDB"));return;}
@@ -4724,8 +4737,24 @@ async function classicRequestPersistence(){
 }
 function classicLoadUserGames(){return classicGameCache.slice();}
 async function classicRefreshCache(){
-  classicGameCache=await classicDbGetAll();
+  let idbGames=[];
+  try{idbGames=await classicDbGetAll();}catch(e){console.warn("classic IndexedDB read:",e);}
+  const mirrorGames=classicReadMirror();
+  const merged=new Map();
+  [...idbGames,...mirrorGames].forEach(game=>{
+    if(!game||!game.id||!game.sgf)return;
+    const old=merged.get(game.id);
+    if(!old||String(game.savedAt||"")>=String(old.savedAt||""))merged.set(game.id,game);
+  });
+  classicGameCache=[...merged.values()];
   classicGameCache.sort((a,b)=>String(b.savedAt||"").localeCompare(String(a.savedAt||"")));
+  classicWriteMirror(classicGameCache);
+  const idbIds=new Set(idbGames.map(g=>g&&g.id));
+  for(const game of classicGameCache){
+    if(!idbIds.has(game.id)){
+      try{await classicDbPut(game);}catch(e){console.warn("classic IndexedDB repair:",e);}
+    }
+  }
   return classicGameCache;
 }
 async function classicMigrateLegacyLocalStorage(){
@@ -4733,9 +4762,9 @@ async function classicMigrateLegacyLocalStorage(){
     const raw=localStorage.getItem(classicDbKey());
     if(!raw)return 0;
     const old=JSON.parse(raw);
-    if(!Array.isArray(old)||!old.length){localStorage.removeItem(classicDbKey());return 0;}
+    if(!Array.isArray(old)||!old.length)return 0;
     for(const g of old){if(g?.id&&g?.sgf)await classicDbPut(g);}
-    localStorage.removeItem(classicDbKey());
+    classicWriteMirror(old);
     return old.length;
   }catch(e){console.warn("legacy migration:",e);return 0;}
 }
@@ -4991,12 +5020,16 @@ async function classicSaveOfficial(){
   try{
     await classicRequestPersistence();
     await classicDbPut(game);
+    classicWriteMirror([
+      ...classicReadMirror().filter(g=>String(g.id)!==String(game.id)),
+      game
+    ]);
     await classicRefreshCache();
     const verified=classicGameCache.some(g=>g.id===game.id && g.sgf===game.sgf);
     if(!verified)throw new Error("寫入後驗證失敗");
     closeModal("classicImportModal");
     renderClassicGameLibrary();
-    toast("✅ 已永久保存並驗證："+game.title);
+    toast("✅ 已雙重保存並驗證："+game.title);
   }catch(err){
     console.error(err);
     if($("classicImportMessage")){
@@ -5012,6 +5045,7 @@ async function classicDeleteOne(game){
   if(!confirm(`確定刪除「${name}」？\n只會刪除這一盤棋譜。`))return;
   try{
     await classicDbDelete(game.id);
+    classicWriteMirror(classicReadMirror().filter(g=>String(g.id)!==String(game.id)));
     await classicRefreshCache();
     if(classicCurrentGameId===String(game.id)){
       classicCurrentGameId="";
@@ -5027,6 +5061,7 @@ async function classicClearUserDb(){
   if(confirm(`確定清除這台裝置中已保存的 ${count} 盤名局嗎？`)){
     try{
       await classicDbClear();
+      classicWriteMirror([]);
       await classicRefreshCache();
       renderClassicGameLibrary();
       toast("已清除全部已保存名局");
@@ -5037,7 +5072,7 @@ async function classicClearUserDb(){
 
 function classicBackupAll(){
   if(!classicGameCache.length){toast("目前沒有棋譜可備份");return;}
-  const payload={format:"JoyGoClassicBackup",version:"1.6b.7a",exportedAt:new Date().toISOString(),games:classicGameCache};
+  const payload={format:"JoyGoClassicBackup",version:"1.6b.7b",exportedAt:new Date().toISOString(),games:classicGameCache};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
   a.download="JoyGo-名局備份-"+new Date().toISOString().slice(0,10)+".json";
@@ -5050,7 +5085,14 @@ async function classicRestoreBackup(file){
     const text=await file.text();
     const data=JSON.parse(text);
     if(data?.format!=="JoyGoClassicBackup"||!Array.isArray(data.games))throw new Error("不是 Joy Go 名局備份檔");
-    for(const g of data.games){if(g?.id&&g?.sgf)await classicDbPut(g);}
+    const mirror=new Map(classicReadMirror().map(g=>[String(g.id),g]));
+    for(const g of data.games){
+      if(g?.id&&g?.sgf){
+        await classicDbPut(g);
+        mirror.set(String(g.id),g);
+      }
+    }
+    classicWriteMirror([...mirror.values()]);
     await classicRefreshCache();renderClassicGameLibrary();
     toast(`✅ 已還原 ${data.games.length} 盤名局`);
   }catch(err){toast("還原失敗："+(err?.message||String(err)))}
