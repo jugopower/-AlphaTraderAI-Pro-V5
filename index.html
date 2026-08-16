@@ -2798,6 +2798,35 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+
+<style id="joygo-online-lobby-v1-css">
+.online-lobby-modal{max-width:980px!important;width:min(94vw,980px)!important}
+.online-lobby-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-right:38px}
+.online-lobby-subtitle{color:var(--muted);font-size:13px}
+.online-count-badge{flex:0 0 auto;border:1px solid #4f8e5e;background:#102016;color:#c9f2d1;padding:8px 11px;border-radius:999px;font-size:13px;font-weight:800}
+.online-lobby-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:10px;margin-top:12px}
+.online-section-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.online-section-head h3{margin:0}
+.online-mini-btn{padding:6px 9px!important;font-size:12px!important}
+.online-small-badge{border:1px solid #6c4b2c;border-radius:999px;padding:3px 8px;color:#e8d6b7;font-size:12px}
+.online-friends-list,.online-openrooms-list{display:grid;gap:6px;max-height:240px;overflow:auto;margin-top:10px;padding-right:2px}
+.online-friend-card,.online-room-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:9px 10px;border:1px solid #3d2b1e;border-radius:10px;background:#15100c}
+.online-friend-name,.online-room-name{font-weight:800;color:#f3e3c7}
+.online-friend-meta,.online-room-meta{font-size:12px;color:#bba98c;margin-top:2px}
+.online-presence-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#6fd27e;margin-right:6px;box-shadow:0 0 7px rgba(111,210,126,.55)}
+.online-status-pill{font-size:11px;border:1px solid #5a4735;border-radius:999px;padding:3px 7px;color:#d9c5a4;white-space:nowrap}
+.online-status-pill.playing{border-color:#a56d2b;color:#ffd58a;background:#281b0b}
+.online-room-join{padding:6px 9px!important;font-size:12px!important;min-width:66px}
+.online-empty{padding:14px 10px;border:1px dashed #4c3827;border-radius:10px;text-align:center;color:#a99375;font-size:13px}
+.online-lobby-hint{margin-top:8px;color:#9f8b70;font-size:12px;line-height:1.45}
+.online-current-room{max-width:620px;margin-left:auto!important;margin-right:auto!important}
+.online-room-headline{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#e8d6b7}
+.online-room-headline b{border:1px solid #6c4b2c;border-radius:999px;padding:4px 9px;color:#ffd970;font-size:12px}
+@media(max-width:760px){
+ .online-lobby-title-row{display:block}.online-count-badge{display:inline-block;margin-top:8px}
+ .online-lobby-layout{grid-template-columns:1fr}.online-friends-list,.online-openrooms-list{max-height:200px}
+}
+</style>
 </head>
 <body>
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
@@ -2805,7 +2834,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 1.9.5｜精簡對局介面</div>
+    <div class="jg-beta">V1.0 Beta 2.0.0｜真人對弈大廳 V1</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3085,31 +3114,53 @@ body.spectator-viewing #statusText{font-weight:800}
   <button class="action" id="startHumanBtn" style="width:100%;margin-top:12px">開始新對局</button>
 </div></div>
 
-<div id="onlineModal" class="modal-backdrop"><div class="modal">
+<div id="onlineModal" class="modal-backdrop"><div class="modal online-lobby-modal">
   <button class="close" data-close="onlineModal">✕</button>
-  <h2>⚔️ Beta 1.9.4｜真人即時對弈</h2>
-  <p style="color:var(--muted);font-size:13px;line-height:1.5">第一階段雙人測試：一人建立房間，另一人輸入六碼房間號碼加入。建立者執黑、加入者執白。</p>
-  <div id="onlineLobbyPanel" class="online-grid">
+  <div class="online-lobby-title-row">
+    <div>
+      <h2 style="margin-bottom:4px">⚔️ Beta 2.0.0｜真人對弈大廳 V1</h2>
+      <div class="online-lobby-subtitle">線上棋友・建立房間・加入對局・即時同步</div>
+    </div>
+    <div class="online-count-badge">🟢 在線 <b id="onlineLobbyCount">0</b> / 16</div>
+  </div>
+
+  <div id="onlineLobbyPanel" class="online-lobby-layout">
+    <section class="online-panel online-friends-panel">
+      <div class="online-section-head"><h3>🟢 線上棋友</h3><button id="onlineLobbyRefreshBtn" class="secondary online-mini-btn" type="button">重新整理</button></div>
+      <div id="onlineFriendsList" class="online-friends-list"><div class="online-empty">正在連線大廳…</div></div>
+      <div class="online-lobby-hint">V1 測試上限：16 人同時在線。對弈中的棋友會標示「對弈中」。</div>
+    </section>
+
     <section class="online-panel">
-      <h3>建立新房間</h3>
+      <h3>➕ 建立新房間</h3>
       <label>棋盤
         <select id="onlineBoardSize"><option value="19">19路</option><option value="13">13路</option><option value="9">9路</option></select>
       </label>
       <label>貼目<input id="onlineKomi" type="number" step="0.5" value="7.5"></label>
       <button id="onlineCreateBtn" class="action" type="button" style="width:100%;margin-top:10px">建立房間（我執黑）</button>
+      <div class="online-lobby-hint">建立後會產生六碼房號，把房號傳給另一位棋友即可。</div>
     </section>
+
     <section class="online-panel">
-      <h3>加入房間</h3>
+      <h3>🚪 加入房間</h3>
       <label>六碼房間號碼<input id="onlineJoinCode" maxlength="6" autocapitalize="characters" placeholder="例如 ABC234"></label>
       <button id="onlineJoinBtn" class="action" type="button" style="width:100%;margin-top:10px">加入房間（我執白）</button>
       <button id="onlineResumeBtn" class="secondary" type="button" style="width:100%;margin-top:8px">重新進入上次房間</button>
     </section>
+
+    <section class="online-panel online-openrooms-panel">
+      <div class="online-section-head"><h3>🎮 開放房間</h3><span id="onlineOpenRoomCount" class="online-small-badge">0 間</span></div>
+      <div id="onlineOpenRoomsList" class="online-openrooms-list"><div class="online-empty">目前沒有等待加入的房間。</div></div>
+    </section>
   </div>
-  <section id="onlineRoomPanel" class="online-panel" style="display:none;margin-top:10px">
+
+  <section id="onlineRoomPanel" class="online-panel online-current-room" style="display:none;margin-top:10px">
+    <div class="online-room-headline"><span>目前房間</span><b id="onlineRoomStateBadge">等待加入</b></div>
     <div style="text-align:center;color:var(--muted)">請將房間號碼告訴另一位棋友</div>
     <div id="onlineRoomCode" class="online-code">——</div>
     <div class="online-player-row"><span>⚫ 黑方</span><b id="onlineBlackName">等待</b></div>
     <div class="online-player-row"><span>⚪ 白方</span><b id="onlineWhiteName">等待加入</b></div>
+    <div class="online-player-row"><span>棋盤</span><b id="onlineRoomBoardSize">19 路</b></div>
     <div class="online-player-row"><span>目前手數</span><b id="onlineMoveCount">0</b></div>
     <div class="online-player-row"><span>輪到</span><b id="onlineTurnText">黑方</b></div>
     <button id="onlineCopyCodeBtn" class="secondary" type="button" style="width:100%;margin-top:10px">複製房間號碼</button>
@@ -5467,6 +5518,8 @@ function onlineRenderRoom(){
   $("onlineWhiteName").textContent=r.white_name||"等待加入";
   $("onlineMoveCount").textContent=String(r.move_count||0);
   $("onlineTurnText").textContent=r.status==="waiting"?"等待白方加入":(r.status==="ended"?"對局結束":(r.turn==="B"?"黑方":"白方"));
+  if($("onlineRoomBoardSize"))$("onlineRoomBoardSize").textContent=String(r.board_size||19)+" 路";
+  if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="waiting"?"等待加入":(r.status==="playing"?"對弈中":"已結束");
 }
 async function onlineUnsubscribe(){
   if(state.onlineChannel&&memberSupabase){try{await memberSupabase.removeChannel(state.onlineChannel)}catch(_){}}
@@ -5586,6 +5639,111 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
   $("onlineJoinCode")?.addEventListener("input",e=>{e.target.value=onlineNormalizeCode(e.target.value)});
 });
+
+// ===== Joy Go Platform Beta 2.0.0: 真人對弈大廳 V1 =====
+let onlineLobbyPresenceChannel=null;
+let onlineLobbyRoomChannel=null;
+let onlineLobbyRefreshTimer=null;
+
+function onlineLobbyPresenceRows(){
+  if(!onlineLobbyPresenceChannel)return [];
+  const raw=onlineLobbyPresenceChannel.presenceState()||{};
+  return Object.values(raw).flat().filter(Boolean);
+}
+function onlineLobbyRenderFriends(){
+  const box=$("onlineFriendsList"),count=$("onlineLobbyCount");if(!box)return;
+  const rows=onlineLobbyPresenceRows();
+  const byUser=new Map();
+  rows.forEach(r=>{if(r.user_id&&!byUser.has(r.user_id))byUser.set(r.user_id,r)});
+  const list=[...byUser.values()].sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),'zh-Hant')).slice(0,16);
+  if(count)count.textContent=String(list.length);
+  box.innerHTML="";
+  if(!list.length){box.innerHTML='<div class="online-empty">目前尚未偵測到其他在線棋友。</div>';return}
+  list.forEach(r=>{
+    const card=document.createElement("div");card.className="online-friend-card";
+    const info=document.createElement("div");
+    const name=document.createElement("div");name.className="online-friend-name";name.innerHTML='<span class="online-presence-dot"></span>';
+    const nt=document.createElement("span");nt.textContent=(r.name||"棋友")+(r.user_id===memberSession?.user?.id?"（我）":"");name.appendChild(nt);
+    const meta=document.createElement("div");meta.className="online-friend-meta";meta.textContent=r.status==="playing"&&r.room_code?"房間 "+r.room_code:"Joy Go 會員";
+    info.append(name,meta);
+    const pill=document.createElement("span");pill.className="online-status-pill"+(r.status==="playing"?" playing":"");pill.textContent=r.status==="playing"?"對弈中":"在線";
+    card.append(info,pill);box.appendChild(card);
+  });
+}
+async function onlineLobbyTrackPresence(){
+  if(!onlineLobbyPresenceChannel||!memberSession?.user)return;
+  try{
+    await onlineLobbyPresenceChannel.track({
+      user_id:memberSession.user.id,
+      name:onlineMemberName(),
+      status:state.onlineRoom?.status==="playing"?"playing":"online",
+      room_code:state.onlineRoom?.room_code||"",
+      online_at:new Date().toISOString()
+    });
+  }catch(e){console.warn("Lobby presence track:",e)}
+}
+async function onlineLobbyConnectPresence(){
+  if(!memberSupabase||!memberSession?.user)return;
+  if(onlineLobbyPresenceChannel){try{await memberSupabase.removeChannel(onlineLobbyPresenceChannel)}catch(_){}}
+  onlineLobbyPresenceChannel=memberSupabase.channel("joygo-lobby-v1",{config:{presence:{key:memberSession.user.id}}})
+    .on("presence",{event:"sync"},onlineLobbyRenderFriends)
+    .on("presence",{event:"join"},onlineLobbyRenderFriends)
+    .on("presence",{event:"leave"},onlineLobbyRenderFriends)
+    .subscribe(async status=>{if(status==="SUBSCRIBED"){await onlineLobbyTrackPresence();onlineLobbyRenderFriends()}});
+}
+async function onlineLobbyLoadRooms(){
+  const box=$("onlineOpenRoomsList"),count=$("onlineOpenRoomCount");if(!box||!memberSupabase)return;
+  try{
+    const cutoff=new Date(Date.now()-12*60*60*1000).toISOString();
+    const {data,error}=await memberSupabase.from("online_rooms")
+      .select("id,room_code,black_name,white_name,board_size,komi,status,move_count,updated_at,created_at")
+      .eq("status","waiting").gte("created_at",cutoff).order("created_at",{ascending:false}).limit(16);
+    if(error)throw error;
+    const rooms=data||[];if(count)count.textContent=rooms.length+" 間";box.innerHTML="";
+    if(!rooms.length){box.innerHTML='<div class="online-empty">目前沒有等待加入的房間。</div>';return}
+    rooms.forEach(r=>{
+      const card=document.createElement("div");card.className="online-room-card";
+      const info=document.createElement("div");
+      const name=document.createElement("div");name.className="online-room-name";name.textContent=(r.black_name||"棋友")+" 的房間";
+      const meta=document.createElement("div");meta.className="online-room-meta";meta.textContent=`${r.room_code}｜${r.board_size||19}路｜貼 ${Number(r.komi||7.5)} 目`;
+      info.append(name,meta);
+      const btn=document.createElement("button");btn.className="action online-room-join";btn.type="button";btn.textContent="加入";btn.onclick=()=>onlineJoinRoom(r.room_code);
+      card.append(info,btn);box.appendChild(card);
+    });
+  }catch(e){box.innerHTML='<div class="online-empty">房間讀取失敗：'+String(e?.message||e).replace(/[<>]/g,'')+'</div>';if(count)count.textContent="—"}
+}
+async function onlineLobbyConnectRooms(){
+  if(!memberSupabase||!memberSession?.user)return;
+  if(onlineLobbyRoomChannel){try{await memberSupabase.removeChannel(onlineLobbyRoomChannel)}catch(_){}}
+  onlineLobbyRoomChannel=memberSupabase.channel("joygo-lobby-rooms-v1")
+    .on("postgres_changes",{event:"*",schema:"public",table:"online_rooms"},()=>onlineLobbyLoadRooms())
+    .subscribe();
+}
+async function onlineLobbyStart(){
+  if(!memberSupabase||!memberSession?.user)return;
+  await Promise.all([onlineLobbyConnectPresence(),onlineLobbyConnectRooms(),onlineLobbyLoadRooms()]);
+  if(onlineLobbyRefreshTimer)clearInterval(onlineLobbyRefreshTimer);
+  onlineLobbyRefreshTimer=setInterval(()=>{onlineLobbyTrackPresence();onlineLobbyLoadRooms()},30000);
+}
+async function onlineLobbyStop(){
+  if(onlineLobbyRefreshTimer)clearInterval(onlineLobbyRefreshTimer);onlineLobbyRefreshTimer=null;
+  if(memberSupabase&&onlineLobbyPresenceChannel){try{await memberSupabase.removeChannel(onlineLobbyPresenceChannel)}catch(_){}}
+  if(memberSupabase&&onlineLobbyRoomChannel){try{await memberSupabase.removeChannel(onlineLobbyRoomChannel)}catch(_){}}
+  onlineLobbyPresenceChannel=null;onlineLobbyRoomChannel=null;
+}
+const openOnlineLobbyV1=openOnlineLobby;
+openOnlineLobby=async function(){
+  if(!await onlineReady())return;
+  onlineRenderRoom();openModal("onlineModal");
+  await onlineLobbyStart();
+};
+const onlineEnterRoomV1=onlineEnterRoom;
+onlineEnterRoom=async function(room){await onlineEnterRoomV1(room);await onlineLobbyTrackPresence();await onlineLobbyLoadRooms()};
+const onlineLeaveRoomV1=onlineLeaveRoom;
+onlineLeaveRoom=async function(){await onlineLeaveRoomV1();await onlineLobbyTrackPresence();await onlineLobbyLoadRooms()};
+$("onlineLobbyRefreshBtn")?.addEventListener("click",()=>{onlineLobbyTrackPresence();onlineLobbyLoadRooms()});
+window.addEventListener("pagehide",()=>{if(onlineLobbyRefreshTimer)clearInterval(onlineLobbyRefreshTimer)},{passive:true});
+
 
 const tools=[
   ["infoBtn","☰","資訊",()=>openModal("infoModal")],
