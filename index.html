@@ -5585,9 +5585,6 @@ buildTools($("rightTools")); buildTools($("topbar"));
   title.className="compact-action-title";
   title.textContent="對局操作";
   panel.appendChild(title);
-  ["undoGameBtn","trialModeBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
-    const button=$(id);if(button)panel.appendChild(button);
-  });
   const fullscreen=document.createElement("button");
   fullscreen.id="compactFullscreenBtn";
   fullscreen.type="button";
@@ -5595,6 +5592,23 @@ buildTools($("rightTools")); buildTools($("topbar"));
   fullscreen.addEventListener("click",toggleFullscreen);
   panel.appendChild(fullscreen);
   right.appendChild(panel);
+
+  const landscapeOrder=["undoGameBtn","trialModeBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn"];
+  const portraitOrder=["undoGameBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn","trialModeBtn"];
+  const layoutQuery=window.matchMedia("(orientation:landscape) and (min-width:901px)");
+  function placeGameActions(){
+    if(layoutQuery.matches){
+      landscapeOrder.forEach(id=>{const button=$(id);if(button)panel.insertBefore(button,fullscreen);});
+    }else{
+      const anchor=$("firstChoiceBtn");
+      portraitOrder.forEach(id=>{
+        const button=$(id);
+        if(button) anchor ? row.insertBefore(button,anchor) : row.appendChild(button);
+      });
+    }
+  }
+  placeGameActions();
+  layoutQuery.addEventListener?.("change",placeGameActions);
 })();
 memberUpdateToolAccess();
 
