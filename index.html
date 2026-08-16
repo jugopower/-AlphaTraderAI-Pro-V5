@@ -3082,7 +3082,6 @@ body.spectator-viewing #statusText{font-weight:800}
     <label>最後5秒語音<select id="voiceCountdownOn"><option value="1">開</option><option value="0">關</option></select></label>
     <label>AI 對局提示<select id="gameHintOn"><option value="0" selected>關閉</option><option value="1">開啟</option></select></label>
   </div>
-  <p id="humanGameHint" style="color:var(--muted);margin:10px 0 0">分先：貼目 7.5。讓子局固定人類執黑、AI 執白。</p>
   <button class="action" id="startHumanBtn" style="width:100%;margin-top:12px">開始新對局</button>
 </div></div>
 
@@ -6949,17 +6948,14 @@ function handicapPoints(size,count){
   return (map[count]||[]).map(i=>({x:order[i][0],y:order[i][1]}));
 }
 function syncHumanSettings(){
-  const levelNamesForGame={entry:"入門",dan1:"初段",dan35:"3～5段",dan67:"6～7段",pro:"職業"};
   const h=Number($("handicapCount").value||0);
   const level=$("humanAiLevel").value;
   const visits=AI_LEVEL_VISITS[level]||12;
   $("humanAiVisits").value=String(visits);
   if(h>0){
     $("humanColor").value="B";$("humanColor").disabled=true;$("gameKomi").value="0.5";
-    $("humanGameHint").textContent=`讓${h}子：人類固定執黑，AI 執白先下，貼目 0.5。${levelNamesForGame[level]} · ${AI_LEVEL_SECONDS[level]}`;
   }else{
     $("humanColor").disabled=false;$("gameKomi").value="7.5";
-    $("humanGameHint").textContent=`分先：貼目 7.5。可選擇人類執黑或執白。${levelNamesForGame[level]} · ${AI_LEVEL_SECONDS[level]}`;
   }
 }
 $("handicapCount").onchange=syncHumanSettings;
