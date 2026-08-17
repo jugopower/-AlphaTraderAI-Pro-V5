@@ -14,7 +14,7 @@
 <header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>會員・報名・真人對弈・比賽設定，一個頁面完成</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
-<nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
+<nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
 
 <section class="pane active" id="pane-home">
 <div class="stats"><div class="stat"><span>全部會員</span><b id="hMembers">—</b></div><div class="stat"><span>待審核報名</span><b id="hPending">—</b></div><div class="stat"><span>正式參賽</span><b id="hApproved">—</b></div><div class="stat"><span>進行中棋局</span><b id="hPlaying">—</b></div></div>
@@ -27,6 +27,13 @@
 
 <section class="pane" id="pane-live"><div class="stats"><div class="stat"><span>等待加入</span><b id="lWaiting">0</b></div><div class="stat"><span>對弈中</span><b id="lPlaying">0</b></div><div class="stat"><span>已結束未清</span><b id="lEnded">0</b></div><div class="stat"><span>全部棋局</span><b id="lTotal">0</b></div></div><section class="card"><h2>真人棋局監看</h2><div class="card-body"><p class="sub">只有「已結束」棋局可以刪除；等待中與對弈中棋局不提供刪除，避免誤刪正在使用的房間。</p><div class="toolbar" style="margin-bottom:12px"><button id="clearEndedRooms" class="btn" style="border-color:#8d3d3d;color:#ffc0c0">🧹 清除全部已結束棋局</button><a href="lobby.html" class="btn gold">進入真人大廳管理</a></div><div id="roomList" class="room-list"></div></div></section></section>
 
+<section class="pane" id="pane-moderation">
+<section class="card"><h2>📋 巡場處置紀錄</h2><div class="card-body">
+<p class="sub">踢出、停權、解除與裁判終止都會留下內部紀錄；一般會員看不到。</p>
+<div class="stats" style="margin:12px 0"><div class="stat"><span>全部紀錄</span><b id="modTotal">0</b></div><div class="stat"><span>今日處置</span><b id="modToday">0</b></div><div class="stat"><span>停權紀錄</span><b id="modSuspend">0</b></div><div class="stat"><span>裁判終止</span><b id="modEndRoom">0</b></div></div>
+<div class="toolbar" style="margin-bottom:12px"><input id="modSearch" placeholder="搜尋會員、執行者、原因…" style="min-width:260px;flex:1"><select id="modFilter"><option value="">全部處置</option><option value="kick">踢出大廳</option><option value="suspend_1d">停權 1 天</option><option value="suspend_7d">停權 7 天</option><option value="suspend_permanent">永久停權</option><option value="unsuspend">解除停權</option><option value="end_room">裁判終止棋局</option></select><button id="refreshModeration" class="btn">重新整理紀錄</button></div>
+<div class="table-wrap"><table><thead><tr><th>時間</th><th>執行者</th><th>對象</th><th>處置</th><th>原因／備註</th><th>到期時間</th></tr></thead><tbody id="moderationRows"><tr><td colspan="6" class="sub">讀取中…</td></tr></tbody></table></div>
+</div></section></section>
 <section class="pane" id="pane-settings"><div class="grid"><section class="card"><h2>16 人比賽基本資料</h2><div class="card-body"><div class="formgrid"><div class="field"><label>比賽名稱</label><input id="eventTitle"></div><div class="field"><label>名額</label><input id="eventMax" type="number" min="2" max="512"></div><div class="field"><label>報名費 NT$</label><input id="eventFee" type="number" min="0" step="50">
 <div class="sub" style="margin-top:6px">可輸入任意金額；0 元會在報名頁顯示「免費」。</div>
 <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px">
@@ -40,7 +47,7 @@
 </main>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
-const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function notice(t,k=""){const e=$("notice");e.className="notice"+(k?" "+k:"");e.textContent=t}
 function dateInput(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(+d))return"";return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function showTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+name))}
@@ -129,7 +136,7 @@ notice('正在執行管理處置…');
 const {error}=await sb.rpc('joygo_admin_moderate_member',{p_target_user:id,p_action:action,p_reason:reason});
 if(error)return notice('處置失敗：'+error.message,'bad');
 notice(`✅ 已${labels[action]}。`,'good');
-await Promise.all([loadMembers(),loadRooms()]);
+await Promise.all([loadMembers(),loadRooms(),loadModeration()]);
 }
 window.moderateMember=moderateMember;
 window.saveMember=async id=>{if(staffRole!=="admin")return notice("只有主管理員可以修改會員身分。","bad");const row=document.querySelector(`tr[data-id="${id}"]`),role=row.querySelector('.role').value,exp=row.querySelector('.expires').value;const changes={role,expires_at:role==='trial'&&exp?new Date(exp+'T23:59:59').toISOString():null,updated_at:new Date().toISOString()};const {error}=await sb.from('profiles').update(changes).eq('id',id);if(error)return notice('會員更新失敗：'+error.message,'bad');notice('✅ 會員資料已更新。','good');await loadMembers()}
@@ -179,6 +186,20 @@ notice(`✅ 已清除 ${Number(data||0)} 局已結束棋局。`,'good');
 await loadRooms();
 }
 window.deleteEndedRoom=deleteEndedRoom;
+
+const moderationActionLabel=a=>({kick:"踢出大廳 10 分鐘",suspend_1d:"停權 1 天",suspend_7d:"停權 7 天",suspend_permanent:"永久停權",unsuspend:"解除停權",end_room:"裁判終止棋局"}[a]||a);
+function renderModeration(){
+ const q=($("modSearch")?.value||"").trim().toLowerCase(),f=$("modFilter")?.value||"",byId=new Map(members.map(x=>[x.id,x]));
+ const arr=moderationEvents.filter(e=>{if(f&&e.action!==f)return false;const a=byId.get(e.admin_user_id),t=byId.get(e.target_user_id),txt=[a?.display_name,a?.email,t?.display_name,t?.email,e.action,e.reason].join(" ").toLowerCase();return !q||txt.includes(q)});
+ const today=new Date();today.setHours(0,0,0,0);
+ $("modTotal").textContent=moderationEvents.length;$("modToday").textContent=moderationEvents.filter(e=>new Date(e.created_at)>=today).length;$("modSuspend").textContent=moderationEvents.filter(e=>["suspend_1d","suspend_7d","suspend_permanent"].includes(e.action)).length;$("modEndRoom").textContent=moderationEvents.filter(e=>e.action==="end_room").length;
+ $("moderationRows").innerHTML=arr.map(e=>{const a=byId.get(e.admin_user_id),t=byId.get(e.target_user_id),an=a?.display_name||a?.email||"未知工作人員",tn=e.action==="end_room"?"棋局":(t?.display_name||t?.email||"未知會員"),reason=String(e.reason||"").replace(/^room=([^｜]+)｜?/,"棋局 $1｜");return `<tr><td>${new Date(e.created_at).toLocaleString("zh-TW")}</td><td><div class="name">${esc(an)}</div><div class="sub">${a?.email?esc(a.email):""}</div></td><td><div class="name">${esc(tn)}</div><div class="sub">${t?.email&&e.action!=="end_room"?esc(t.email):""}</div></td><td><span class="pill ${["suspend_1d","suspend_7d","suspend_permanent"].includes(e.action)?"bad":e.action==="unsuspend"?"ok":"pending"}">${esc(moderationActionLabel(e.action))}</span></td><td>${esc(reason||"—")}</td><td>${e.expires_at?new Date(e.expires_at).toLocaleString("zh-TW"):"—"}</td></tr>`}).join("")||'<tr><td colspan="6" class="sub">沒有符合的處置紀錄。</td></tr>';
+}
+async function loadModeration(){
+ const {data,error}=await sb.from("moderation_events").select("id,target_user_id,admin_user_id,action,reason,expires_at,created_at").order("created_at",{ascending:false}).limit(300);
+ if(error){$("moderationRows").innerHTML=`<tr><td colspan="6" class="sub">紀錄讀取失敗：${esc(error.message)}</td></tr>`;return}
+ moderationEvents=data||[];renderModeration();
+}
 async function loadModeratorIds(){
 const {data,error}=await sb.rpc('joygo_get_moderator_ids');
 if(error){moderatorIds=new Set();return}
@@ -194,11 +215,14 @@ $("saveEvent").onclick=async()=>{const fee=Math.max(0,Math.round(Number($("event
 $("saveTimer").onclick=async()=>{const payload={p_board_size:Number($("tBoard").value),p_komi:Number($("tKomi").value),p_main_seconds:Math.max(0,Math.round(Number($("tMain").value||20)*60)),p_byo_seconds:Math.max(5,Math.round(Number($("tByo").value||30))),p_byo_periods:Math.max(1,Math.round(Number($("tPeriods").value||3)))};const {error}=await sb.rpc('joygo_save_tournament_settings',payload);if(error)return notice('計時設定儲存失敗：'+error.message,'bad');notice('✅ 比賽計時設定已儲存。','good');await loadTimer()};
 $("clearEndedRooms").onclick=()=>{if(staffRole!=="admin")return notice("巡場員不能刪除棋局資料。","bad");clearAllEndedRooms()};
 $("memberSearch").oninput=renderMembers;$("memberClear").onclick=()=>{$("memberSearch").value='';renderMembers()};$("regSearch").oninput=renderRegs;$("regClear").onclick=()=>{$("regSearch").value='';renderRegs()};
+$("modSearch")?.addEventListener("input",renderModeration);
+$("modFilter")?.addEventListener("change",renderModeration);
+$("refreshModeration")?.addEventListener("click",()=>loadModeration());
 async function loadAll(){
 notice('正在同步管理資料…');
 await loadModeratorIds();
 if(staffRole==="admin"){
-  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer()]);
+  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration()]);
 }else{
   await Promise.all([loadMembers(),loadRooms()]);
 }
