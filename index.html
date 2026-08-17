@@ -2834,7 +2834,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 2.1.0｜真人獨立大廳・邀請對局</div>
+    <div class="jg-beta">V1.0 Beta 2.1.1｜自由對弈・比賽計時設定</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3118,7 +3118,7 @@ body.spectator-viewing #statusText{font-weight:800}
   <button class="close" data-close="onlineModal">✕</button>
   <div class="online-lobby-title-row">
     <div>
-      <h2 style="margin-bottom:4px">⚔️ Beta 2.1.0｜真人棋局資訊</h2>
+      <h2 style="margin-bottom:4px">⚔️ Beta 2.1.1｜真人棋局資訊</h2>
       <div class="online-lobby-subtitle">線上棋友・建立房間・加入對局・即時同步</div>
     </div>
     <div class="online-count-badge">🟢 在線 <b id="onlineLobbyCount">0</b> / 16</div>
@@ -8606,8 +8606,8 @@ window.addEventListener("DOMContentLoaded",async()=>{
 <!-- Beta 1.8.4 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 
-<script id="joygo-beta210-direct-room-js">
-// Beta 2.1.0：從獨立大廳接受邀請後，以 ?room=XXXXXX 回到棋局頁。
+<script id="joygo-beta211-direct-room-js">
+// Beta 2.1.1：從獨立大廳接受邀請後，以 ?room=XXXXXX 回到棋局頁；房間已含自由對弈計時設定。
 window.addEventListener("DOMContentLoaded",()=>{
   const code=new URLSearchParams(location.search).get("room");
   if(!code)return;
