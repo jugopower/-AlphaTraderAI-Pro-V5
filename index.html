@@ -5303,19 +5303,16 @@ async function memberRefreshAccess(){
   }
   try{
     const {data,error}=await memberSupabase.from("profiles")
-      .select("role,status,expires_at,display_name,suspended_until").eq("id",user.id).single();
+      .select("role,status,expires_at,display_name").eq("id",user.id).single();
     if(error)throw error;
     const expired=data.role!=="admin"&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
-    const suspensionUntil=data.suspended_until?new Date(data.suspended_until).getTime():0;
-    const tempSuspended=data.status==="suspended"&&suspensionUntil>Date.now();
-    const permanentSuspended=data.status==="suspended"&&!data.suspended_until;
-    const blocked=tempSuspended||permanentSuspended||expired;
+    const blocked=data.status!=="active"||expired;
     const labels={admin:"管理員",member:"正式會員",trial:"試用會員"};
     memberAccess={
       role:blocked?"blocked":data.role,
       status:data.status,
       expiresAt:data.expires_at||null,
-      label:blocked?(data.status==="suspended"?(data.suspended_until?`暫停至 ${new Date(data.suspended_until).toLocaleString("zh-TW")}`:"已永久停權"):"會員已到期"):(labels[data.role]||"會員"),
+      label:blocked?(data.status==="suspended"?"已停權":"會員已到期"):(labels[data.role]||"會員"),
       displayName:data.display_name||""
     };
   }catch(err){
@@ -5499,22 +5496,6 @@ function startOnlineClockUI(){
     }
   },250);
 }
-let onlineModerationTimer=null,onlineKickVersion=null;
-async function onlineModerationCheck(initial=false){
-  if(!memberSupabase||!memberSession?.user)return true;
-  const {data,error}=await memberSupabase.rpc("joygo_get_my_moderation_state");
-  if(error)return true;
-  const s=Array.isArray(data)?data[0]:data;if(!s)return true;
-  if(initial)onlineKickVersion=Number(s.kick_version||0);
-  if(!s.online_allowed||(!initial&&onlineKickVersion!==null&&Number(s.kick_version||0)>onlineKickVersion)){
-    onlineKickVersion=Number(s.kick_version||0);
-    if(state.onlineMode){try{await onlineLeaveRoom()}catch{}}
-    toast("⛔ "+(s.message||"管理員已限制真人大廳使用"));
-    return false;
-  }
-  onlineKickVersion=Number(s.kick_version||0);return true;
-}
-function startOnlineModerationWatch(){if(onlineModerationTimer)clearInterval(onlineModerationTimer);onlineModerationTimer=setInterval(()=>onlineModerationCheck(false),5000)}
 async function onlineReady(){
   if(!await memberEnsureClient())return false;
   if(!memberSession?.user){
@@ -5525,8 +5506,6 @@ async function onlineReady(){
   }
   if(!memberSession?.user){onlineSetStatus("請先登入會員，再使用真人對弈。","bad");openMemberModal();return false}
   if(memberAccess.role==="blocked"){onlineSetStatus("目前會員狀態無法使用真人對弈："+memberAccess.label,"bad");return false}
-  if(!await onlineModerationCheck(true)){onlineSetStatus("目前無法使用真人大廳。","bad");return false}
-  startOnlineModerationWatch();
   return true;
 }
 async function openOnlineLobby(){
@@ -5792,7 +5771,7 @@ const tools=[
   ["teachBtn","▣","教學",()=>memberGuard("teach",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")})],
   ["aiBtn","AI","分析總覽",()=>memberGuard("ai",()=>{updateProfessionalDashboard();openModal("aiModal")})],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>memberGuard("human",()=>openModal("humanModal"))],
-  ["onlineBtn","⚔️","真人",()=>memberGuard("online",openOnlineLobby)],
+  ["onlineBtn","⚔️","弈廳",()=>memberGuard("online",openOnlineLobby)],
   ["tournamentRegBtn","🏆","比賽報名",()=>memberGuard("online",()=>{window.location.href="tournament-register.html"})],
   ["adminCenterBtn","👑","管理",()=>{window.location.href="admin-center.html"}],
   ["memberBtn","👤","會員",()=>openMemberModal()],
