@@ -5769,6 +5769,7 @@ const tools=[
   ["aiBtn","AI","分析總覽",()=>memberGuard("ai",()=>{updateProfessionalDashboard();openModal("aiModal")})],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>memberGuard("human",()=>openModal("humanModal"))],
   ["onlineBtn","⚔️","真人",()=>memberGuard("online",openOnlineLobby)],
+  ["tournamentRegBtn","🏆","比賽報名",()=>memberGuard("online",()=>{window.location.href="tournament-register.html"})],
   ["memberBtn","👤","會員",()=>openMemberModal()],
   ["classicGameBtn","🏛️","名局館",()=>memberGuard("classic",()=>openClassicGameLibrary())],
   ["spectatorBtn","👁","觀戰",()=>memberGuard("spectator",()=>openSpectatorLobby())],
