@@ -5300,7 +5300,7 @@ let onlineLastPassMove=0;
 let onlineClockTimer=null;
 let onlineTimeoutClaimed=false;
 let onlineLastResult="";
-let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:""};
+let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",staffRole:"none"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
   url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",
@@ -5374,7 +5374,7 @@ function memberDisplayName(user){
 async function memberRefreshAccess(){
   const user=memberSession?.user;
   if(!user||!memberSupabase){
-    memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:""};
+    memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",staffRole:"none"};
     memberUpdateToolAccess();
     return memberAccess;
   }
@@ -5382,7 +5382,13 @@ async function memberRefreshAccess(){
     const {data,error}=await memberSupabase.from("profiles")
       .select("role,status,expires_at,display_name").eq("id",user.id).single();
     if(error)throw error;
-    const expired=data.role!=="admin"&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
+    let staffRole="none";
+    try{
+      const {data:sa}=await memberSupabase.rpc("joygo_get_staff_access");
+      const s=Array.isArray(sa)?sa[0]:sa;
+      staffRole=s?.staff_role||"none";
+    }catch{}
+    const expired=!["admin"].includes(data.role)&&staffRole!=="moderator"&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
     const blocked=data.status!=="active"||expired;
     const labels={admin:"管理員",member:"正式會員",trial:"試用會員"};
     memberAccess={
@@ -5390,7 +5396,8 @@ async function memberRefreshAccess(){
       status:data.status,
       expiresAt:data.expires_at||null,
       label:blocked?(data.status==="suspended"?"已停權":"會員已到期"):(labels[data.role]||"會員"),
-      displayName:data.display_name||""
+      displayName:data.display_name||"",
+      staffRole
     };
   }catch(err){
     console.error(err);
@@ -5417,7 +5424,7 @@ function memberGuard(feature,action){
 }
 function memberUpdateToolAccess(){
   document.querySelectorAll('[id^="adminCenterBtn_"]').forEach(button=>{
-    button.style.display=memberAccess.role==="admin"?"":"none";
+    button.style.display=(memberAccess.role==="admin"||memberAccess.staffRole==="moderator")?"":"none";
   });
   const featureById={teachBtn:"teach",aiBtn:"ai",humanBtn:"human",onlineBtn:"online",classicGameBtn:"classic",spectatorBtn:"spectator",cloudBtn:"cloud"};
   Object.entries(featureById).forEach(([id,feature])=>{

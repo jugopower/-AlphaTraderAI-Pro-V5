@@ -40,12 +40,25 @@
 </main>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
-const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[];const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function notice(t,k=""){const e=$("notice");e.className="notice"+(k?" "+k:"");e.textContent=t}
 function dateInput(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(+d))return"";return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function showTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+name))}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-function updateHome(){const pending=regs.filter(x=>x.registration_status==='pending').length, approved=regs.filter(x=>x.registration_status==='approved').length, playing=rooms.filter(x=>x.status==='playing').length;$("hMembers").textContent=members.length;$("hPending").textContent=pending;$("hApproved").textContent=approved+" / 16";$("hPlaying").textContent=playing;const notes=[];if(pending)notes.push(`🔔 有 ${pending} 位選手等待報名審核。`);if(rooms.filter(x=>x.status==='ended').length)notes.push(`🧹 有 ${rooms.filter(x=>x.status==='ended').length} 局已結束尚未由棋手清除。`);if(approved<16)notes.push(`🏆 正式參賽目前 ${approved}/16 人，尚有 ${16-approved} 個名額。`);else notes.push('✅ 16 人正式名額已滿。');$("todayFocus").innerHTML=notes.map(x=>`<p>${esc(x)}</p>`).join('')}
+function updateHome(){
+const pending=regs.filter(x=>x.registration_status==='pending').length, approved=regs.filter(x=>x.registration_status==='approved').length, playing=rooms.filter(x=>x.status==='playing').length;
+$("hMembers").textContent=members.length;$("hPlaying").textContent=playing;
+if(staffRole==="admin"){
+  $("hPending").textContent=pending;$("hApproved").textContent=approved+" / 16";
+  const notes=[];if(pending)notes.push(`🔔 有 ${pending} 位選手等待報名審核。`);
+  if(rooms.filter(x=>x.status==='ended').length)notes.push(`🧹 有 ${rooms.filter(x=>x.status==='ended').length} 局已結束尚未清除。`);
+  if(approved<16)notes.push(`🏆 正式參賽目前 ${approved}/16 人，尚有 ${16-approved} 個名額。`);else notes.push('✅ 16 人正式名額已滿。');
+  $("todayFocus").innerHTML=notes.map(x=>`<p>${esc(x)}</p>`).join('');
+}else{
+  const ended=rooms.filter(x=>x.status==='ended').length;
+  $("todayFocus").innerHTML=`<p>🕵️ 巡場模式：對外以一般會員身分在線。</p><p>🟢 對弈中 ${playing} 局；已結束 ${ended} 局。</p><p>⚠️ 可踢出大廳、停權 1 天／7 天、解除停權與裁判終止棋局；不能修改比賽設定或會員身分。</p>`;
+}
+}
 function renderMembers(){
 const q=$("memberSearch").value.trim().toLowerCase(),arr=members.filter(x=>!q||[x.display_name,x.email,x.moderation_note].join(' ').toLowerCase().includes(q));
 $("mTotal").textContent=members.length;
@@ -53,7 +66,8 @@ $("mMember").textContent=members.filter(x=>x.role==='member'&&x.status==='active
 $("mTrial").textContent=members.filter(x=>x.role==='trial').length;
 $("mSusp").textContent=members.filter(x=>x.status==='suspended').length;
 $("memberRows").innerHTML=arr.map(r=>{
-const self=r.id===me.id, isAdmin=r.role==='admin';
+const self=r.id===me.id, isAdmin=r.role==='admin', isModerator=moderatorIds.has(r.id);
+const protectedTarget=isAdmin || (staffRole==="moderator"&&isModerator);
 const until=r.suspended_until?new Date(r.suspended_until):null;
 const temp=until&&until.getTime()>Date.now();
 const lobbyUntil=r.lobby_blocked_until?new Date(r.lobby_blocked_until):null;
@@ -61,23 +75,46 @@ const lobbyBlocked=lobbyUntil&&lobbyUntil.getTime()>Date.now();
 const stateText=r.status==='suspended'?(temp?`暫停至 ${until.toLocaleString('zh-TW')}`:'永久停權'):(lobbyBlocked?`大廳停用至 ${lobbyUntil.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}`:'正常');
 const stateClass=r.status==='suspended'?'bad':(lobbyBlocked?'pending':'ok');
 const note=r.moderation_note?`<div class="sub">備註：${esc(r.moderation_note)}</div>`:'';
-const actions=(self||isAdmin)?'<span class="sub">不可處置管理員</span>':`
-<div style="display:flex;flex-wrap:wrap;gap:5px;min-width:250px">
+let actions='';
+if(self||protectedTarget){
+  actions=`<span class="sub">${self?'自己的帳號不可處置':isAdmin?'不可處置主管理員':'巡場員彼此不可處置'}</span>`;
+}else{
+  actions=`<div style="display:flex;flex-wrap:wrap;gap:5px;min-width:250px">
 <button class="mini neutral" onclick="moderateMember('${r.id}','kick')">踢出大廳 10 分</button>
 <button class="mini wait" onclick="moderateMember('${r.id}','suspend_1d')">停 1 天</button>
 <button class="mini wait" onclick="moderateMember('${r.id}','suspend_7d')">停 7 天</button>
-<button class="mini reject" onclick="moderateMember('${r.id}','suspend_permanent')">永久停權</button>
+${staffRole==="admin"?`<button class="mini reject" onclick="moderateMember('${r.id}','suspend_permanent')">永久停權</button>`:''}
 <button class="mini approve" onclick="moderateMember('${r.id}','unsuspend')">解除</button>
 </div>`;
+}
+let roleCell='';
+if(staffRole==="admin"){
+  roleCell=`<select class="role" ${self?'disabled':''}><option value="trial" ${r.role==='trial'?'selected':''}>試用</option><option value="member" ${r.role==='member'?'selected':''}>正式會員</option><option value="admin" ${r.role==='admin'?'selected':''}>管理員</option></select>
+  ${!isAdmin&&!self?`<div style="margin-top:6px"><button class="mini ${isModerator?'reject':'neutral'}" onclick="setModerator('${r.id}',${isModerator?'false':'true'})">${isModerator?'取消巡場':'設為巡場'}</button></div>`:''}
+  ${isModerator?'<div class="sub">🕵️ 隱身巡場員</div>':''}`;
+}else{
+  roleCell=`<span>${r.role==='admin'?'管理員':isModerator?'正式會員':'正式會員'}</span>${isModerator?'<div class="sub">🕵️ 巡場員（僅內部可見）</div>':''}`;
+}
 return `<tr data-id="${r.id}">
 <td><div class="name">${esc(r.display_name||'未命名')}${self?'（我）':''}</div><div class="sub">${esc(r.email)}</div>${note}</td>
-<td><select class="role" ${self?'disabled':''}><option value="trial" ${r.role==='trial'?'selected':''}>試用</option><option value="member" ${r.role==='member'?'selected':''}>正式會員</option><option value="admin" ${r.role==='admin'?'selected':''}>管理員</option></select></td>
+<td>${roleCell}</td>
 <td><span class="pill ${stateClass}">${stateText}</span></td>
-<td><input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?'disabled':''}></td>
+<td>${staffRole==="admin"?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?'disabled':''}>`:'—'}</td>
 <td>${new Date(r.created_at).toLocaleDateString('zh-TW')}</td>
-<td>${actions}<button class="mini save" style="margin-top:6px" ${self?'disabled':''} onclick="saveMember('${r.id}')">儲存身分／期限</button></td>
+<td>${actions}${staffRole==="admin"?`<button class="mini save" style="margin-top:6px" ${self?'disabled':''} onclick="saveMember('${r.id}')">儲存身分／期限</button>`:''}</td>
 </tr>`}).join('')||'<tr><td colspan="6" class="sub">沒有符合資料。</td></tr>';
 }
+async function setModerator(id,enabled){
+if(staffRole!=="admin")return notice('只有主管理員可以設定巡場員。','bad');
+const row=members.find(x=>x.id===id);if(!row)return;
+if(!confirm(`${enabled?'設為':'取消'}「${row.display_name||row.email}」的巡場管理員資格？`))return;
+notice('正在更新巡場員資格…');
+const {error}=await sb.rpc('joygo_admin_set_moderator',{p_target_user:id,p_enabled:enabled});
+if(error)return notice('巡場員設定失敗：'+error.message,'bad');
+notice(`✅ 已${enabled?'設為':'取消'}巡場管理員。`,'good');
+await Promise.all([loadModeratorIds(),loadMembers()]);
+}
+window.setModerator=setModerator;
 async function moderateMember(id,action){
 const row=members.find(x=>x.id===id); if(!row)return;
 const labels={kick:'踢出真人大廳 10 分鐘',suspend_1d:'暫停帳號 1 天',suspend_7d:'暫停帳號 7 天',suspend_permanent:'永久停權',unsuspend:'解除停權'};
@@ -95,7 +132,7 @@ notice(`✅ 已${labels[action]}。`,'good');
 await Promise.all([loadMembers(),loadRooms()]);
 }
 window.moderateMember=moderateMember;
-window.saveMember=async id=>{const row=document.querySelector(`tr[data-id="${id}"]`),role=row.querySelector('.role').value,exp=row.querySelector('.expires').value;const changes={role,expires_at:role==='trial'&&exp?new Date(exp+'T23:59:59').toISOString():null,updated_at:new Date().toISOString()};const {error}=await sb.from('profiles').update(changes).eq('id',id);if(error)return notice('會員更新失敗：'+error.message,'bad');notice('✅ 會員資料已更新。','good');await loadMembers()}
+window.saveMember=async id=>{if(staffRole!=="admin")return notice("只有主管理員可以修改會員身分。","bad");const row=document.querySelector(`tr[data-id="${id}"]`),role=row.querySelector('.role').value,exp=row.querySelector('.expires').value;const changes={role,expires_at:role==='trial'&&exp?new Date(exp+'T23:59:59').toISOString():null,updated_at:new Date().toISOString()};const {error}=await sb.from('profiles').update(changes).eq('id',id);if(error)return notice('會員更新失敗：'+error.message,'bad');notice('✅ 會員資料已更新。','good');await loadMembers()}
 const rl=s=>({pending:'待審核',approved:'正式參賽',waitlist:'候補',rejected:'未通過',cancelled:'已取消'}[s]||s),pl=s=>({pending:'待確認',paid:'已繳費',rejected:'有問題',refunded:'已退款'}[s]||s),il=s=>({pending:'待查核',verified:'已通過',rejected:'未通過'}[s]||s);
 function renderRegs(){const q=$("regSearch").value.trim().toLowerCase(),arr=regs.filter(r=>!q||[r.real_name,r.email,r.phone,r.rank,r.go_account,r.payment_last5].join(' ').toLowerCase().includes(q));$("rTotal").textContent=regs.length;$("rApproved").textContent=regs.filter(x=>x.registration_status==='approved').length;$("rPending").textContent=regs.filter(x=>x.registration_status==='pending').length;$("rOther").textContent=regs.filter(x=>['waitlist','rejected'].includes(x.registration_status)).length;$("regRows").innerHTML=arr.map((r,i)=>`<tr><td>${i+1}</td><td><div class="name">${esc(r.real_name)}</div><div class="sub">${esc(r.email)}</div></td><td><b>${esc(r.rank)}</b><div class="sub">${esc(r.phone)}<br>${esc(r.go_account||'—')}</div></td><td><b>NT$ ${Number(r.payment_amount||0).toLocaleString()}</b><div class="sub">後五碼 ${esc(r.payment_last5)}<br>${esc(pl(r.payment_status))}</div></td><td>${esc(il(r.identity_status))}</td><td><span class="pill ${r.registration_status==='approved'?'ok':r.registration_status==='pending'?'pending':r.registration_status==='waitlist'?'blue':'badpill'}">${esc(rl(r.registration_status))}</span></td><td><div class="rowops"><button class="mini approve" onclick="approveReg('${r.id}')">✓ 核准</button><button class="mini neutral" onclick="reviewReg('${r.id}','pending','pending','pending','')">待審</button><button class="mini wait" onclick="reviewReg('${r.id}','verified','paid','waitlist','正式名額未確認，暫列候補')">候補</button><button class="mini reject" onclick="rejectReg('${r.id}')">退回</button></div></td></tr>`).join('')||'<tr><td colspan="7" class="sub">目前沒有報名資料。</td></tr>'}
 window.approveReg=async id=>{const {error}=await sb.rpc('joygo_approve_tournament_registration',{p_registration_id:id});if(error)return notice('核准失敗：'+error.message,'bad');notice('✅ 已核准正式參賽。','good');await loadRegs()};window.reviewReg=async(id,is,pay,reg,note)=>{const {error}=await sb.rpc('joygo_review_tournament_registration',{p_registration_id:id,p_identity_status:is,p_payment_status:pay,p_registration_status:reg,p_admin_note:note});if(error)return notice('審核失敗：'+error.message,'bad');notice('✅ 報名狀態已更新。','good');await loadRegs()};window.rejectReg=id=>{const n=prompt('退回原因','資料待補正')||'資料待補正';reviewReg(id,'rejected','rejected','rejected',n)};
@@ -104,14 +141,25 @@ $("lWaiting").textContent=rooms.filter(x=>x.status==='waiting').length;
 $("lPlaying").textContent=rooms.filter(x=>x.status==='playing').length;
 $("lEnded").textContent=rooms.filter(x=>x.status==='ended').length;
 $("lTotal").textContent=rooms.length;
-$("clearEndedRooms").disabled=!rooms.some(x=>x.status==='ended');
+$("clearEndedRooms").disabled=staffRole!=="admin"||!rooms.some(x=>x.status==='ended');
 $("roomList").innerHTML=rooms.slice(0,100).map(r=>`<div class="room">
 <div><b>${esc(r.room_code)}</b><div class="sub">${new Date(r.created_at).toLocaleString('zh-TW')}</div></div>
 <div>${esc(r.black_name||'黑方')} vs ${esc(r.white_name||'等待加入')}</div>
 <div>${r.board_size}路｜${Math.round(Number(r.main_seconds||0)/60)}分＋${r.byo_seconds||30}秒×${r.byo_periods||3}</div>
-<div><span class="pill ${r.status==='playing'?'ok':r.status==='waiting'?'pending':'blue'}">${r.status==='playing'?'對弈中':r.status==='waiting'?'等待':'已結束'}</span>${r.status==='ended'?`<button class="mini reject" style="margin-left:8px" onclick="deleteEndedRoom('${esc(r.id)}','${esc(r.room_code)}')">🗑️ 刪除此局</button>`:''}</div>
+<div><span class="pill ${r.status==='playing'?'ok':r.status==='waiting'?'pending':'blue'}">${r.status==='playing'?'對弈中':r.status==='waiting'?'等待':'已結束'}</span>${r.status==='playing'?`<button class="mini wait" style="margin-left:8px" onclick="staffEndRoom('${esc(r.id)}','${esc(r.room_code)}')">⚖️ 裁判終止</button>`:''}${r.status==='ended'&&staffRole==='admin'?`<button class="mini reject" style="margin-left:8px" onclick="deleteEndedRoom('${esc(r.id)}','${esc(r.room_code)}')">🗑️ 刪除此局</button>`:''}</div>
 </div>`).join('')||'<div class="sub">目前沒有真人棋局。</div>';
 }
+async function staffEndRoom(id,code){
+const reason=prompt(`裁判終止棋局「${code}」\n\n請輸入原因：`,'異常／鬧場處置');
+if(reason===null)return;
+if(!confirm(`確定由管理人員終止棋局「${code}」？`))return;
+notice('正在裁判終止棋局…');
+const {error}=await sb.rpc('joygo_staff_end_room',{p_room_id:id,p_reason:reason});
+if(error)return notice('終止失敗：'+error.message,'bad');
+notice(`✅ 棋局 ${code} 已由裁判終止。`,'good');
+await loadRooms();
+}
+window.staffEndRoom=staffEndRoom;
 async function deleteEndedRoom(id,code){
 if(!confirm(`確定刪除已結束棋局「${code}」？\n刪除後無法復原。`))return;
 notice('正在刪除已結束棋局…');
@@ -131,6 +179,11 @@ notice(`✅ 已清除 ${Number(data||0)} 局已結束棋局。`,'good');
 await loadRooms();
 }
 window.deleteEndedRoom=deleteEndedRoom;
+async function loadModeratorIds(){
+const {data,error}=await sb.rpc('joygo_get_moderator_ids');
+if(error){moderatorIds=new Set();return}
+moderatorIds=new Set((data||[]).map(x=>x.user_id||x));
+}
 async function loadMembers(){try{await sb.rpc('joygo_admin_cleanup_expired_suspensions')}catch{}const {data,error}=await sb.from('profiles').select('id,email,display_name,role,status,expires_at,suspended_until,lobby_blocked_until,moderation_note,created_at').order('created_at',{ascending:true});if(error)throw error;members=data||[];renderMembers();updateHome()}
 async function loadRegs(){const {data,error}=await sb.from('tournament_registrations').select('*').eq('tournament_code',CODE).order('created_at',{ascending:true});if(error)throw error;regs=data||[];renderRegs();updateHome()}
 async function loadRooms(){const {data,error}=await sb.from('online_rooms').select('id,room_code,black_name,white_name,board_size,status,main_seconds,byo_seconds,byo_periods,created_at').order('created_at',{ascending:false}).limit(100);if(error)throw error;rooms=data||[];renderRooms();updateHome()}
@@ -139,10 +192,39 @@ async function loadTimer(){const {data,error}=await sb.from('tournament_settings
 document.querySelectorAll(".feePreset").forEach(b=>b.onclick=()=>{$("eventFee").value=b.dataset.fee});
 $("saveEvent").onclick=async()=>{const fee=Math.max(0,Math.round(Number($("eventFee").value||0)));$("eventFee").value=String(fee);const payload={title:$("eventTitle").value.trim(),max_players:Number($("eventMax").value),entry_fee:fee,event_date:$("eventDate").value||null,registration_open:$("eventOpen").value==='true',venue:$("eventVenue").value.trim(),updated_at:new Date().toISOString()};const {error}=await sb.from('tournament_events').update(payload).eq('code',CODE);if(error)return notice('比賽資料儲存失敗：'+error.message,'bad');notice('✅ 比賽基本資料已儲存。','good');await loadEvent()};
 $("saveTimer").onclick=async()=>{const payload={p_board_size:Number($("tBoard").value),p_komi:Number($("tKomi").value),p_main_seconds:Math.max(0,Math.round(Number($("tMain").value||20)*60)),p_byo_seconds:Math.max(5,Math.round(Number($("tByo").value||30))),p_byo_periods:Math.max(1,Math.round(Number($("tPeriods").value||3)))};const {error}=await sb.rpc('joygo_save_tournament_settings',payload);if(error)return notice('計時設定儲存失敗：'+error.message,'bad');notice('✅ 比賽計時設定已儲存。','good');await loadTimer()};
-$("clearEndedRooms").onclick=clearAllEndedRooms;
+$("clearEndedRooms").onclick=()=>{if(staffRole!=="admin")return notice("巡場員不能刪除棋局資料。","bad");clearAllEndedRooms()};
 $("memberSearch").oninput=renderMembers;$("memberClear").onclick=()=>{$("memberSearch").value='';renderMembers()};$("regSearch").oninput=renderRegs;$("regClear").onclick=()=>{$("regSearch").value='';renderRegs()};
-async function loadAll(){notice('正在同步管理資料…');await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer()]);notice('✅ Joy Go 管理中心已同步完成。','good')}
+async function loadAll(){
+notice('正在同步管理資料…');
+await loadModeratorIds();
+if(staffRole==="admin"){
+  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer()]);
+}else{
+  await Promise.all([loadMembers(),loadRooms()]);
+}
+notice(staffRole==="admin"?'✅ Joy Go 管理中心已同步完成。':'✅ 巡場監控資料已同步完成。','good');
+}
 $("refreshAll").onclick=()=>loadAll().catch(e=>notice('重新整理失敗：'+e.message,'bad'));
-async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session){notice('請先回 Joy Go Platform 登入管理員帳號。','bad');return}me=data.session.user;const {data:p,error:pe}=await sb.from('profiles').select('role,status').eq('id',me.id).single();if(pe||p?.role!=='admin'||p?.status!=='active'){notice('此頁只有啟用中的 Joy Go 管理員可使用。','bad');return}$("app").hidden=false;await loadAll()}catch(e){notice('系統錯誤：'+(e?.message||e),'bad')}}init();
+async function init(){
+try{
+  const {data,error}=await sb.auth.getSession();
+  if(error||!data?.session){notice('請先回 Joy Go Platform 登入帳號。','bad');return}
+  me=data.session.user;
+  const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');
+  if(ae)throw ae;
+  const a=Array.isArray(access)?access[0]:access;
+  staffRole=a?.staff_role||'none';
+  if(!['admin','moderator'].includes(staffRole)){notice('此頁只有主管理員或巡場管理員可使用。','bad');return}
+  $("app").hidden=false;
+  if(staffRole==="moderator"){
+    document.querySelectorAll('.tab[data-tab="registrations"],.tab[data-tab="settings"]').forEach(x=>x.hidden=true);
+    const hp=$("hPending")?.closest(".stat"),ha=$("hApproved")?.closest(".stat");if(hp)hp.hidden=true;if(ha)ha.hidden=true;
+    $("clearEndedRooms").hidden=true;
+    document.querySelectorAll('.quick a[href="tournament-register.html"],.quick a[href="tournament-admin.html"]').forEach(x=>x.hidden=true);
+    const brand=document.querySelector('.brand p');if(brand)brand.textContent='🕵️ 巡場監控模式｜對外不顯示管理員標記';
+  }
+  await loadAll();
+}catch(e){notice('系統錯誤：'+(e?.message||e),'bad')}
+}init();
 </script>
 </body></html>
