@@ -2834,7 +2834,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 2.0.0｜真人對弈大廳 V1</div>
+    <div class="jg-beta">V1.0 Beta 2.1.0｜真人獨立大廳・邀請對局</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -3118,7 +3118,7 @@ body.spectator-viewing #statusText{font-weight:800}
   <button class="close" data-close="onlineModal">✕</button>
   <div class="online-lobby-title-row">
     <div>
-      <h2 style="margin-bottom:4px">⚔️ Beta 2.0.0｜真人對弈大廳 V1</h2>
+      <h2 style="margin-bottom:4px">⚔️ Beta 2.1.0｜真人棋局資訊</h2>
       <div class="online-lobby-subtitle">線上棋友・建立房間・加入對局・即時同步</div>
     </div>
     <div class="online-count-badge">🟢 在線 <b id="onlineLobbyCount">0</b> / 16</div>
@@ -3165,6 +3165,7 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="online-player-row"><span>輪到</span><b id="onlineTurnText">黑方</b></div>
     <button id="onlineCopyCodeBtn" class="secondary" type="button" style="width:100%;margin-top:10px">複製房間號碼</button>
     <button id="onlineLeaveBtn" class="secondary" type="button" style="width:100%;margin-top:8px">離開真人對弈</button>
+    <button id="onlineClearEndedBtn" class="action" type="button" style="width:100%;margin-top:8px;display:none">🧹 清除本局並回大廳</button>
   </section>
   <div id="onlineStatus" class="online-status">請先登入會員，再建立或加入房間。</div>
 </div></div>
@@ -5520,6 +5521,7 @@ function onlineRenderRoom(){
   $("onlineTurnText").textContent=r.status==="waiting"?"等待白方加入":(r.status==="ended"?"對局結束":(r.turn==="B"?"黑方":"白方"));
   if($("onlineRoomBoardSize"))$("onlineRoomBoardSize").textContent=String(r.board_size||19)+" 路";
   if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="waiting"?"等待加入":(r.status==="playing"?"對弈中":"已結束");
+  if($("onlineClearEndedBtn"))$("onlineClearEndedBtn").style.display=r.status==="ended"?"block":"none";
 }
 async function onlineUnsubscribe(){
   if(state.onlineChannel&&memberSupabase){try{await memberSupabase.removeChannel(state.onlineChannel)}catch(_){}}
@@ -5565,7 +5567,7 @@ async function onlineSyncRoom(){
     if(room.status==="ended"&&room.result&&room.result!==onlineLastResult){
       onlineLastResult=room.result;
       const message="🏁 對局結束\n"+onlineResultText(room.result);
-      toast(message.replace("\n","："));setTimeout(()=>alert(message),120);
+      toast(message.replace("\n","："));setTimeout(()=>{alert(message);openModal("onlineModal")},120);
     }
   }catch(err){console.error(err);onlineSetStatus("同步失敗："+(err?.message||err),"bad")}
   finally{state.onlineSyncing=false}
@@ -5631,12 +5633,27 @@ async function onlineResign(){
   if(error){toast("投降失敗："+error.message);return}
   state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom();
 }
+async function onlineClearEndedRoom(){
+  const r=state.onlineRoom;
+  if(!r||r.status!=="ended"){toast("棋局尚未結束，不能清除。");return}
+  if(!confirm("確定清除這一局？棋步會從真人大廳移除；如要保存，請先儲存 SGF。"))return;
+  const {data,error}=await memberSupabase.rpc("joygo_clear_room",{p_room_id:r.id});
+  if(error){toast("清除失敗："+error.message);return}
+  await onlineUnsubscribe();
+  if(onlineClockTimer)clearInterval(onlineClockTimer);onlineClockTimer=null;
+  try{localStorage.removeItem("joygo-online-room-code")}catch(_){}
+  state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";state.casualMode=true;state.gameEnded=false;
+  toast("✅ 本局已清除");
+  setTimeout(()=>{window.location.href="lobby.html"},250);
+}
+
 document.addEventListener("DOMContentLoaded",()=>{
   $("onlineCreateBtn")?.addEventListener("click",onlineCreateRoom);
   $("onlineJoinBtn")?.addEventListener("click",()=>onlineJoinRoom($("onlineJoinCode").value));
   $("onlineResumeBtn")?.addEventListener("click",onlineResumeRoom);
   $("onlineCopyCodeBtn")?.addEventListener("click",async()=>{const c=state.onlineRoom?.room_code||"";try{await navigator.clipboard.writeText(c);toast("房間號碼已複製") }catch(_){prompt("請複製房間號碼：",c)}});
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
+  $("onlineClearEndedBtn")?.addEventListener("click",onlineClearEndedRoom);
   $("onlineJoinCode")?.addEventListener("input",e=>{e.target.value=onlineNormalizeCode(e.target.value)});
 });
 
@@ -5734,8 +5751,8 @@ async function onlineLobbyStop(){
 const openOnlineLobbyV1=openOnlineLobby;
 openOnlineLobby=async function(){
   if(!await onlineReady())return;
-  onlineRenderRoom();openModal("onlineModal");
-  await onlineLobbyStart();
+  if(state.onlineRoom){onlineRenderRoom();openModal("onlineModal");return;}
+  window.location.href="lobby.html";
 };
 const onlineEnterRoomV1=onlineEnterRoom;
 onlineEnterRoom=async function(room){await onlineEnterRoomV1(room);await onlineLobbyTrackPresence();await onlineLobbyLoadRooms()};
@@ -8588,5 +8605,31 @@ window.addEventListener("DOMContentLoaded",async()=>{
 
 <!-- Beta 1.8.4 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
+
+<script id="joygo-beta210-direct-room-js">
+// Beta 2.1.0：從獨立大廳接受邀請後，以 ?room=XXXXXX 回到棋局頁。
+window.addEventListener("DOMContentLoaded",()=>{
+  const code=new URLSearchParams(location.search).get("room");
+  if(!code)return;
+  const clean=String(code).toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+  if(clean.length!==6)return;
+  let tries=0;
+  const enter=async()=>{
+    tries++;
+    if(!window.memberSupabase&&!memberSupabase){if(tries<30)setTimeout(enter,250);return}
+    try{
+      if(!await onlineReady()){if(tries<30)setTimeout(enter,300);return}
+      const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:clean});
+      const room=onlineRpcRow(data);
+      if(error||!room){toast("無法進入配對棋局："+(error?.message||"找不到房間"));return}
+      await onlineEnterRoom(room);
+      setTimeout(()=>{closeModal("onlineModal");toast("⚔️ 已進入真人棋局")},220);
+      try{history.replaceState({},"",location.pathname)}catch(_){}
+    }catch(e){console.error(e);toast("進入真人棋局失敗："+(e?.message||e))}
+  };
+  setTimeout(enter,350);
+});
+</script>
+
 </body>
 </html>
