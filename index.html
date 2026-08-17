@@ -2594,11 +2594,11 @@ body.spectator-viewing #statusText{font-weight:800}
 </style>
 
 
-<style id="ipadLandscapeBackPlatform241">
-/* Beta 2.4.1：iPad 橫式對局固定返回平台按鈕 */
-#landscapeBackPlatformBtn{
-  display:none;
-}
+<style id="ipadLandscapeBackPlatform242">
+/* Beta 2.4.2：iPad 橫式「返回平台」真正顯示平台功能列 */
+#landscapeBackPlatformBtn{display:none}
+#landscapePlatformCloseBtn{display:none}
+
 @media (orientation:landscape) and (min-width:901px){
   #landscapeBackPlatformBtn{
     display:block !important;
@@ -2616,8 +2616,57 @@ body.spectator-viewing #statusText{font-weight:800}
     box-shadow:0 2px 8px #0007;
     cursor:pointer;
   }
-  #landscapeBackPlatformBtn:active{
-    transform:translateY(1px);
+
+  body.landscape-platform-menu .topbar{
+    display:grid !important;
+    position:fixed !important;
+    z-index:70000 !important;
+    top:58px !important;
+    left:12px !important;
+    right:12px !important;
+    width:auto !important;
+    min-height:74px !important;
+    grid-template-columns:repeat(8,minmax(92px,1fr)) !important;
+    gap:5px !important;
+    padding:7px !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    border:1px solid #8f642e !important;
+    border-radius:16px !important;
+    background:linear-gradient(180deg,#21150e,#100b08) !important;
+    box-shadow:0 12px 30px #000c !important;
+  }
+
+  body.landscape-platform-menu .topbar .tool{
+    min-width:92px !important;
+    min-height:58px !important;
+    display:flex !important;
+  }
+
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    display:block !important;
+    position:fixed !important;
+    z-index:70001 !important;
+    top:136px !important;
+    right:18px !important;
+    min-width:108px !important;
+    height:36px !important;
+    border:1px solid #d9a83e !important;
+    border-radius:999px !important;
+    background:#1d130d !important;
+    color:#ffe6a3 !important;
+    font-size:13px !important;
+    font-weight:900 !important;
+    box-shadow:0 4px 12px #000a !important;
+  }
+
+  body.landscape-platform-menu::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:69990;
+    background:rgba(0,0,0,.28);
+    pointer-events:none;
   }
 }
 </style>
@@ -5823,6 +5872,13 @@ function buildTools(container){
 buildTools($("rightTools")); buildTools($("topbar"));
 memberUpdateToolAccess();
 
+/* Beta 2.4.2：橫式平台功能列按下任一功能後自動收合 */
+$("topbar")?.addEventListener("click",()=>{
+  if(document.body.classList.contains("landscape-platform-menu")){
+    setTimeout(()=>document.body.classList.remove("landscape-platform-menu"),120);
+  }
+});
+
 /* Beta 1.9.5 安全精簡版：工具列建立完成後，再搬移原有按鍵。
    這些是同一批 DOM 節點，不會產生重複 ID，也不會改變既有事件功能。 */
 (()=>{
@@ -5836,18 +5892,21 @@ memberUpdateToolAccess();
   backPlatform.id="landscapeBackPlatformBtn";
   backPlatform.type="button";
   backPlatform.textContent="← 返回平台";
-  backPlatform.addEventListener("click",async()=>{
-    const activeOnline=!!state.onlineMode && !!state.onlineRoom;
-    const playing=activeOnline && state.onlineRoom?.status==="playing";
-    if(playing){
-      if(!confirm("真人棋局仍在進行中。\n\n確定返回平台嗎？棋局資料會保留，之後可再進弈廳恢復。"))return;
-      try{await onlineLeaveRoom()}catch(_){}
-    }else if(activeOnline){
-      try{await onlineLeaveRoom()}catch(_){}
-    }
-    window.location.href="index.html";
+  backPlatform.addEventListener("click",()=>{
+    document.body.classList.add("landscape-platform-menu");
+    const closeBtn=document.getElementById("landscapePlatformCloseBtn");
+    closeBtn?.focus?.();
   });
   panel.appendChild(backPlatform);
+
+  const platformClose=document.createElement("button");
+  platformClose.id="landscapePlatformCloseBtn";
+  platformClose.type="button";
+  platformClose.textContent="↩ 返回棋局";
+  platformClose.addEventListener("click",()=>{
+    document.body.classList.remove("landscape-platform-menu");
+  });
+  document.body.appendChild(platformClose);
 
   const title=document.createElement("div");
   title.className="compact-action-title";
