@@ -21,7 +21,7 @@
 <div class="grid"><section class="card"><h2>今日管理重點</h2><div class="card-body" id="todayFocus" class="muted">讀取中…</div></section><section class="card"><h2>快速入口</h2><div class="card-body quick"><a href="tournament-register.html">🏆 選手報名頁<span>查看公開報名畫面</span></a><a href="lobby.html">🟢 真人大廳<span>進入棋友與比賽大廳</span></a><a href="tournament-admin.html">📋 舊報名管理<span>保留作備用，不刪除</span></a><a href="index.html">🎯 回主平台<span>返回 Joy Go Platform</span></a></div></section></div>
 </section>
 
-<section class="pane" id="pane-members"><div class="stats"><div class="stat"><span>全部會員</span><b id="mTotal">0</b></div><div class="stat"><span>正式會員</span><b id="mMember">0</b></div><div class="stat"><span>試用會員</span><b id="mTrial">0</b></div><div class="stat"><span>停權</span><b id="mSusp">0</b></div></div><section class="card"><h2>會員管理</h2><div class="card-body"><div class="toolbar"><input id="memberSearch" placeholder="搜尋姓名或 Email"><button class="btn" id="memberClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>會員</th><th>身分</th><th>狀態</th><th>試用到期</th><th>建立日期</th><th>操作</th></tr></thead><tbody id="memberRows"></tbody></table></div></div></section></section>
+<section class="pane" id="pane-members"><div class="stats"><div class="stat"><span>全部會員</span><b id="mTotal">0</b></div><div class="stat"><span>正式會員</span><b id="mMember">0</b></div><div class="stat"><span>試用會員</span><b id="mTrial">0</b></div><div class="stat"><span>停權</span><b id="mSusp">0</b></div></div><section class="card"><h2>會員管理</h2><div class="card-body"><div class="toolbar"><input id="memberSearch" placeholder="搜尋姓名或 Email"><button class="btn" id="memberClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>會員</th><th>身分</th><th>狀態／處置</th><th>試用到期</th><th>建立日期</th><th>管理處置</th></tr></thead><tbody id="memberRows"></tbody></table></div></div></section></section>
 
 <section class="pane" id="pane-registrations"><div class="stats"><div class="stat"><span>全部報名</span><b id="rTotal">0</b></div><div class="stat"><span>正式參賽</span><b id="rApproved">0</b></div><div class="stat"><span>待審核</span><b id="rPending">0</b></div><div class="stat"><span>候補／未通過</span><b id="rOther">0</b></div></div><section class="card"><h2>16 人賽報名審核</h2><div class="card-body"><div class="toolbar"><input id="regSearch" placeholder="搜尋姓名、Email、電話、棋帳號"><button class="btn" id="regClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>選手</th><th>聯絡／棋力</th><th>付款</th><th>身分</th><th>資格</th><th>管理操作</th></tr></thead><tbody id="regRows"></tbody></table></div></div></section></section>
 
@@ -38,8 +38,56 @@ function dateInput(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(+d))ret
 function showTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+name))}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function updateHome(){const pending=regs.filter(x=>x.registration_status==='pending').length, approved=regs.filter(x=>x.registration_status==='approved').length, playing=rooms.filter(x=>x.status==='playing').length;$("hMembers").textContent=members.length;$("hPending").textContent=pending;$("hApproved").textContent=approved+" / 16";$("hPlaying").textContent=playing;const notes=[];if(pending)notes.push(`🔔 有 ${pending} 位選手等待報名審核。`);if(rooms.filter(x=>x.status==='ended').length)notes.push(`🧹 有 ${rooms.filter(x=>x.status==='ended').length} 局已結束尚未由棋手清除。`);if(approved<16)notes.push(`🏆 正式參賽目前 ${approved}/16 人，尚有 ${16-approved} 個名額。`);else notes.push('✅ 16 人正式名額已滿。');$("todayFocus").innerHTML=notes.map(x=>`<p>${esc(x)}</p>`).join('')}
-function renderMembers(){const q=$("memberSearch").value.trim().toLowerCase(),arr=members.filter(x=>!q||[x.display_name,x.email].join(' ').toLowerCase().includes(q));$("mTotal").textContent=members.length;$("mMember").textContent=members.filter(x=>x.role==='member'&&x.status==='active').length;$("mTrial").textContent=members.filter(x=>x.role==='trial').length;$("mSusp").textContent=members.filter(x=>x.status==='suspended').length;$("memberRows").innerHTML=arr.map(r=>{const self=r.id===me.id;return `<tr data-id="${r.id}"><td><div class="name">${esc(r.display_name||'未命名')}${self?'（我）':''}</div><div class="sub">${esc(r.email)}</div></td><td><select class="role" ${self?'disabled':''}><option value="trial" ${r.role==='trial'?'selected':''}>試用</option><option value="member" ${r.role==='member'?'selected':''}>正式會員</option><option value="admin" ${r.role==='admin'?'selected':''}>管理員</option></select></td><td><select class="status" ${self?'disabled':''}><option value="active" ${r.status==='active'?'selected':''}>啟用</option><option value="suspended" ${r.status==='suspended'?'selected':''}>停權</option></select></td><td><input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?'disabled':''}></td><td>${new Date(r.created_at).toLocaleDateString('zh-TW')}</td><td><button class="mini save" ${self?'disabled':''} onclick="saveMember('${r.id}')">儲存</button></td></tr>`}).join('')||'<tr><td colspan="6" class="sub">沒有符合資料。</td></tr>'}
-window.saveMember=async id=>{const row=document.querySelector(`tr[data-id="${id}"]`),role=row.querySelector('.role').value,status=row.querySelector('.status').value,exp=row.querySelector('.expires').value;const changes={role,status,expires_at:role==='trial'&&exp?new Date(exp+'T23:59:59').toISOString():null,updated_at:new Date().toISOString()};const {error}=await sb.from('profiles').update(changes).eq('id',id);if(error)return notice('會員更新失敗：'+error.message,'bad');notice('✅ 會員資料已更新。','good');await loadMembers()}
+function renderMembers(){
+const q=$("memberSearch").value.trim().toLowerCase(),arr=members.filter(x=>!q||[x.display_name,x.email,x.moderation_note].join(' ').toLowerCase().includes(q));
+$("mTotal").textContent=members.length;
+$("mMember").textContent=members.filter(x=>x.role==='member'&&x.status==='active').length;
+$("mTrial").textContent=members.filter(x=>x.role==='trial').length;
+$("mSusp").textContent=members.filter(x=>x.status==='suspended').length;
+$("memberRows").innerHTML=arr.map(r=>{
+const self=r.id===me.id, isAdmin=r.role==='admin';
+const until=r.suspended_until?new Date(r.suspended_until):null;
+const temp=until&&until.getTime()>Date.now();
+const lobbyUntil=r.lobby_blocked_until?new Date(r.lobby_blocked_until):null;
+const lobbyBlocked=lobbyUntil&&lobbyUntil.getTime()>Date.now();
+const stateText=r.status==='suspended'?(temp?`暫停至 ${until.toLocaleString('zh-TW')}`:'永久停權'):(lobbyBlocked?`大廳停用至 ${lobbyUntil.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}`:'正常');
+const stateClass=r.status==='suspended'?'bad':(lobbyBlocked?'pending':'ok');
+const note=r.moderation_note?`<div class="sub">備註：${esc(r.moderation_note)}</div>`:'';
+const actions=(self||isAdmin)?'<span class="sub">不可處置管理員</span>':`
+<div style="display:flex;flex-wrap:wrap;gap:5px;min-width:250px">
+<button class="mini neutral" onclick="moderateMember('${r.id}','kick')">踢出大廳 10 分</button>
+<button class="mini wait" onclick="moderateMember('${r.id}','suspend_1d')">停 1 天</button>
+<button class="mini wait" onclick="moderateMember('${r.id}','suspend_7d')">停 7 天</button>
+<button class="mini reject" onclick="moderateMember('${r.id}','suspend_permanent')">永久停權</button>
+<button class="mini approve" onclick="moderateMember('${r.id}','unsuspend')">解除</button>
+</div>`;
+return `<tr data-id="${r.id}">
+<td><div class="name">${esc(r.display_name||'未命名')}${self?'（我）':''}</div><div class="sub">${esc(r.email)}</div>${note}</td>
+<td><select class="role" ${self?'disabled':''}><option value="trial" ${r.role==='trial'?'selected':''}>試用</option><option value="member" ${r.role==='member'?'selected':''}>正式會員</option><option value="admin" ${r.role==='admin'?'selected':''}>管理員</option></select></td>
+<td><span class="pill ${stateClass}">${stateText}</span></td>
+<td><input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?'disabled':''}></td>
+<td>${new Date(r.created_at).toLocaleDateString('zh-TW')}</td>
+<td>${actions}<button class="mini save" style="margin-top:6px" ${self?'disabled':''} onclick="saveMember('${r.id}')">儲存身分／期限</button></td>
+</tr>`}).join('')||'<tr><td colspan="6" class="sub">沒有符合資料。</td></tr>';
+}
+async function moderateMember(id,action){
+const row=members.find(x=>x.id===id); if(!row)return;
+const labels={kick:'踢出真人大廳 10 分鐘',suspend_1d:'暫停帳號 1 天',suspend_7d:'暫停帳號 7 天',suspend_permanent:'永久停權',unsuspend:'解除停權'};
+let reason='';
+if(action!=='unsuspend'){
+  reason=prompt(`對「${row.display_name||row.email}」執行：${labels[action]}\n\n請輸入管理備註（可留空）：`,'')??'';
+  if(!confirm(`確定要${labels[action]}「${row.display_name||row.email}」？`))return;
+}else{
+  if(!confirm(`確定解除「${row.display_name||row.email}」的停權與大廳限制？`))return;
+}
+notice('正在執行管理處置…');
+const {error}=await sb.rpc('joygo_admin_moderate_member',{p_target_user:id,p_action:action,p_reason:reason});
+if(error)return notice('處置失敗：'+error.message,'bad');
+notice(`✅ 已${labels[action]}。`,'good');
+await Promise.all([loadMembers(),loadRooms()]);
+}
+window.moderateMember=moderateMember;
+window.saveMember=async id=>{const row=document.querySelector(`tr[data-id="${id}"]`),role=row.querySelector('.role').value,exp=row.querySelector('.expires').value;const changes={role,expires_at:role==='trial'&&exp?new Date(exp+'T23:59:59').toISOString():null,updated_at:new Date().toISOString()};const {error}=await sb.from('profiles').update(changes).eq('id',id);if(error)return notice('會員更新失敗：'+error.message,'bad');notice('✅ 會員資料已更新。','good');await loadMembers()}
 const rl=s=>({pending:'待審核',approved:'正式參賽',waitlist:'候補',rejected:'未通過',cancelled:'已取消'}[s]||s),pl=s=>({pending:'待確認',paid:'已繳費',rejected:'有問題',refunded:'已退款'}[s]||s),il=s=>({pending:'待查核',verified:'已通過',rejected:'未通過'}[s]||s);
 function renderRegs(){const q=$("regSearch").value.trim().toLowerCase(),arr=regs.filter(r=>!q||[r.real_name,r.email,r.phone,r.rank,r.go_account,r.payment_last5].join(' ').toLowerCase().includes(q));$("rTotal").textContent=regs.length;$("rApproved").textContent=regs.filter(x=>x.registration_status==='approved').length;$("rPending").textContent=regs.filter(x=>x.registration_status==='pending').length;$("rOther").textContent=regs.filter(x=>['waitlist','rejected'].includes(x.registration_status)).length;$("regRows").innerHTML=arr.map((r,i)=>`<tr><td>${i+1}</td><td><div class="name">${esc(r.real_name)}</div><div class="sub">${esc(r.email)}</div></td><td><b>${esc(r.rank)}</b><div class="sub">${esc(r.phone)}<br>${esc(r.go_account||'—')}</div></td><td><b>NT$ ${Number(r.payment_amount||0).toLocaleString()}</b><div class="sub">後五碼 ${esc(r.payment_last5)}<br>${esc(pl(r.payment_status))}</div></td><td>${esc(il(r.identity_status))}</td><td><span class="pill ${r.registration_status==='approved'?'ok':r.registration_status==='pending'?'pending':r.registration_status==='waitlist'?'blue':'badpill'}">${esc(rl(r.registration_status))}</span></td><td><div class="rowops"><button class="mini approve" onclick="approveReg('${r.id}')">✓ 核准</button><button class="mini neutral" onclick="reviewReg('${r.id}','pending','pending','pending','')">待審</button><button class="mini wait" onclick="reviewReg('${r.id}','verified','paid','waitlist','正式名額未確認，暫列候補')">候補</button><button class="mini reject" onclick="rejectReg('${r.id}')">退回</button></div></td></tr>`).join('')||'<tr><td colspan="7" class="sub">目前沒有報名資料。</td></tr>'}
 window.approveReg=async id=>{const {error}=await sb.rpc('joygo_approve_tournament_registration',{p_registration_id:id});if(error)return notice('核准失敗：'+error.message,'bad');notice('✅ 已核准正式參賽。','good');await loadRegs()};window.reviewReg=async(id,is,pay,reg,note)=>{const {error}=await sb.rpc('joygo_review_tournament_registration',{p_registration_id:id,p_identity_status:is,p_payment_status:pay,p_registration_status:reg,p_admin_note:note});if(error)return notice('審核失敗：'+error.message,'bad');notice('✅ 報名狀態已更新。','good');await loadRegs()};window.rejectReg=id=>{const n=prompt('退回原因','資料待補正')||'資料待補正';reviewReg(id,'rejected','rejected','rejected',n)};
@@ -75,7 +123,7 @@ notice(`✅ 已清除 ${Number(data||0)} 局已結束棋局。`,'good');
 await loadRooms();
 }
 window.deleteEndedRoom=deleteEndedRoom;
-async function loadMembers(){const {data,error}=await sb.from('profiles').select('id,email,display_name,role,status,expires_at,created_at').order('created_at',{ascending:true});if(error)throw error;members=data||[];renderMembers();updateHome()}
+async function loadMembers(){try{await sb.rpc('joygo_admin_cleanup_expired_suspensions')}catch{}const {data,error}=await sb.from('profiles').select('id,email,display_name,role,status,expires_at,suspended_until,lobby_blocked_until,moderation_note,created_at').order('created_at',{ascending:true});if(error)throw error;members=data||[];renderMembers();updateHome()}
 async function loadRegs(){const {data,error}=await sb.from('tournament_registrations').select('*').eq('tournament_code',CODE).order('created_at',{ascending:true});if(error)throw error;regs=data||[];renderRegs();updateHome()}
 async function loadRooms(){const {data,error}=await sb.from('online_rooms').select('id,room_code,black_name,white_name,board_size,status,main_seconds,byo_seconds,byo_periods,created_at').order('created_at',{ascending:false}).limit(100);if(error)throw error;rooms=data||[];renderRooms();updateHome()}
 async function loadEvent(){const {data,error}=await sb.from('tournament_events').select('*').eq('code',CODE).single();if(error)throw error;$("eventTitle").value=data.title||'';$("eventMax").value=data.max_players||16;$("eventFee").value=data.entry_fee||0;$("eventDate").value=data.event_date||'';$("eventOpen").value=String(data.registration_open!==false);$("eventVenue").value=data.venue||''}
