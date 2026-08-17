@@ -5339,6 +5339,9 @@ function memberGuard(feature,action){
   memberSetStatus(`🔒 ${reason}。`,"bad");
 }
 function memberUpdateToolAccess(){
+  document.querySelectorAll('[id^="adminCenterBtn_"]').forEach(button=>{
+    button.style.display=memberAccess.role==="admin"?"":"none";
+  });
   const featureById={teachBtn:"teach",aiBtn:"ai",humanBtn:"human",onlineBtn:"online",classicGameBtn:"classic",spectatorBtn:"spectator",cloudBtn:"cloud"};
   Object.entries(featureById).forEach(([id,feature])=>{
     document.querySelectorAll(`[id^="${id}_"]`).forEach(button=>{
@@ -5770,6 +5773,7 @@ const tools=[
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>memberGuard("human",()=>openModal("humanModal"))],
   ["onlineBtn","⚔️","真人",()=>memberGuard("online",openOnlineLobby)],
   ["tournamentRegBtn","🏆","比賽報名",()=>memberGuard("online",()=>{window.location.href="tournament-register.html"})],
+  ["adminCenterBtn","👑","管理",()=>{window.location.href="admin-center.html"}],
   ["memberBtn","👤","會員",()=>openMemberModal()],
   ["classicGameBtn","🏛️","名局館",()=>memberGuard("classic",()=>openClassicGameLibrary())],
   ["spectatorBtn","👁","觀戰",()=>memberGuard("spectator",()=>openSpectatorLobby())],
@@ -5789,6 +5793,7 @@ function buildTools(container){
   });
 }
 buildTools($("rightTools")); buildTools($("topbar"));
+memberUpdateToolAccess();
 
 /* Beta 1.9.5 安全精簡版：工具列建立完成後，再搬移原有按鍵。
    這些是同一批 DOM 節點，不會產生重複 ID，也不會改變既有事件功能。 */
