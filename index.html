@@ -2594,6 +2594,34 @@ body.spectator-viewing #statusText{font-weight:800}
 </style>
 
 
+<style id="ipadLandscapeBackPlatform241">
+/* Beta 2.4.1：iPad 橫式對局固定返回平台按鈕 */
+#landscapeBackPlatformBtn{
+  display:none;
+}
+@media (orientation:landscape) and (min-width:901px){
+  #landscapeBackPlatformBtn{
+    display:block !important;
+    width:100%;
+    min-height:42px;
+    margin:0 0 8px 0;
+    padding:8px 10px;
+    border:1px solid #d9a83e;
+    border-radius:12px;
+    background:linear-gradient(135deg,#5a3518,#2b1a0d);
+    color:#ffe6a3;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:.5px;
+    box-shadow:0 2px 8px #0007;
+    cursor:pointer;
+  }
+  #landscapeBackPlatformBtn:active{
+    transform:translateY(1px);
+  }
+}
+</style>
+
 <style id="bottomRightButtonsFix16b4">
 /* Beta 1.6b.4：右下角「API 資料」與「離開 Beta」分開，不再重疊 */
 #joygoBetaExit{
@@ -5804,6 +5832,23 @@ memberUpdateToolAccess();
   panel.className="compact-action-panel";
   panel.id="compactActionPanel";
   panel.setAttribute("aria-label","對局快捷操作");
+  const backPlatform=document.createElement("button");
+  backPlatform.id="landscapeBackPlatformBtn";
+  backPlatform.type="button";
+  backPlatform.textContent="← 返回平台";
+  backPlatform.addEventListener("click",async()=>{
+    const activeOnline=!!state.onlineMode && !!state.onlineRoom;
+    const playing=activeOnline && state.onlineRoom?.status==="playing";
+    if(playing){
+      if(!confirm("真人棋局仍在進行中。\n\n確定返回平台嗎？棋局資料會保留，之後可再進弈廳恢復。"))return;
+      try{await onlineLeaveRoom()}catch(_){}
+    }else if(activeOnline){
+      try{await onlineLeaveRoom()}catch(_){}
+    }
+    window.location.href="index.html";
+  });
+  panel.appendChild(backPlatform);
+
   const title=document.createElement("div");
   title.className="compact-action-title";
   title.textContent="對局操作";
