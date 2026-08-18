@@ -5574,12 +5574,13 @@ function startOnlineClockUI(){
   onlineClockTimer=setInterval(async()=>{
     if(!state.onlineMode||!state.onlineRoom){clearInterval(onlineClockTimer);onlineClockTimer=null;return}
     updateClockUI();const v=onlineClockValues(),r=state.onlineRoom,active=v?.[r.turn];
-    if(r.status==="playing"&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
+    if(joygoTournamentAccessMode!=="referee"&&r.status==="playing"&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
       onlineTimeoutClaimed=true;const {data}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
       if(data){state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom()}
     }
   },250);
 }
+let joygoTournamentAccessMode="player";
 async function onlineReady(){
   if(!await memberEnsureClient())return false;
   if(!memberSession?.user){
@@ -5645,7 +5646,7 @@ async function onlineSyncRoom(){
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
-    onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"),myTurn?"ok":"");
+    onlineSetStatus(joygoTournamentAccessMode==="referee"?"👁 裁判監看模式｜只能觀看與巡場，不能落子":(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。")),joygoTournamentAccessMode==="referee"?"":(myTurn?"ok":""));
     const lastMove=(moves||[]).at(-1);
     if(lastMove?.is_pass&&Number(lastMove.move_no)!==onlineLastPassMove){
       onlineLastPassMove=Number(lastMove.move_no);
@@ -5693,6 +5694,7 @@ async function onlineResumeRoom(){
   await onlineEnterRoom(room);
 }
 async function onlinePlayAt(x,y,isPass=false){
+  if(joygoTournamentAccessMode==="referee"){toast("👁 裁判監看模式不能落子");return}
   const r=state.onlineRoom;if(!state.onlineMode||!r||state.onlineSyncing)return;
   if(r.status!=="playing"){toast("等待另一位棋友加入");return}
   if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
@@ -5714,6 +5716,7 @@ async function onlineLeaveRoom(){
   onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
 }
 async function onlineResign(){
+  if(joygoTournamentAccessMode==="referee"){toast("👁 裁判監看模式不能投降");return}
   const r=state.onlineRoom;if(!r||r.status!=="playing")return;
   if(!confirm("確定要投降嗎？"))return;
   const {data,error}=await memberSupabase.rpc("joygo_resign_room",{p_room_id:r.id});
@@ -8724,8 +8727,11 @@ window.addEventListener("DOMContentLoaded",async()=>{
 <!-- Beta 1.8.4 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 
-<script id="joygo-beta211-direct-room-js">
-// Beta 2.1.1：從獨立大廳接受邀請後，以 ?room=XXXXXX 回到棋局頁；房間已含自由對弈計時設定。
+<script id="joygo-beta252-direct-room-js">
+// Beta 2.5.2：正式比賽棋局權限鎖定。
+// 棋手：可進入自己的正式棋局並落子。
+// 主管理員／巡場員：可進入裁判監看模式，但不能落子／投降。
+// 其他會員：即使知道房號也不能進入。
 window.addEventListener("DOMContentLoaded",()=>{
   const code=new URLSearchParams(location.search).get("room");
   if(!code)return;
@@ -8737,13 +8743,35 @@ window.addEventListener("DOMContentLoaded",()=>{
     if(!window.memberSupabase&&!memberSupabase){if(tries<30)setTimeout(enter,250);return}
     try{
       if(!await onlineReady()){if(tries<30)setTimeout(enter,300);return}
+
+      const {data:accessData,error:accessError}=await memberSupabase.rpc("joygo_get_room_access",{p_code:clean});
+      const access=Array.isArray(accessData)?accessData[0]:accessData;
+      if(accessError||!access){
+        toast("無法檢查棋局權限："+(accessError?.message||"找不到房間"));
+        return;
+      }
+      if(access.access_mode==="denied"){
+        alert("⛔ 這是正式比賽棋局。\n只有本桌黑白棋手可以進入；主管理員／巡場員只能以裁判監看模式進入。");
+        try{history.replaceState({},"",location.pathname)}catch(_){}
+        setTimeout(()=>{location.href="lobby.html"},300);
+        return;
+      }
+
+      joygoTournamentAccessMode=access.access_mode==="referee"?"referee":"player";
       const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:clean});
       const room=onlineRpcRow(data);
-      if(error||!room){toast("無法進入配對棋局："+(error?.message||"找不到房間"));return}
+      if(error||!room){toast("無法進入正式棋局："+(error?.message||"找不到房間"));return}
+
       await onlineEnterRoom(room);
-      setTimeout(()=>{closeModal("onlineModal");toast("⚔️ 已進入真人棋局")},220);
+      setTimeout(()=>{
+        closeModal("onlineModal");
+        toast(joygoTournamentAccessMode==="referee"?"👁 已進入裁判監看模式":"⚔️ 已進入您的正式比賽棋局");
+      },220);
       try{history.replaceState({},"",location.pathname)}catch(_){}
-    }catch(e){console.error(e);toast("進入真人棋局失敗："+(e?.message||e))}
+    }catch(e){
+      console.error(e);
+      toast("進入正式棋局失敗："+(e?.message||e));
+    }
   };
   setTimeout(enter,350);
 });
