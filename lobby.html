@@ -9,6 +9,13 @@
 :root{--bg:#0c0806;--panel:#17100c;--panel2:#21150e;--line:#6c4b2c;--gold:#ffd970;--gold2:#f2b632;--text:#f7ead6;--muted:#bca98b;--green:#66d87b;--red:#ff9188}
 *{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at top,#25180f 0,#0c0806 45%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;min-height:100%}button,input,select{font:inherit}
 .page{max-width:1180px;margin:auto;padding:16px 18px 40px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 18px}.brand h1{margin:0;font-size:28px}.brand p{margin:5px 0 0;color:var(--muted)}.badge{border:1px solid #26713b;background:#0d2615;border-radius:999px;padding:8px 13px;color:#baf6c5;font-weight:800}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#2a1a11;color:var(--text);border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#ffd66b,#edae27);color:#211203;border:0}.btn.red{border-color:#78433c;color:#ffc0ba}.btn:disabled{opacity:.42;cursor:not-allowed}
+.broadcast-banner{display:none;margin:0 0 14px;padding:15px 18px;border-radius:15px;font-weight:900;font-size:17px;line-height:1.55;box-shadow:0 10px 28px rgba(0,0,0,.28);animation:bcastPulse 1.8s ease-in-out infinite}
+.broadcast-banner.show{display:block}
+.broadcast-banner.info{border:1px solid #4f86a8;background:#102535;color:#cfeeff}
+.broadcast-banner.important{border:1px solid #c8912a;background:#37270d;color:#ffe5a0}
+.broadcast-banner.emergency{border:2px solid #d14a43;background:#42110f;color:#ffd0ca}
+.broadcast-banner .bcast-meta{display:block;font-size:12px;opacity:.78;margin-top:4px;font-weight:700}
+@keyframes bcastPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.004)}}
 .notice{display:none;margin:0 0 12px;padding:10px 12px;border-radius:10px;border:1px solid #6c4b2c;background:#160f0b;color:#dcc6a6}.notice.bad{display:block;border-color:#8c443d;color:#ffb8af}.notice.ok{display:block;border-color:#397d49;color:#c4f3cb}
 .grid{display:grid;grid-template-columns:1.35fr .85fr;gap:14px}.panel{background:rgba(20,13,9,.94);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 14px 40px rgba(0,0,0,.22)}.panel h2{margin:0 0 12px;font-size:19px}.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px}.small{font-size:12px;color:var(--muted)}
 .players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.player{border:1px solid #4b3526;background:#17100c;border-radius:13px;padding:12px;display:grid;grid-template-columns:1fr auto;gap:9px;align-items:center}.pname{font-weight:900;font-size:16px}.pmeta{font-size:12px;color:var(--muted);margin-top:3px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(102,216,123,.55);margin-right:7px}.pill{font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid #5f4938;color:#d8c4a8}.pill.playing{color:#ffd48a;border-color:#9a682f;background:#2a1b0b}
@@ -23,6 +30,10 @@
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
+  <div id="broadcastBanner" class="broadcast-banner" role="status" aria-live="assertive">
+    <span id="broadcastText"></span>
+    <span id="broadcastMeta" class="bcast-meta"></span>
+  </div>
   <div class="grid">
     <main class="panel">
       <div class="headrow"><h2>🟢 線上棋友</h2><span class="small">點「邀請」即可配對，不必抄房號</span></div>
@@ -74,7 +85,7 @@
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let session=null,meName="會員",meRole="member",presence=null,inviteChannel=null,roomChannel=null,refreshTimer=null,moderationTimer=null,moderationKickVersion=null;
+let session=null,meName="會員",meRole="member",presence=null,inviteChannel=null,roomChannel=null,refreshTimer=null,moderationTimer=null,moderationKickVersion=null,broadcastTimer=null,lastBroadcastId=null;
 const $=id=>document.getElementById(id);
 function msg(t,type=""){const n=$("notice");n.textContent=t;n.className="notice "+type;if(!t)n.style.display="none";else n.style.display="block"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -90,6 +101,45 @@ async function replyInvite(id,accept){const {data,error}=await sb.rpc("joygo_rep
 async function loadInvites(){const {data,error}=await sb.from("online_invites").select("id,from_id,to_id,from_name,to_name,board_size,komi,main_seconds,byo_seconds,byo_periods,status,room_code,created_at").or(`from_id.eq.${session.user.id},to_id.eq.${session.user.id}`).order("created_at",{ascending:false}).limit(20);if(error){msg("邀請資料讀取失敗："+error.message,"bad");return}const rows=data||[];const incoming=rows.filter(x=>x.to_id===session.user.id&&x.status==="pending"),outgoing=rows.filter(x=>x.from_id===session.user.id&&["pending","accepted"].includes(x.status));renderIncoming(incoming);renderOutgoing(outgoing);if(outgoing.some(x=>x.status==="accepted"&&x.room_code)){msg("✅ 有已接受的邀請，可按「進入棋局」進入；大廳不會自動跳轉。","ok")}}
 function renderIncoming(list){const box=$("incoming");box.innerHTML="";if(!list.length){box.innerHTML='<div class="empty">目前沒有邀請</div>';return}list.forEach(x=>{const d=document.createElement("div");d.className="invite";d.innerHTML=`<strong>⚔️ ${esc(x.from_name)} 邀請您</strong><span class="small">${x.board_size} 路｜${Math.round(Number(x.main_seconds||1200)/60)} 分鐘｜${Number(x.byo_seconds||30)} 秒 × ${Number(x.byo_periods||3)} 次｜貼 ${Number(x.komi)} 目</span><div class="rowbtns"><button class="btn primary">接受</button><button class="btn red">拒絕</button></div>`;const bs=d.querySelectorAll("button");bs[0].onclick=()=>replyInvite(x.id,true);bs[1].onclick=()=>replyInvite(x.id,false);box.appendChild(d)})}
 function renderOutgoing(list){const box=$("outgoing");box.innerHTML="";if(!list.length){box.innerHTML='<div class="empty">目前沒有等待中的邀請</div>';return}list.forEach(x=>{const d=document.createElement("div");d.className="invite";const title=document.createElement("strong");title.textContent="→ "+(x.to_name||"棋友");const detail=document.createElement("span");detail.className="small";detail.textContent=(x.status==="accepted"?"已接受，可手動進入棋局":"等待對方回覆")+`｜${Math.round(Number(x.main_seconds||1200)/60)}分＋${Number(x.byo_seconds||30)}秒×${Number(x.byo_periods||3)}`;d.append(title,detail);if(x.status==="accepted"&&x.room_code){const btn=document.createElement("button");btn.className="primary";btn.type="button";btn.textContent="進入棋局";btn.onclick=()=>goRoom(x.room_code);d.appendChild(btn)}box.appendChild(d)})}
+
+const TOURNAMENT_CODE="JOYGO16-001";
+function hideBroadcast(){
+  const box=$("broadcastBanner");if(!box)return;
+  box.className="broadcast-banner";
+  $("broadcastText").textContent="";
+  $("broadcastMeta").textContent="";
+}
+async function loadBroadcast(){
+  try{
+    const {data,error}=await sb.from("joygo_broadcasts")
+      .select("id,level,message,created_at,expires_at")
+      .eq("tournament_code",TOURNAMENT_CODE)
+      .eq("active",true)
+      .order("created_at",{ascending:false})
+      .limit(1)
+      .maybeSingle();
+    if(error)throw error;
+    if(!data){hideBroadcast();return}
+    if(data.expires_at&&new Date(data.expires_at).getTime()<=Date.now()){hideBroadcast();return}
+    const box=$("broadcastBanner");
+    box.className=`broadcast-banner show ${data.level||"info"}`;
+    const icon=data.level==="emergency"?"🚨":data.level==="important"?"⚠️":"📢";
+    $("broadcastText").textContent=`${icon} 大會公告：${data.message}`;
+    $("broadcastMeta").textContent=`發布時間 ${new Date(data.created_at).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit"})}`;
+    if(lastBroadcastId!==data.id){
+      lastBroadcastId=data.id;
+      try{navigator.vibrate?.([120,80,120])}catch{}
+    }
+  }catch(e){
+    console.warn("broadcast",e);
+  }
+}
+function startBroadcastPolling(){
+  clearInterval(broadcastTimer);
+  loadBroadcast();
+  broadcastTimer=setInterval(loadBroadcast,2500);
+}
+
 async function loadRooms(){const {data,error}=await sb.from("online_rooms").select("room_code,black_id,black_name,board_size,komi,main_seconds,byo_seconds,byo_periods,status,created_at").eq("status","waiting").order("created_at",{ascending:false}).limit(16);const box=$("rooms");if(error){box.innerHTML='<div class="empty">房間讀取失敗</div>';return}const rows=data||[];$("roomCount").textContent=rows.length;box.innerHTML="";if(!rows.length){box.innerHTML='<div class="empty">目前沒有開放房間</div>';return}rows.forEach(r=>{const d=document.createElement("div");d.className="room";d.innerHTML=`<strong>${esc(r.black_name||"棋友")} 的房間</strong><span class="small">${esc(r.room_code)}｜${r.board_size} 路｜${Math.round(Number(r.main_seconds||1200)/60)}分＋${Number(r.byo_seconds||30)}秒×${Number(r.byo_periods||3)}｜貼 ${Number(r.komi)} 目</span><div class="rowbtns"><button class="btn primary">加入</button></div>`;d.querySelector("button").onclick=()=>joinRoom(r.room_code);box.appendChild(d)})}
 async function joinRoom(code){code=String(code||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if(code.length!==6){msg("請輸入六碼房號","bad");return}const {data,error}=await sb.rpc("joygo_join_room",{p_code:code,p_name:meName});if(error){msg("加入失敗："+error.message,"bad");return}const row=Array.isArray(data)?data[0]:data;goRoom(row?.room_code||code)}
 function setPreset(prefix,mins,byo,periods){if(prefix==="free"){$("mainMinutes").value=mins;$("byoSeconds").value=byo;$("byoPeriods").value=periods}else{$("tMainMinutes").value=mins;$("tByoSeconds").value=byo;$("tByoPeriods").value=periods}}
@@ -98,5 +148,6 @@ async function saveTournamentSettings(){const payload={p_board_size:Number($("tB
 async function connectRealtime(){inviteChannel=sb.channel("joygo-invites-ui-"+session.user.id).on("postgres_changes",{event:"*",schema:"public",table:"online_invites",filter:"to_id=eq."+session.user.id},loadInvites).on("postgres_changes",{event:"*",schema:"public",table:"online_invites",filter:"from_id=eq."+session.user.id},loadInvites).subscribe();roomChannel=sb.channel("joygo-lobby-room-ui").on("postgres_changes",{event:"*",schema:"public",table:"online_rooms"},loadRooms).subscribe()}
 async function init(){const {data,error}=await sb.auth.getSession();session=data?.session||null;if(error||!session){msg("請先回 Joy Go Platform 登入會員，再進入真人大廳。","bad");return}if(!await checkModeration(true))return;await loadProfile();await connectPresence();await connectRealtime();const jobs=[loadInvites(),loadRooms()];if(meRole==="admin")jobs.push(loadTournamentSettings());await Promise.all(jobs);refreshTimer=setInterval(()=>{track();loadInvites();loadRooms()},30000);moderationTimer=setInterval(()=>checkModeration(false),5000)}
 $("refreshBtn").onclick=()=>{track();loadInvites();loadRooms()};$("backBtn").onclick=()=>location.href="index.html";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if($("saveTournamentBtn"))$("saveTournamentBtn").onclick=()=>{if(meRole!=="admin"){msg("只有管理員可以修改比賽設定。","bad");return}saveTournamentSettings()};document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(moderationTimer)clearInterval(moderationTimer)},{passive:true});init();
+startBroadcastPolling();
 </script>
 </body></html>

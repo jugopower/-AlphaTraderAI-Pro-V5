@@ -14,7 +14,7 @@
 <header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>會員・報名・真人對弈・比賽設定，一個頁面完成</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
-<nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
+<nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="broadcast">📢 廣播</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
 
 <section class="pane active" id="pane-home">
 <div class="stats"><div class="stat"><span>全部會員</span><b id="hMembers">—</b></div><div class="stat"><span>待審核報名</span><b id="hPending">—</b></div><div class="stat"><span>正式參賽</span><b id="hApproved">—</b></div><div class="stat"><span>進行中棋局</span><b id="hPlaying">—</b></div></div>
@@ -27,6 +27,54 @@
 
 <section class="pane" id="pane-live"><div class="stats"><div class="stat"><span>等待加入</span><b id="lWaiting">0</b></div><div class="stat"><span>對弈中</span><b id="lPlaying">0</b></div><div class="stat"><span>已結束未清</span><b id="lEnded">0</b></div><div class="stat"><span>全部棋局</span><b id="lTotal">0</b></div></div><section class="card"><h2>真人棋局監看</h2><div class="card-body"><p class="sub">只有「已結束」棋局可以刪除；等待中與對弈中棋局不提供刪除，避免誤刪正在使用的房間。</p><div class="toolbar" style="margin-bottom:12px"><button id="clearEndedRooms" class="btn" style="border-color:#8d3d3d;color:#ffc0c0">🧹 清除全部已結束棋局</button><a href="lobby.html" class="btn gold">進入真人大廳管理</a></div><div id="roomList" class="room-list"></div></div></section></section>
 
+
+<section class="pane" id="pane-broadcast">
+  <section class="card">
+    <h2>📢 比賽弈廳廣播器</h2>
+    <div class="card-body">
+      <p class="sub">只有主管理員可以發送全體廣播。訊息會顯示在真人／比賽弈廳上方；所有發送內容都保留紀錄。</p>
+      <div class="grid" style="grid-template-columns:1.3fr .7fr">
+        <div>
+          <label>公告內容</label>
+          <textarea id="broadcastMessage" maxlength="240" rows="5" placeholder="例如：第 2 輪將於 14:30 開始，請選手準時進入比賽弈廳。" style="width:100%;margin-top:6px"></textarea>
+          <div class="sub" style="margin-top:6px">最多 240 字。</div>
+        </div>
+        <div>
+          <label>公告類型</label>
+          <select id="broadcastLevel" style="width:100%;margin-top:6px">
+            <option value="info">📢 一般通知</option>
+            <option value="important">⚠️ 重要通知</option>
+            <option value="emergency">🚨 緊急通知</option>
+          </select>
+          <label style="display:block;margin-top:12px">顯示時間</label>
+          <select id="broadcastDuration" style="width:100%;margin-top:6px">
+            <option value="10">10 秒</option>
+            <option value="30" selected>30 秒</option>
+            <option value="60">60 秒</option>
+            <option value="0">直到手動關閉</option>
+          </select>
+        </div>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button id="sendBroadcast" class="btn gold">📢 立即廣播</button>
+        <button id="clearBroadcast" class="btn" style="border-color:#8d3d3d;color:#ffc0c0">停止目前廣播</button>
+      </div>
+      <div id="broadcastStatus" class="sub" style="margin-top:10px"></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>廣播紀錄</h2>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>時間</th><th>類型</th><th>內容</th><th>狀態</th><th>到期</th></tr></thead>
+          <tbody id="broadcastRows"><tr><td colspan="5" class="sub">讀取中…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</section>
 <section class="pane" id="pane-moderation">
 <section class="card"><h2>📋 巡場處置紀錄</h2><div class="card-body">
 <p class="sub">主管理員可看全部紀錄；巡場管理員只看自己的處置紀錄；一般會員看不到。</p>
@@ -47,7 +95,7 @@
 </main>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
-const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function notice(t,k=""){const e=$("notice");e.className="notice"+(k?" "+k:"");e.textContent=t}
 function dateInput(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(+d))return"";return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function showTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+name))}
@@ -187,6 +235,67 @@ await loadRooms();
 }
 window.deleteEndedRoom=deleteEndedRoom;
 
+
+const broadcastLevelLabel=l=>({info:"一般通知",important:"重要通知",emergency:"緊急通知"}[l]||l);
+async function loadBroadcasts(){
+  if(staffRole!=="admin")return;
+  const {data,error}=await sb.from("joygo_broadcasts")
+    .select("id,tournament_code,level,message,active,created_at,expires_at")
+    .eq("tournament_code",CODE)
+    .order("created_at",{ascending:false})
+    .limit(30);
+  if(error){
+    $("broadcastRows").innerHTML=`<tr><td colspan="5" class="sub">廣播紀錄讀取失敗：${esc(error.message)}</td></tr>`;
+    return;
+  }
+  broadcasts=data||[];
+  $("broadcastRows").innerHTML=broadcasts.map(b=>{
+    const expired=b.expires_at&&new Date(b.expires_at).getTime()<=Date.now();
+    const state=b.active&&!expired?"廣播中":expired?"已到期":"已停止";
+    return `<tr>
+      <td>${new Date(b.created_at).toLocaleString("zh-TW")}</td>
+      <td><span class="pill ${b.level==="emergency"?"bad":b.level==="important"?"pending":"blue"}">${esc(broadcastLevelLabel(b.level))}</span></td>
+      <td>${esc(b.message)}</td>
+      <td>${state}</td>
+      <td>${b.expires_at?new Date(b.expires_at).toLocaleString("zh-TW"):"手動關閉"}</td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="5" class="sub">尚無廣播紀錄。</td></tr>';
+}
+async function sendBroadcast(){
+  if(staffRole!=="admin")return notice("只有主管理員可以發送廣播。","bad");
+  const message=$("broadcastMessage").value.trim();
+  const level=$("broadcastLevel").value;
+  const duration=Number($("broadcastDuration").value||0);
+  if(!message)return notice("請先輸入廣播內容。","bad");
+  if(!confirm(`確定向比賽弈廳廣播？\n\n${message}`))return;
+  $("sendBroadcast").disabled=true;
+  $("broadcastStatus").textContent="正在發送…";
+  const {error}=await sb.rpc("joygo_admin_broadcast",{
+    p_tournament_code:CODE,
+    p_level:level,
+    p_message:message,
+    p_display_seconds:duration
+  });
+  $("sendBroadcast").disabled=false;
+  if(error){
+    $("broadcastStatus").textContent="發送失敗："+error.message;
+    return;
+  }
+  $("broadcastStatus").textContent="✅ 廣播已送出。";
+  $("broadcastMessage").value="";
+  await loadBroadcasts();
+}
+async function clearBroadcast(){
+  if(staffRole!=="admin")return notice("只有主管理員可以停止廣播。","bad");
+  if(!confirm("確定停止目前正在顯示的廣播？"))return;
+  const {error}=await sb.rpc("joygo_admin_clear_broadcast",{p_tournament_code:CODE});
+  if(error){$("broadcastStatus").textContent="停止失敗："+error.message;return}
+  $("broadcastStatus").textContent="✅ 目前廣播已停止。";
+  await loadBroadcasts();
+}
+$("sendBroadcast")?.addEventListener("click",sendBroadcast);
+$("clearBroadcast")?.addEventListener("click",clearBroadcast);
+
 const moderationActionLabel=a=>({kick:"踢出大廳 10 分鐘",suspend_1d:"停權 1 天",suspend_7d:"停權 7 天",suspend_permanent:"永久停權",unsuspend:"解除停權",end_room:"裁判終止棋局"}[a]||a);
 function renderModeration(){
  const q=($("modSearch")?.value||"").trim().toLowerCase(),f=$("modFilter")?.value||"",byId=new Map(members.map(x=>[x.id,x]));
@@ -231,7 +340,7 @@ async function loadAll(){
 notice('正在同步管理資料…');
 await loadModeratorIds();
 if(staffRole==="admin"){
-  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration()]);
+  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration(),loadBroadcasts()]);
 }else{
   await Promise.all([loadMembers(),loadRooms()]);
 }
@@ -256,7 +365,7 @@ try{
       :"巡場管理員只能查看自己執行的處置紀錄。";
   }
   if(staffRole==="moderator"){
-    document.querySelectorAll('.tab[data-tab="registrations"],.tab[data-tab="settings"]').forEach(x=>x.hidden=true);
+    document.querySelectorAll('.tab[data-tab="registrations"],.tab[data-tab="settings"],.tab[data-tab="broadcast"]').forEach(x=>x.hidden=true);
     const hp=$("hPending")?.closest(".stat"),ha=$("hApproved")?.closest(".stat");if(hp)hp.hidden=true;if(ha)ha.hidden=true;
     $("clearEndedRooms").hidden=true;
     document.querySelectorAll('.quick a[href="tournament-register.html"],.quick a[href="tournament-admin.html"]').forEach(x=>x.hidden=true);
