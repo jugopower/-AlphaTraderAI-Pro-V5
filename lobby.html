@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Joy Go｜真人對弈大廳</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">$("refreshTournamentGame")?.addEventListener("click",loadMyTournamentGame);
+</script>
 <style>
 :root{--bg:#0c0806;--panel:#17100c;--panel2:#21150e;--line:#6c4b2c;--gold:#ffd970;--gold2:#f2b632;--text:#f7ead6;--muted:#bca98b;--green:#66d87b;--red:#ff9188}
 *{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at top,#25180f 0,#0c0806 45%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;min-height:100%}button,input,select{font:inherit}
@@ -77,6 +78,10 @@
         <div class="sectionnote">這是主辦人的比賽預設。下一階段 16 人瑞士制建立每一輪 8 桌時，系統會把這組規則自動套用到全部棋桌，參賽者不能自行修改。</div>
         <div id="tournamentStatus" class="small" style="margin-top:8px"></div>
       </section>
+      <section class="panel" id="myTournamentGamePanel">
+        <div class="headrow"><h2>🏆 我的比賽棋局</h2><button class="btn" id="refreshTournamentGame">重新整理</button></div>
+        <div id="myTournamentGame" class="empty">目前沒有正式比賽棋局</div>
+      </section>
       <section class="panel"><div class="headrow"><h2>🚪 開放房間</h2><span class="small"><b id="roomCount">0</b> 間</span></div><div id="rooms" class="room-list"><div class="empty">目前沒有開放房間</div></div><div class="manual"><input id="roomCode" maxlength="6" placeholder="六碼房號" style="border:1px solid #5d4029;background:#0b0806;color:#fff;border-radius:10px;padding:10px;text-transform:uppercase"><button class="btn primary" id="joinCodeBtn">加入</button></div></section>
     </aside>
   </div>
@@ -108,6 +113,21 @@ function hideBroadcast(){
   box.className="broadcast-banner";
   $("broadcastText").textContent="";
   $("broadcastMeta").textContent="";
+}
+
+async function loadMyTournamentGame(){
+  const box=$("myTournamentGame");
+  if(!box||!session)return;
+  const {data,error}=await sb.rpc("joygo_get_my_swiss_room",{p_tournament_code:"JOYGO16-001"});
+  if(error){box.className="empty";box.textContent="比賽棋局讀取失敗："+error.message;return}
+  const row=Array.isArray(data)?data[0]:data;
+  if(!row||!row.room_code){box.className="empty";box.textContent="目前沒有正式比賽棋局";return}
+  box.className="room";
+  box.innerHTML=`<strong>第 ${row.round_no} 輪｜第 ${row.board_no} 桌</strong>
+    <span class="small">${esc(row.black_name)}（黑） vs ${esc(row.white_name)}（白）</span>
+    <span class="small">房號 ${esc(row.room_code)}｜${row.board_size} 路｜${Math.round(Number(row.main_seconds||0)/60)}分＋${Number(row.byo_seconds||30)}秒×${Number(row.byo_periods||3)}</span>
+    <div class="rowbtns"><button class="btn primary" id="enterTournamentRoom">進入正式棋局</button></div>`;
+  $("enterTournamentRoom").onclick=()=>goRoom(row.room_code);
 }
 async function loadBroadcast(){
   try{
@@ -149,5 +169,7 @@ async function connectRealtime(){inviteChannel=sb.channel("joygo-invites-ui-"+se
 async function init(){const {data,error}=await sb.auth.getSession();session=data?.session||null;if(error||!session){msg("請先回 Joy Go Platform 登入會員，再進入真人大廳。","bad");return}if(!await checkModeration(true))return;await loadProfile();await connectPresence();await connectRealtime();const jobs=[loadInvites(),loadRooms()];if(meRole==="admin")jobs.push(loadTournamentSettings());await Promise.all(jobs);refreshTimer=setInterval(()=>{track();loadInvites();loadRooms()},30000);moderationTimer=setInterval(()=>checkModeration(false),5000)}
 $("refreshBtn").onclick=()=>{track();loadInvites();loadRooms()};$("backBtn").onclick=()=>location.href="index.html";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if($("saveTournamentBtn"))$("saveTournamentBtn").onclick=()=>{if(meRole!=="admin"){msg("只有管理員可以修改比賽設定。","bad");return}saveTournamentSettings()};document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(moderationTimer)clearInterval(moderationTimer)},{passive:true});init();
 startBroadcastPolling();
+loadMyTournamentGame();
+setInterval(loadMyTournamentGame,5000);
 </script>
 </body></html>

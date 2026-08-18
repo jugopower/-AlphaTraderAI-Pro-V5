@@ -41,6 +41,7 @@
       <div class="toolbar">
         <button class="btn" id="syncSwissPlayers">① 同步正式名單</button>
         <button class="btn gold" id="generateSwissRound">② 產生下一輪配對</button>
+        <button class="btn gold" id="createSwissRooms">③ 建立本輪正式棋局</button>
         <button class="btn" id="refreshSwiss">重新整理</button>
       </div>
       <div id="swissNote" class="sub" style="margin-top:10px">尚未載入。</div>
@@ -52,8 +53,8 @@
     <div class="card-body">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>桌次</th><th>黑棋</th><th>白棋</th><th>結果</th><th>操作</th></tr></thead>
-          <tbody id="swissPairingRows"><tr><td colspan="5" class="sub">尚未產生配對。</td></tr></tbody>
+          <thead><tr><th>桌次</th><th>黑棋</th><th>白棋</th><th>正式棋局</th><th>結果</th><th>操作</th></tr></thead>
+          <tbody id="swissPairingRows"><tr><td colspan="6" class="sub">尚未產生配對。</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -328,6 +329,7 @@ function renderSwiss(){
       <td><b>${x.board_no}</b></td>
       <td>${bp?esc(bp.player_name):"—"}</td>
       <td>${wp?esc(wp.player_name):"輪空"}</td>
+      <td>${x.game_room_code?`<a class="mini approve" href="index.html?room=${encodeURIComponent(x.game_room_code)}">${esc(x.game_room_code)}</a>`:(wp?"尚未建立":"輪空")}</td>
       <td><span class="pill ${locked?"ok":"pending"}">${esc(swissResultLabel(x.result))}</span></td>
       <td><div class="rowops">
         ${wp?`<button class="mini approve" onclick="setSwissResult(${x.id},'B')">黑勝</button>
@@ -335,7 +337,7 @@ function renderSwiss(){
         ${locked?`<button class="mini neutral" onclick="setSwissResult(${x.id},'pending')">更正</button>`:""}
       </div></td>
     </tr>`;
-  }).join("")||'<tr><td colspan="5" class="sub">尚未產生配對。</td></tr>';
+  }).join("")||'<tr><td colspan="6" class="sub">尚未產生配對。</td></tr>';
 
   if(!players.length)$("swissNote").textContent="請先按「同步正式名單」。";
   else if(roundNo===0)$("swissNote").textContent=`已同步 ${players.length} 位正式選手，可產生第 1 輪。`;
@@ -440,8 +442,30 @@ window.setSwissResult=async(id,result)=>{
   notice("✅ 成績已更新。","good");
   await loadSwiss();
 };
+
+async function createSwissRooms(){
+  if(staffRole!=="admin")return notice("只有主管理員可以建立正式比賽棋局。","bad");
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  if(!latest)return notice("請先產生瑞士制配對。","bad");
+  const cur=swissPairings.filter(x=>Number(x.round_no)===Number(latest.round_no));
+  const normal=cur.filter(x=>x.white_player_id);
+  if(!normal.length)return notice("本輪沒有可建立的正式棋局。","bad");
+  const missing=normal.filter(x=>!x.game_room_code).length;
+  if(!missing)return notice(`第 ${latest.round_no} 輪正式棋局已全部建立。`,"good");
+  if(!confirm(`確定建立第 ${latest.round_no} 輪正式比賽棋局？\n將建立 ${missing} 桌，並套用目前比賽計時設定。`))return;
+  $("createSwissRooms").disabled=true;
+  const {data,error}=await sb.rpc("joygo_swiss_create_rooms",{
+    p_tournament_code:CODE,
+    p_round_no:Number(latest.round_no)
+  });
+  $("createSwissRooms").disabled=false;
+  if(error)return notice("建立正式棋局失敗："+error.message,"bad");
+  notice(`✅ 第 ${latest.round_no} 輪已建立 ${data} 個正式比賽棋局。`,"good");
+  await Promise.all([loadSwiss(),loadRooms()]);
+}
 $("syncSwissPlayers")?.addEventListener("click",syncSwissPlayers);
 $("generateSwissRound")?.addEventListener("click",generateSwissRound);
+$("createSwissRooms")?.addEventListener("click",createSwissRooms);
 $("refreshSwiss")?.addEventListener("click",loadSwiss);
 
 const broadcastLevelLabel=l=>({info:"一般通知",important:"重要通知",emergency:"緊急通知"}[l]||l);
