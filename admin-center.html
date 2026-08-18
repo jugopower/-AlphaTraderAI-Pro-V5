@@ -14,7 +14,7 @@
 <header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>會員・報名・真人對弈・比賽設定，一個頁面完成</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
-<nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="broadcast">📢 廣播</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
+<nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="swiss">♟️ 瑞士制</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="broadcast">📢 廣播</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
 
 <section class="pane active" id="pane-home">
 <div class="stats"><div class="stat"><span>全部會員</span><b id="hMembers">—</b></div><div class="stat"><span>待審核報名</span><b id="hPending">—</b></div><div class="stat"><span>正式參賽</span><b id="hApproved">—</b></div><div class="stat"><span>進行中棋局</span><b id="hPlaying">—</b></div></div>
@@ -24,6 +24,53 @@
 <section class="pane" id="pane-members"><div class="stats"><div class="stat"><span>全部會員</span><b id="mTotal">0</b></div><div class="stat"><span>正式會員</span><b id="mMember">0</b></div><div class="stat"><span>試用會員</span><b id="mTrial">0</b></div><div class="stat"><span>停權</span><b id="mSusp">0</b></div></div><section class="card"><h2>會員管理</h2><div class="card-body"><div class="toolbar"><input id="memberSearch" placeholder="搜尋姓名或 Email"><button class="btn" id="memberClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>會員</th><th>身分</th><th>狀態／處置</th><th>試用到期</th><th>建立日期</th><th>管理處置</th></tr></thead><tbody id="memberRows"></tbody></table></div></div></section></section>
 
 <section class="pane" id="pane-registrations"><div class="stats"><div class="stat"><span>全部報名</span><b id="rTotal">0</b></div><div class="stat"><span>正式參賽</span><b id="rApproved">0</b></div><div class="stat"><span>待審核</span><b id="rPending">0</b></div><div class="stat"><span>候補／未通過</span><b id="rOther">0</b></div></div><section class="card"><h2>16 人賽報名審核</h2><div class="card-body"><div class="toolbar"><input id="regSearch" placeholder="搜尋姓名、Email、電話、棋帳號"><button class="btn" id="regClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>選手</th><th>聯絡／棋力</th><th>付款</th><th>身分</th><th>資格</th><th>管理操作</th></tr></thead><tbody id="regRows"></tbody></table></div></div></section></section>
+
+
+<section class="pane" id="pane-swiss">
+  <div class="stats">
+    <div class="stat"><span>正式選手</span><b id="sPlayers">0 / 16</b></div>
+    <div class="stat"><span>目前輪次</span><b id="sRound">0 / 5</b></div>
+    <div class="stat"><span>本輪完成</span><b id="sDone">0 / 0</b></div>
+    <div class="stat"><span>狀態</span><b id="sStatus">尚未開始</b></div>
+  </div>
+
+  <section class="card">
+    <h2>♟️ 16 人瑞士制自動配對核心</h2>
+    <div class="card-body">
+      <p class="sub">流程：同步「正式參賽」名單 → 產生第 1 輪 → 輸入 8 桌勝負 → 系統重新計分 → 自動產生下一輪。預賽共 5 輪；系統會盡量避免重複對手並平衡黑白棋。</p>
+      <div class="toolbar">
+        <button class="btn" id="syncSwissPlayers">① 同步正式名單</button>
+        <button class="btn gold" id="generateSwissRound">② 產生下一輪配對</button>
+        <button class="btn" id="refreshSwiss">重新整理</button>
+      </div>
+      <div id="swissNote" class="sub" style="margin-top:10px">尚未載入。</div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>本輪對戰表</h2>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>桌次</th><th>黑棋</th><th>白棋</th><th>結果</th><th>操作</th></tr></thead>
+          <tbody id="swissPairingRows"><tr><td colspan="5" class="sub">尚未產生配對。</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>即時排名</h2>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>名次</th><th>選手</th><th>棋力</th><th>勝</th><th>負</th><th>積分</th><th>對手分</th><th>黑/白</th></tr></thead>
+          <tbody id="swissStandingRows"><tr><td colspan="8" class="sub">尚無選手資料。</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</section>
 
 <section class="pane" id="pane-live"><div class="stats"><div class="stat"><span>等待加入</span><b id="lWaiting">0</b></div><div class="stat"><span>對弈中</span><b id="lPlaying">0</b></div><div class="stat"><span>已結束未清</span><b id="lEnded">0</b></div><div class="stat"><span>全部棋局</span><b id="lTotal">0</b></div></div><section class="card"><h2>真人棋局監看</h2><div class="card-body"><p class="sub">只有「已結束」棋局可以刪除；等待中與對弈中棋局不提供刪除，避免誤刪正在使用的房間。</p><div class="toolbar" style="margin-bottom:12px"><button id="clearEndedRooms" class="btn" style="border-color:#8d3d3d;color:#ffc0c0">🧹 清除全部已結束棋局</button><a href="lobby.html" class="btn gold">進入真人大廳管理</a></div><div id="roomList" class="room-list"></div></div></section></section>
 
@@ -95,7 +142,7 @@
 </main>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
-const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],swissPlayers=[],swissRounds=[],swissPairings=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function notice(t,k=""){const e=$("notice");e.className="notice"+(k?" "+k:"");e.textContent=t}
 function dateInput(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(+d))return"";return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function showTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+name))}
@@ -236,6 +283,167 @@ await loadRooms();
 window.deleteEndedRoom=deleteEndedRoom;
 
 
+
+function swissResultLabel(r){
+  return ({pending:"未回報",B:"黑勝",W:"白勝",BYE:"輪空勝",VOID:"作廢"}[r]||r);
+}
+function swissPlayer(id){
+  return swissPlayers.find(p=>Number(p.id)===Number(id));
+}
+function swissSortedPlayers(){
+  return [...swissPlayers].sort((a,b)=>
+    Number(b.points||0)-Number(a.points||0) ||
+    Number(b.buchholz||0)-Number(a.buchholz||0) ||
+    Number(b.wins||0)-Number(a.wins||0) ||
+    Number(a.seed||999)-Number(b.seed||999)
+  );
+}
+function renderSwiss(){
+  const players=swissSortedPlayers();
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const roundNo=latest?Number(latest.round_no):0;
+  const cur=swissPairings.filter(x=>Number(x.round_no)===roundNo);
+  const done=cur.filter(x=>x.result!=="pending").length;
+
+  $("sPlayers").textContent=`${players.length} / 16`;
+  $("sRound").textContent=`${roundNo} / 5`;
+  $("sDone").textContent=`${done} / ${cur.length}`;
+  $("sStatus").textContent=!latest?"尚未開始":latest.status==="completed"?"本輪完成":"比賽中";
+
+  $("swissStandingRows").innerHTML=players.map((p,i)=>`<tr>
+    <td><b>${i+1}</b></td>
+    <td><div class="name">${esc(p.player_name)}</div></td>
+    <td>${esc(p.rank||"—")}</td>
+    <td>${Number(p.wins||0)}</td>
+    <td>${Number(p.losses||0)}</td>
+    <td><b>${Number(p.points||0)}</b></td>
+    <td>${Number(p.buchholz||0).toFixed(1)}</td>
+    <td>${Number(p.black_count||0)} / ${Number(p.white_count||0)}</td>
+  </tr>`).join("")||'<tr><td colspan="8" class="sub">尚無選手資料。</td></tr>';
+
+  $("swissPairingRows").innerHTML=cur.map(x=>{
+    const bp=swissPlayer(x.black_player_id), wp=swissPlayer(x.white_player_id);
+    const locked=x.result!=="pending";
+    return `<tr>
+      <td><b>${x.board_no}</b></td>
+      <td>${bp?esc(bp.player_name):"—"}</td>
+      <td>${wp?esc(wp.player_name):"輪空"}</td>
+      <td><span class="pill ${locked?"ok":"pending"}">${esc(swissResultLabel(x.result))}</span></td>
+      <td><div class="rowops">
+        ${wp?`<button class="mini approve" onclick="setSwissResult(${x.id},'B')">黑勝</button>
+        <button class="mini wait" onclick="setSwissResult(${x.id},'W')">白勝</button>`:""}
+        ${locked?`<button class="mini neutral" onclick="setSwissResult(${x.id},'pending')">更正</button>`:""}
+      </div></td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="5" class="sub">尚未產生配對。</td></tr>';
+
+  if(!players.length)$("swissNote").textContent="請先按「同步正式名單」。";
+  else if(roundNo===0)$("swissNote").textContent=`已同步 ${players.length} 位正式選手，可產生第 1 輪。`;
+  else if(roundNo>=5&&latest?.status==="completed")$("swissNote").textContent="✅ 5 輪瑞士制預賽已完成，可依排名確認前四名。";
+  else if(latest?.status==="completed")$("swissNote").textContent=`✅ 第 ${roundNo} 輪完成，可產生第 ${roundNo+1} 輪。`;
+  else $("swissNote").textContent=`第 ${roundNo} 輪進行中：已完成 ${done}/${cur.length} 桌。`;
+}
+async function loadSwiss(){
+  if(staffRole!=="admin")return;
+  const [p1,p2,p3]=await Promise.all([
+    sb.from("joygo_swiss_players").select("*").eq("tournament_code",CODE).eq("active",true),
+    sb.from("joygo_swiss_rounds").select("*").eq("tournament_code",CODE).order("round_no",{ascending:true}),
+    sb.from("joygo_swiss_pairings").select("*").eq("tournament_code",CODE).order("round_no",{ascending:true}).order("board_no",{ascending:true})
+  ]);
+  if(p1.error||p2.error||p3.error){
+    $("swissNote").textContent="瑞士制資料讀取失敗："+(p1.error||p2.error||p3.error).message;
+    return;
+  }
+  swissPlayers=p1.data||[];swissRounds=p2.data||[];swissPairings=p3.data||[];
+  renderSwiss();
+}
+async function syncSwissPlayers(){
+  if(staffRole!=="admin")return notice("只有主管理員可以操作瑞士制。","bad");
+  if(swissRounds.length&& !confirm("比賽已經產生輪次。同步只會補入正式參賽名單，不會刪除既有棋手。確定繼續？"))return;
+  const {data,error}=await sb.rpc("joygo_swiss_sync_players",{p_tournament_code:CODE});
+  if(error)return notice("同步失敗："+error.message,"bad");
+  notice(`✅ 正式參賽名單已同步，共 ${data} 人。`,"good");
+  await loadSwiss();
+}
+function opponentSet(){
+  const m=new Map();
+  swissPlayers.forEach(p=>m.set(Number(p.id),new Set()));
+  swissPairings.forEach(g=>{
+    if(!g.black_player_id||!g.white_player_id)return;
+    m.get(Number(g.black_player_id))?.add(Number(g.white_player_id));
+    m.get(Number(g.white_player_id))?.add(Number(g.black_player_id));
+  });
+  return m;
+}
+function colorCost(p,asBlack){
+  const b=Number(p.black_count||0),w=Number(p.white_count||0);
+  return asBlack?Math.max(0,(b+1)-w):Math.max(0,(w+1)-b);
+}
+function chooseColors(a,b,boardNo){
+  const ab=colorCost(a,true)+colorCost(b,false);
+  const ba=colorCost(b,true)+colorCost(a,false);
+  if(ab<ba)return [a,b];
+  if(ba<ab)return [b,a];
+  return boardNo%2===1?[a,b]:[b,a];
+}
+function makeSwissPairs(){
+  const arr=swissSortedPlayers();
+  const opponents=opponentSet();
+  const used=new Set(), pairs=[];
+  function penalty(a,b){
+    const rematch=opponents.get(Number(a.id))?.has(Number(b.id))?100000:0;
+    const score=Math.abs(Number(a.points||0)-Number(b.points||0))*1000;
+    const buch=Math.abs(Number(a.buchholz||0)-Number(b.buchholz||0))*10;
+    return rematch+score+buch;
+  }
+  for(let board=1;board<=Math.floor(arr.length/2);board++){
+    const a=arr.find(p=>!used.has(Number(p.id)));
+    if(!a)break;
+    used.add(Number(a.id));
+    const candidates=arr.filter(p=>!used.has(Number(p.id))).sort((x,y)=>penalty(a,x)-penalty(a,y));
+    const b=candidates[0];
+    if(!b)break;
+    used.add(Number(b.id));
+    const [black,white]=chooseColors(a,b,board);
+    pairs.push({board_no:board,black_player_id:Number(black.id),white_player_id:Number(white.id)});
+  }
+  const leftover=arr.find(p=>!used.has(Number(p.id)));
+  if(leftover)pairs.push({board_no:pairs.length+1,black_player_id:Number(leftover.id),white_player_id:null});
+  return pairs;
+}
+async function generateSwissRound(){
+  if(staffRole!=="admin")return notice("只有主管理員可以產生配對。","bad");
+  if(!swissPlayers.length)return notice("請先同步正式參賽名單。","bad");
+  if(swissPlayers.length>16)return notice("正式選手超過 16 人，請先處理名單。","bad");
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const next=latest?Number(latest.round_no)+1:1;
+  if(next>5)return notice("5 輪瑞士制已完成。","bad");
+  if(latest&&latest.status!=="completed")return notice(`第 ${latest.round_no} 輪尚未全部回報勝負。`,"bad");
+  const pairs=makeSwissPairs();
+  if(!pairs.length)return notice("無法產生配對。","bad");
+  const rematch=opponentSet();
+  const hasRepeat=pairs.some(x=>x.white_player_id&&rematch.get(x.black_player_id)?.has(x.white_player_id));
+  const msg=`確定產生第 ${next} 輪？\n共 ${pairs.length} 桌${hasRepeat?"\n⚠️ 因配對限制，本輪可能出現重複對手。":""}`;
+  if(!confirm(msg))return;
+  const {error}=await sb.rpc("joygo_swiss_create_round",{
+    p_tournament_code:CODE,p_round_no:next,p_pairings:pairs
+  });
+  if(error)return notice("產生配對失敗："+error.message,"bad");
+  notice(`✅ 第 ${next} 輪配對已產生。`,"good");
+  await loadSwiss();
+}
+window.setSwissResult=async(id,result)=>{
+  if(staffRole!=="admin")return;
+  if(result!=="pending"&&!confirm(`確定登錄為「${swissResultLabel(result)}」？`))return;
+  const {error}=await sb.rpc("joygo_swiss_set_result",{p_pairing_id:id,p_result:result});
+  if(error)return notice("成績登錄失敗："+error.message,"bad");
+  notice("✅ 成績已更新。","good");
+  await loadSwiss();
+};
+$("syncSwissPlayers")?.addEventListener("click",syncSwissPlayers);
+$("generateSwissRound")?.addEventListener("click",generateSwissRound);
+$("refreshSwiss")?.addEventListener("click",loadSwiss);
+
 const broadcastLevelLabel=l=>({info:"一般通知",important:"重要通知",emergency:"緊急通知"}[l]||l);
 async function loadBroadcasts(){
   if(staffRole!=="admin")return;
@@ -340,7 +548,7 @@ async function loadAll(){
 notice('正在同步管理資料…');
 await loadModeratorIds();
 if(staffRole==="admin"){
-  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration(),loadBroadcasts()]);
+  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration(),loadBroadcasts(),loadSwiss()]);
 }else{
   await Promise.all([loadMembers(),loadRooms()]);
 }
@@ -365,7 +573,7 @@ try{
       :"巡場管理員只能查看自己執行的處置紀錄。";
   }
   if(staffRole==="moderator"){
-    document.querySelectorAll('.tab[data-tab="registrations"],.tab[data-tab="settings"],.tab[data-tab="broadcast"]').forEach(x=>x.hidden=true);
+    document.querySelectorAll('.tab[data-tab="registrations"],.tab[data-tab="swiss"],.tab[data-tab="settings"],.tab[data-tab="broadcast"]').forEach(x=>x.hidden=true);
     const hp=$("hPending")?.closest(".stat"),ha=$("hApproved")?.closest(".stat");if(hp)hp.hidden=true;if(ha)ha.hidden=true;
     $("clearEndedRooms").hidden=true;
     document.querySelectorAll('.quick a[href="tournament-register.html"],.quick a[href="tournament-admin.html"]').forEach(x=>x.hidden=true);
