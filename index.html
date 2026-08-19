@@ -2928,15 +2928,19 @@ body.spectator-viewing #statusText{font-weight:800}
   <span class="jm-chip" id="jmToday">📊 今日訪客 <b>—</b></span>
   <span class="jm-chip" id="jmQueue">⏳ 排隊 <b>—</b></span>
 </div>
+<!-- Beta 2.7.3: guidance iframe bypasses Beta gate only when guidance_embed=1 -->
 <script id="joygo-beta-shell-js">
 (()=>{
  const gate=document.getElementById('joygoBetaGate'),input=document.getElementById('joygoBetaCode'),enter=document.getElementById('joygoBetaEnter'),msg=document.getElementById('joygoBetaMsg'),exit=document.getElementById('joygoBetaExit');
  const CODE='JOYGO10', KEY='joygo_beta_v1_session';
+ const guidanceEmbed=(()=>{try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch{return false}})();
  function open(){gate.hidden=true;exit.hidden=false;document.getElementById('joygoLiveMonitor').hidden=false;try{sessionStorage.setItem(KEY,'1')}catch{};setTimeout(()=>window.joygoMonitorStart?.(),50)}
+ function openGuidanceEmbed(){gate.hidden=true;exit.hidden=true;document.getElementById('joygoLiveMonitor').hidden=true}
  function lock(){gate.hidden=false;exit.hidden=true;document.getElementById('joygoLiveMonitor').hidden=true;window.joygoMonitorStop?.();input.value='';msg.textContent='';try{sessionStorage.removeItem(KEY)}catch{};setTimeout(()=>input.focus(),80)}
  function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='測試碼不正確，請重新輸入。';input.select()}}
  enter.addEventListener('click',check);input.addEventListener('keydown',e=>{if(e.key==='Enter')check()});exit.addEventListener('click',lock);
- try{if(sessionStorage.getItem(KEY)==='1')open();else setTimeout(()=>input.focus(),120)}catch{}
+ if(guidanceEmbed){openGuidanceEmbed()}
+ else{try{if(sessionStorage.getItem(KEY)==='1')open();else setTimeout(()=>input.focus(),120)}catch{setTimeout(()=>input.focus(),120)}}
 })();
 </script>
 <script id="joygo-beta12-monitor-js">
@@ -3238,12 +3242,6 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="online-player-row"><span>⚫ 黑方</span><b id="onlineBlackName">等待</b></div>
     <div class="online-player-row"><span>⚪ 白方</span><b id="onlineWhiteName">等待加入</b></div>
     <div class="online-player-row"><span>棋盤</span><b id="onlineRoomBoardSize">19 路</b></div>
-    <div id="onlineReadyBlackRow" class="online-player-row" style="display:none"><span>⚫ 黑方準備</span><b id="onlineBlackReady">等待</b></div>
-    <div id="onlineReadyWhiteRow" class="online-player-row" style="display:none"><span>⚪ 白方準備</span><b id="onlineWhiteReady">等待</b></div>
-    <div id="onlineReadyStateRow" class="online-player-row" style="display:none"><span>比賽狀態</span><b id="onlineReadyState">等待雙方準備</b></div>
-    <button id="onlineReadyBtn" class="action" type="button" style="width:100%;margin-top:10px;display:none">✅ 我準備完成</button>
-    <button id="onlineRefPauseBtn" class="secondary" type="button" style="width:100%;margin-top:10px;display:none">⏸ 裁判暫停棋鐘</button>
-    <div id="onlinePauseRow" class="online-player-row" style="display:none"><span>裁判狀態</span><b id="onlinePauseText">正常</b></div>
     <div class="online-player-row"><span>目前手數</span><b id="onlineMoveCount">0</b></div>
     <div class="online-player-row"><span>輪到</span><b id="onlineTurnText">黑方</b></div>
     <button id="onlineCopyCodeBtn" class="secondary" type="button" style="width:100%;margin-top:10px">複製房間號碼</button>
@@ -5561,7 +5559,7 @@ function onlineResultText(result){
 }
 function onlineClockValues(){
   const r=state.onlineRoom;if(!r)return null;
-  const elapsed=r.status==="playing"&&!r.clock_paused&&(!r.is_tournament||r.tournament_started_at)&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
+  const elapsed=r.status==="playing"&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
   const periodMs=Number(r.byo_seconds||30)*1000;
   const one=color=>{
     let main=Number(color==="B"?r.black_main_ms:r.white_main_ms)||0;
@@ -5580,13 +5578,12 @@ function startOnlineClockUI(){
   onlineClockTimer=setInterval(async()=>{
     if(!state.onlineMode||!state.onlineRoom){clearInterval(onlineClockTimer);onlineClockTimer=null;return}
     updateClockUI();const v=onlineClockValues(),r=state.onlineRoom,active=v?.[r.turn];
-    if(joygoTournamentAccessMode!=="referee"&&!r.clock_paused&&r.status==="playing"&&(!r.is_tournament||r.tournament_started_at)&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
+    if(r.status==="playing"&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
       onlineTimeoutClaimed=true;const {data}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
       if(data){state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom()}
     }
   },250);
 }
-let joygoTournamentAccessMode="player";
 async function onlineReady(){
   if(!await memberEnsureClient())return false;
   if(!memberSession?.user){
@@ -5614,24 +5611,7 @@ function onlineRenderRoom(){
   $("onlineMoveCount").textContent=String(r.move_count||0);
   $("onlineTurnText").textContent=r.status==="waiting"?"等待白方加入":(r.status==="ended"?"對局結束":(r.turn==="B"?"黑方":"白方"));
   if($("onlineRoomBoardSize"))$("onlineRoomBoardSize").textContent=String(r.board_size||19)+" 路";
-  const isTournament=!!r.is_tournament;
-  const started=!!r.tournament_started_at;
-  ["onlineReadyBlackRow","onlineReadyWhiteRow","onlineReadyStateRow"].forEach(id=>{if($(id))$(id).style.display=isTournament?"flex":"none"});
-  if($("onlineBlackReady"))$("onlineBlackReady").textContent=r.black_ready?"✅ 已準備":"⏳ 未準備";
-  if($("onlineWhiteReady"))$("onlineWhiteReady").textContent=r.white_ready?"✅ 已準備":"⏳ 未準備";
-  if($("onlineReadyState"))$("onlineReadyState").textContent=started?"▶️ 已正式開鐘":"⏸ 等待雙方準備";
-  if($("onlineReadyBtn")){
-    const mine=state.onlineColor==="B"?!!r.black_ready:(state.onlineColor==="W"?!!r.white_ready:false);
-    $("onlineReadyBtn").style.display=isTournament&&!started&&joygoTournamentAccessMode!=="referee"&&!!state.onlineColor?"block":"none";
-    $("onlineReadyBtn").textContent=mine?"↩ 取消準備":"✅ 我準備完成";
-  }
-  if($("onlineRefPauseBtn")){
-    $("onlineRefPauseBtn").style.display=isTournament&&started&&r.status==="playing"&&joygoTournamentAccessMode==="referee"?"block":"none";
-    $("onlineRefPauseBtn").textContent=r.clock_paused?"▶️ 恢復棋鐘":"⏸ 裁判暫停棋鐘";
-  }
-  if($("onlinePauseRow"))$("onlinePauseRow").style.display=isTournament&&started?"flex":"none";
-  if($("onlinePauseText"))$("onlinePauseText").textContent=r.clock_paused?"⏸ 裁判暫停中":"正常";
-  if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="waiting"?"等待加入":(r.status==="ended"?"已結束":(isTournament&&!started?"等待準備":(r.clock_paused?"裁判暫停":"對弈中")));
+  if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="waiting"?"等待加入":(r.status==="playing"?"對弈中":"已結束");
   if($("onlineClearEndedBtn"))$("onlineClearEndedBtn").style.display=r.status==="ended"?"block":"none";
 }
 async function onlineUnsubscribe(){
@@ -5669,18 +5649,7 @@ async function onlineSyncRoom(){
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
-    onlineSetStatus(
-      joygoTournamentAccessMode==="referee"
-        ? (room.is_tournament&&!room.tournament_started_at
-            ? "👁 裁判監看模式｜等待雙方棋手準備"
-            : "👁 裁判監看模式｜只能觀看與巡場，不能落子")
-        : (room.is_tournament&&!room.tournament_started_at
-            ? "⏸ 正式比賽尚未開鐘｜請雙方按「我準備完成」"
-            : (room.status==="waiting"
-                ? "房間已建立，請將六碼房號交給另一位棋友。"
-                : (myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"))),
-      joygoTournamentAccessMode==="referee"?"":(myTurn&&(!room.is_tournament||room.tournament_started_at)?"ok":"")
-    );
+    onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"),myTurn?"ok":"");
     const lastMove=(moves||[]).at(-1);
     if(lastMove?.is_pass&&Number(lastMove.move_no)!==onlineLastPassMove){
       onlineLastPassMove=Number(lastMove.move_no);
@@ -5728,10 +5697,7 @@ async function onlineResumeRoom(){
   await onlineEnterRoom(room);
 }
 async function onlinePlayAt(x,y,isPass=false){
-  if(joygoTournamentAccessMode==="referee"){toast("👁 裁判監看模式不能落子");return}
   const r=state.onlineRoom;if(!state.onlineMode||!r||state.onlineSyncing)return;
-  if(r.is_tournament&&!r.tournament_started_at){toast("⏸ 正式比賽尚未開鐘，請先完成雙方準備");return}
-  if(r.clock_paused){toast("⏸ 裁判暫停中，現在不能落子");return}
   if(r.status!=="playing"){toast("等待另一位棋友加入");return}
   if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
   if(!isPass){
@@ -5747,49 +5713,12 @@ async function onlinePlayAt(x,y,isPass=false){
   if(error){onlineSetStatus("落子失敗："+error.message,"bad");await onlineSyncRoom();return}
   await onlineSyncRoom();
 }
-
-
-async function onlineRefTogglePause(){
-  const r=state.onlineRoom;
-  if(!r||!r.is_tournament)return;
-  if(joygoTournamentAccessMode!=="referee"){toast("只有裁判可以暫停棋鐘");return}
-  const {data,error}=await memberSupabase.rpc("joygo_referee_set_clock_pause",{
-    p_room_id:r.id,p_pause:!r.clock_paused,p_reason:r.clock_paused?"恢復比賽":"裁判處理中"
-  });
-  if(error){toast("裁判棋鐘操作失敗："+error.message);return}
-  state.onlineRoom=onlineRpcRow(data)||r;
-  await onlineSyncRoom();
-  toast(state.onlineRoom?.clock_paused?"⏸ 棋鐘已暫停":"▶️ 棋鐘已恢復");
-}
-async function onlineToggleReady(){
-  const r=state.onlineRoom;
-  if(!r||!r.is_tournament)return;
-  if(joygoTournamentAccessMode==="referee"){toast("👁 裁判不能代替棋手按準備");return}
-  if(r.tournament_started_at){toast("比賽已經正式開鐘");return}
-  if(!state.onlineColor){toast("您不是本桌棋手");return}
-  const mine=state.onlineColor==="B"?!!r.black_ready:!!r.white_ready;
-  const {data,error}=await memberSupabase.rpc("joygo_tournament_set_ready",{
-    p_room_id:r.id,
-    p_ready:!mine
-  });
-  if(error){toast("準備狀態更新失敗："+error.message);return}
-  state.onlineRoom=onlineRpcRow(data)||r;
-  await onlineSyncRoom();
-  if(state.onlineRoom?.tournament_started_at){
-    toast("▶️ 雙方已準備，正式開鐘！");
-  }else{
-    toast(!mine?"✅ 已標記準備完成":"↩ 已取消準備");
-  }
-}
 async function onlineLeaveRoom(){
   await onlineUnsubscribe();if(onlineClockTimer)clearInterval(onlineClockTimer);onlineClockTimer=null;onlineLastResult="";state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
   onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
 }
 async function onlineResign(){
-  if(joygoTournamentAccessMode==="referee"){toast("👁 裁判監看模式不能投降");return}
   const r=state.onlineRoom;if(!r||r.status!=="playing")return;
-  if(r.is_tournament&&!r.tournament_started_at){toast("比賽尚未正式開鐘，不能投降");return}
-  if(r.clock_paused){toast("⏸ 裁判暫停中，不能投降");return}
   if(!confirm("確定要投降嗎？"))return;
   const {data,error}=await memberSupabase.rpc("joygo_resign_room",{p_room_id:r.id});
   if(error){toast("投降失敗："+error.message);return}
@@ -5813,8 +5742,6 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("onlineCreateBtn")?.addEventListener("click",onlineCreateRoom);
   $("onlineJoinBtn")?.addEventListener("click",()=>onlineJoinRoom($("onlineJoinCode").value));
   $("onlineResumeBtn")?.addEventListener("click",onlineResumeRoom);
-  $("onlineReadyBtn")?.addEventListener("click",onlineToggleReady);
-  $("onlineRefPauseBtn")?.addEventListener("click",onlineRefTogglePause);
   $("onlineCopyCodeBtn")?.addEventListener("click",async()=>{const c=state.onlineRoom?.room_code||"";try{await navigator.clipboard.writeText(c);toast("房間號碼已複製") }catch(_){prompt("請複製房間號碼：",c)}});
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
   $("onlineClearEndedBtn")?.addEventListener("click",onlineClearEndedRoom);
@@ -8801,11 +8728,8 @@ window.addEventListener("DOMContentLoaded",async()=>{
 <!-- Beta 1.8.4 security note: browser code may contain only a Supabase publishable/anon key.
      NEVER place a service_role key in this static GitHub Pages application. -->
 
-<script id="joygo-beta252-direct-room-js">
-// Beta 2.5.2：正式比賽棋局權限鎖定。
-// 棋手：可進入自己的正式棋局並落子。
-// 主管理員／巡場員：可進入裁判監看模式，但不能落子／投降。
-// 其他會員：即使知道房號也不能進入。
+<script id="joygo-beta211-direct-room-js">
+// Beta 2.1.1：從獨立大廳接受邀請後，以 ?room=XXXXXX 回到棋局頁；房間已含自由對弈計時設定。
 window.addEventListener("DOMContentLoaded",()=>{
   const code=new URLSearchParams(location.search).get("room");
   if(!code)return;
@@ -8817,35 +8741,13 @@ window.addEventListener("DOMContentLoaded",()=>{
     if(!window.memberSupabase&&!memberSupabase){if(tries<30)setTimeout(enter,250);return}
     try{
       if(!await onlineReady()){if(tries<30)setTimeout(enter,300);return}
-
-      const {data:accessData,error:accessError}=await memberSupabase.rpc("joygo_get_room_access",{p_code:clean});
-      const access=Array.isArray(accessData)?accessData[0]:accessData;
-      if(accessError||!access){
-        toast("無法檢查棋局權限："+(accessError?.message||"找不到房間"));
-        return;
-      }
-      if(access.access_mode==="denied"){
-        alert("⛔ 這是正式比賽棋局。\n只有本桌黑白棋手可以進入；主管理員／巡場員只能以裁判監看模式進入。");
-        try{history.replaceState({},"",location.pathname)}catch(_){}
-        setTimeout(()=>{location.href="lobby.html"},300);
-        return;
-      }
-
-      joygoTournamentAccessMode=access.access_mode==="referee"?"referee":"player";
       const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:clean});
       const room=onlineRpcRow(data);
-      if(error||!room){toast("無法進入正式棋局："+(error?.message||"找不到房間"));return}
-
+      if(error||!room){toast("無法進入配對棋局："+(error?.message||"找不到房間"));return}
       await onlineEnterRoom(room);
-      setTimeout(()=>{
-        closeModal("onlineModal");
-        toast(joygoTournamentAccessMode==="referee"?"👁 已進入裁判監看模式":"⚔️ 已進入您的正式比賽棋局");
-      },220);
+      setTimeout(()=>{closeModal("onlineModal");toast("⚔️ 已進入真人棋局")},220);
       try{history.replaceState({},"",location.pathname)}catch(_){}
-    }catch(e){
-      console.error(e);
-      toast("進入正式棋局失敗："+(e?.message||e));
-    }
+    }catch(e){console.error(e);toast("進入真人棋局失敗："+(e?.message||e))}
   };
   setTimeout(enter,350);
 });
