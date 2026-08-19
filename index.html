@@ -3100,6 +3100,271 @@ body.guidance-embed-mode #saveSgfBtn{
 }
 </style>
 
+
+<script id="joygoGuidance276HeadBoot">
+(()=>{try{
+  const q=new URLSearchParams(location.search);
+  if(window.self!==window.top && q.get("guidance_embed")==="1"){
+    document.documentElement.setAttribute("data-joygo-guidance","1");
+  }
+}catch(_){}})();
+</script>
+
+
+<style id="joygoGuidance276Layout">
+/* Beta 2.7.6：iPad 指導棋專用穩定版面 */
+html[data-joygo-guidance="1"],
+html[data-joygo-guidance="1"] body{
+  margin:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  background:#0b0806!important;
+}
+
+/* 所有主平台／浮動入口在指導棋 iframe 隱藏 */
+html[data-joygo-guidance="1"] #joygoBetaGate,
+html[data-joygo-guidance="1"] #joygoBetaExit,
+html[data-joygo-guidance="1"] #joygoLiveMonitor,
+html[data-joygo-guidance="1"] #infoCollapseBtn,
+html[data-joygo-guidance="1"] #teachQuickBar,
+html[data-joygo-guidance="1"] #teachBarToggle,
+html[data-joygo-guidance="1"] #apiInspectorToggle,
+html[data-joygo-guidance="1"] #apiInspectorPanel,
+html[data-joygo-guidance="1"] .member-chip,
+html[data-joygo-guidance="1"] #memberChip,
+html[data-joygo-guidance="1"] .left{
+  display:none!important;
+}
+
+/* 主結構：棋盤 + 右側計時；底部完整功能列 */
+html[data-joygo-guidance="1"] .app{
+  width:100%!important;
+  height:100dvh!important;
+  padding:5px!important;
+  gap:5px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 205px!important;
+  grid-template-rows:minmax(0,1fr) 68px!important;
+  overflow:hidden!important;
+}
+
+html[data-joygo-guidance="1"] .board-wrap{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  border-radius:12px!important;
+}
+
+html[data-joygo-guidance="1"] #board{
+  width:min(calc(100dvh - 88px),calc(100vw - 225px))!important;
+  height:min(calc(100dvh - 88px),calc(100vw - 225px))!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+
+/* 計時器固定右側，上下排列 */
+html[data-joygo-guidance="1"] .right{
+  display:flex!important;
+  grid-column:2!important;
+  grid-row:1!important;
+  position:static!important;
+  width:205px!important;
+  min-width:205px!important;
+  max-width:205px!important;
+  height:100%!important;
+  padding:7px!important;
+  margin:0!important;
+  overflow:hidden!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  background:linear-gradient(180deg,#14100d,#090706)!important;
+  border:1px solid #5b4028!important;
+  border-radius:12px!important;
+}
+
+html[data-joygo-guidance="1"] .right > .tool,
+html[data-joygo-guidance="1"] .right > .ai-hint-panel,
+html[data-joygo-guidance="1"] #redrawBtn,
+html[data-joygo-guidance="1"] #aiHintPanel{
+  display:none!important;
+}
+
+html[data-joygo-guidance="1"] #gameClockPanel{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  padding:7px!important;
+  gap:9px!important;
+  margin:0!important;
+  pointer-events:none!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+}
+
+html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
+  display:grid!important;
+  grid-template-columns:28px 1fr!important;
+  grid-template-rows:auto auto auto!important;
+  column-gap:8px!important;
+  align-items:center!important;
+  width:100%!important;
+  min-height:112px!important;
+  padding:10px 8px!important;
+  border-radius:13px!important;
+}
+
+html[data-joygo-guidance="1"] #gameClockPanel .clock-stone{
+  grid-column:1!important;
+  grid-row:1 / span 2!important;
+  width:25px!important;
+  height:25px!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-name{
+  grid-column:2!important;
+  grid-row:1!important;
+  font-size:13px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
+  grid-column:2!important;
+  grid-row:2!important;
+  font-size:30px!important;
+  line-height:1!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-byo{
+  grid-column:1 / span 2!important;
+  grid-row:3!important;
+  font-size:10px!important;
+  margin-top:6px!important;
+}
+html[data-joygo-guidance="1"] #clockSoundIcon{
+  display:none!important;
+}
+
+/* 底部只顯示必要功能鍵，完整可見 */
+html[data-joygo-guidance="1"] .player{
+  display:block!important;
+  grid-column:1 / span 2!important;
+  grid-row:2!important;
+  width:100%!important;
+  height:68px!important;
+  min-height:68px!important;
+  padding:7px!important;
+  margin:0!important;
+  overflow:visible!important;
+  background:linear-gradient(180deg,#17100c,#0e0907)!important;
+  border:1px solid #5b4028!important;
+  border-radius:12px!important;
+}
+
+html[data-joygo-guidance="1"] .move-tools,
+html[data-joygo-guidance="1"] .controls,
+html[data-joygo-guidance="1"] .range-row,
+html[data-joygo-guidance="1"] #trialModeBar{
+  display:none!important;
+}
+
+html[data-joygo-guidance="1"] #gameActionRow{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  grid-template-rows:1fr!important;
+  gap:7px!important;
+  width:100%!important;
+  height:52px!important;
+  padding:0!important;
+  margin:0!important;
+}
+
+html[data-joygo-guidance="1"] #gameActionRow > button{
+  display:none!important;
+  width:100%!important;
+  height:52px!important;
+  min-height:52px!important;
+  margin:0!important;
+  padding:6px 8px!important;
+  border-radius:10px!important;
+  font-size:14px!important;
+  font-weight:900!important;
+  line-height:1.1!important;
+}
+
+html[data-joygo-guidance="1"] #undoGameBtn,
+html[data-joygo-guidance="1"] #scoreGameBtn,
+html[data-joygo-guidance="1"] #passGameBtn,
+html[data-joygo-guidance="1"] #resignGameBtn,
+html[data-joygo-guidance="1"] #saveSgfBtn{
+  display:block!important;
+}
+
+html[data-joygo-guidance="1"] #scoreGameBtn{
+  background:linear-gradient(135deg,#d9a72e,#f0c34f)!important;
+  color:#201407!important;
+}
+html[data-joygo-guidance="1"] #resignGameBtn{
+  background:#3b1518!important;
+  border-color:#a95359!important;
+}
+html[data-joygo-guidance="1"] #saveSgfBtn{
+  background:#15331e!important;
+  border-color:#5c9668!important;
+}
+
+/* 數地模式開啟時，浮在功能列上方，不會被裁掉 */
+html[data-joygo-guidance="1"] #scoringModeBar{
+  position:fixed!important;
+  left:12px!important;
+  right:12px!important;
+  bottom:78px!important;
+  z-index:50000!important;
+  max-height:170px!important;
+  overflow:auto!important;
+  border-radius:12px!important;
+  box-shadow:0 10px 30px #000a!important;
+}
+
+/* iPad 較窄 iframe：右側時鐘仍維持，不改成下方橫列 */
+@media (max-width:760px){
+  html[data-joygo-guidance="1"] .app{
+    grid-template-columns:minmax(0,1fr) 165px!important;
+  }
+  html[data-joygo-guidance="1"] .right{
+    width:165px!important;
+    min-width:165px!important;
+    max-width:165px!important;
+    padding:5px!important;
+  }
+  html[data-joygo-guidance="1"] #board{
+    width:min(calc(100dvh - 88px),calc(100vw - 185px))!important;
+    height:min(calc(100dvh - 88px),calc(100vw - 185px))!important;
+  }
+  html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
+    font-size:24px!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow > button{
+    font-size:12px!important;
+    padding:4px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -8971,6 +9236,34 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(m.id!=="onlineModal") m.classList.remove("show","open","active");
   });
 });
+</script>
+
+
+<script id="joygoGuidance276Guard">
+(()=>{
+  function apply(){
+    try{
+      const q=new URLSearchParams(location.search);
+      if(!(window.self!==window.top && q.get("guidance_embed")==="1"))return;
+      document.documentElement.setAttribute("data-joygo-guidance","1");
+      document.body.classList.add("guidance-embed-mode");
+      const hide=[".left",".move-tools",".controls",".range-row","#trialModeBar",
+                  "#redrawBtn","#aiHintPanel","#apiInspectorToggle","#apiInspectorPanel",
+                  "#teachQuickBar","#teachBarToggle",".member-chip","#memberChip"];
+      hide.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.style.setProperty("display","none","important")));
+      const row=document.getElementById("gameActionRow");
+      if(row) row.style.setProperty("display","grid","important");
+      ["undoGameBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.style.setProperty("display","block","important");
+      });
+    }catch(_){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",apply,{once:true});
+  else apply();
+  setTimeout(apply,250);
+  setTimeout(apply,1000);
+})();
 </script>
 
 </body>
