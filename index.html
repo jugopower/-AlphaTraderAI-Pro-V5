@@ -3454,6 +3454,104 @@ html[data-joygo-guidance="1"] #coordToggleBtn{
 }
 </style>
 
+
+<style id="joygoGuidance283SafeTune">
+/* ============================================================
+   Beta 2.8.3 安全微調版
+   只改 CSS：不搬 DOM、不改棋局 JS、不監聽 resize。
+   ============================================================ */
+
+/* 指導棋內嵌模式：不要顯示重複的返回平台／試下／全螢幕 */
+html[data-joygo-guidance="1"] #landscapeBackPlatformBtn,
+html[data-joygo-guidance="1"] #compactFullscreenBtn,
+html[data-joygo-guidance="1"] #trialModeBtn,
+html[data-joygo-guidance="1"] #landscapePlatformCloseBtn{
+  display:none!important;
+}
+
+/* 橫式：棋鐘從右欄頂端開始，和棋盤上方視覺對齊 */
+@media (orientation:landscape) and (min-width:901px){
+  html[data-joygo-guidance="1"] .right{
+    justify-content:flex-start!important;
+    padding-top:8px!important;
+  }
+  html[data-joygo-guidance="1"] #gameClockPanel{
+    margin-top:0!important;
+    width:100%!important;
+    gap:8px!important;
+  }
+  html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
+    width:100%!important;
+    min-height:104px!important;
+    height:104px!important;
+    box-sizing:border-box!important;
+  }
+
+  /* 右側只保留必要對局操作 */
+  html[data-joygo-guidance="1"] .compact-action-panel{
+    margin-top:2px!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    padding:8px!important;
+  }
+  html[data-joygo-guidance="1"] .compact-action-panel #undoGameBtn{
+    grid-column:1!important;
+  }
+  html[data-joygo-guidance="1"] .compact-action-panel #scoreGameBtn{
+    grid-column:2!important;
+  }
+  html[data-joygo-guidance="1"] .compact-action-panel #passGameBtn{
+    grid-column:1!important;
+  }
+  html[data-joygo-guidance="1"] .compact-action-panel #resignGameBtn{
+    grid-column:2!important;
+  }
+  html[data-joygo-guidance="1"] .compact-action-panel #saveSgfBtn{
+    grid-column:1 / -1!important;
+  }
+  html[data-joygo-guidance="1"] .compact-action-panel button{
+    min-height:42px!important;
+    height:42px!important;
+    font-size:12px!important;
+  }
+}
+
+/* 直式：保留原本穩定功能列，按鈕完整、間距一致 */
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] .player{
+    display:block!important;
+    min-height:118px!important;
+    height:auto!important;
+    padding:7px!important;
+    overflow:visible!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow > button{
+    min-height:48px!important;
+    height:48px!important;
+    margin:0!important;
+    font-size:13px!important;
+  }
+  html[data-joygo-guidance="1"] #undoGameBtn,
+  html[data-joygo-guidance="1"] #scoreGameBtn,
+  html[data-joygo-guidance="1"] #passGameBtn,
+  html[data-joygo-guidance="1"] #resignGameBtn,
+  html[data-joygo-guidance="1"] #saveSgfBtn{
+    display:block!important;
+  }
+}
+
+/* 座標按鈕永遠保留，不碰其事件功能 */
+html[data-joygo-guidance="1"] #coordToggleBtn{
+  visibility:visible!important;
+  opacity:1!important;
+}
+</style>
+
 </head>
 <body>
 
