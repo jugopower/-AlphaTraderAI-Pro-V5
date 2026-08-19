@@ -3552,6 +3552,45 @@ html[data-joygo-guidance="1"] #coordToggleBtn{
 }
 </style>
 
+
+<style id="joygoGuidance284RequiredActions">
+/* Beta 2.8.4：補齊必要功能鍵 */
+#calculateResultBtn{
+  background:linear-gradient(135deg,#7d5bd6,#53389e)!important;
+  border-color:#9d85e2!important;
+  color:#fff!important;
+  font-weight:900!important;
+}
+
+/* 橫式：六個必要功能鍵一排 */
+html[data-joygo-guidance="1"] #gameActionRow{
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+}
+html[data-joygo-guidance="1"] #calculateResultBtn{
+  display:block!important;
+}
+
+/* 若仍使用右側 compact action panel，也顯示計算勝負 */
+@media (orientation:landscape) and (min-width:901px){
+  html[data-joygo-guidance="1"] .compact-action-panel #calculateResultBtn{
+    display:block!important;
+    grid-column:1 / -1!important;
+    min-height:42px!important;
+    height:42px!important;
+  }
+}
+
+/* 直式：六鍵剛好 3欄 x 2列 */
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] #gameActionRow{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  html[data-joygo-guidance="1"] #calculateResultBtn{
+    display:block!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -3703,6 +3742,7 @@ html[data-joygo-guidance="1"] #coordToggleBtn{
       <button id="scoreGameBtn">正式數地</button>
       <button id="passGameBtn">Pass</button>
       <button id="resignGameBtn">投降</button>
+      <button id="calculateResultBtn">計算勝負</button>
       <button id="saveSgfBtn">存檔 SGF</button>
       <button id="trialModeBtn">🧪 試下</button>
       <button id="firstChoiceBtn">第一選</button>
@@ -8924,6 +8964,29 @@ $("undoGameBtn").onclick=undoGameMove;
   scoreBtn.onclick=runScore;
   scoreBtn.addEventListener("touchend",runScore,{passive:false});
 }
+
+{
+  const resultBtn=$("calculateResultBtn");
+  if(resultBtn){
+    let resultBusy=false;
+    const runResult=async(e)=>{
+      if(e){e.preventDefault();e.stopPropagation();}
+      if(resultBusy)return;
+      if(!state.gameEnded){
+        const ok=confirm("將以目前盤面計算勝負並停止棋鐘。\n若尚未確認死子，建議先使用「正式數地」。\n\n確定要計算勝負嗎？");
+        if(!ok)return;
+      }
+      resultBusy=true;
+      try{await calculateGameResult();}
+      catch(err){
+        console.error("計算勝負按鈕錯誤",err);
+        alert("計算勝負失敗：\n"+(err?.message||err));
+      }finally{resultBusy=false;}
+    };
+    resultBtn.onclick=runResult;
+  }
+}
+
 $("resultOkBtn").onclick=()=>closeModal("resultModal");
 $("resultDetailBtn").onclick=()=>{const d=$("resultDetail");d.classList.toggle("open");$("resultDetailBtn").textContent=d.classList.contains("open")?"收起詳細計算":"查看詳細計算";};
 $("passGameBtn").onclick=()=>state.onlineMode?onlinePlayAt(null,null,true):humanGamePass();
