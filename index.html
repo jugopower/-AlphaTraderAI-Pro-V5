@@ -3238,6 +3238,10 @@ body.spectator-viewing #statusText{font-weight:800}
     <div class="online-player-row"><span>⚫ 黑方</span><b id="onlineBlackName">等待</b></div>
     <div class="online-player-row"><span>⚪ 白方</span><b id="onlineWhiteName">等待加入</b></div>
     <div class="online-player-row"><span>棋盤</span><b id="onlineRoomBoardSize">19 路</b></div>
+    <div id="onlineReadyBlackRow" class="online-player-row" style="display:none"><span>⚫ 黑方準備</span><b id="onlineBlackReady">等待</b></div>
+    <div id="onlineReadyWhiteRow" class="online-player-row" style="display:none"><span>⚪ 白方準備</span><b id="onlineWhiteReady">等待</b></div>
+    <div id="onlineReadyStateRow" class="online-player-row" style="display:none"><span>比賽狀態</span><b id="onlineReadyState">等待雙方準備</b></div>
+    <button id="onlineReadyBtn" class="action" type="button" style="width:100%;margin-top:10px;display:none">✅ 我準備完成</button>
     <div class="online-player-row"><span>目前手數</span><b id="onlineMoveCount">0</b></div>
     <div class="online-player-row"><span>輪到</span><b id="onlineTurnText">黑方</b></div>
     <button id="onlineCopyCodeBtn" class="secondary" type="button" style="width:100%;margin-top:10px">複製房間號碼</button>
@@ -5555,7 +5559,7 @@ function onlineResultText(result){
 }
 function onlineClockValues(){
   const r=state.onlineRoom;if(!r)return null;
-  const elapsed=r.status==="playing"&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
+  const elapsed=r.status==="playing"&&(!r.is_tournament||r.tournament_started_at)&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
   const periodMs=Number(r.byo_seconds||30)*1000;
   const one=color=>{
     let main=Number(color==="B"?r.black_main_ms:r.white_main_ms)||0;
@@ -5574,7 +5578,7 @@ function startOnlineClockUI(){
   onlineClockTimer=setInterval(async()=>{
     if(!state.onlineMode||!state.onlineRoom){clearInterval(onlineClockTimer);onlineClockTimer=null;return}
     updateClockUI();const v=onlineClockValues(),r=state.onlineRoom,active=v?.[r.turn];
-    if(joygoTournamentAccessMode!=="referee"&&r.status==="playing"&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
+    if(joygoTournamentAccessMode!=="referee"&&r.status==="playing"&&(!r.is_tournament||r.tournament_started_at)&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
       onlineTimeoutClaimed=true;const {data}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
       if(data){state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom()}
     }
@@ -5608,7 +5612,18 @@ function onlineRenderRoom(){
   $("onlineMoveCount").textContent=String(r.move_count||0);
   $("onlineTurnText").textContent=r.status==="waiting"?"等待白方加入":(r.status==="ended"?"對局結束":(r.turn==="B"?"黑方":"白方"));
   if($("onlineRoomBoardSize"))$("onlineRoomBoardSize").textContent=String(r.board_size||19)+" 路";
-  if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="waiting"?"等待加入":(r.status==="playing"?"對弈中":"已結束");
+  const isTournament=!!r.is_tournament;
+  const started=!!r.tournament_started_at;
+  ["onlineReadyBlackRow","onlineReadyWhiteRow","onlineReadyStateRow"].forEach(id=>{if($(id))$(id).style.display=isTournament?"flex":"none"});
+  if($("onlineBlackReady"))$("onlineBlackReady").textContent=r.black_ready?"✅ 已準備":"⏳ 未準備";
+  if($("onlineWhiteReady"))$("onlineWhiteReady").textContent=r.white_ready?"✅ 已準備":"⏳ 未準備";
+  if($("onlineReadyState"))$("onlineReadyState").textContent=started?"▶️ 已正式開鐘":"⏸ 等待雙方準備";
+  if($("onlineReadyBtn")){
+    const mine=state.onlineColor==="B"?!!r.black_ready:(state.onlineColor==="W"?!!r.white_ready:false);
+    $("onlineReadyBtn").style.display=isTournament&&!started&&joygoTournamentAccessMode!=="referee"&&!!state.onlineColor?"block":"none";
+    $("onlineReadyBtn").textContent=mine?"↩ 取消準備":"✅ 我準備完成";
+  }
+  if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="waiting"?"等待加入":(r.status==="ended"?"已結束":(isTournament&&!started?"等待準備":"對弈中"));
   if($("onlineClearEndedBtn"))$("onlineClearEndedBtn").style.display=r.status==="ended"?"block":"none";
 }
 async function onlineUnsubscribe(){
@@ -5646,7 +5661,18 @@ async function onlineSyncRoom(){
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
-    onlineSetStatus(joygoTournamentAccessMode==="referee"?"👁 裁判監看模式｜只能觀看與巡場，不能落子":(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。")),joygoTournamentAccessMode==="referee"?"":(myTurn?"ok":""));
+    onlineSetStatus(
+      joygoTournamentAccessMode==="referee"
+        ? (room.is_tournament&&!room.tournament_started_at
+            ? "👁 裁判監看模式｜等待雙方棋手準備"
+            : "👁 裁判監看模式｜只能觀看與巡場，不能落子")
+        : (room.is_tournament&&!room.tournament_started_at
+            ? "⏸ 正式比賽尚未開鐘｜請雙方按「我準備完成」"
+            : (room.status==="waiting"
+                ? "房間已建立，請將六碼房號交給另一位棋友。"
+                : (myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"))),
+      joygoTournamentAccessMode==="referee"?"":(myTurn&&(!room.is_tournament||room.tournament_started_at)?"ok":"")
+    );
     const lastMove=(moves||[]).at(-1);
     if(lastMove?.is_pass&&Number(lastMove.move_no)!==onlineLastPassMove){
       onlineLastPassMove=Number(lastMove.move_no);
@@ -5696,6 +5722,7 @@ async function onlineResumeRoom(){
 async function onlinePlayAt(x,y,isPass=false){
   if(joygoTournamentAccessMode==="referee"){toast("👁 裁判監看模式不能落子");return}
   const r=state.onlineRoom;if(!state.onlineMode||!r||state.onlineSyncing)return;
+  if(r.is_tournament&&!r.tournament_started_at){toast("⏸ 正式比賽尚未開鐘，請先完成雙方準備");return}
   if(r.status!=="playing"){toast("等待另一位棋友加入");return}
   if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
   if(!isPass){
@@ -5711,6 +5738,27 @@ async function onlinePlayAt(x,y,isPass=false){
   if(error){onlineSetStatus("落子失敗："+error.message,"bad");await onlineSyncRoom();return}
   await onlineSyncRoom();
 }
+
+async function onlineToggleReady(){
+  const r=state.onlineRoom;
+  if(!r||!r.is_tournament)return;
+  if(joygoTournamentAccessMode==="referee"){toast("👁 裁判不能代替棋手按準備");return}
+  if(r.tournament_started_at){toast("比賽已經正式開鐘");return}
+  if(!state.onlineColor){toast("您不是本桌棋手");return}
+  const mine=state.onlineColor==="B"?!!r.black_ready:!!r.white_ready;
+  const {data,error}=await memberSupabase.rpc("joygo_tournament_set_ready",{
+    p_room_id:r.id,
+    p_ready:!mine
+  });
+  if(error){toast("準備狀態更新失敗："+error.message);return}
+  state.onlineRoom=onlineRpcRow(data)||r;
+  await onlineSyncRoom();
+  if(state.onlineRoom?.tournament_started_at){
+    toast("▶️ 雙方已準備，正式開鐘！");
+  }else{
+    toast(!mine?"✅ 已標記準備完成":"↩ 已取消準備");
+  }
+}
 async function onlineLeaveRoom(){
   await onlineUnsubscribe();if(onlineClockTimer)clearInterval(onlineClockTimer);onlineClockTimer=null;onlineLastResult="";state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
   onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
@@ -5718,6 +5766,7 @@ async function onlineLeaveRoom(){
 async function onlineResign(){
   if(joygoTournamentAccessMode==="referee"){toast("👁 裁判監看模式不能投降");return}
   const r=state.onlineRoom;if(!r||r.status!=="playing")return;
+  if(r.is_tournament&&!r.tournament_started_at){toast("比賽尚未正式開鐘，不能投降");return}
   if(!confirm("確定要投降嗎？"))return;
   const {data,error}=await memberSupabase.rpc("joygo_resign_room",{p_room_id:r.id});
   if(error){toast("投降失敗："+error.message);return}
@@ -5741,6 +5790,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("onlineCreateBtn")?.addEventListener("click",onlineCreateRoom);
   $("onlineJoinBtn")?.addEventListener("click",()=>onlineJoinRoom($("onlineJoinCode").value));
   $("onlineResumeBtn")?.addEventListener("click",onlineResumeRoom);
+  $("onlineReadyBtn")?.addEventListener("click",onlineToggleReady);
   $("onlineCopyCodeBtn")?.addEventListener("click",async()=>{const c=state.onlineRoom?.room_code||"";try{await navigator.clipboard.writeText(c);toast("房間號碼已複製") }catch(_){prompt("請複製房間號碼：",c)}});
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
   $("onlineClearEndedBtn")?.addEventListener("click",onlineClearEndedRoom);
