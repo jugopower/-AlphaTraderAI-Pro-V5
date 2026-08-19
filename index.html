@@ -3546,6 +3546,143 @@ html[data-joygo-guidance="1"] #gameActionRow{display:none!important;}
 }
 </style>
 
+
+<style id="joygoGuidance278FixedLayout">
+/* Beta 2.7.8：iPad 指導棋固定左右版，不再因 iframe 寬度改成上下版 */
+html[data-joygo-guidance="1"] .app{
+  width:100%!important;
+  height:100dvh!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 190px!important;
+  grid-template-rows:minmax(0,1fr)!important;
+  gap:6px!important;
+  padding:6px!important;
+  overflow:hidden!important;
+}
+html[data-joygo-guidance="1"] .board-wrap{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:14px!important;
+}
+html[data-joygo-guidance="1"] #board{
+  width:min(calc(100dvh - 20px),calc(100vw - 210px))!important;
+  height:min(calc(100dvh - 20px),calc(100vw - 210px))!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+html[data-joygo-guidance="1"] .right{
+  display:flex!important;
+  grid-column:2!important;
+  grid-row:1!important;
+  width:190px!important;
+  min-width:190px!important;
+  max-width:190px!important;
+  height:100%!important;
+  padding:8px!important;
+  margin:0!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  align-items:stretch!important;
+  gap:9px!important;
+  overflow:hidden!important;
+  border-radius:14px!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:7px!important;
+  margin:0!important;
+  padding:0!important;
+  width:100%!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
+  min-height:86px!important;
+  padding:8px 7px!important;
+  border-radius:11px!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
+  font-size:25px!important;
+  line-height:1!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-name{
+  font-size:11px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-byo{
+  font-size:9px!important;
+  white-space:nowrap!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:6px!important;
+  align-content:start!important;
+  margin-top:2px!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions .action-title{
+  margin:0 0 1px!important;
+  font-size:11px!important;
+  color:#d9c8a9!important;
+  text-align:center!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions button{
+  display:block!important;
+  width:100%!important;
+  min-height:43px!important;
+  height:43px!important;
+  padding:5px 6px!important;
+  margin:0!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  font-weight:900!important;
+}
+html[data-joygo-guidance="1"] #coordToggleBtn{
+  min-height:39px!important;
+  height:39px!important;
+  order:99!important;
+  background:#2a2118!important;
+  color:#ffe09a!important;
+  border:1px solid #d7a943!important;
+}
+html[data-joygo-guidance="1"] .player,
+html[data-joygo-guidance="1"] #gameActionRow,
+html[data-joygo-guidance="1"] .move-tools,
+html[data-joygo-guidance="1"] .controls,
+html[data-joygo-guidance="1"] .range-row{
+  display:none!important;
+}
+/* 明確覆蓋上一版所有 max-width 窄畫面規則 */
+@media (max-width: 1200px){
+  html[data-joygo-guidance="1"] .app{
+    grid-template-columns:minmax(0,1fr) 190px!important;
+    grid-template-rows:minmax(0,1fr)!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap{grid-column:1!important;grid-row:1!important;}
+  html[data-joygo-guidance="1"] .right{
+    grid-column:2!important;grid-row:1!important;
+    width:190px!important;min-width:190px!important;max-width:190px!important;
+  }
+  html[data-joygo-guidance="1"] #gameClockPanel{grid-template-columns:1fr!important;}
+  html[data-joygo-guidance="1"] #guidanceRightActions{grid-template-columns:1fr!important;}
+  html[data-joygo-guidance="1"] #board{
+    width:min(calc(100dvh - 20px),calc(100vw - 210px))!important;
+    height:min(calc(100dvh - 20px),calc(100vw - 210px))!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -9484,6 +9621,27 @@ document.addEventListener("DOMContentLoaded",()=>{
   else applyGuidanceRightPanel();
   setTimeout(applyGuidanceRightPanel,250);
   setTimeout(applyGuidanceRightPanel,1000);
+})();
+</script>
+
+
+<script id="joygoGuidance278Force">
+(()=>{
+ function fix(){
+  try{
+   const q=new URLSearchParams(location.search);
+   if(!(window.self!==window.top && q.get('guidance_embed')==='1'))return;
+   document.documentElement.setAttribute('data-joygo-guidance','1');
+   const app=document.querySelector('.app'), right=document.querySelector('.right'), board=document.querySelector('.board-wrap');
+   if(app){app.style.setProperty('grid-template-columns','minmax(0,1fr) 190px','important');app.style.setProperty('grid-template-rows','minmax(0,1fr)','important');}
+   if(board){board.style.setProperty('grid-column','1','important');board.style.setProperty('grid-row','1','important');}
+   if(right){right.style.setProperty('display','flex','important');right.style.setProperty('grid-column','2','important');right.style.setProperty('grid-row','1','important');right.style.setProperty('width','190px','important');right.style.setProperty('min-width','190px','important');right.style.setProperty('max-width','190px','important');}
+   const panel=document.getElementById('guidanceRightActions');
+   if(panel){panel.style.setProperty('display','grid','important');panel.style.setProperty('grid-template-columns','1fr','important');}
+  }catch(_){ }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix();
+ setTimeout(fix,150);setTimeout(fix,600);setTimeout(fix,1500);
 })();
 </script>
 
