@@ -3365,6 +3365,187 @@ html[data-joygo-guidance="1"] #scoringModeBar{
 }
 </style>
 
+
+<style id="joygoGuidance277Layout">
+/* Beta 2.7.7：右側功能鍵美化版 */
+html[data-joygo-guidance="1"],
+html[data-joygo-guidance="1"] body{
+  margin:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  background:#0b0806!important;
+}
+html[data-joygo-guidance="1"] .left,
+html[data-joygo-guidance="1"] .move-tools,
+html[data-joygo-guidance="1"] .controls,
+html[data-joygo-guidance="1"] .range-row,
+html[data-joygo-guidance="1"] #trialModeBar,
+html[data-joygo-guidance="1"] #redrawBtn,
+html[data-joygo-guidance="1"] #aiHintPanel,
+html[data-joygo-guidance="1"] #topbar,
+html[data-joygo-guidance="1"] .topbar,
+html[data-joygo-guidance="1"] #memberChip,
+html[data-joygo-guidance="1"] .member-chip,
+html[data-joygo-guidance="1"] #infoCollapseBtn,
+html[data-joygo-guidance="1"] #famousGameInfoBar,
+html[data-joygo-guidance="1"] #joygoLiveMonitor,
+html[data-joygo-guidance="1"] #joygoBetaExit,
+html[data-joygo-guidance="1"] #teachQuickBar,
+html[data-joygo-guidance="1"] #teachBarToggle,
+html[data-joygo-guidance="1"] #apiInspectorToggle,
+html[data-joygo-guidance="1"] #apiInspectorPanel,
+html[data-joygo-guidance="1"] #photoReferencePanel{
+  display:none!important;
+}
+html[data-joygo-guidance="1"] .app{
+  width:100%!important;
+  height:100dvh!important;
+  padding:6px!important;
+  gap:6px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 236px!important;
+  grid-template-rows:minmax(0,1fr)!important;
+  overflow:hidden!important;
+}
+html[data-joygo-guidance="1"] .board-wrap{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:16px!important;
+  overflow:hidden!important;
+}
+html[data-joygo-guidance="1"] #board{
+  width:min(calc(100dvh - 24px),calc(100vw - 272px))!important;
+  height:min(calc(100dvh - 24px),calc(100vw - 272px))!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+html[data-joygo-guidance="1"] .right{
+  grid-column:2!important;
+  grid-row:1!important;
+  min-width:236px!important;
+  max-width:236px!important;
+  width:236px!important;
+  padding:10px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+  overflow:hidden!important;
+  border-radius:16px!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+  margin-top:4px!important;
+  align-content:start!important;
+}
+html[data-joygo-guidance="1"] .clock-side{
+  min-height:124px!important;
+  padding:12px 10px!important;
+}
+html[data-joygo-guidance="1"] .clock-time{
+  font-size:24px!important;
+}
+html[data-joygo-guidance="1"] .clock-name{
+  font-size:13px!important;
+}
+html[data-joygo-guidance="1"] .clock-byo{
+  font-size:12px!important;
+}
+html[data-joygo-guidance="1"] .clock-sound{
+  display:none!important;
+}
+html[data-joygo-guidance="1"] .player{
+  display:none!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  align-content:start!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions .action-title{
+  grid-column:1 / -1!important;
+  color:#d8c7a7!important;
+  font-size:12px!important;
+  letter-spacing:.08em!important;
+  text-align:center!important;
+  margin:2px 0 0!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions button{
+  display:block!important;
+  width:100%!important;
+  min-height:54px!important;
+  padding:8px 6px!important;
+  border-radius:12px!important;
+  font-size:15px!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+html[data-joygo-guidance="1"] #coordToggleBtn{
+  grid-column:1 / -1!important;
+  min-height:46px!important;
+  background:#2b2115!important;
+  border:1px solid #d8a943!important;
+  color:#ffe09a!important;
+}
+html[data-joygo-guidance="1"] #undoGameBtn,
+html[data-joygo-guidance="1"] #passGameBtn{background:#20140d!important;}
+html[data-joygo-guidance="1"] #scoreGameBtn{background:linear-gradient(135deg,#f5d264,#d6a22c)!important;color:#120b06!important;}
+html[data-joygo-guidance="1"] #resignGameBtn{background:#47171b!important;border-color:#a34e54!important;}
+html[data-joygo-guidance="1"] #saveSgfBtn{background:#153420!important;border-color:#4d8e68!important;}
+html[data-joygo-guidance="1"] #gameActionRow{display:none!important;}
+
+@media (max-width: 880px){
+  html[data-joygo-guidance="1"] .app{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr) auto!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  html[data-joygo-guidance="1"] .right{
+    grid-column:1!important;
+    grid-row:2!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    padding:8px!important;
+    gap:8px!important;
+  }
+  html[data-joygo-guidance="1"] #gameClockPanel{
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+  }
+  html[data-joygo-guidance="1"] .clock-side{
+    min-height:88px!important;
+  }
+  html[data-joygo-guidance="1"] #guidanceRightActions{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  html[data-joygo-guidance="1"] #coordToggleBtn{
+    grid-column:1 / -1!important;
+  }
+  html[data-joygo-guidance="1"] #board{
+    width:min(calc(100vw - 18px),calc(100dvh - 235px))!important;
+    height:min(calc(100vw - 18px),calc(100dvh - 235px))!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -9263,6 +9444,46 @@ document.addEventListener("DOMContentLoaded",()=>{
   else apply();
   setTimeout(apply,250);
   setTimeout(apply,1000);
+})();
+</script>
+
+
+<script id="joygoGuidance277Boot">
+(()=>{
+  function applyGuidanceRightPanel(){
+    try{
+      const q=new URLSearchParams(location.search);
+      if(!(window.self!==window.top && q.get('guidance_embed')==='1')) return;
+      document.documentElement.setAttribute('data-joygo-guidance','1');
+      document.body.classList.add('guidance-embed-mode');
+      const right=document.querySelector('.right');
+      if(!right) return;
+      let panel=document.getElementById('guidanceRightActions');
+      if(!panel){
+        panel=document.createElement('div');
+        panel.id='guidanceRightActions';
+        panel.innerHTML='<div class="action-title">功能鍵</div>';
+        right.appendChild(panel);
+      }
+      ['undoGameBtn','scoreGameBtn','passGameBtn','resignGameBtn','saveSgfBtn','coordToggleBtn'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el && el.parentElement!==panel){
+          panel.appendChild(el);
+        }
+        if(el){
+          el.style.setProperty('display','block','important');
+        }
+      });
+      const row=document.getElementById('gameActionRow');
+      if(row) row.style.setProperty('display','none','important');
+      const player=document.querySelector('.player');
+      if(player) player.style.setProperty('display','none','important');
+    }catch(_){ }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',applyGuidanceRightPanel,{once:true});
+  else applyGuidanceRightPanel();
+  setTimeout(applyGuidanceRightPanel,250);
+  setTimeout(applyGuidanceRightPanel,1000);
 })();
 </script>
 
