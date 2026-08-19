@@ -3829,6 +3829,282 @@ html[data-joygo-guidance="1"] .right:after{
 }
 </style>
 
+
+<style id="joygoGuidance280Responsive">
+/* ============================================================
+   Beta 2.8.0｜直橫雙版面定稿
+   layout 由 parent(iPad 實際方向)決定，不再讓 iframe 寬高誤判。
+   ============================================================ */
+
+/* 共通：隱藏主平台與重複工具 */
+html[data-joygo-guidance="1"] #joygoBetaGate,
+html[data-joygo-guidance="1"] #joygoBetaExit,
+html[data-joygo-guidance="1"] #joygoLiveMonitor,
+html[data-joygo-guidance="1"] #infoCollapseBtn,
+html[data-joygo-guidance="1"] #teachQuickBar,
+html[data-joygo-guidance="1"] #teachBarToggle,
+html[data-joygo-guidance="1"] #apiInspectorToggle,
+html[data-joygo-guidance="1"] #apiInspectorPanel,
+html[data-joygo-guidance="1"] #photoReferencePanel,
+html[data-joygo-guidance="1"] #famousGameInfoBar,
+html[data-joygo-guidance="1"] #memberChip,
+html[data-joygo-guidance="1"] .member-chip,
+html[data-joygo-guidance="1"] .left,
+html[data-joygo-guidance="1"] .topbar,
+html[data-joygo-guidance="1"] #topbar,
+html[data-joygo-guidance="1"] .compact-action-panel,
+html[data-joygo-guidance="1"] #compactActionPanel,
+html[data-joygo-guidance="1"] #landscapePlatformCloseBtn,
+html[data-joygo-guidance="1"] .player{
+  display:none!important;
+}
+html[data-joygo-guidance="1"],
+html[data-joygo-guidance="1"] body{
+  margin:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  background:#0b0806!important;
+}
+html[data-joygo-guidance="1"] .app{
+  width:100%!important;
+  height:100dvh!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+html[data-joygo-guidance="1"] #redrawBtn,
+html[data-joygo-guidance="1"] #aiHintPanel{
+  display:none!important;
+}
+
+/* 控制按鈕共通 */
+html[data-joygo-guidance="1"] #guidanceRightActions{
+  display:grid!important;
+  gap:9px!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions .action-title{
+  text-align:center!important;
+  color:#d8c7a7!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.12em!important;
+}
+html[data-joygo-guidance="1"] #guidanceRightActions button{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  height:56px!important;
+  min-height:56px!important;
+  padding:7px!important;
+  margin:0!important;
+  border-radius:13px!important;
+  font-size:14px!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+html[data-joygo-guidance="1"] #scoreGameBtn{
+  background:linear-gradient(135deg,#f3d266,#d9a62d)!important;
+  color:#1a1108!important;
+}
+html[data-joygo-guidance="1"] #resignGameBtn{
+  background:#48181c!important;
+  border-color:#a75056!important;
+}
+html[data-joygo-guidance="1"] #saveSgfBtn{
+  background:#17361f!important;
+  border-color:#518d64!important;
+}
+html[data-joygo-guidance="1"] #coordToggleBtn{
+  background:#2c2216!important;
+  color:#ffe19a!important;
+  border-color:#d7a63c!important;
+}
+
+/* 棋鐘共通：黑白同尺寸，只由 active 狀態亮框 */
+html[data-joygo-guidance="1"] #gameClockPanel{
+  margin:0!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
+  border:1px solid #4d3929!important;
+  background:#15100c!important;
+  box-shadow:none!important;
+  border-radius:14px!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-side.active{
+  border-color:#53b977!important;
+  background:#12271a!important;
+  box-shadow:0 0 0 1px #53b97755 inset!important;
+}
+html[data-joygo-guidance="1"] #clockSoundIcon{display:none!important;}
+
+/* ---------------- 橫式：左棋盤 + 右控制台 ---------------- */
+html[data-joygo-guidance-layout="landscape"] .app{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 258px!important;
+  grid-template-rows:minmax(0,1fr)!important;
+  gap:8px!important;
+  padding:8px!important;
+}
+html[data-joygo-guidance-layout="landscape"] .board-wrap{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  border-radius:17px!important;
+}
+html[data-joygo-guidance-layout="landscape"] #board{
+  width:min(calc(100dvh - 16px),calc(100vw - 300px))!important;
+  height:min(calc(100dvh - 16px),calc(100vw - 300px))!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+html[data-joygo-guidance-layout="landscape"] .right{
+  display:flex!important;
+  grid-column:2!important;
+  grid-row:1!important;
+  width:258px!important;
+  min-width:258px!important;
+  max-width:258px!important;
+  height:100%!important;
+  padding:10px!important;
+  margin:0!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+  overflow:hidden!important;
+  border-radius:17px!important;
+  background:linear-gradient(180deg,#17100c,#0d0907)!important;
+}
+html[data-joygo-guidance-layout="landscape"] #gameClockPanel{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+  width:100%!important;
+}
+html[data-joygo-guidance-layout="landscape"] #gameClockPanel .clock-side{
+  height:108px!important;
+  min-height:108px!important;
+  padding:11px!important;
+}
+html[data-joygo-guidance-layout="landscape"] #gameClockPanel .clock-time{
+  font-size:29px!important;
+  line-height:1!important;
+}
+html[data-joygo-guidance-layout="landscape"] #gameClockPanel .clock-name{font-size:13px!important}
+html[data-joygo-guidance-layout="landscape"] #gameClockPanel .clock-byo{font-size:11px!important}
+html[data-joygo-guidance-layout="landscape"] #guidanceRightActions{
+  grid-template-columns:1fr 1fr!important;
+  grid-template-rows:auto repeat(3,56px)!important;
+}
+html[data-joygo-guidance-layout="landscape"] #guidanceRightActions .action-title{
+  grid-column:1/-1!important;
+}
+html[data-joygo-guidance-layout="landscape"] #undoGameBtn{grid-column:1;grid-row:2}
+html[data-joygo-guidance-layout="landscape"] #scoreGameBtn{grid-column:2;grid-row:2}
+html[data-joygo-guidance-layout="landscape"] #passGameBtn{grid-column:1;grid-row:3}
+html[data-joygo-guidance-layout="landscape"] #resignGameBtn{grid-column:2;grid-row:3}
+html[data-joygo-guidance-layout="landscape"] #saveSgfBtn{grid-column:1;grid-row:4}
+html[data-joygo-guidance-layout="landscape"] #coordToggleBtn{grid-column:2;grid-row:4}
+
+/* ---------------- 直式：上棋盤 + 下控制區 ---------------- */
+html[data-joygo-guidance-layout="portrait"] body{
+  overflow:auto!important;
+}
+html[data-joygo-guidance-layout="portrait"] .app{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:minmax(0,1fr) 238px!important;
+  gap:8px!important;
+  padding:8px!important;
+  min-height:100dvh!important;
+}
+html[data-joygo-guidance-layout="portrait"] .board-wrap{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  border-radius:17px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #board{
+  width:min(calc(100vw - 20px),calc(100dvh - 260px))!important;
+  height:min(calc(100vw - 20px),calc(100dvh - 260px))!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+html[data-joygo-guidance-layout="portrait"] .right{
+  display:grid!important;
+  grid-column:1!important;
+  grid-row:2!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:100px 122px!important;
+  gap:8px!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:238px!important;
+  padding:8px!important;
+  overflow:hidden!important;
+  border-radius:17px!important;
+  background:linear-gradient(180deg,#17100c,#0d0907)!important;
+}
+html[data-joygo-guidance-layout="portrait"] #gameClockPanel{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  width:100%!important;
+  height:100px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #gameClockPanel .clock-side{
+  height:100px!important;
+  min-height:100px!important;
+  padding:9px 12px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #gameClockPanel .clock-time{
+  font-size:27px!important;
+  line-height:1!important;
+}
+html[data-joygo-guidance-layout="portrait"] #gameClockPanel .clock-name{
+  font-size:13px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #gameClockPanel .clock-byo{
+  font-size:10px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #guidanceRightActions{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:auto 50px 50px!important;
+  gap:7px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #guidanceRightActions .action-title{
+  grid-column:1/-1!important;
+  line-height:14px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #guidanceRightActions button{
+  height:50px!important;
+  min-height:50px!important;
+  font-size:13px!important;
+}
+html[data-joygo-guidance-layout="portrait"] #undoGameBtn{grid-column:1;grid-row:2}
+html[data-joygo-guidance-layout="portrait"] #scoreGameBtn{grid-column:2;grid-row:2}
+html[data-joygo-guidance-layout="portrait"] #passGameBtn{grid-column:3;grid-row:2}
+html[data-joygo-guidance-layout="portrait"] #resignGameBtn{grid-column:1;grid-row:3}
+html[data-joygo-guidance-layout="portrait"] #saveSgfBtn{grid-column:2;grid-row:3}
+html[data-joygo-guidance-layout="portrait"] #coordToggleBtn{grid-column:3;grid-row:3}
+</style>
+
 </head>
 <body>
 
@@ -9827,6 +10103,71 @@ document.addEventListener("DOMContentLoaded",()=>{
   else apply279();
   setTimeout(apply279,250);
   setTimeout(apply279,1000);
+})();
+</script>
+
+
+<script id="joygoGuidance280Boot">
+(()=>{
+  function isGuidance(){
+    try{
+      return window.self!==window.top &&
+             new URLSearchParams(location.search).get("guidance_embed")==="1";
+    }catch(_){return false}
+  }
+  function physicalLayout(){
+    try{
+      return parent.innerWidth >= parent.innerHeight ? "landscape" : "portrait";
+    }catch(_){
+      return innerWidth >= innerHeight ? "landscape" : "portrait";
+    }
+  }
+  function apply(){
+    if(!isGuidance())return;
+    const layout=physicalLayout();
+    document.documentElement.setAttribute("data-joygo-guidance","1");
+    document.documentElement.setAttribute("data-joygo-guidance-layout",layout);
+    document.body?.classList.add("guidance-embed-mode");
+
+    const right=document.querySelector(".right");
+    if(!right)return;
+
+    // 移除舊版重複快捷面板，只保留 2.8.0 專用控制台
+    document.querySelectorAll("#compactActionPanel,.compact-action-panel")
+      .forEach(el=>el.style.setProperty("display","none","important"));
+    const close=document.getElementById("landscapePlatformCloseBtn");
+    if(close)close.style.setProperty("display","none","important");
+
+    let panel=document.getElementById("guidanceRightActions");
+    if(!panel){
+      panel=document.createElement("div");
+      panel.id="guidanceRightActions";
+      right.appendChild(panel);
+    }
+    let title=panel.querySelector(".action-title");
+    if(!title){
+      title=document.createElement("div");
+      title.className="action-title";
+      title.textContent="功能鍵";
+      panel.prepend(title);
+    }
+    ["undoGameBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn","coordToggleBtn"]
+      .forEach(id=>{
+        const el=document.getElementById(id);
+        if(el && el.parentElement!==panel)panel.appendChild(el);
+        if(el)el.style.setProperty("display","block","important");
+      });
+
+    const player=document.querySelector(".player");
+    if(player)player.style.setProperty("display","none","important");
+  }
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",apply,{once:true});
+  }else apply();
+  addEventListener("resize",()=>setTimeout(apply,60));
+  addEventListener("orientationchange",()=>setTimeout(apply,160));
+  setTimeout(apply,250);
+  setTimeout(apply,1000);
 })();
 </script>
 
