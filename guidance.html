@@ -19,14 +19,14 @@ header{position:sticky;top:0;z-index:50;background:#2b2117;color:#fff;padding:12
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.7.1｜書籤式 1 對 1～1 對 5｜完局自動清除</div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.7.2｜書籤式 1 對 1～1 對 5｜空場次清理</div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
 <label>名稱 <input id="title" value="朱老師線上指導棋"></label><label>人數 <select id="studentCount"><option value="1">1 對 1</option><option value="2">1 對 2</option><option value="3">1 對 3</option><option value="4">1 對 4</option><option value="5">1 對 5</option></select></label>
 <label>基本時間(分) <input id="mainMin" type="number" value="20" min="0" style="width:80px"></label><label>讀秒(秒) <input id="byoSec" type="number" value="30" min="5" style="width:76px"></label><label>次數 <input id="byoPeriods" type="number" value="3" min="1" style="width:60px"></label></div>
 <div id="studentRows" class="formgrid"></div><div class="toolbar" style="margin-top:12px"><button id="createBtn" class="btn green">建立指導棋</button><span class="small">老師固定執白；學生執黑。讓 2～9 子會自動放置標準讓子。</span></div></div></section>
-<section class="card"><h2>最近指導棋</h2><div class="body"><div id="sessions" class="session-list">讀取中…</div></div></section>
+<section class="card"><h2>最近指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:10px"><button id="cleanupBtn" class="btn ghost">清除空場次</button><span class="small">只清除 0 盤失敗場次，不刪除任何已建立棋局或棋譜。</span></div><div id="sessions" class="session-list">讀取中…</div></div></section>
 <section class="card"><h2>老師書籤總控</h2><div class="body"><div class="tabs-wrap"><div id="tabs" class="tabs"></div></div><div id="controlbar" class="controlbar" style="display:none"><div id="currentInfo" class="current">—</div><label><input type="checkbox" id="autoNext" checked> 自動下一盤</label><button id="nextBtn" class="btn gold">下一盤 🔴</button><button id="copyBtn" class="btn ghost">複製學生連結</button><button id="refreshBtn" class="btn ghost">重新整理</button><button id="endBtn" class="btn red">結束整場</button></div><div id="frames"><div class="empty">請先建立或開啟一場指導棋。</div></div></div></section>
 </div>
 <script>
@@ -37,7 +37,15 @@ function profileOptions(sel=""){return '<option value="">選擇學生</option>'+
 function renderStudentRows(){const n=Number($("studentCount").value||1),box=$("studentRows");const old=[...box.querySelectorAll('.student-row')].map(r=>({id:r.querySelector('.student')?.value||'',rank:r.querySelector('.rank')?.value||'',h:r.querySelector('.handicap')?.value||'0'}));box.innerHTML='';for(let i=0;i<n;i++){const d=document.createElement('div');d.className='student-row';d.innerHTML=`<b>學生 ${i+1}</b><select class="student">${profileOptions(old[i]?.id||'')}</select><input class="rank" placeholder="棋力，例如 3段" value="${esc(old[i]?.rank||'')}"><select class="handicap"><option value="0">分先</option>${[2,3,4,5,6,7,8,9].map(x=>`<option value="${x}" ${String(x)===old[i]?.h?'selected':''}>讓 ${x} 子</option>`).join('')}</select>`;box.appendChild(d)}}
 $("studentCount").onchange=renderStudentRows;
 async function loadProfiles(){const {data,error}=await sb.from('profiles').select('id,display_name,role,status').order('display_name');if(error)throw error;profiles=(data||[]).filter(p=>p.id!==me.id&&String(p.status||'').toLowerCase()!=='suspended');renderStudentRows()}
-async function loadSessions(){const {data,error}=await sb.rpc('joygo_guidance_my_sessions');if(error){$("sessions").textContent='讀取失敗：'+error.message;return}const rows=data||[];$("sessions").innerHTML=rows.length?rows.map(s=>`<button class="session-chip" data-id="${s.session_id}">${esc(s.title)}｜${s.student_count}盤｜${s.status==='active'?'進行中':'已結束'}</button>`).join(''):'目前沒有指導棋紀錄。';document.querySelectorAll('.session-chip').forEach(b=>b.onclick=()=>openSession(b.dataset.id))}
+async function loadSessions(){
+  const {data,error}=await sb.rpc('joygo_guidance_my_sessions');
+  if(error){$("sessions").textContent='讀取失敗：'+error.message;return}
+  const rows=(data||[]).filter(s=>Number(s.student_count||0)>0);
+  $("sessions").innerHTML=rows.length
+    ?rows.map(s=>`<button class="session-chip" data-id="${s.session_id}">${esc(s.title)}｜${s.student_count}盤｜${s.status==='active'?'進行中':'已結束'}</button>`).join('')
+    :'目前沒有有效的指導棋紀錄。';
+  document.querySelectorAll('.session-chip').forEach(b=>b.onclick=()=>openSession(b.dataset.id))
+}
 async function createSession(){const rows=[...document.querySelectorAll('.student-row')],students=[],used=new Set();for(let i=0;i<rows.length;i++){const id=rows[i].querySelector('.student').value;if(!id)return notice(`請選擇學生 ${i+1}`,'bad');if(used.has(id))return notice('同一位學生不能重複加入','bad');used.add(id);const p=profiles.find(x=>x.id===id);students.push({user_id:id,name:p?.display_name||`學生${i+1}`,rank:rows[i].querySelector('.rank').value.trim(),handicap:Number(rows[i].querySelector('.handicap').value||0)})}notice('正在建立 1 對 '+students.length+' 指導棋…');const {data,error}=await sb.rpc('joygo_guidance_create_session',{p_title:$("title").value.trim()||'線上指導棋',p_students:students,p_main_seconds:Math.max(0,Number($("mainMin").value||20)*60),p_byo_seconds:Math.max(5,Number($("byoSec").value||30)),p_byo_periods:Math.max(1,Number($("byoPeriods").value||3))});if(error)return notice('建立失敗：'+error.message,'bad');if(!data?.length)return notice('建立完成但沒有取得棋盤資料','bad');notice(`✅ 已建立 1 對 ${data.length} 指導棋。`,'good');await loadSessions();await openSession(data[0].session_id)}
 $("createBtn").onclick=createSession;
 function tabLabel(b){return b.tab_status==='ended'?'✅ 已結束':b.tab_status==='waiting_teacher'?'🔴 等老師':'🟢 學生思考'}
@@ -54,7 +62,40 @@ $("autoNext").onchange=async e=>{if(!currentSession)return;const {error}=await s
 $("endBtn").onclick=async()=>{if(!currentSession||!confirm('確定結束整場指導棋？棋局與棋譜不會刪除。'))return;const {error}=await sb.rpc('joygo_guidance_end_session',{p_session_id:currentSession});if(error)return notice('結束失敗：'+error.message,'bad');notice('✅ 本場指導棋已標示結束。','good');await loadSessions();await refreshSession(true)};
 async function refreshSession(manual=false){if(!currentSession)return;const prev=new Map(boards.map(b=>[b.room_id,b.tab_status]));const {data,error}=await sb.rpc('joygo_guidance_get_session',{p_session_id:currentSession});if(error){if(manual)notice('更新失敗：'+error.message,'bad');return}boards=data||[];removeEndedFrames();const live=activeBoards();if(!live.length){clearTeacherControl();if(manual)notice('✅ 已結束棋局已從老師總控清除，紀錄仍保留。','good');await loadSessions();return}const a=live.find(b=>b.slot_no===activeSlot)||live.find(b=>b.tab_status==='waiting_teacher')||live[0];activeSlot=a.slot_no;renderTabs();renderCurrent();const cur=boards.find(b=>b.slot_no===activeSlot),old=cur?prev.get(cur.room_id):null;if(cur&&cur.auto_next&&old==='waiting_teacher'&&cur.tab_status==='waiting_student')setTimeout(nextWaitingTeacher,250);if(manual)notice('✅ 指導棋狀態已更新','good')}
 async function subscribeRooms(){if(roomChannel){try{await sb.removeChannel(roomChannel)}catch{}}roomChannel=sb.channel('joygo-guidance-'+currentSession).on('postgres_changes',{event:'*',schema:'public',table:'online_rooms'},()=>refreshSession(false)).subscribe()}
-async function openSession(id){currentSession=id;const {data,error}=await sb.rpc('joygo_guidance_get_session',{p_session_id:id});if(error)return notice('開啟失敗：'+error.message,'bad');boards=data||[];if(!boards.length)return notice('這場指導棋沒有棋盤資料','bad');$("frames").innerHTML='';const live=activeBoards();if(!live.length){clearTeacherControl();await subscribeRooms();notice(`✅ ${boards[0].title} 已全部結束；棋局已從總控清除。`,'good');return}activeSlot=live.find(b=>b.tab_status==='waiting_teacher')?.slot_no||live[0].slot_no;renderTabs();activate(activeSlot);await subscribeRooms();notice(`✅ 已開啟 ${boards[0].title}，進行中 ${live.length} 盤。`,'good')}
-async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session)return notice('請先回 Joy Go Platform 登入主管理員帳號。','bad');me=data.session.user;const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');if(ae)return notice('無法檢查管理權限：'+ae.message,'bad');const a=Array.isArray(access)?access[0]:access;if(!a||a.staff_role==='none')return notice('目前 Beta 2.7.0 第一階段只開放主管理員／工作人員使用。','bad');await loadProfiles();await loadSessions();notice('✅ 多人指導棋系統已就緒。','good')}catch(e){notice('初始化失敗：'+(e.message||e),'bad')}}
+async function openSession(id){
+  currentSession=id;
+  const {data,error}=await sb.rpc('joygo_guidance_get_session',{p_session_id:id});
+  if(error)return notice('開啟失敗：'+error.message,'bad');
+  boards=data||[];
+  if(!boards.length){
+    currentSession='';
+    clearTeacherControl();
+    await loadSessions();
+    notice('已略過空白指導棋場次；有效棋局仍保留。','good');
+    return
+  }
+  $("frames").innerHTML='';
+  const live=activeBoards();
+  if(!live.length){
+    clearTeacherControl();
+    await subscribeRooms();
+    notice(`✅ ${boards[0].title} 已全部結束；棋局已從總控清除。`,'good');
+    return
+  }
+  activeSlot=live.find(b=>b.tab_status==='waiting_teacher')?.slot_no||live[0].slot_no;
+  renderTabs();activate(activeSlot);await subscribeRooms();
+  notice(`✅ 已開啟 ${boards[0].title}，進行中 ${live.length} 盤。`,'good')
+}
+async function cleanupEmptySessions(){
+  if(!confirm('只清除沒有任何棋盤的 0 盤失敗場次。\n已建立棋局與棋譜都不會刪除。\n\n確定清除嗎？'))return;
+  notice('正在清除空場次…');
+  const {data,error}=await sb.rpc('joygo_guidance_cleanup_empty_sessions');
+  if(error)return notice('清除失敗：'+error.message,'bad');
+  const n=Number(data||0);
+  await loadSessions();
+  notice(n>0?`✅ 已清除 ${n} 個 0 盤空場次。`:'✅ 目前沒有需要清除的空場次。','good')
+}
+$("cleanupBtn").onclick=cleanupEmptySessions;
+async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session)return notice('請先回 Joy Go Platform 登入主管理員帳號。','bad');me=data.session.user;const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');if(ae)return notice('無法檢查管理權限：'+ae.message,'bad');const a=Array.isArray(access)?access[0]:access;if(!a||a.staff_role==='none')return notice('目前 Beta 2.7.2 只開放主管理員／工作人員使用。','bad');await loadProfiles();await loadSessions();notice('✅ 多人指導棋系統已就緒。','good')}catch(e){notice('初始化失敗：'+(e.message||e),'bad')}}
 init();setInterval(()=>refreshSession(false),5000);
 </script></body></html>
