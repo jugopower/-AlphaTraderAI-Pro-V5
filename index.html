@@ -2905,9 +2905,214 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+<style id="joygoGuidanceEmbed275Style">
+/* ============================================================
+   Joy Go Beta 2.7.5 - 指導棋專用棋盤模式
+   只在 iframe + ?guidance_embed=1 啟用。
+   一般 Joy Go 主平台完全不受影響。
+   ============================================================ */
+body.guidance-embed-mode{
+  overflow:hidden!important;
+  background:#0b0806!important;
+}
 
-<style id="joygoGuidance281CleanLayout">
-/* Beta 2.8.1：單一版面系統，避免舊版 CSS 疊加衝突 */
+/* 隱藏主平台導覽與浮動工具 */
+body.guidance-embed-mode #topbar,
+body.guidance-embed-mode #memberChip,
+body.guidance-embed-mode #infoCollapseBtn,
+body.guidance-embed-mode #famousGameInfoBar,
+body.guidance-embed-mode #joygoLiveMonitor,
+body.guidance-embed-mode #joygoBetaExit,
+body.guidance-embed-mode #teachQuickBar,
+body.guidance-embed-mode #teachBarToggle,
+body.guidance-embed-mode #apiInspectorToggle,
+body.guidance-embed-mode #apiInspectorPanel,
+body.guidance-embed-mode #photoReferencePanel{
+  display:none!important;
+}
+
+/* 指導棋版面：左側只留姓名，中間最大棋盤，右側只留計時 */
+body.guidance-embed-mode .app{
+  height:100dvh!important;
+  grid-template-columns:150px minmax(0,1fr) 245px!important;
+  grid-template-rows:minmax(0,1fr) 58px!important;
+  gap:4px!important;
+  padding:4px!important;
+}
+
+body.guidance-embed-mode .left{
+  grid-column:1!important;
+  grid-row:1 / span 2!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:8px!important;
+  padding:8px!important;
+  overflow:hidden!important;
+}
+body.guidance-embed-mode .left .brand,
+body.guidance-embed-mode .left .stats{
+  display:none!important;
+}
+body.guidance-embed-mode .left .card{
+  display:block!important;
+  margin:0!important;
+  padding:12px 8px!important;
+  border-radius:12px!important;
+}
+body.guidance-embed-mode .left .player-name{
+  font-size:14px!important;
+  gap:6px!important;
+}
+body.guidance-embed-mode .left .player-name b{
+  font-size:15px!important;
+  max-width:88px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+/* 棋盤最大化 */
+body.guidance-embed-mode .board-wrap{
+  grid-column:2!important;
+  grid-row:1!important;
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+  border-radius:12px!important;
+}
+body.guidance-embed-mode #board{
+  width:min(calc(100dvh - 72px),calc(100vw - 410px))!important;
+  height:min(calc(100dvh - 72px),calc(100vw - 410px))!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+
+/* 右側只留雙方計時 */
+body.guidance-embed-mode .right{
+  grid-column:3!important;
+  grid-row:1 / span 2!important;
+  min-width:245px!important;
+  max-width:245px!important;
+  padding:6px!important;
+  overflow:hidden!important;
+  justify-content:center!important;
+}
+body.guidance-embed-mode #redrawBtn,
+body.guidance-embed-mode #aiHintPanel{
+  display:none!important;
+}
+body.guidance-embed-mode #gameClockPanel{
+  display:grid!important;
+  gap:8px!important;
+}
+
+/* 底部只留對局必要操作 */
+body.guidance-embed-mode .player{
+  grid-column:2!important;
+  grid-row:2!important;
+  height:58px!important;
+  min-height:58px!important;
+  padding:5px!important;
+  display:block!important;
+  overflow:hidden!important;
+}
+body.guidance-embed-mode .move-tools,
+body.guidance-embed-mode .controls,
+body.guidance-embed-mode #trialModeBar{
+  display:none!important;
+}
+body.guidance-embed-mode #gameActionRow{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:5px!important;
+  height:100%!important;
+}
+body.guidance-embed-mode #gameActionRow > button{
+  display:none!important;
+  min-height:44px!important;
+  padding:6px 8px!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  font-weight:900!important;
+}
+body.guidance-embed-mode #undoGameBtn,
+body.guidance-embed-mode #scoreGameBtn,
+body.guidance-embed-mode #passGameBtn,
+body.guidance-embed-mode #resignGameBtn,
+body.guidance-embed-mode #saveSgfBtn{
+  display:block!important;
+}
+body.guidance-embed-mode #resignGameBtn{
+  background:#371416!important;
+  border-color:#9b4b50!important;
+}
+body.guidance-embed-mode #saveSgfBtn{
+  background:#15301d!important;
+  border-color:#548661!important;
+}
+
+/* iPad 直式／較窄 iframe：姓名改上方，計時改下方，不讓棋盤被擠小 */
+@media (max-width:820px){
+  body.guidance-embed-mode .app{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:62px minmax(0,1fr) 100px 58px!important;
+  }
+  body.guidance-embed-mode .left{
+    grid-column:1!important;
+    grid-row:1!important;
+    flex-direction:row!important;
+    padding:4px!important;
+  }
+  body.guidance-embed-mode .left .card{flex:1!important;padding:7px!important}
+  body.guidance-embed-mode .left .player-name b{max-width:none!important}
+  body.guidance-embed-mode .board-wrap{
+    grid-column:1!important;
+    grid-row:2!important;
+  }
+  body.guidance-embed-mode .right{
+    grid-column:1!important;
+    grid-row:3!important;
+    min-width:0!important;
+    max-width:none!important;
+    width:100%!important;
+    padding:4px!important;
+  }
+  body.guidance-embed-mode #gameClockPanel{
+    grid-template-columns:1fr 1fr!important;
+  }
+  body.guidance-embed-mode .player{
+    grid-column:1!important;
+    grid-row:4!important;
+  }
+  body.guidance-embed-mode #board{
+    width:min(calc(100vw - 16px),calc(100dvh - 230px))!important;
+    height:min(calc(100vw - 16px),calc(100dvh - 230px))!important;
+  }
+}
+
+/* 極窄畫面時仍保留五個必要按鈕 */
+@media (max-width:560px){
+  body.guidance-embed-mode #gameActionRow > button{
+    font-size:11px!important;
+    padding:4px!important;
+  }
+}
+</style>
+
+
+<script id="joygoGuidance276HeadBoot">
+(()=>{try{
+  const q=new URLSearchParams(location.search);
+  if(window.self!==window.top && q.get("guidance_embed")==="1"){
+    document.documentElement.setAttribute("data-joygo-guidance","1");
+  }
+}catch(_){}})();
+</script>
+
+
+<style id="joygoGuidance276Layout">
+/* Beta 2.7.6：iPad 指導棋專用穩定版面 */
 html[data-joygo-guidance="1"],
 html[data-joygo-guidance="1"] body{
   margin:0!important;
@@ -2916,6 +3121,8 @@ html[data-joygo-guidance="1"] body{
   overflow:hidden!important;
   background:#0b0806!important;
 }
+
+/* 所有主平台／浮動入口在指導棋 iframe 隱藏 */
 html[data-joygo-guidance="1"] #joygoBetaGate,
 html[data-joygo-guidance="1"] #joygoBetaExit,
 html[data-joygo-guidance="1"] #joygoLiveMonitor,
@@ -2924,109 +3131,344 @@ html[data-joygo-guidance="1"] #teachQuickBar,
 html[data-joygo-guidance="1"] #teachBarToggle,
 html[data-joygo-guidance="1"] #apiInspectorToggle,
 html[data-joygo-guidance="1"] #apiInspectorPanel,
-html[data-joygo-guidance="1"] #photoReferencePanel,
-html[data-joygo-guidance="1"] #famousGameInfoBar,
-html[data-joygo-guidance="1"] #memberChip,
 html[data-joygo-guidance="1"] .member-chip,
-html[data-joygo-guidance="1"] .left,
-html[data-joygo-guidance="1"] .topbar,
-html[data-joygo-guidance="1"] #topbar,
-html[data-joygo-guidance="1"] #redrawBtn,
-html[data-joygo-guidance="1"] #aiHintPanel,
-html[data-joygo-guidance="1"] .player,
-html[data-joygo-guidance="1"] #compactActionPanel,
-html[data-joygo-guidance="1"] .compact-action-panel,
-html[data-joygo-guidance="1"] #landscapePlatformCloseBtn{
+html[data-joygo-guidance="1"] #memberChip,
+html[data-joygo-guidance="1"] .left{
   display:none!important;
 }
+
+/* 主結構：棋盤 + 右側計時；底部完整功能列 */
 html[data-joygo-guidance="1"] .app{
-  margin:0!important;
   width:100%!important;
   height:100dvh!important;
-  min-height:0!important;
+  padding:5px!important;
+  gap:5px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 205px!important;
+  grid-template-rows:minmax(0,1fr) 68px!important;
   overflow:hidden!important;
 }
+
 html[data-joygo-guidance="1"] .board-wrap{
-  padding:0!important;
-  margin:0!important;
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  height:100%!important;
   min-width:0!important;
   min-height:0!important;
-  overflow:hidden!important;
+  padding:0!important;
+  margin:0!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  border-radius:16px!important;
-}
-html[data-joygo-guidance="1"] #board{
-  display:block!important;
-  flex:0 0 auto!important;
-}
-html[data-joygo-guidance="1"] .right{
   overflow:hidden!important;
-  background:linear-gradient(180deg,#17100c,#0d0907)!important;
-  border:1px solid #6c4b2c!important;
-  border-radius:16px!important;
+  border-radius:12px!important;
 }
-html[data-joygo-guidance="1"] #gameClockPanel{
+
+html[data-joygo-guidance="1"] #board{
+  width:min(calc(100dvh - 88px),calc(100vw - 225px))!important;
+  height:min(calc(100dvh - 88px),calc(100vw - 225px))!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+
+/* 計時器固定右側，上下排列 */
+html[data-joygo-guidance="1"] .right{
+  display:flex!important;
+  grid-column:2!important;
+  grid-row:1!important;
+  position:static!important;
+  width:205px!important;
+  min-width:205px!important;
+  max-width:205px!important;
+  height:100%!important;
+  padding:7px!important;
   margin:0!important;
+  overflow:hidden!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  background:linear-gradient(180deg,#14100d,#090706)!important;
+  border:1px solid #5b4028!important;
+  border-radius:12px!important;
+}
+
+html[data-joygo-guidance="1"] .right > .tool,
+html[data-joygo-guidance="1"] .right > .ai-hint-panel,
+html[data-joygo-guidance="1"] #redrawBtn,
+html[data-joygo-guidance="1"] #aiHintPanel{
+  display:none!important;
+}
+
+html[data-joygo-guidance="1"] #gameClockPanel{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  display:flex!important;
+  flex-direction:column!important;
   width:100%!important;
-}
-html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
-  box-sizing:border-box!important;
-  border:1px solid #4d3929!important;
-  background:#15100c!important;
-  border-radius:14px!important;
+  min-width:0!important;
+  height:auto!important;
+  padding:7px!important;
+  gap:9px!important;
+  margin:0!important;
+  pointer-events:none!important;
+  background:transparent!important;
   box-shadow:none!important;
+  border:0!important;
 }
-html[data-joygo-guidance="1"] #gameClockPanel .clock-side.active{
-  border-color:#53b977!important;
-  background:#12271a!important;
-  box-shadow:0 0 0 1px #53b97755 inset!important;
+
+html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
+  display:grid!important;
+  grid-template-columns:28px 1fr!important;
+  grid-template-rows:auto auto auto!important;
+  column-gap:8px!important;
+  align-items:center!important;
+  width:100%!important;
+  min-height:112px!important;
+  padding:10px 8px!important;
+  border-radius:13px!important;
+}
+
+html[data-joygo-guidance="1"] #gameClockPanel .clock-stone{
+  grid-column:1!important;
+  grid-row:1 / span 2!important;
+  width:25px!important;
+  height:25px!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-name{
+  grid-column:2!important;
+  grid-row:1!important;
+  font-size:13px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
+  grid-column:2!important;
+  grid-row:2!important;
+  font-size:30px!important;
+  line-height:1!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-byo{
+  grid-column:1 / span 2!important;
+  grid-row:3!important;
+  font-size:10px!important;
+  margin-top:6px!important;
 }
 html[data-joygo-guidance="1"] #clockSoundIcon{
   display:none!important;
 }
-html[data-joygo-guidance="1"] #guidanceRightActions{
-  display:grid!important;
-  gap:8px!important;
-}
-html[data-joygo-guidance="1"] #guidanceRightActions .action-title{
-  text-align:center!important;
-  color:#d8c7a7!important;
-  font-size:12px!important;
-  font-weight:800!important;
-  letter-spacing:.1em!important;
-}
-html[data-joygo-guidance="1"] #guidanceRightActions button{
+
+/* 底部只顯示必要功能鍵，完整可見 */
+html[data-joygo-guidance="1"] .player{
   display:block!important;
+  grid-column:1 / span 2!important;
+  grid-row:2!important;
   width:100%!important;
-  min-width:0!important;
+  height:68px!important;
+  min-height:68px!important;
+  padding:7px!important;
   margin:0!important;
+  overflow:visible!important;
+  background:linear-gradient(180deg,#17100c,#0e0907)!important;
+  border:1px solid #5b4028!important;
   border-radius:12px!important;
+}
+
+html[data-joygo-guidance="1"] .move-tools,
+html[data-joygo-guidance="1"] .controls,
+html[data-joygo-guidance="1"] .range-row,
+html[data-joygo-guidance="1"] #trialModeBar{
+  display:none!important;
+}
+
+html[data-joygo-guidance="1"] #gameActionRow{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  grid-template-rows:1fr!important;
+  gap:7px!important;
+  width:100%!important;
+  height:52px!important;
+  padding:0!important;
+  margin:0!important;
+}
+
+html[data-joygo-guidance="1"] #gameActionRow > button{
+  display:none!important;
+  width:100%!important;
+  height:52px!important;
+  min-height:52px!important;
+  margin:0!important;
+  padding:6px 8px!important;
+  border-radius:10px!important;
   font-size:14px!important;
   font-weight:900!important;
+  line-height:1.1!important;
 }
+
+html[data-joygo-guidance="1"] #undoGameBtn,
+html[data-joygo-guidance="1"] #scoreGameBtn,
+html[data-joygo-guidance="1"] #passGameBtn,
+html[data-joygo-guidance="1"] #resignGameBtn,
+html[data-joygo-guidance="1"] #saveSgfBtn{
+  display:block!important;
+}
+
 html[data-joygo-guidance="1"] #scoreGameBtn{
-  background:linear-gradient(135deg,#f3d266,#d9a62d)!important;
-  color:#1a1108!important;
+  background:linear-gradient(135deg,#d9a72e,#f0c34f)!important;
+  color:#201407!important;
 }
 html[data-joygo-guidance="1"] #resignGameBtn{
-  background:#48181c!important;
-  border-color:#a75056!important;
+  background:#3b1518!important;
+  border-color:#a95359!important;
 }
 html[data-joygo-guidance="1"] #saveSgfBtn{
-  background:#17361f!important;
-  border-color:#518d64!important;
+  background:#15331e!important;
+  border-color:#5c9668!important;
 }
+
+/* 數地模式開啟時，浮在功能列上方，不會被裁掉 */
+html[data-joygo-guidance="1"] #scoringModeBar{
+  position:fixed!important;
+  left:12px!important;
+  right:12px!important;
+  bottom:78px!important;
+  z-index:50000!important;
+  max-height:170px!important;
+  overflow:auto!important;
+  border-radius:12px!important;
+  box-shadow:0 10px 30px #000a!important;
+}
+
+/* iPad 較窄 iframe：右側時鐘仍維持，不改成下方橫列 */
+@media (max-width:760px){
+  html[data-joygo-guidance="1"] .app{
+    grid-template-columns:minmax(0,1fr) 165px!important;
+  }
+  html[data-joygo-guidance="1"] .right{
+    width:165px!important;
+    min-width:165px!important;
+    max-width:165px!important;
+    padding:5px!important;
+  }
+  html[data-joygo-guidance="1"] #board{
+    width:min(calc(100dvh - 88px),calc(100vw - 185px))!important;
+    height:min(calc(100dvh - 88px),calc(100vw - 185px))!important;
+  }
+  html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
+    font-size:24px!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow > button{
+    font-size:12px!important;
+    padding:4px!important;
+  }
+}
+</style>
+
+
+<style id="joygoGuidance282SafePolish">
+/* Beta 2.8.2 穩定恢復版
+   原則：不搬 DOM、不監聽 resize、不觸發 resize、不改棋局核心。
+   只用 CSS 微調既有 2.7.6 穩定版面。 */
+
+html[data-joygo-guidance="1"] .right{
+  justify-content:flex-start!important;
+  padding-top:8px!important;
+}
+
+/* 黑白棋鐘同寬、同高，從右欄頂端開始 */
+html[data-joygo-guidance="1"] #gameClockPanel{
+  margin-top:0!important;
+  gap:8px!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
+  min-height:108px!important;
+  height:108px!important;
+  box-sizing:border-box!important;
+}
+html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
+  font-size:27px!important;
+}
+
+/* 原本底部功能鍵保留，避免任何功能消失 */
+html[data-joygo-guidance="1"] .player{
+  display:block!important;
+  overflow:visible!important;
+}
+html[data-joygo-guidance="1"] #gameActionRow{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+html[data-joygo-guidance="1"] #gameActionRow > button{
+  min-height:50px!important;
+  height:50px!important;
+  font-size:13px!important;
+}
+html[data-joygo-guidance="1"] #undoGameBtn,
+html[data-joygo-guidance="1"] #scoreGameBtn,
+html[data-joygo-guidance="1"] #passGameBtn,
+html[data-joygo-guidance="1"] #resignGameBtn,
+html[data-joygo-guidance="1"] #saveSgfBtn{
+  display:block!important;
+}
+
+/* 座標開關放在原本 move-tools 右側，不搬移元素 */
 html[data-joygo-guidance="1"] #coordToggleBtn{
-  background:#2c2216!important;
-  color:#ffe19a!important;
-  border-color:#d7a63c!important;
+  display:block!important;
+}
+
+/* iPad 直式：回到穩定的上下結構，功能鍵完整顯示 */
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] .app{
+    height:auto!important;
+    min-height:100dvh!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:minmax(520px,1fr) 118px!important;
+    gap:8px!important;
+    padding:8px!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap{
+    grid-column:1!important;
+    grid-row:1!important;
+    min-height:520px!important;
+    height:auto!important;
+  }
+  html[data-joygo-guidance="1"] .right{
+    display:none!important;
+  }
+  html[data-joygo-guidance="1"] .player{
+    grid-column:1!important;
+    grid-row:2!important;
+    min-height:118px!important;
+    height:auto!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-auto-rows:48px!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow > button{
+    min-height:48px!important;
+    height:48px!important;
+  }
 }
 </style>
 
 </head>
 <body>
+
+<script id="joygoGuidanceEmbed275Boot">
+(()=>{
+  try{
+    const p=new URLSearchParams(location.search);
+    const embedded=(window.self!==window.top) && p.get("guidance_embed")==="1";
+    if(embedded){
+      document.body.classList.add("guidance-embed-mode");
+      document.documentElement.classList.add("guidance-embed-mode");
+    }
+  }catch(_){}
+})();
+</script>
 
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
   <div class="jg-card">
@@ -8876,197 +9318,40 @@ window.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 
+<script id="joygoGuidanceEmbed275Guard">
+document.addEventListener("DOMContentLoaded",()=>{
+  if(!document.body.classList.contains("guidance-embed-mode"))return;
+  document.querySelectorAll(".modal-backdrop").forEach(m=>{
+    if(m.id!=="onlineModal") m.classList.remove("show","open","active");
+  });
+});
+</script>
 
-<script id="joygoGuidance281Controller">
+
+<script id="joygoGuidance276Guard">
 (()=>{
-  const important=(el,prop,val)=>{ if(el) el.style.setProperty(prop,val,"important"); };
-
-  function isGuidance(){
-    try{
-      return window.self!==window.top &&
-        new URLSearchParams(location.search).get("guidance_embed")==="1";
-    }catch(_){ return false; }
-  }
-
-  function getOrientation(){
-    try{
-      const w=parent.innerWidth, h=parent.innerHeight;
-      return w>=h ? "landscape" : "portrait";
-    }catch(_){
-      return innerWidth>=innerHeight ? "landscape" : "portrait";
-    }
-  }
-
-  function ensurePanel(right){
-    let panel=document.getElementById("guidanceRightActions");
-    if(!panel){
-      panel=document.createElement("div");
-      panel.id="guidanceRightActions";
-      right.appendChild(panel);
-    }
-    if(!panel.querySelector(".action-title")){
-      const t=document.createElement("div");
-      t.className="action-title";
-      t.textContent="功能鍵";
-      panel.prepend(t);
-    }
-    ["undoGameBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn","coordToggleBtn"]
-      .forEach(id=>{
-        const el=document.getElementById(id);
-        if(el && el.parentElement!==panel) panel.appendChild(el);
-        important(el,"display","block");
-      });
-    return panel;
-  }
-
-  function applyLandscape(app,boardWrap,board,right,clock,panel){
-    important(app,"display","grid");
-    important(app,"grid-template-columns","minmax(0,1fr) 250px");
-    important(app,"grid-template-rows","minmax(0,1fr)");
-    important(app,"gap","8px");
-    important(app,"padding","8px");
-
-    important(boardWrap,"grid-column","1");
-    important(boardWrap,"grid-row","1");
-    important(boardWrap,"width","100%");
-    important(boardWrap,"height","100%");
-    important(boardWrap,"align-items","flex-start");
-
-    const W=innerWidth, H=innerHeight;
-    const boardSize=Math.max(420,Math.min(H-16,W-282));
-    important(board,"width",boardSize+"px");
-    important(board,"height",boardSize+"px");
-    important(board,"max-width","100%");
-    important(board,"max-height","100%");
-
-    important(right,"display","flex");
-    important(right,"grid-column","2");
-    important(right,"grid-row","1");
-    important(right,"width","250px");
-    important(right,"min-width","250px");
-    important(right,"max-width","250px");
-    important(right,"height","100%");
-    important(right,"padding","10px");
-    important(right,"gap","10px");
-    important(right,"flex-direction","column");
-    important(right,"justify-content","flex-start");
-
-    important(clock,"display","grid");
-    important(clock,"grid-template-columns","1fr");
-    important(clock,"gap","8px");
-    important(clock,"height","auto");
-    clock.querySelectorAll(".clock-side").forEach(c=>{
-      important(c,"height","104px");
-      important(c,"min-height","104px");
-      important(c,"padding","10px");
-    });
-    clock.querySelectorAll(".clock-time").forEach(c=>important(c,"font-size","28px"));
-
-    important(panel,"grid-template-columns","1fr 1fr");
-    important(panel,"grid-template-rows","auto repeat(3,54px)");
-    panel.querySelectorAll("button").forEach(b=>{
-      important(b,"height","54px");
-      important(b,"min-height","54px");
-      important(b,"padding","7px");
-    });
-  }
-
-  function applyPortrait(app,boardWrap,board,right,clock,panel){
-    important(app,"display","grid");
-    important(app,"grid-template-columns","minmax(0,1fr)");
-    important(app,"grid-template-rows","minmax(0,1fr) 230px");
-    important(app,"gap","8px");
-    important(app,"padding","8px");
-
-    important(boardWrap,"grid-column","1");
-    important(boardWrap,"grid-row","1");
-    important(boardWrap,"width","100%");
-    important(boardWrap,"height","100%");
-    important(boardWrap,"align-items","center");
-
-    const W=innerWidth, H=innerHeight;
-    const boardSize=Math.max(360,Math.min(W-16,H-254));
-    important(board,"width",boardSize+"px");
-    important(board,"height",boardSize+"px");
-    important(board,"max-width","100%");
-    important(board,"max-height","100%");
-
-    important(right,"display","grid");
-    important(right,"grid-column","1");
-    important(right,"grid-row","2");
-    important(right,"grid-template-columns","1fr");
-    important(right,"grid-template-rows","96px 118px");
-    important(right,"width","100%");
-    important(right,"min-width","0");
-    important(right,"max-width","none");
-    important(right,"height","230px");
-    important(right,"padding","8px");
-    important(right,"gap","8px");
-
-    important(clock,"display","grid");
-    important(clock,"grid-template-columns","1fr 1fr");
-    important(clock,"gap","8px");
-    important(clock,"height","96px");
-    clock.querySelectorAll(".clock-side").forEach(c=>{
-      important(c,"height","96px");
-      important(c,"min-height","96px");
-      important(c,"padding","8px 10px");
-    });
-    clock.querySelectorAll(".clock-time").forEach(c=>important(c,"font-size","26px"));
-
-    important(panel,"grid-template-columns","repeat(3,minmax(0,1fr))");
-    important(panel,"grid-template-rows","auto 48px 48px");
-    panel.querySelectorAll("button").forEach(b=>{
-      important(b,"height","48px");
-      important(b,"min-height","48px");
-      important(b,"padding","6px");
-      important(b,"font-size","13px");
-    });
-  }
-
   function apply(){
-    if(!isGuidance()) return;
-    document.documentElement.setAttribute("data-joygo-guidance","1");
-    document.body?.classList.add("guidance-embed-mode");
-
-    const app=document.querySelector(".app");
-    const boardWrap=document.querySelector(".board-wrap");
-    const board=document.getElementById("board");
-    const right=document.querySelector(".right");
-    const clock=document.getElementById("gameClockPanel");
-    if(!app||!boardWrap||!board||!right||!clock) return;
-
-    document.querySelectorAll("#compactActionPanel,.compact-action-panel")
-      .forEach(el=>important(el,"display","none"));
-    important(document.getElementById("landscapePlatformCloseBtn"),"display","none");
-    important(document.querySelector(".player"),"display","none");
-
-    const panel=ensurePanel(right);
-    const o=getOrientation();
-    document.documentElement.setAttribute("data-joygo-guidance-layout",o);
-
-    if(o==="landscape") applyLandscape(app,boardWrap,board,right,clock,panel);
-    else applyPortrait(app,boardWrap,board,right,clock,panel);
-
-    // 觸發棋盤重繪，避免 canvas 在旋轉後沿用舊尺寸。
     try{
-      window.dispatchEvent(new Event("resize"));
+      const q=new URLSearchParams(location.search);
+      if(!(window.self!==window.top && q.get("guidance_embed")==="1"))return;
+      document.documentElement.setAttribute("data-joygo-guidance","1");
+      document.body.classList.add("guidance-embed-mode");
+      const hide=[".left",".move-tools",".controls",".range-row","#trialModeBar",
+                  "#redrawBtn","#aiHintPanel","#apiInspectorToggle","#apiInspectorPanel",
+                  "#teachQuickBar","#teachBarToggle",".member-chip","#memberChip"];
+      hide.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.style.setProperty("display","none","important")));
+      const row=document.getElementById("gameActionRow");
+      if(row) row.style.setProperty("display","grid","important");
+      ["undoGameBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.style.setProperty("display","block","important");
+      });
     }catch(_){}
   }
-
-  let timer=null;
-  const schedule=()=>{
-    clearTimeout(timer);
-    timer=setTimeout(apply,120);
-  };
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",()=>setTimeout(apply,120),{once:true});
-  }else setTimeout(apply,120);
-
-  addEventListener("orientationchange",()=>setTimeout(apply,250));
-  addEventListener("resize",schedule);
-  setTimeout(apply,700);
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",apply,{once:true});
+  else apply();
+  setTimeout(apply,250);
+  setTimeout(apply,1000);
 })();
 </script>
 
