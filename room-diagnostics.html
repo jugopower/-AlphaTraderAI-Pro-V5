@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07100b">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<title>Joy Go Beta 3.1.3｜舊房間診斷</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--amber:#f1c75b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}
+.shell{max-width:1180px;margin:auto;padding:16px}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:14px}.head h1{margin:0;color:var(--gold);font-size:clamp(24px,4vw,38px)}.head p{margin:5px 0 0;color:var(--muted)}
+.btn{display:inline-block;border:1px solid var(--line);background:#0a120d;color:var(--ink);padding:9px 12px;border-radius:10px;font-weight:800;text-decoration:none;cursor:pointer}
+.btn.gold{background:#74591e;color:#fff0b6;border-color:#94762d}.btn.red{background:#6d2828;color:#ffd1d1;border-color:#994747}
+.notice{padding:11px 13px;border:1px solid var(--line);background:#0c150f;border-radius:12px;color:var(--muted);margin-bottom:12px}.notice.good{border-color:#2d7455;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.stat{border:1px solid var(--line);background:#101a13;border-radius:14px;padding:13px}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{display:block;color:var(--gold);font-size:26px;margin-top:4px}
+.card{border:1px solid var(--line);background:#0b130e;border-radius:16px;overflow:hidden}.card h2{margin:0;padding:13px 14px;background:#18261d;color:var(--gold);font-size:18px}.body{padding:12px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:980px}th,td{padding:9px;border-bottom:1px solid #27382d;font-size:13px;text-align:left;vertical-align:middle}th{background:#122018;color:#ffe184;position:sticky;top:0}
+.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.warn{background:#55451e;color:#ffe0a0}.ended{background:#313131;color:#ddd}
+.ops{display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}.head{flex-direction:column}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="head">
+    <div>
+      <h1>🧹 Joy Go 舊房間診斷</h1>
+      <p>Beta 3.1.3｜先診斷，再安全封存</p>
+    </div>
+    <div>
+      <a class="btn" href="admin-center.html">返回管理中心</a>
+      <button id="refreshBtn" class="btn gold">重新整理</button>
+    </div>
+  </div>
+
+  <div id="notice" class="notice">正在讀取房間狀態…</div>
+
+  <div class="stats">
+    <div class="stat"><span>最近 30 分鐘活躍</span><b id="active30">0</b></div>
+    <div class="stat"><span>30 分鐘～24 小時</span><b id="idle24">0</b></div>
+    <div class="stat"><span>超過 24 小時未結束</span><b id="stale24">0</b></div>
+    <div class="stat"><span>全部未結束房間</span><b id="openAll">0</b></div>
+  </div>
+
+  <section class="card">
+    <h2>房間清單</h2>
+    <div class="body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>房間</th>
+              <th>狀態</th>
+              <th>黑方</th>
+              <th>白方</th>
+              <th>最後更新</th>
+              <th>分類</th>
+              <th>管理</th>
+            </tr>
+          </thead>
+          <tbody id="rows"><tr><td colspan="7">讀取中…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const SUPABASE_URL="https://kpwfkmkxtrwmlxhomaxy.supabase.co";
+const SUPABASE_KEY="sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);
+let rooms=[];
+
+function note(msg,type=""){const e=$("notice");e.className="notice"+(type?(" "+type):"");e.textContent=msg}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fmt(ts){if(!ts)return "—";try{return new Date(ts).toLocaleString("zh-TW",{hour12:false})}catch{return String(ts)}}
+function cat(r){
+  const t=r.updated_at?new Date(r.updated_at).getTime():0;
+  const age=Date.now()-t;
+  if(r.status==="ended") return ["已結束","ended"];
+  if(age<=30*60*1000) return ["最近活躍","ok"];
+  if(age<=24*60*60*1000) return ["疑似殘留","warn"];
+  return ["超過24小時","warn"];
+}
+function render(){
+  const open=rooms.filter(r=>r.status!=="ended");
+  const a30=open.filter(r=>Date.now()-new Date(r.updated_at).getTime()<=30*60*1000).length;
+  const i24=open.filter(r=>{
+    const age=Date.now()-new Date(r.updated_at).getTime();
+    return age>30*60*1000 && age<=24*60*60*1000
+  }).length;
+  const s24=open.filter(r=>Date.now()-new Date(r.updated_at).getTime()>24*60*60*1000).length;
+  $("active30").textContent=a30;$("idle24").textContent=i24;$("stale24").textContent=s24;$("openAll").textContent=open.length;
+
+  $("rows").innerHTML=rooms.map(r=>{
+    const [label,cls]=cat(r);
+    return `<tr>
+      <td><b>${esc(r.room_name||r.room_id)}</b><br><small>${esc(r.room_id)}</small></td>
+      <td>${esc(r.status||"")}</td>
+      <td>${esc(r.black_name||"—")}</td>
+      <td>${esc(r.white_name||"—")}</td>
+      <td>${fmt(r.updated_at)}</td>
+      <td><span class="pill ${cls}">${label}</span></td>
+      <td><div class="ops">
+        ${r.status!=="ended" && cls==="warn" ? `<button class="btn red" onclick="archiveRoom('${r.room_id}')">安全封存</button>` : ""}
+      </div></td>
+    </tr>`;
+  }).join("") || '<tr><td colspan="7">目前沒有房間資料。</td></tr>';
+}
+async function load(){
+  const {data,error}=await sb.rpc("joygo_admin_room_diagnostics",{p_limit:200});
+  if(error){note("讀取失敗："+error.message,"bad");return}
+  rooms=data||[];
+  render();
+  note("✅ 房間診斷完成。只有疑似殘留房間才會顯示「安全封存」。","good");
+}
+async function archiveRoom(id){
+  const r=rooms.find(x=>x.room_id===id); if(!r)return;
+  if(!confirm(`確定封存房間「${r.room_name||id}」？\n\n只會標記結束，不刪棋步與 SGF。`))return;
+  const reason=prompt("封存備註（可留空）","舊測試房間／疑似殘留")||"";
+  const {data,error}=await sb.rpc("joygo_admin_archive_room",{p_room_id:id,p_reason:reason});
+  if(error){note("封存失敗："+error.message,"bad");return}
+  note("✅ 房間已安全封存。","good");
+  await load();
+}
+window.archiveRoom=archiveRoom;
+$("refreshBtn").onclick=load;
+
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){note("請先登入管理員帳號。","bad");return}
+  const {data:isStaff,error}=await sb.rpc("is_joygo_staff");
+  if(error||isStaff!==true){note("此頁僅限管理員使用。","bad");return}
+  await load();
+})();
+</script>
+</body>
+</html>
