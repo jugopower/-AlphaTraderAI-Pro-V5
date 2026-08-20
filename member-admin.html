@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07100b">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<title>Joy Go Beta 3.1.1｜會員管理</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}
+.shell{width:min(1280px,100%);margin:auto;padding:16px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.brand h1{margin:0;color:var(--gold2);font-size:clamp(26px,4vw,40px)}.brand p{margin:5px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}
+.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}
+.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px;background:#0b130e}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}
+.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}
+.card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.body{padding:14px}
+.toolbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}.toolbar input{flex:1;min-width:220px;background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}
+.table-wrap{overflow:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;min-width:920px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}
+.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}
+select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px}
+.mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}
+.ops{display:flex;gap:5px;flex-wrap:wrap;min-width:260px}
+@media(max-width:760px){.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr 1fr}.actions{width:100%}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="head">
+  <div class="brand">
+    <h1>👥 Joy Go 會員管理</h1>
+    <p>Beta 3.1.1｜深色管理版</p>
+  </div>
+  <div class="actions">
+    <button id="refreshBtn" class="btn">重新整理</button>
+    <a class="btn" href="admin-center.html">返回管理中心</a>
+    <a class="btn gold" href="index.html">返回平台</a>
+  </div>
+</header>
+
+<div id="notice" class="notice">正在確認管理員身分…</div>
+
+<section id="app" hidden>
+  <div class="stats">
+    <div class="stat"><span>全部會員</span><b id="mTotal">0</b></div>
+    <div class="stat"><span>正式會員</span><b id="mMember">0</b></div>
+    <div class="stat"><span>試用會員</span><b id="mTrial">0</b></div>
+    <div class="stat"><span>停權</span><b id="mSusp">0</b></div>
+  </div>
+
+  <section class="card">
+    <h2>會員資料與權限</h2>
+    <div class="body">
+      <div class="toolbar">
+        <input id="memberSearch" placeholder="搜尋姓名或 Email">
+        <button class="btn" id="memberClear">清除搜尋</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>會員</th>
+              <th>身分</th>
+              <th>狀態</th>
+              <th>試用到期</th>
+              <th>建立日期</th>
+              <th>管理處置</th>
+            </tr>
+          </thead>
+          <tbody id="memberRows"><tr><td colspan="6" class="sub">讀取中…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</section>
+</main>
+
+<script>
+const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let me=null,members=[],staffRole="none";
+
+function notice(msg,type=""){
+  $("notice").className="notice"+(type?(" "+type):"");
+  $("notice").textContent=msg;
+}
+function dateInput(ts){
+  if(!ts)return "";
+  try{return new Date(ts).toISOString().slice(0,10)}catch{return ""}
+}
+function renderMembers(){
+  const q=$("memberSearch").value.trim().toLowerCase();
+  const arr=members.filter(x=>!q||[x.display_name,x.email].join(" ").toLowerCase().includes(q));
+  $("mTotal").textContent=members.length;
+  $("mMember").textContent=members.filter(x=>x.role==="member"&&x.status==="active").length;
+  $("mTrial").textContent=members.filter(x=>x.role==="trial").length;
+  $("mSusp").textContent=members.filter(x=>x.status==="suspended").length;
+
+  $("memberRows").innerHTML=arr.map(r=>{
+    const self=r.id===me.id;
+    const isAdmin=r.role==="admin";
+    const until=r.suspended_until?new Date(r.suspended_until):null;
+    const temp=until&&until.getTime()>Date.now();
+    const stateText=r.status==="suspended"?(temp?`暫停至 ${until.toLocaleString("zh-TW")}`:"永久停權"):"正常";
+    const stateClass=r.status==="suspended"?"badpill":"ok";
+
+    const roleCell=staffRole==="admin"
+      ? `<select class="role" ${self?"disabled":""}>
+           <option value="trial" ${r.role==="trial"?"selected":""}>試用會員</option>
+           <option value="member" ${r.role==="member"?"selected":""}>正式會員</option>
+           <option value="admin" ${r.role==="admin"?"selected":""}>管理員</option>
+         </select>`
+      : `<span>${r.role==="admin"?"管理員":r.role==="trial"?"試用會員":"正式會員"}</span>`;
+
+    let actions="";
+    if(self || isAdmin){
+      actions=`<span class="sub">${self?"自己的帳號不可處置":"主管理員帳號不可處置"}</span>`;
+    }else{
+      actions=`<div class="ops">
+        <button class="mini wait" onclick="moderateMember('${r.id}','suspend_1d')">停 1 天</button>
+        <button class="mini wait" onclick="moderateMember('${r.id}','suspend_7d')">停 7 天</button>
+        ${staffRole==="admin"?`<button class="mini reject" onclick="moderateMember('${r.id}','suspend_permanent')">永久停權</button>`:""}
+        <button class="mini save" onclick="moderateMember('${r.id}','unsuspend')">解除</button>
+      </div>`;
+    }
+
+    return `<tr data-id="${r.id}">
+      <td><div class="name">${esc(r.display_name||"未命名")}${self?"（我）":""}</div><div class="sub">${esc(r.email||"")}</div></td>
+      <td>${roleCell}</td>
+      <td><span class="pill ${stateClass}">${stateText}</span></td>
+      <td>${staffRole==="admin"?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?"disabled":""}>`:"—"}</td>
+      <td>${r.created_at?new Date(r.created_at).toLocaleDateString("zh-TW"):"—"}</td>
+      <td>${actions}${staffRole==="admin"&&!self&&!isAdmin?`<button class="mini neutral" style="margin-top:6px" onclick="saveMember('${r.id}')">儲存身分／期限</button>`:""}</td>
+    </tr>`;
+  }).join("") || '<tr><td colspan="6" class="sub">沒有符合資料。</td></tr>';
+}
+
+async function loadMembers(){
+  try{await sb.rpc("joygo_admin_cleanup_expired_suspensions")}catch{}
+  const {data,error}=await sb.from("profiles")
+    .select("id,email,display_name,role,status,expires_at,suspended_until,created_at")
+    .order("created_at",{ascending:true});
+  if(error){notice("會員資料讀取失敗："+error.message,"bad");return}
+  members=data||[];
+  renderMembers();
+}
+
+async function moderateMember(id,action){
+  const r=members.find(x=>x.id===id); if(!r)return;
+  if(!confirm(`確定要對「${r.display_name||r.email}」執行這項處置？`))return;
+  const reason=prompt("管理備註（可留空）","")||"";
+  notice("正在更新會員狀態…");
+  const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:id,p_action:action,p_reason:reason});
+  if(error){notice("會員處置失敗："+error.message,"bad");return}
+  notice("✅ 會員狀態已更新。","good");
+  await loadMembers();
+}
+window.moderateMember=moderateMember;
+
+async function saveMember(id){
+  if(staffRole!=="admin")return notice("只有主管理員可以修改會員身分。","bad");
+  const row=document.querySelector(`tr[data-id="${id}"]`);
+  const role=row.querySelector(".role").value;
+  const exp=row.querySelector(".expires").value;
+  const changes={
+    role,
+    expires_at:role==="trial"&&exp?new Date(exp+"T23:59:59").toISOString():null,
+    updated_at:new Date().toISOString()
+  };
+  const {error}=await sb.from("profiles").update(changes).eq("id",id);
+  if(error){notice("會員更新失敗："+error.message,"bad");return}
+  notice("✅ 會員資料已更新。","good");
+  await loadMembers();
+}
+window.saveMember=saveMember;
+
+async function init(){
+  const {data:{session},error}=await sb.auth.getSession();
+  if(error||!session){notice("請先登入 Joy Go 管理員帳號。","bad");return}
+  me=session.user;
+
+  const {data:isStaff,error:staffErr}=await sb.rpc("is_joygo_staff");
+  if(staffErr||isStaff!==true){notice("此頁僅限 Joy Go 管理員使用。","bad");return}
+
+  // Determine whether full admin or moderator.
+  const {data:profile}=await sb.from("profiles").select("role").eq("id",me.id).maybeSingle();
+  staffRole=profile?.role==="admin"?"admin":"moderator";
+
+  $("app").hidden=false;
+  notice("✅ 會員管理已就緒。","good");
+  await loadMembers();
+}
+
+$("memberSearch").oninput=renderMembers;
+$("memberClear").onclick=()=>{$("memberSearch").value="";renderMembers()};
+$("refreshBtn").onclick=loadMembers;
+init();
+</script>
+</body>
+</html>

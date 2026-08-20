@@ -19,30 +19,32 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#E7DED0;--card:#F3EBDD;--ink:#2F261F;--line:#C8B79F;
-  --title:#D8C7AE;--field:#F8F4EC;--green:#287A50;--red:#B8453D;
-  --gold:#9A6A21;--blue:#49677B;--muted:#746454;
+  color-scheme:dark;
+  --bg:#08100C;--panel:#0F1913;--panel2:#16251B;--ink:#F8F2E3;
+  --muted:#B7C3B9;--line:#355241;--gold:#E7BD62;--gold2:#FFE08A;
+  --green:#4FC08A;--red:#E87D78;--blue:#79BCE7;--field:#09110D;
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;background:linear-gradient(180deg,#E9E0D3,#E3D8C9);color:var(--ink)}
-header{position:sticky;top:0;z-index:20;background:#2B2117;color:white;padding:14px 18px;display:flex;gap:12px;align-items:center;box-shadow:0 2px 12px #0003}
-header h1{margin:0;font-size:22px;flex:1}
-header small{display:block;color:#d8c9b6;margin-top:3px}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;color:var(--ink);
+background:radial-gradient(circle at 90% 0,#183B28 0,transparent 35%),linear-gradient(145deg,#050907,#0B1B11)}
+header{position:sticky;top:0;z-index:20;background:rgba(7,14,10,.96);backdrop-filter:blur(12px);color:white;padding:15px 18px;display:flex;gap:12px;align-items:center;border-bottom:1px solid #2A4435;box-shadow:0 3px 18px #0007}
+header h1{margin:0;font-size:22px;flex:1;color:var(--gold2)}
+header small{display:block;color:var(--muted);margin-top:3px}
 .wrap{max-width:1180px;margin:auto;padding:16px}
-.notice{padding:11px 13px;border-radius:11px;background:#DDD3C2;border:1px solid #C9BAA2;margin-bottom:14px}
-.good{background:#DFE9DD;color:#315A38;border-color:#B7C9B5}.bad{background:#F1D9D5;color:#8C302A;border-color:#D5AAA5}
+.notice{padding:12px 14px;border-radius:12px;background:#101B14;border:1px solid var(--line);margin-bottom:14px;color:var(--muted)}
+.good{background:#0E2B1E;color:#9BE7C0;border-color:#2C7253}.bad{background:#2D1515;color:#FFB3AF;border-color:#8A4542}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 6px 18px #4B3B2212}
-.stat .n{font-size:28px;font-weight:900;margin-top:5px}.stat .t{font-size:13px;color:var(--muted)}
+.stat{background:linear-gradient(155deg,#15261B,#0B120E);border:1px solid var(--line);border-radius:15px;padding:15px;box-shadow:0 8px 24px #0004}
+.stat .n{font-size:30px;font-weight:900;margin-top:5px;color:var(--gold2)}.stat .t{font-size:13px;color:var(--muted)}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 24px #4B3B2218}
-.card h2{font-size:17px;margin:0;padding:12px 14px;background:var(--title);border-bottom:1px solid #C5B298}
-.card .body{padding:14px}.desc{color:var(--muted);font-size:13px;line-height:1.5;min-height:42px}
-button,.btn{display:inline-block;border:0;border-radius:10px;padding:10px 13px;font-weight:800;font:inherit;cursor:pointer;text-decoration:none}
-.primary{background:#5D4934;color:white}.green{background:var(--green);color:white}.gold{background:var(--gold);color:white}.blue{background:var(--blue);color:white}.ghost{background:var(--field);color:#4D3C2A;border:1px solid var(--line)}
+.card{background:linear-gradient(155deg,#111C15,#0A110D);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 8px 24px #0004}
+.card h2{font-size:17px;margin:0;padding:13px 14px;background:#18271D;color:var(--gold2);border-bottom:1px solid #2E4638}
+.card .body{padding:14px}.desc{color:var(--muted);font-size:13px;line-height:1.55;min-height:42px}
+button,.btn{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-weight:800;font:inherit;cursor:pointer;text-decoration:none;background:#0A120D;color:var(--ink)}
+.primary{background:#4A3825;color:#FFF4D2;border-color:#725634}.green{background:#225E43;color:#D9FFEB;border-color:#347C5C}.gold{background:#74591E;color:#FFF0B6;border-color:#94762D}.blue{background:#22465B;color:#D8F0FF;border-color:#376D89}.ghost{background:#101811;color:#F4EBD8;border:1px solid var(--line)}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.health{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:13px}.dot{width:11px;height:11px;border-radius:50%;background:#aaa}.dot.ok{background:#2F8A57}.dot.warn{background:#C99B25}.dot.bad{background:#C84C43}
-.list{margin:0;padding:0;list-style:none}.list li{padding:8px 0;border-bottom:1px solid #d8c9b6;font-size:13px}.list li:last-child{border-bottom:0}
+.health{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:var(--muted)}.dot{width:11px;height:11px;border-radius:50%;background:#777}.dot.ok{background:#42C184}.dot.warn{background:#D0A53E}.dot.bad{background:#E96660}
+.list{margin:0;padding:0;list-style:none}.list li{padding:8px 0;border-bottom:1px solid #263A2F;font-size:13px}.list li:last-child{border-bottom:0}
 .hidden{display:none!important}
 @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}header h1{font-size:18px}}
@@ -52,7 +54,7 @@ button,.btn{display:inline-block;border:0;border-radius:10px;padding:10px 13px;f
 <header>
   <div>
     <h1>🧭 Joy Go 管理中心</h1>
-    <small>Beta 3.1｜管理中心整理強化版</small>
+    <small>Beta 3.1.1｜深色管理中心＋會員管理修正</small>
   </div>
   <button class="ghost" onclick="location.href='index.html'">返回平台</button>
 </header>
@@ -74,7 +76,7 @@ button,.btn{display:inline-block;border:0;border-radius:10px;padding:10px 13px;f
         <div class="body">
           <div class="desc">會員查詢、正式／試用狀態、停權與參賽資格等會員營運資料。</div>
           <div class="row">
-            <a class="btn primary" href="admin.html">進入會員管理</a>
+            <a class="btn primary" href="member-admin.html">進入會員管理</a>
           </div>
         </div>
       </article>
