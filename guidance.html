@@ -23,15 +23,99 @@
 <title>Joy Go｜多人線上指導棋</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#f5f0e6;--card:#fffdf8;--ink:#2d251c;--line:#d8c7a7;--gold:#9a6a21;--red:#c83a32;--green:#287a50}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(#f7f3eb,#efe6d7);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif}
-header{position:sticky;top:0;z-index:50;background:#2b2117;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 12px #0003}header h1{font-size:20px;margin:0;flex:1}.tag{font-size:12px;opacity:.8}
-.wrap{max-width:1280px;margin:auto;padding:14px}.card{background:var(--card);border:1px solid #dfd3bd;border-radius:16px;box-shadow:0 8px 24px #4b3b2210;margin-bottom:14px;overflow:hidden}.card h2{font-size:17px;margin:0;padding:12px 14px;background:#eadfc9}.body{padding:14px}
-.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:#5d4934;color:white}.gold{background:var(--gold)}.red{background:var(--red)}.green{background:var(--green)}.ghost{background:#fff;color:#4d3c2a;border:1px solid var(--line)}
-.notice{padding:10px 12px;border-radius:10px;background:#f2eadb;margin-bottom:12px}.good{background:#e4f3e9;color:#1d653d}.bad{background:#fde7e5;color:#9c2b26}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.toolbar select,.toolbar input{padding:9px;border:1px solid var(--line);border-radius:9px;background:white}.formgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.student-row{border:1px solid var(--line);border-radius:12px;padding:10px;background:white}.student-row b{display:block;margin-bottom:7px}.student-row select,.student-row input{width:100%;padding:8px;border:1px solid #ccb997;border-radius:8px;margin-top:6px;background:white}
-.tabs-wrap{position:sticky;top:60px;z-index:40;background:#f7f1e6;padding-top:8px}.tabs{display:flex;gap:5px;overflow-x:auto;padding:0 2px 7px}.tab{min-width:150px;border:1px solid #cbb994;background:#fffaf0;border-radius:12px 12px 4px 4px;padding:9px 10px;text-align:left;cursor:pointer;position:relative}.tab.active{background:#3b2d1f;color:white;border-color:#3b2d1f}.tab.wait-teacher:not(.active){border:2px solid var(--red);background:#fff1ef}.tab.wait-teacher:after{content:"";width:10px;height:10px;background:var(--red);border-radius:50%;position:absolute;right:7px;top:7px}.tab.done{opacity:.65}.tab-name{font-weight:800}.tab-meta{font-size:12px;margin-top:3px;opacity:.8}
-.controlbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}.current{font-weight:800;flex:1}.board-frame{width:100%;height:760px;border:1px solid #bda984;border-radius:14px;background:white;display:none}.board-frame.active{display:block}.empty{padding:36px;text-align:center;color:#796a58}.session-list{display:flex;gap:8px;flex-wrap:wrap}.session-chip{padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:white;cursor:pointer}.small{font-size:12px;color:#7e6c58}
+:root{
+  --bg:#E7DED0;
+  --card:#F3EBDD;
+  --ink:#2F261F;
+  --line:#C8B79F;
+  --title:#D8C7AE;
+  --field:#F8F4EC;
+  --gold:#9A6A21;
+  --red:#C83A32;
+  --green:#287A50
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#E9E0D3 0%,#E3D8C9 100%);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif
+}
+header{
+  position:sticky;top:0;z-index:50;
+  background:#2B2117;color:#fff;
+  padding:12px 16px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 12px #0003
+}
+header h1{font-size:20px;margin:0;flex:1}
+.tag{font-size:12px;opacity:.84}
+.wrap{max-width:1280px;margin:auto;padding:14px}
+.card{
+  background:var(--card);
+  border:1px solid #CDBDA7;
+  border-radius:16px;
+  box-shadow:0 8px 24px #4B3B2218;
+  margin-bottom:14px;
+  overflow:hidden
+}
+.card h2{
+  font-size:17px;margin:0;padding:12px 14px;
+  background:var(--title);
+  border-bottom:1px solid #C5B298
+}
+.body{padding:14px}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:#5D4934;color:white}
+.gold{background:var(--gold)}.red{background:var(--red)}.green{background:var(--green)}
+.ghost{background:var(--field);color:#4D3C2A;border:1px solid var(--line)}
+.notice{
+  padding:10px 12px;border-radius:10px;
+  background:#DDD3C2;
+  border:1px solid #C9BAA2;
+  margin-bottom:12px
+}
+.good{background:#DFE9DD;color:#315A38;border-color:#B7C9B5}
+.bad{background:#F1D9D5;color:#8C302A;border-color:#D5AAA5}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toolbar select,.toolbar input{
+  padding:9px;border:1px solid var(--line);border-radius:9px;
+  background:var(--field);color:var(--ink)
+}
+.formgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.student-row{
+  border:1px solid var(--line);border-radius:12px;padding:10px;
+  background:#EEE4D5
+}
+.student-row b{display:block;margin-bottom:7px}
+.student-row select,.student-row input{
+  width:100%;padding:8px;border:1px solid #BFAE95;
+  border-radius:8px;margin-top:6px;background:var(--field);color:var(--ink)
+}
+.tabs-wrap{position:sticky;top:60px;z-index:40;background:#E8DECF;padding-top:8px}
+.tabs{display:flex;gap:5px;overflow-x:auto;padding:0 2px 7px}
+.tab{
+  min-width:150px;border:1px solid #BFAE95;background:#EEE4D5;
+  border-radius:12px 12px 4px 4px;padding:9px 10px;text-align:left;cursor:pointer;position:relative
+}
+.tab.active{background:#3B2D1F;color:white;border-color:#3B2D1F}
+.tab.wait-teacher:not(.active){border:2px solid var(--red);background:#F1DFDB}
+.tab.wait-teacher:after{content:"";width:10px;height:10px;background:var(--red);border-radius:50%;position:absolute;right:7px;top:7px}
+.tab.done{opacity:.65}
+.tab-name{font-weight:800}
+.tab-meta{font-size:12px;margin-top:3px;opacity:.8}
+.controlbar{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px;
+  background:#EEE4D5;border:1px solid var(--line);border-radius:12px;margin-bottom:10px
+}
+.current{font-weight:800;flex:1}
+.board-frame{width:100%;height:760px;border:1px solid #B69F80;border-radius:14px;background:#EDE2D2;display:none}
+.board-frame.active{display:block}
+.empty{padding:36px;text-align:center;color:#6F5D4C}
+.session-list{display:flex;gap:8px;flex-wrap:wrap}
+.session-chip{
+  padding:8px 10px;border:1px solid var(--line);
+  border-radius:999px;background:#EEE4D5;color:#3B3026;cursor:pointer
+}
+.small{font-size:12px;color:#6F5D4C}
 @media(max-width:900px){.formgrid{grid-template-columns:1fr 1fr}.board-frame{height:700px}}@media(max-width:560px){.formgrid{grid-template-columns:1fr}.tab{min-width:132px}.board-frame{height:650px}header h1{font-size:17px}}
 </style>
 
@@ -46,7 +130,7 @@ header{position:sticky;top:0;z-index:50;background:#2b2117;color:#fff;padding:12
 
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.3｜書籤式 1 對 1～1 對 5｜自動切換最終修正 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.4｜書籤式 1 對 1～1 對 5｜暖灰米色＋淺咖啡 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -137,7 +221,7 @@ function renderTabs(){const live=activeBoards();$("tabs").innerHTML=live.map(b=>
 function ensureFrame(b){let f=document.getElementById('frame-'+b.slot_no);if(!f){const e=$("frames").querySelector('.empty');if(e)e.remove();f=document.createElement('iframe');f.id='frame-'+b.slot_no;f.className='board-frame';
 f.referrerPolicy='no-referrer';
 f.setAttribute('allow','clipboard-write');
-f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=293`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
+f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=294`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
 function activate(slot){const live=activeBoards();if(!live.length){clearTeacherControl();return}const chosen=live.find(b=>b.slot_no===slot)||live[0];activeSlot=chosen.slot_no;live.forEach(b=>ensureFrame(b).classList.toggle('active',b.slot_no===activeSlot));renderTabs();renderCurrent()}
 function clearTeacherControl(){document.querySelectorAll('.board-frame').forEach(f=>f.remove());$("tabs").innerHTML='';$("controlbar").style.display='none';$("frames").innerHTML='<div class="empty">✅ 本場棋局已結束，棋盤與標籤已自動清除；棋譜紀錄仍保留。</div>'}
 function removeEndedFrames(){boards.filter(b=>b.room_status==='ended').forEach(b=>document.getElementById('frame-'+b.slot_no)?.remove())}
