@@ -38,8 +38,8 @@ body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Pi
 <main class="shell">
   <div class="head">
     <div>
-      <h1>🧹 Joy Go 舊房間診斷</h1>
-      <p>Beta 3.1.3｜先診斷，再安全封存</p>
+      <h1>🗂️ Joy Go 房間與測試棋譜整理</h1>
+      <p>Beta 3.1.4｜正式／測試資料分流</p>
     </div>
     <div>
       <a class="btn" href="admin-center.html">返回管理中心</a>
@@ -50,15 +50,21 @@ body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Pi
   <div id="notice" class="notice">正在讀取房間狀態…</div>
 
   <div class="stats">
-    <div class="stat"><span>最近 30 分鐘活躍</span><b id="active30">0</b></div>
-    <div class="stat"><span>30 分鐘～24 小時</span><b id="idle24">0</b></div>
-    <div class="stat"><span>超過 24 小時未結束</span><b id="stale24">0</b></div>
-    <div class="stat"><span>全部未結束房間</span><b id="openAll">0</b></div>
+    <div class="stat"><span>正式資料</span><b id="formalCount">0</b></div>
+    <div class="stat"><span>測試資料</span><b id="testCount">0</b></div>
+    <div class="stat"><span>目前未結束</span><b id="openAll">0</b></div>
+    <div class="stat"><span>全部房間</span><b id="allCount">0</b></div>
   </div>
 
   <section class="card">
     <h2>房間清單</h2>
     <div class="body">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn gold filterBtn" data-filter="formal">正式資料</button>
+        <button class="btn filterBtn" data-filter="test">測試資料</button>
+        <button class="btn filterBtn" data-filter="all">全部</button>
+        <span style="color:var(--muted);align-self:center">預設只顯示正式資料</span>
+      </div>
       <div class="table-wrap">
         <table>
           <thead>
@@ -68,11 +74,12 @@ body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Pi
               <th>黑方</th>
               <th>白方</th>
               <th>最後更新</th>
+              <th>資料類型</th>
               <th>分類</th>
               <th>管理</th>
             </tr>
           </thead>
-          <tbody id="rows"><tr><td colspan="7">讀取中…</td></tr></tbody>
+          <tbody id="rows"><tr><td colspan="8">讀取中…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -85,6 +92,7 @@ const SUPABASE_KEY="sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 let rooms=[];
+let currentFilter="formal";
 
 function note(msg,type=""){const e=$("notice");e.className="notice"+(type?(" "+type):"");e.textContent=msg}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -98,47 +106,75 @@ function cat(r){
   return ["超過24小時","warn"];
 }
 function render(){
+  const formal=rooms.filter(r=>r.data_class!=="test");
+  const test=rooms.filter(r=>r.data_class==="test");
   const open=rooms.filter(r=>r.status!=="ended");
-  const a30=open.filter(r=>Date.now()-new Date(r.updated_at).getTime()<=30*60*1000).length;
-  const i24=open.filter(r=>{
-    const age=Date.now()-new Date(r.updated_at).getTime();
-    return age>30*60*1000 && age<=24*60*60*1000
-  }).length;
-  const s24=open.filter(r=>Date.now()-new Date(r.updated_at).getTime()>24*60*60*1000).length;
-  $("active30").textContent=a30;$("idle24").textContent=i24;$("stale24").textContent=s24;$("openAll").textContent=open.length;
+  $("formalCount").textContent=formal.length;
+  $("testCount").textContent=test.length;
+  $("openAll").textContent=open.length;
+  $("allCount").textContent=rooms.length;
 
-  $("rows").innerHTML=rooms.map(r=>{
+  const arr=currentFilter==="all"
+    ? rooms
+    : currentFilter==="test"
+      ? test
+      : formal;
+
+  $("rows").innerHTML=arr.map(r=>{
     const [label,cls]=cat(r);
+    const dataType=r.data_class==="test"
+      ? '<span class="pill warn">測試資料</span>'
+      : '<span class="pill ok">正式資料</span>';
     return `<tr>
       <td><b>${esc(r.room_name||r.room_id)}</b><br><small>${esc(r.room_id)}</small></td>
       <td>${esc(r.status||"")}</td>
       <td>${esc(r.black_name||"—")}</td>
       <td>${esc(r.white_name||"—")}</td>
       <td>${fmt(r.updated_at)}</td>
+      <td>${dataType}</td>
       <td><span class="pill ${cls}">${label}</span></td>
       <td><div class="ops">
         ${r.status!=="ended" && cls==="warn" ? `<button class="btn red" onclick="archiveRoom('${r.room_id}')">安全封存</button>` : ""}
+        <button class="btn" onclick="setRoomClass('${r.room_id}','${r.data_class==="test"?"formal":"test"}')">${r.data_class==="test"?"改正式":"標記測試"}</button>
       </div></td>
     </tr>`;
-  }).join("") || '<tr><td colspan="7">目前沒有房間資料。</td></tr>';
+  }).join("") || '<tr><td colspan="8">這個分類目前沒有資料。</td></tr>';
 }
 async function load(){
-  const {data,error}=await sb.rpc("joygo_admin_room_diagnostics",{p_limit:200});
+  const {data,error}=await sb.rpc("joygo_admin_room_diagnostics_v2",{p_limit:500,p_data_class:"all"});
   if(error){note("讀取失敗："+error.message,"bad");return}
   rooms=data||[];
   render();
-  note("✅ 房間診斷完成。只有疑似殘留房間才會顯示「安全封存」。","good");
+  note("✅ 房間資料已整理。預設只顯示正式資料；8/19、8/20 測試房間已標記為測試資料。","good");
 }
 async function archiveRoom(id){
   const r=rooms.find(x=>x.room_id===id); if(!r)return;
   if(!confirm(`確定封存房間「${r.room_name||id}」？\n\n只會標記結束，不刪棋步與 SGF。`))return;
-  const reason=prompt("封存備註（可留空）","舊測試房間／疑似殘留")||"";
-  const {data,error}=await sb.rpc("joygo_admin_archive_room",{p_room_id:id,p_reason:reason});
+  const reason=prompt("封存備註（可留空）","測試／殘留房間")||"";
+  const {error}=await sb.rpc("joygo_admin_archive_room",{p_room_id:id,p_reason:reason});
   if(error){note("封存失敗："+error.message,"bad");return}
   note("✅ 房間已安全封存。","good");
   await load();
 }
+async function setRoomClass(id,dataClass){
+  const label=dataClass==="test"?"測試資料":"正式資料";
+  if(!confirm(`確定將此房間標記為「${label}」？`))return;
+  const {error}=await sb.rpc("joygo_admin_set_room_data_class",{p_room_id:id,p_data_class:dataClass});
+  if(error){note("更新分類失敗："+error.message,"bad");return}
+  note(`✅ 已標記為${label}。`,"good");
+  await load();
+}
 window.archiveRoom=archiveRoom;
+window.setRoomClass=setRoomClass;
+
+document.querySelectorAll(".filterBtn").forEach(btn=>{
+  btn.onclick=()=>{
+    currentFilter=btn.dataset.filter;
+    document.querySelectorAll(".filterBtn").forEach(b=>b.classList.remove("gold"));
+    btn.classList.add("gold");
+    render();
+  };
+});
 $("refreshBtn").onclick=load;
 
 (async()=>{
