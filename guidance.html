@@ -46,7 +46,7 @@ header{position:sticky;top:0;z-index:50;background:#2b2117;color:#fff;padding:12
 
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.0｜書籤式 1 對 1～1 對 5｜資安強化版 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.3｜書籤式 1 對 1～1 對 5｜自動切換最終修正 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -69,6 +69,41 @@ async function loadProfiles(){
   profiles=(data||[]).filter(p=>p.id!==me.id);
   renderStudentRows();
 }
+
+async function autoSwitchToNewestLiveSession(endedSessionId=null){
+  // Beta 2.9.3：
+  // 不再只靠前端 live_sessions 陣列判斷。
+  // 直接由資料庫選出「排除剛結束場次」後的最新未完場次。
+  for(let attempt=0;attempt<3;attempt++){
+    const {data,error}=await sb.rpc(
+      'joygo_guidance_next_live_session',
+      {p_exclude_session_id:endedSessionId||null}
+    );
+
+    if(!error){
+      const row=Array.isArray(data)?data[0]:data;
+
+      if(row?.session_id && Number(row.live_count||0)>0){
+        const nextId=String(row.session_id);
+
+        // 先切換 currentSession，再開啟。
+        currentSession=nextId;
+
+        const opened=await openSession(nextId,true);
+        if(opened)return true;
+      }
+
+      // RPC 正常回傳，但確實沒有下一場。
+      if(!row?.session_id)return false;
+    }
+
+    // Realtime / transaction 剛完成時，短暫等待再試。
+    await new Promise(r=>setTimeout(r,300*(attempt+1)));
+  }
+
+  return false;
+}
+
 async function loadSessions(){
   const {data,error}=await sb.rpc('joygo_guidance_live_sessions');
   if(error){$("sessions").textContent='讀取失敗：'+error.message;return}
@@ -102,7 +137,7 @@ function renderTabs(){const live=activeBoards();$("tabs").innerHTML=live.map(b=>
 function ensureFrame(b){let f=document.getElementById('frame-'+b.slot_no);if(!f){const e=$("frames").querySelector('.empty');if(e)e.remove();f=document.createElement('iframe');f.id='frame-'+b.slot_no;f.className='board-frame';
 f.referrerPolicy='no-referrer';
 f.setAttribute('allow','clipboard-write');
-f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=290`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
+f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=293`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
 function activate(slot){const live=activeBoards();if(!live.length){clearTeacherControl();return}const chosen=live.find(b=>b.slot_no===slot)||live[0];activeSlot=chosen.slot_no;live.forEach(b=>ensureFrame(b).classList.toggle('active',b.slot_no===activeSlot));renderTabs();renderCurrent()}
 function clearTeacherControl(){document.querySelectorAll('.board-frame').forEach(f=>f.remove());$("tabs").innerHTML='';$("controlbar").style.display='none';$("frames").innerHTML='<div class="empty">✅ 本場棋局已結束，棋盤與標籤已自動清除；棋譜紀錄仍保留。</div>'}
 function removeEndedFrames(){boards.filter(b=>b.room_status==='ended').forEach(b=>document.getElementById('frame-'+b.slot_no)?.remove())}
@@ -110,52 +145,220 @@ function renderCurrent(){const b=boards.find(x=>x.slot_no===activeSlot);if(!b)re
 function nextWaitingTeacher(){const o=activeBoards().sort((a,b)=>a.slot_no-b.slot_no);if(!o.length){clearTeacherControl();return false}const start=Math.max(0,o.findIndex(x=>x.slot_no===activeSlot));for(let k=1;k<=o.length;k++){const b=o[(start+k)%o.length];if(b.room_status!=='ended'&&b.room_turn==='W'){activate(b.slot_no);return true}}notice('目前沒有其他等待老師落子的棋盤。');return false}
 $("nextBtn").onclick=nextWaitingTeacher;$("refreshBtn").onclick=()=>refreshSession(true);$("copyBtn").onclick=async()=>{const b=boards.find(x=>x.slot_no===activeSlot);if(!b)return;const u=new URL('index.html',location.href);u.searchParams.set('room',b.room_code);const text=`Joy Go 指導棋｜${b.student_name}\n房號：${b.room_code}\n${u.href}`;try{await navigator.clipboard.writeText(text);notice('✅ 學生連結已複製','good')}catch{prompt('請複製學生連結：',text)}};
 $("autoNext").onchange=async e=>{if(!currentSession)return;const {error}=await sb.rpc('joygo_guidance_set_auto_next',{p_session_id:currentSession,p_enabled:e.target.checked});if(error)notice('設定失敗：'+error.message,'bad');else boards.forEach(b=>b.auto_next=e.target.checked)};
+
+async function getAuthoritativeSessionState(){
+  if(!currentSession)return null;
+  const {data,error}=await sb.rpc('joygo_guidance_session_state',{
+    p_session_id:currentSession
+  });
+  if(error){
+    console.warn('session_state failed',error);
+    return null;
+  }
+  return Array.isArray(data)?data[0]:data;
+}
+
+async function confirmSessionReallyEnded(){
+  const s=await getAuthoritativeSessionState();
+  if(!s)return false;
+  return Number(s.live_count||0)===0;
+}
+
 $("endBtn").onclick=async()=>{if(!currentSession||!confirm('確定結束整場指導棋？棋局與棋譜不會刪除。'))return;const {error}=await sb.rpc('joygo_guidance_end_session',{p_session_id:currentSession});if(error)return notice('結束失敗：'+error.message,'bad');notice('✅ 本場指導棋已標示結束。','good');await loadSessions();await refreshSession(true)};
 async function refreshSession(manual=false){
-if(!currentSession)return;
-const prev=new Map(boards.map(b=>[b.room_id,{
-  room_status:b.room_status,
-  room_turn:b.room_turn
-}]));const {data,error}=await sb.rpc('joygo_guidance_get_session',{p_session_id:currentSession});if(error){if(manual)notice('更新失敗：'+error.message,'bad');return}boards=normalizeBoards(data);removeEndedFrames();const live=activeBoards();if(!live.length){
-  clearTeacherControl();
-  try{
-    await sb.rpc('joygo_guidance_mark_ended_if_complete',{p_session_id:currentSession});
-  }catch(e){}
-  if(manual)notice('✅ 本場所有棋盤均已完局；棋盤與標籤已清除，棋譜仍保留。','good');
-  await loadSessions();
-  return
-}const a=live.find(b=>b.slot_no===activeSlot)||live.find(b=>b.room_turn==='W')||live[0];activeSlot=a.slot_no;renderTabs();renderCurrent();const cur=boards.find(b=>b.slot_no===activeSlot),old=cur?prev.get(cur.room_id):null;
-if(cur&&cur.auto_next&&old&&old.room_status!=='ended'&&old.room_turn==='W'&&cur.room_status!=='ended'&&cur.room_turn==='B'){
-  setTimeout(nextWaitingTeacher,250);
-}if(manual)notice('✅ 指導棋狀態已更新','good')}
+  if(!currentSession)return;
+
+  const prev=new Map(boards.map(b=>[
+    b.room_id,
+    {room_status:b.room_status,room_turn:b.room_turn}
+  ]));
+
+  const {data,error}=await sb.rpc(
+    'joygo_guidance_get_session',
+    {p_session_id:currentSession}
+  );
+
+  if(error){
+    if(manual)notice('更新失敗：'+error.message,'bad');
+    return;
+  }
+
+  const nextBoards=normalizeBoards(data);
+  const nextLive=nextBoards.filter(b=>b.room_status!=='ended');
+
+  // Beta 2.9.1：
+  // 前端看到 0 盤時，不准自行判定整場結束。
+  // 必須再由資料庫 session_state 確認 live_count=0。
+  if(!nextLive.length){
+    const reallyEnded=await confirmSessionReallyEnded();
+
+    if(!reallyEnded){
+      // 可能是 Realtime / RPC 短暫不同步。
+      // 保留目前未完棋盤，不清空畫面，稍後再同步。
+      if(manual){
+        notice('⏳ 棋局狀態同步中；尚有未完棋局，不會清除老師總控。');
+      }
+      setTimeout(()=>refreshSession(false),650);
+      return;
+    }
+
+    const endedSessionId=String(currentSession);
+
+    boards=nextBoards;
+    removeEndedFrames();
+    clearTeacherControl();
+
+    try{
+      await sb.rpc(
+        'joygo_guidance_mark_ended_if_complete',
+        {p_session_id:endedSessionId}
+      );
+    }catch(e){}
+
+    await loadSessions();
+
+    const switched=await autoSwitchToNewestLiveSession(endedSessionId);
+
+    if(!switched){
+      currentSession='';
+      if(manual){
+        notice(
+          '✅ 本場所有棋盤均已真正完局；目前沒有其他進行中的指導棋。',
+          'good'
+        );
+      }
+    }
+    return;
+  }
+
+  // 有未完棋局才正式接受本次資料。
+  boards=nextBoards;
+  removeEndedFrames();
+
+  const live=activeBoards();
+
+  const a=
+    live.find(b=>b.slot_no===activeSlot) ||
+    live.find(b=>b.room_turn==='W') ||
+    live[0];
+
+  activeSlot=a.slot_no;
+  renderTabs();
+  renderCurrent();
+
+  const cur=boards.find(b=>b.slot_no===activeSlot);
+  const old=cur?prev.get(cur.room_id):null;
+
+  if(
+    cur &&
+    cur.auto_next &&
+    old &&
+    old.room_status!=='ended' &&
+    old.room_turn==='W' &&
+    cur.room_status!=='ended' &&
+    cur.room_turn==='B'
+  ){
+    setTimeout(nextWaitingTeacher,250);
+  }
+
+  if(manual)notice('✅ 指導棋狀態已更新','good');
+}
+
 async function subscribeRooms(){if(roomChannel){try{await sb.removeChannel(roomChannel)}catch{}}roomChannel=sb.channel('joygo-guidance-'+currentSession).on('postgres_changes',{event:'*',schema:'public',table:'online_rooms'},()=>refreshSession(false)).subscribe()}
-async function openSession(id){
+async function openSession(id,fromAutoSwitch=false){
   currentSession=id;
-  const {data,error}=await sb.rpc('joygo_guidance_get_session',{p_session_id:id});
-  if(error)return notice('開啟失敗：'+error.message,'bad');
-  boards=normalizeBoards(data);
-  if(!boards.length){
+
+  const {data,error}=await sb.rpc(
+    'joygo_guidance_get_session',
+    {p_session_id:id}
+  );
+
+  if(error){
+    if(!fromAutoSwitch)notice('開啟失敗：'+error.message,'bad');
+    return false;
+  }
+
+  const nextBoards=normalizeBoards(data);
+
+  if(!nextBoards.length){
+    const state=await getAuthoritativeSessionState();
+
+    if(state && Number(state.live_count||0)>0){
+      notice('⏳ 場次仍有未完棋局，正在重新同步，不會清除。');
+      setTimeout(()=>openSession(id),650);
+      return;
+    }
+
+    if(fromAutoSwitch)return false;
+
     currentSession='';
     clearTeacherControl();
     await loadSessions();
-    notice('已略過空白指導棋場次；有效棋局仍保留。','good');
-    return
+
+    const switched=await autoSwitchToNewestLiveSession(id);
+    if(!switched){
+      notice('目前沒有其他進行中的指導棋。','good');
+    }
+    return switched;
   }
-  $("frames").innerHTML='';
-  const live=activeBoards();
-  if(!live.length){
+
+  const nextLive=nextBoards.filter(b=>b.room_status!=='ended');
+
+  if(!nextLive.length){
+    const reallyEnded=await confirmSessionReallyEnded();
+
+    if(!reallyEnded){
+      notice('⏳ 尚有未完棋局，正在重新同步，不會清除老師總控。');
+      setTimeout(()=>openSession(id),650);
+      return;
+    }
+
+    const endedId=String(id);
+    const endedTitle=nextBoards[0]?.title||'本場指導棋';
+
+    boards=nextBoards;
+    $("frames").innerHTML='';
     clearTeacherControl();
+
     try{
-      await sb.rpc('joygo_guidance_mark_ended_if_complete',{p_session_id:currentSession});
+      await sb.rpc(
+        'joygo_guidance_mark_ended_if_complete',
+        {p_session_id:endedId}
+      );
     }catch(e){}
+
     await loadSessions();
-    notice(`✅ ${boards[0].title} 所有棋盤均已結束；棋盤與標籤已清除，棋譜仍保留。`,'good');
-    return
+
+    if(fromAutoSwitch)return false;
+
+    const switched=await autoSwitchToNewestLiveSession(endedId);
+
+    if(!switched){
+      currentSession='';
+      notice(
+        `✅ ${endedTitle} 所有棋盤均已真正結束；目前沒有其他進行中的指導棋。`,
+        'good'
+      );
+    }
+    return switched;
   }
-  activeSlot=live.find(b=>b.room_turn==='W')?.slot_no||live[0].slot_no;
-  renderTabs();activate(activeSlot);await subscribeRooms();
-  notice(`✅ 已開啟 ${boards[0].title}，進行中 ${live.length} 盤。`,'good')
+
+  boards=nextBoards;
+  $("frames").innerHTML='';
+
+  const live=activeBoards();
+  activeSlot=
+    live.find(b=>b.room_turn==='W')?.slot_no ||
+    live[0].slot_no;
+
+  renderTabs();
+  activate(activeSlot);
+  await subscribeRooms();
+
+  notice(`✅ 已開啟 ${boards[0].title}，進行中 ${live.length} 盤。`,'good');
+  return true;
 }
+
 async function cleanupOldSessions(){
   if(!confirm('將封存超過 3 小時沒有更新的舊指導棋場次，並清除 0 盤空場次。\n\n棋局、online_rooms、落子紀錄與棋譜都不會刪除。\n目前仍有近期更新的棋局不會處理。\n\n確定清理嗎？'))return;
   notice('正在安全清理舊場次…');
