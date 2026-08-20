@@ -28,7 +28,7 @@ body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Pi
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}
 .card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.body{padding:14px}
 .filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:8px;margin-bottom:10px}.filters input,.filters select{background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}
-.table-wrap{overflow:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;min-width:1180px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}
+.table-wrap{overflow:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;min-width:1280px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}
 .pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}.bluepill{background:#193b51;color:#a8ddff}
 select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px}
 .mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}
@@ -42,7 +42,7 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
 <header class="head">
   <div class="brand">
     <h1>👥 Joy Go 會員管理</h1>
-    <p>Beta 3.2｜搜尋・篩選・到期日・最近登入・參賽資格</p>
+    <p>Beta 3.2.1｜加入會員時間＋最近登入分開顯示</p>
   </div>
   <div class="actions">
     <button id="refreshBtn" class="btn">重新整理</button>
@@ -92,10 +92,10 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
               <th>身分</th>
               <th>狀態</th>
               <th>試用／會員到期</th>
+              <th>加入會員時間</th>
               <th>最近登入</th>
               <th>參賽資格</th>
               <th>停權原因</th>
-              <th>建立日期</th>
               <th>管理處置</th>
             </tr>
           </thead>
@@ -180,10 +180,10 @@ function renderMembers(){
       <td>${roleCell}</td>
       <td><span class="pill ${stateClass}">${stateText}</span></td>
       <td>${staffRole==="admin"?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?"disabled":""}>`:(r.expires_at?fmt(r.expires_at):"—")}</td>
-      <td>${fmt(r.last_sign_in_at)}</td>
+      <td>${r.created_at?fmt(r.created_at):"加入時間未記錄"}</td>
+      <td>${r.last_sign_in_at?fmt(r.last_sign_in_at):'<span class="sub">尚無登入紀錄</span>'}</td>
       <td>${compCell}</td>
       <td><span class="sub">${esc(r.suspension_reason||"—")}</span></td>
-      <td>${r.created_at?new Date(r.created_at).toLocaleDateString("zh-TW"):"—"}</td>
       <td>${actions}${staffRole==="admin"&&!self&&!isAdmin?`<button class="mini neutral" style="margin-top:6px" onclick="saveMember('${r.id}')">儲存會員設定</button>`:""}</td>
     </tr>`;
   }).join("") || '<tr><td colspan="9" class="sub">沒有符合資料。</td></tr>';
