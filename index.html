@@ -3591,6 +3591,40 @@ html[data-joygo-guidance="1"] #calculateResultBtn{
 }
 </style>
 
+
+<style id="joygoGuidance287RequiredActions">
+/* Beta 2.8.7：計算勝負必須可見 */
+html[data-joygo-guidance="1"] #calculateResultBtn{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  background:linear-gradient(135deg,#7d5bd6,#53389e)!important;
+  border-color:#9d85e2!important;
+  color:#fff!important;
+  font-weight:900!important;
+}
+
+/* 橫式右側快捷面板：計算勝負整列顯示 */
+@media (orientation:landscape) and (min-width:901px){
+  html[data-joygo-guidance="1"] .compact-action-panel #calculateResultBtn{
+    display:block!important;
+    grid-column:1 / -1!important;
+    min-height:42px!important;
+    height:42px!important;
+  }
+}
+
+/* 底部原始功能列若顯示，六項全部保留 */
+html[data-joygo-guidance="1"] #gameActionRow{
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+}
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] #gameActionRow{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -6421,10 +6455,19 @@ async function onlineLeaveRoom(){
 }
 async function onlineResign(){
   const r=state.onlineRoom;if(!r||r.status!=="playing")return;
-  if(!confirm("確定要投降嗎？"))return;
-  const {data,error}=await memberSupabase.rpc("joygo_resign_room",{p_room_id:r.id});
+  if(!confirm("確定要投降嗎？\n多人指導棋只會結束目前這一盤。"))return;
+
+  let guidanceEmbed=false;
+  try{
+    const q=new URLSearchParams(location.search);
+    guidanceEmbed=(window.self!==window.top && q.get("guidance_embed")==="1");
+  }catch(_){}
+
+  const rpcName=guidanceEmbed ? "joygo_guidance_resign_one_room" : "joygo_resign_room";
+  const {data,error}=await memberSupabase.rpc(rpcName,{p_room_id:r.id});
   if(error){toast("投降失敗："+error.message);return}
-  state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom();
+  state.onlineRoom=onlineRpcRow(data);
+  await onlineSyncRoom();
 }
 async function onlineClearEndedRoom(){
   const r=state.onlineRoom;
@@ -6633,8 +6676,8 @@ $("topbar")?.addEventListener("click",()=>{
   panel.appendChild(fullscreen);
   right.appendChild(panel);
 
-  const landscapeOrder=["undoGameBtn","trialModeBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn"];
-  const portraitOrder=["undoGameBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn","trialModeBtn"];
+  const landscapeOrder=["undoGameBtn","trialModeBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"];
+  const portraitOrder=["undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn","trialModeBtn"];
   const layoutQuery=window.matchMedia("(orientation:landscape) and (min-width:901px)");
   function placeGameActions(){
     if(layoutQuery.matches){
@@ -9503,7 +9546,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       hide.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.style.setProperty("display","none","important")));
       const row=document.getElementById("gameActionRow");
       if(row) row.style.setProperty("display","grid","important");
-      ["undoGameBtn","scoreGameBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
+      ["undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
         const el=document.getElementById(id);
         if(el) el.style.setProperty("display","block","important");
       });

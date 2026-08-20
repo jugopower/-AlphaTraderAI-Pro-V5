@@ -19,7 +19,7 @@ header{position:sticky;top:0;z-index:50;background:#2b2117;color:#fff;padding:12
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.8.6｜書籤式 1 對 1～1 對 5｜舊場次清理＋列表修正</div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.8.7｜書籤式 1 對 1～1 對 5｜計算勝負＋單盤投降鎖定</div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -51,7 +51,7 @@ $("createBtn").onclick=createSession;
 function tabLabel(b){return b.tab_status==='ended'?'✅ 已結束':b.tab_status==='waiting_teacher'?'🔴 等老師':'🟢 學生思考'}
 function activeBoards(){return boards.filter(b=>b.tab_status!=='ended')}
 function renderTabs(){const live=activeBoards();$("tabs").innerHTML=live.map(b=>`<button class="tab ${b.slot_no===activeSlot?'active':''} ${b.tab_status==='waiting_teacher'?'wait-teacher':''}" data-slot="${b.slot_no}"><div class="tab-name">${esc(b.student_name)} ${esc(b.student_rank||'')}</div><div class="tab-meta">${tabLabel(b)}｜${b.handicap?`讓${b.handicap}子`:'分先'}｜${esc(b.room_code)}</div></button>`).join('');document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>activate(Number(t.dataset.slot)))}
-function ensureFrame(b){let f=document.getElementById('frame-'+b.slot_no);if(!f){const e=$("frames").querySelector('.empty');if(e)e.remove();f=document.createElement('iframe');f.id='frame-'+b.slot_no;f.className='board-frame';f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=286`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
+function ensureFrame(b){let f=document.getElementById('frame-'+b.slot_no);if(!f){const e=$("frames").querySelector('.empty');if(e)e.remove();f=document.createElement('iframe');f.id='frame-'+b.slot_no;f.className='board-frame';f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=287`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
 function activate(slot){const live=activeBoards();if(!live.length){clearTeacherControl();return}const chosen=live.find(b=>b.slot_no===slot)||live[0];activeSlot=chosen.slot_no;live.forEach(b=>ensureFrame(b).classList.toggle('active',b.slot_no===activeSlot));renderTabs();renderCurrent()}
 function clearTeacherControl(){document.querySelectorAll('.board-frame').forEach(f=>f.remove());$("tabs").innerHTML='';$("controlbar").style.display='none';$("frames").innerHTML='<div class="empty">✅ 本場棋局已結束，棋盤與標籤已自動清除；棋譜紀錄仍保留。</div>'}
 function removeEndedFrames(){boards.filter(b=>b.tab_status==='ended').forEach(b=>document.getElementById('frame-'+b.slot_no)?.remove())}
