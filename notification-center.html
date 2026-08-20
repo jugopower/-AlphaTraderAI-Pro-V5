@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2b2117">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<title>Joy Go Beta 3.0｜會員活動通知中心</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#E7DED0;
+  --card:#F3EBDD;
+  --ink:#2F261F;
+  --line:#C8B79F;
+  --title:#D8C7AE;
+  --field:#F8F4EC;
+  --green:#287A50;
+  --red:#B8453D;
+  --gold:#9A6A21;
+  --muted:#746454;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;background:linear-gradient(180deg,#E9E0D3,#E3D8C9);color:var(--ink)}
+header{position:sticky;top:0;z-index:20;background:#2B2117;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;box-shadow:0 2px 12px #0003}
+header h1{margin:0;font-size:21px;flex:1}
+header small{display:block;color:#d8c9b6;margin-top:3px}
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.card{background:var(--card);border:1px solid #CDBDA7;border-radius:16px;overflow:hidden;margin-bottom:15px;box-shadow:0 8px 24px #4B3B2218}
+.card h2{font-size:18px;margin:0;padding:12px 15px;background:var(--title);border-bottom:1px solid #C5B298}
+.body{padding:15px}
+.notice{padding:11px 13px;border-radius:11px;background:#DDD3C2;border:1px solid #C9BAA2;margin-bottom:13px}
+.notice.good{background:#DFE9DD;border-color:#B7C9B5;color:#315A38}
+.notice.bad{background:#F1D9D5;border-color:#D5AAA5;color:#8C302A}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}
+input,select,textarea{width:100%;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:10px;padding:11px;font:inherit}
+textarea{min-height:120px;resize:vertical}
+.full{grid-column:1/-1}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font:inherit;cursor:pointer}
+.primary{background:var(--green);color:#fff}
+.secondary{background:#5D4934;color:#fff}
+.gold{background:var(--gold);color:#fff}
+.ghost{background:var(--field);color:#4D3C2A;border:1px solid var(--line)}
+.danger{background:var(--red);color:#fff}
+.statbar{display:flex;gap:10px;flex-wrap:wrap}
+.stat{padding:9px 12px;border:1px solid var(--line);border-radius:999px;background:#EEE4D5;font-size:13px}
+.item{border:1px solid var(--line);background:#EEE4D5;border-radius:13px;padding:13px;margin-bottom:10px}
+.item.unread{border-left:5px solid var(--green)}
+.item h3{margin:0 0 6px;font-size:17px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.bodytext{white-space:pre-wrap;line-height:1.55}
+.item-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.hidden{display:none!important}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.badge{display:inline-block;padding:3px 7px;border-radius:999px;background:#E5D6BE;font-size:11px;margin-left:5px}
+@media(max-width:760px){
+  .grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  header{align-items:flex-start}
+  header h1{font-size:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>🔔 Joy Go 會員活動通知中心</h1>
+    <small>Beta 3.0｜站內活動通知｜權限分流</small>
+  </div>
+  <button class="ghost" onclick="location.href='index.html'">返回平台</button>
+</header>
+
+<div class="wrap">
+  <div id="status" class="notice">正在連接 Joy Go 會員系統…</div>
+
+  <section id="adminCard" class="card hidden">
+    <h2>發布活動通知</h2>
+    <div class="body">
+      <div class="grid">
+        <div class="full">
+          <label>活動標題</label>
+          <input id="title" maxlength="100" placeholder="例如：第一屆 Joy Go 網路圍棋友誼賽">
+        </div>
+        <div>
+          <label>活動日期時間</label>
+          <input id="eventAt" type="datetime-local">
+        </div>
+        <div>
+          <label>通知對象</label>
+          <select id="audience">
+            <option value="all">全部已註冊會員</option>
+            <option value="member">正式會員</option>
+            <option value="trial">試用會員</option>
+          </select>
+        </div>
+        <div>
+          <label>活動地點／方式</label>
+          <input id="location" maxlength="120" placeholder="例如：Joy Go Platform 線上">
+        </div>
+        <div>
+          <label>報名／活動連結</label>
+          <input id="signupUrl" maxlength="500" placeholder="可留空">
+        </div>
+        <div class="full">
+          <label>活動內容</label>
+          <textarea id="body" maxlength="3000" placeholder="輸入活動辦法、時間、資格、獎勵與注意事項"></textarea>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button id="publishBtn" class="primary">發布給會員</button>
+        <button id="clearBtn" class="ghost">清空內容</button>
+      </div>
+      <div class="meta" style="margin-top:9px">
+        系統只建立站內通知；不會在瀏覽器公開會員 Email。
+      </div>
+    </div>
+  </section>
+
+  <section id="adminListCard" class="card hidden">
+    <h2>最近發布活動</h2>
+    <div class="body">
+      <div id="adminStats" class="statbar"></div>
+      <div id="adminList" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>我的活動通知</h2>
+    <div class="body">
+      <div class="row" style="margin-bottom:12px">
+        <div id="myStats" class="statbar" style="flex:1"></div>
+        <button id="refreshBtn" class="ghost">重新整理</button>
+        <button id="readAllBtn" class="secondary">全部標示已讀</button>
+      </div>
+      <div id="feed"><div class="empty">目前沒有活動通知。</div></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const SUPABASE_URL="https://kpwfkmkxtrwmlxhomaxy.supabase.co";
+const SUPABASE_KEY="sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+});
+const $=id=>document.getElementById(id);
+let session=null;
+let staff=false;
+
+function setStatus(msg,type=""){
+  const el=$("status");
+  el.className="notice"+(type?(" "+type):"");
+  el.textContent=msg;
+}
+function esc(s){
+  return String(s??"")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+function fmt(ts){
+  if(!ts)return "未設定";
+  try{return new Date(ts).toLocaleString("zh-TW",{hour12:false})}catch{return ts}
+}
+function clearForm(){
+  $("title").value="";
+  $("eventAt").value="";
+  $("location").value="";
+  $("signupUrl").value="";
+  $("body").value="";
+  $("audience").value="all";
+}
+
+async function init(){
+  const {data,error}=await sb.auth.getSession();
+  if(error){setStatus("會員服務讀取失敗："+error.message,"bad");return}
+  session=data.session;
+  if(!session){
+    setStatus("請先回 Joy Go 平台登入會員，再進入活動通知中心。","bad");
+    return;
+  }
+
+  const {data:isStaff,error:staffErr}=await sb.rpc("is_joygo_staff");
+  staff=!staffErr && isStaff===true;
+
+  if(staff){
+    $("adminCard").classList.remove("hidden");
+    $("adminListCard").classList.remove("hidden");
+  }
+  setStatus(staff?"✅ 已登入管理員活動通知中心。":"✅ 已登入會員活動通知中心。","good");
+
+  await Promise.all([loadFeed(), staff?loadAdmin():Promise.resolve()]);
+}
+
+async function loadFeed(){
+  const {data,error}=await sb.rpc("joygo_activity_my_feed",{p_limit:50});
+  if(error){
+    $("feed").innerHTML='<div class="empty">讀取失敗：'+esc(error.message)+'</div>';
+    return;
+  }
+  const rows=data||[];
+  const unread=rows.filter(x=>!x.read_at).length;
+  $("myStats").innerHTML=
+    `<div class="stat">共 ${rows.length} 則</div><div class="stat">未讀 ${unread} 則</div>`;
+
+  if(!rows.length){
+    $("feed").innerHTML='<div class="empty">目前沒有活動通知。</div>';
+    return;
+  }
+
+  $("feed").innerHTML=rows.map(x=>{
+    const link=x.signup_url?`<button class="gold" onclick="window.open('${esc(x.signup_url)}','_blank','noopener')">活動／報名連結</button>`:"";
+    const read=x.read_at
+      ? `<span class="badge">已讀</span>`
+      : `<button class="primary" onclick="markRead('${x.notification_id}')">標示已讀</button>`;
+    return `
+      <article class="item ${x.read_at?"":"unread"}">
+        <h3>${esc(x.title)} ${x.read_at?'<span class="badge">已讀</span>':'<span class="badge">未讀</span>'}</h3>
+        <div class="meta">
+          活動：${esc(fmt(x.event_at))}　
+          地點：${esc(x.location||"未設定")}　
+          發布：${esc(fmt(x.published_at))}
+        </div>
+        <div class="bodytext">${esc(x.body)}</div>
+        <div class="item-actions">${link}${read}</div>
+      </article>`;
+  }).join("");
+}
+
+async function markRead(id){
+  const {error}=await sb.rpc("joygo_activity_mark_read",{p_notification_id:id});
+  if(error){setStatus("標示已讀失敗："+error.message,"bad");return}
+  await loadFeed();
+}
+window.markRead=markRead;
+
+async function markAllRead(){
+  const {error}=await sb.rpc("joygo_activity_mark_all_read");
+  if(error){setStatus("全部標示已讀失敗："+error.message,"bad");return}
+  setStatus("✅ 已全部標示為已讀。","good");
+  await loadFeed();
+}
+
+async function publish(){
+  const title=$("title").value.trim();
+  const body=$("body").value.trim();
+  if(!title)return setStatus("請輸入活動標題。","bad");
+  if(!body)return setStatus("請輸入活動內容。","bad");
+
+  $("publishBtn").disabled=true;
+  setStatus("正在發布活動通知…");
+
+  const eventAt=$("eventAt").value
+    ? new Date($("eventAt").value).toISOString()
+    : null;
+
+  const {data,error}=await sb.rpc("joygo_activity_publish",{
+    p_title:title,
+    p_body:body,
+    p_event_at:eventAt,
+    p_location:$("location").value.trim()||null,
+    p_signup_url:$("signupUrl").value.trim()||null,
+    p_audience:$("audience").value
+  });
+
+  $("publishBtn").disabled=false;
+
+  if(error){
+    setStatus("發布失敗："+error.message,"bad");
+    return;
+  }
+
+  const row=Array.isArray(data)?data[0]:data;
+  setStatus(`✅ 發布成功，共通知 ${row?.recipient_count??0} 位會員。`,"good");
+  clearForm();
+  await Promise.all([loadAdmin(),loadFeed()]);
+}
+
+async function loadAdmin(){
+  const {data,error}=await sb.rpc("joygo_activity_admin_list",{p_limit:30});
+  if(error){
+    $("adminList").innerHTML='<div class="empty">管理列表讀取失敗：'+esc(error.message)+'</div>';
+    return;
+  }
+  const rows=data||[];
+  const recipients=rows.reduce((n,x)=>n+Number(x.recipient_count||0),0);
+  $("adminStats").innerHTML=
+    `<div class="stat">最近 ${rows.length} 場活動</div><div class="stat">通知人次 ${recipients}</div>`;
+
+  if(!rows.length){
+    $("adminList").innerHTML='<div class="empty">尚未發布活動。</div>';
+    return;
+  }
+
+  $("adminList").innerHTML=rows.map(x=>`
+    <article class="item">
+      <h3>${esc(x.title)}</h3>
+      <div class="meta">
+        對象：${esc(x.audience_label)}　
+        收件：${x.recipient_count}　
+        已讀：${x.read_count}　
+        發布：${esc(fmt(x.published_at))}
+      </div>
+      <div class="bodytext">${esc(x.body)}</div>
+    </article>
+  `).join("");
+}
+
+$("publishBtn").addEventListener("click",publish);
+$("clearBtn").addEventListener("click",clearForm);
+$("refreshBtn").addEventListener("click",loadFeed);
+$("readAllBtn").addEventListener("click",markAllRead);
+
+init();
+</script>
+</body>
+</html>
