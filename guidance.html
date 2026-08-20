@@ -3,6 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self' https://kpwfkmkxtrwmlxhomaxy.supabase.co wss://kpwfkmkxtrwmlxhomaxy.supabase.co;
+  frame-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  font-src 'self' data:;
+  upgrade-insecure-requests
+">
+<meta name="joygo-security-version" content="2.9.0">
+
 <title>Joy Go｜多人線上指導棋</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -17,13 +34,23 @@ header{position:sticky;top:0;z-index:50;background:#2b2117;color:#fff;padding:12
 .controlbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}.current{font-weight:800;flex:1}.board-frame{width:100%;height:760px;border:1px solid #bda984;border-radius:14px;background:white;display:none}.board-frame.active{display:block}.empty{padding:36px;text-align:center;color:#796a58}.session-list{display:flex;gap:8px;flex-wrap:wrap}.session-chip{padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:white;cursor:pointer}.small{font-size:12px;color:#7e6c58}
 @media(max-width:900px){.formgrid{grid-template-columns:1fr 1fr}.board-frame{height:700px}}@media(max-width:560px){.formgrid{grid-template-columns:1fr}.tab{min-width:132px}.board-frame{height:650px}header h1{font-size:17px}}
 </style>
+
+<style id="joygoGuidanceSecurity290">
+.security-note{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-left:6px;padding:4px 8px;border-radius:999px;
+  background:#e5f4e9;color:#1d653d;border:1px solid #a9d4b7;
+  font-size:11px;font-weight:800;
+}
+</style>
+
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.8.8｜書籤式 1 對 1～1 對 5｜未完棋局保留修正</div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.0｜書籤式 1 對 1～1 對 5｜資安強化版 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
-<label>名稱 <input id="title" value="朱老師線上指導棋"></label><label>人數 <select id="studentCount"><option value="1">1 對 1</option><option value="2">1 對 2</option><option value="3">1 對 3</option><option value="4">1 對 4</option><option value="5">1 對 5</option></select></label>
+<label>名稱 <input id="title" value="朱老師線上指導棋" maxlength="80"></label><label>人數 <select id="studentCount"><option value="1">1 對 1</option><option value="2">1 對 2</option><option value="3">1 對 3</option><option value="4">1 對 4</option><option value="5">1 對 5</option></select></label>
 <label>基本時間(分) <input id="mainMin" type="number" value="20" min="0" style="width:80px"></label><label>讀秒(秒) <input id="byoSec" type="number" value="30" min="5" style="width:76px"></label><label>次數 <input id="byoPeriods" type="number" value="3" min="1" style="width:60px"></label></div>
 <div id="studentRows" class="formgrid"></div><div class="toolbar" style="margin-top:12px"><button id="createBtn" class="btn green">建立指導棋</button><span class="small">老師固定執白；學生執黑。讓 2～9 子會自動放置標準讓子。</span></div></div></section>
 <section class="card"><h2>進行中的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:10px"><button id="cleanupBtn" class="btn ghost">清理舊場次</button><span class="small">只顯示真正近期進行中的場次；舊測試場次只封存、不刪棋譜。</span></div><div id="sessions" class="session-list">讀取中…</div></div></section>
@@ -34,9 +61,14 @@ const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0D
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const $=id=>document.getElementById(id);let me=null,profiles=[],currentSession="",boards=[],activeSlot=1,roomChannel=null;
 function notice(t,k=""){const n=$("notice");n.textContent=t;n.className="notice"+(k?" "+k:"")}function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function profileOptions(sel=""){return '<option value="">選擇學生</option>'+profiles.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.display_name||'會員')}</option>`).join('')}
-function renderStudentRows(){const n=Number($("studentCount").value||1),box=$("studentRows");const old=[...box.querySelectorAll('.student-row')].map(r=>({id:r.querySelector('.student')?.value||'',rank:r.querySelector('.rank')?.value||'',h:r.querySelector('.handicap')?.value||'0'}));box.innerHTML='';for(let i=0;i<n;i++){const d=document.createElement('div');d.className='student-row';d.innerHTML=`<b>學生 ${i+1}</b><select class="student">${profileOptions(old[i]?.id||'')}</select><input class="rank" placeholder="棋力，例如 3段" value="${esc(old[i]?.rank||'')}"><select class="handicap"><option value="0">分先</option>${[2,3,4,5,6,7,8,9].map(x=>`<option value="${x}" ${String(x)===old[i]?.h?'selected':''}>讓 ${x} 子</option>`).join('')}</select>`;box.appendChild(d)}}
+function renderStudentRows(){const n=Number($("studentCount").value||1),box=$("studentRows");const old=[...box.querySelectorAll('.student-row')].map(r=>({id:r.querySelector('.student')?.value||'',rank:r.querySelector('.rank')?.value||'',h:r.querySelector('.handicap')?.value||'0'}));box.innerHTML='';for(let i=0;i<n;i++){const d=document.createElement('div');d.className='student-row';d.innerHTML=`<b>學生 ${i+1}</b><select class="student">${profileOptions(old[i]?.id||'')}</select><input class="rank" placeholder="棋力，例如 3段" maxlength="20" value="${esc(old[i]?.rank||'')}"><select class="handicap"><option value="0">分先</option>${[2,3,4,5,6,7,8,9].map(x=>`<option value="${x}" ${String(x)===old[i]?.h?'selected':''}>讓 ${x} 子</option>`).join('')}</select>`;box.appendChild(d)}}
 $("studentCount").onchange=renderStudentRows;
-async function loadProfiles(){const {data,error}=await sb.from('profiles').select('id,display_name,role,status').order('display_name');if(error)throw error;profiles=(data||[]).filter(p=>p.id!==me.id&&String(p.status||'').toLowerCase()!=='suspended');renderStudentRows()}
+async function loadProfiles(){
+  const {data,error}=await sb.rpc('joygo_guidance_student_directory');
+  if(error)throw error;
+  profiles=(data||[]).filter(p=>p.id!==me.id);
+  renderStudentRows();
+}
 async function loadSessions(){
   const {data,error}=await sb.rpc('joygo_guidance_live_sessions');
   if(error){$("sessions").textContent='讀取失敗：'+error.message;return}
@@ -67,7 +99,10 @@ function normalizeBoards(rows){
 }
 
 function renderTabs(){const live=activeBoards();$("tabs").innerHTML=live.map(b=>`<button class="tab ${b.slot_no===activeSlot?'active':''} ${b.tab_status==='waiting_teacher'?'wait-teacher':''}" data-slot="${b.slot_no}"><div class="tab-name">${esc(b.student_name)} ${esc(b.student_rank||'')}</div><div class="tab-meta">${tabLabel(b)}｜${b.handicap?`讓${b.handicap}子`:'分先'}｜${esc(b.room_code)}</div></button>`).join('');document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>activate(Number(t.dataset.slot)))}
-function ensureFrame(b){let f=document.getElementById('frame-'+b.slot_no);if(!f){const e=$("frames").querySelector('.empty');if(e)e.remove();f=document.createElement('iframe');f.id='frame-'+b.slot_no;f.className='board-frame';f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=288`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
+function ensureFrame(b){let f=document.getElementById('frame-'+b.slot_no);if(!f){const e=$("frames").querySelector('.empty');if(e)e.remove();f=document.createElement('iframe');f.id='frame-'+b.slot_no;f.className='board-frame';
+f.referrerPolicy='no-referrer';
+f.setAttribute('allow','clipboard-write');
+f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=290`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
 function activate(slot){const live=activeBoards();if(!live.length){clearTeacherControl();return}const chosen=live.find(b=>b.slot_no===slot)||live[0];activeSlot=chosen.slot_no;live.forEach(b=>ensureFrame(b).classList.toggle('active',b.slot_no===activeSlot));renderTabs();renderCurrent()}
 function clearTeacherControl(){document.querySelectorAll('.board-frame').forEach(f=>f.remove());$("tabs").innerHTML='';$("controlbar").style.display='none';$("frames").innerHTML='<div class="empty">✅ 本場棋局已結束，棋盤與標籤已自動清除；棋譜紀錄仍保留。</div>'}
 function removeEndedFrames(){boards.filter(b=>b.room_status==='ended').forEach(b=>document.getElementById('frame-'+b.slot_no)?.remove())}
@@ -133,6 +168,6 @@ async function cleanupOldSessions(){
   notice((a+b)>0?`✅ 已封存 ${a} 個舊場次、清除 ${b} 個 0 盤空場次；棋譜均保留。`:'✅ 目前沒有需要清理的舊場次。','good')
 }
 $("cleanupBtn").onclick=cleanupOldSessions;
-async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session)return notice('請先回 Joy Go Platform 登入主管理員帳號。','bad');me=data.session.user;const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');if(ae)return notice('無法檢查管理權限：'+ae.message,'bad');const a=Array.isArray(access)?access[0]:access;if(!a||a.staff_role==='none')return notice('目前 Beta 2.7.2 只開放主管理員／工作人員使用。','bad');await loadProfiles();await loadSessions();notice('✅ 多人指導棋系統已就緒。','good')}catch(e){notice('初始化失敗：'+(e.message||e),'bad')}}
+async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session)return notice('請先回 Joy Go Platform 登入主管理員帳號。','bad');me=data.session.user;const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');if(ae)return notice('無法檢查管理權限：'+ae.message,'bad');const a=Array.isArray(access)?access[0]:access;if(!a||a.staff_role==='none')return notice('此頁只開放授權工作人員使用。','bad');await loadProfiles();await loadSessions();notice('✅ 多人指導棋系統已就緒。','good')}catch(e){notice('初始化失敗：'+(e.message||e),'bad')}}
 init();setInterval(()=>refreshSession(false),5000);
 </script></body></html>

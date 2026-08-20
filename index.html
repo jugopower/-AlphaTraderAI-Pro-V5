@@ -4,6 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#120c08">
+
+<!-- Joy Go Platform Beta 2.9.0 Security Baseline -->
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://alphatrader-katago-server-v2.onrender.com;
+  frame-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  font-src 'self' data:;
+  media-src 'self' data: blob:;
+  worker-src 'self' blob:;
+  upgrade-insecure-requests
+">
+<meta name="joygo-security-version" content="2.9.0">
+
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
 <title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
@@ -3625,8 +3645,22 @@ html[data-joygo-guidance="1"] #gameActionRow{
 }
 </style>
 
+
+<style id="joygoSecurity290Style">
+#joygoSecurityBadge{
+  position:fixed;left:10px;bottom:10px;z-index:10060;
+  padding:6px 9px;border-radius:999px;
+  border:1px solid #4b8a63;background:#10251aee;color:#bff0ce;
+  font-size:10px;font-weight:800;pointer-events:none;
+  box-shadow:0 3px 12px #0008;
+}
+#memberConfigPanel{display:none!important}
+</style>
+
 </head>
 <body>
+<div id="joygoSecurityBadge">🔒 Beta 2.9.0 資安強化</div>
+
 
 <script id="joygoGuidanceEmbed275Boot">
 (()=>{
@@ -4510,7 +4544,7 @@ function getApiSettings(){
   if(url!==saved)localStorage.setItem("katagoApiUrl",url);
   return {
     url,
-    key:localStorage.getItem("katagoApiKey")||"",
+    key:sessionStorage.getItem("katagoApiKey")||"",
     authMode:localStorage.getItem("katagoAuthMode")||"bearer",
     visits:Number(localStorage.getItem("katagoVisits")||500),
     rules:localStorage.getItem("katagoRules")||"japanese",
@@ -4521,7 +4555,7 @@ function getApiSettings(){
 
 function saveApiSettings(){
   localStorage.setItem("katagoApiUrl",($("apiUrl").value.trim()||"https://alphatrader-katago-server-v2.onrender.com/analyze"));
-  localStorage.setItem("katagoApiKey",$("apiKey").value);
+  sessionStorage.setItem("katagoApiKey",$("apiKey").value);
   localStorage.setItem("katagoAuthMode",$("apiAuthMode").value);
   localStorage.setItem("katagoVisits",$("apiVisits").value);
   localStorage.setItem("katagoRules",$("apiRules").value);
@@ -6053,6 +6087,13 @@ function memberSetStatus(text,type=""){
   el.textContent=text;
 }
 function memberLoadConfig(){
+  const production=/\.github\.io$/i.test(location.hostname);
+  if(production){
+    const config={...MEMBER_DEFAULT_CONFIG};
+    if($("memberSupabaseUrl"))$("memberSupabaseUrl").value=config.url;
+    if($("memberSupabaseKey"))$("memberSupabaseKey").value=config.key;
+    return config;
+  }
   try{
     const c=JSON.parse(localStorage.getItem(MEMBER_CONFIG_KEY)||"{}");
     const config={
@@ -6065,6 +6106,10 @@ function memberLoadConfig(){
   }catch{return {...MEMBER_DEFAULT_CONFIG}}
 }
 function memberSaveConfig(){
+  if(/\.github\.io$/i.test(location.hostname)){
+    memberSetStatus("🔒 正式版已鎖定 Joy Go Supabase 專案，不允許在瀏覽器中更換。","ok");
+    return;
+  }
   const url=String($("memberSupabaseUrl")?.value||"").trim();
   const key=String($("memberSupabaseKey")?.value||"").trim();
   if(!/^https:\/\/.+\.supabase\.co\/?$/.test(url)){memberSetStatus("Supabase Project URL 格式不正確。","bad");return}
@@ -9556,6 +9601,22 @@ document.addEventListener("DOMContentLoaded",()=>{
   else apply();
   setTimeout(apply,250);
   setTimeout(apply,1000);
+})();
+</script>
+
+
+<script id="joygoSecurity290Boot">
+(()=>{
+  "use strict";
+  const harden=()=>{
+    document.querySelectorAll('a[target="_blank"]').forEach(a=>{
+      const rel=new Set(String(a.rel||"").split(/\s+/).filter(Boolean));
+      rel.add("noopener"); rel.add("noreferrer");
+      a.rel=[...rel].join(" ");
+    });
+  };
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",harden,{once:true});
+  else harden();
 })();
 </script>
 
