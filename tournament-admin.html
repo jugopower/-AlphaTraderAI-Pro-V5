@@ -12,7 +12,7 @@
 </head>
 <body>
 <main class="shell">
-<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.2b｜瑞士制重複輪空修正版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
+<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.2c｜輪空＋避免重複對手最佳化版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
 <nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="control">🎛️ 比賽總控</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="swiss">♟️ 瑞士制</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="broadcast">📢 廣播</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
@@ -436,38 +436,18 @@ function swissByeCount(playerId){
     String(g.result||"").toUpperCase()==="BYE"
   ).length;
 }
-function chooseSwissByePlayer(arr){
-  if(arr.length%2===0)return null;
 
-  // 排名資料 arr 已由高到低排列。
-  // 輪空優先規則：
-  // 1. 輪空次數最少
-  // 2. 同次數時，排名較後者優先（由陣列尾端挑）
-  let best=null;
-  for(let i=arr.length-1;i>=0;i--){
-    const p=arr[i];
-    const count=swissByeCount(p.id);
-    if(!best || count<best.count){
-      best={player:p,count,index:i};
-    }
-  }
-  return best?.player||null;
+function swissPairPenalty(a,b,opponents){
+  const rematch=opponents.get(Number(a.id))?.has(Number(b.id))?100000:0;
+  const score=Math.abs(Number(a.points||0)-Number(b.points||0))*1000;
+  const buch=Math.abs(Number(a.buchholz||0)-Number(b.buchholz||0))*10;
+  return rematch+score+buch;
 }
-function makeSwissPairs(){
-  const arr=swissSortedPlayers();
-  const opponents=opponentSet();
+
+function buildPairsForPlayers(players,opponents){
+  const arr=[...players];
   const used=new Set(), pairs=[];
-
-  // 奇數人時先決定本輪輪空者，避免最後剩下誰就讓誰輪空。
-  const byePlayer=chooseSwissByePlayer(arr);
-  if(byePlayer)used.add(Number(byePlayer.id));
-
-  function penalty(a,b){
-    const rematch=opponents.get(Number(a.id))?.has(Number(b.id))?100000:0;
-    const score=Math.abs(Number(a.points||0)-Number(b.points||0))*1000;
-    const buch=Math.abs(Number(a.buchholz||0)-Number(b.buchholz||0))*10;
-    return rematch+score+buch;
-  }
+  let rematchCount=0, totalPenalty=0;
 
   for(let board=1;board<=Math.floor(arr.length/2);board++){
     const a=arr.find(p=>!used.has(Number(p.id)));
@@ -476,11 +456,23 @@ function makeSwissPairs(){
 
     const candidates=arr
       .filter(p=>!used.has(Number(p.id)))
-      .sort((x,y)=>penalty(a,x)-penalty(a,y));
+      .map(p=>({
+        p,
+        rematch:opponents.get(Number(a.id))?.has(Number(p.id))?1:0,
+        penalty:swissPairPenalty(a,p,opponents)
+      }))
+      .sort((x,y)=>
+        x.rematch-y.rematch ||
+        x.penalty-y.penalty
+      );
 
-    const b=candidates[0];
-    if(!b)break;
+    const picked=candidates[0];
+    if(!picked)break;
+
+    const b=picked.p;
     used.add(Number(b.id));
+    rematchCount+=picked.rematch;
+    totalPenalty+=picked.penalty;
 
     const [black,white]=chooseColors(a,b,board);
     pairs.push({
@@ -490,13 +482,55 @@ function makeSwissPairs(){
     });
   }
 
-  if(byePlayer){
+  return {pairs,rematchCount,totalPenalty};
+}
+
+function chooseSwissRoundPlan(arr){
+  const opponents=opponentSet();
+
+  if(arr.length%2===0){
+    const built=buildPairsForPlayers(arr,opponents);
+    return {...built,byePlayer:null,byeCount:0,byeRankPenalty:0};
+  }
+
+  const plans=[];
+
+  for(let i=0;i<arr.length;i++){
+    const byePlayer=arr[i];
+    const remaining=arr.filter(p=>Number(p.id)!==Number(byePlayer.id));
+    const built=buildPairsForPlayers(remaining,opponents);
+
+    plans.push({
+      ...built,
+      byePlayer,
+      byeCount:swissByeCount(byePlayer.id),
+      byeRankPenalty:(arr.length-1-i)
+    });
+  }
+
+  plans.sort((a,b)=>
+    a.rematchCount-b.rematchCount ||
+    a.byeCount-b.byeCount ||
+    a.totalPenalty-b.totalPenalty ||
+    a.byeRankPenalty-b.byeRankPenalty
+  );
+
+  return plans[0];
+}
+
+function makeSwissPairs(){
+  const arr=swissSortedPlayers();
+  const plan=chooseSwissRoundPlan(arr);
+  const pairs=[...plan.pairs];
+
+  if(plan.byePlayer){
     pairs.push({
       board_no:pairs.length+1,
-      black_player_id:Number(byePlayer.id),
+      black_player_id:Number(plan.byePlayer.id),
       white_player_id:null
     });
   }
+
   return pairs;
 }
 async function generateSwissRound(){
@@ -515,7 +549,10 @@ async function generateSwissRound(){
   const byePair=pairs.find(x=>!x.white_player_id);
   const byeP=byePair?swissPlayer(byePair.black_player_id):null;
   const byeInfo=byeP?`\n輪空：${byeP.player_name}（過去輪空 ${swissByeCount(byeP.id)} 次）`:"";
-  const msg=`確定產生第 ${next} 輪？\n共 ${pairs.length} 桌${byeInfo}${hasRepeat?"\n⚠️ 因配對限制，本輪可能出現重複對手。":""}`;
+  const repeatInfo=hasRepeat
+    ?"\n⚠️ 已做最佳化，但目前條件仍可能出現重複對手。"
+    :"\n✅ 本輪已找到無重複對手的配對。";
+  const msg=`確定產生第 ${next} 輪？\n共 ${pairs.length} 桌${byeInfo}${repeatInfo}`;
   if(!confirm(msg))return;
   const {error}=await sb.rpc("joygo_swiss_create_round",{
     p_tournament_code:CODE,p_round_no:next,p_pairings:pairs
