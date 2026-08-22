@@ -15,7 +15,7 @@
   base-uri 'self';
   form-action 'self';
 ">
-<title>Joy Go Beta 3.0｜會員活動通知中心</title>
+<title>Joy Go Beta 3.0.2｜會員活動通知中心</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -77,7 +77,7 @@ button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font:inheri
 <header>
   <div>
     <h1>🔔 Joy Go 會員活動通知中心</h1>
-    <small>Beta 3.0｜站內活動通知｜權限分流</small>
+    <small>Beta 3.0.2｜站內通知＋收回／刪除＋會員 Email</small>
   </div>
   <button class="ghost" onclick="location.href='index.html'">返回平台</button>
 </header>
@@ -119,12 +119,18 @@ button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font:inheri
         </div>
       </div>
 
+      <div class="notice" style="margin-top:12px">
+        <label style="display:flex;align-items:center;gap:9px;margin:0;cursor:pointer">
+          <input id="sendEmail" type="checkbox" checked style="width:20px;height:20px">
+          <span><b>同時寄送 Email</b>：寄到會員註冊信箱；Email 地址不會顯示在前端。</span>
+        </label>
+      </div>
       <div class="row" style="margin-top:12px">
         <button id="publishBtn" class="primary">發布給會員</button>
         <button id="clearBtn" class="ghost">清空內容</button>
       </div>
       <div class="meta" style="margin-top:9px">
-        系統只建立站內通知；不會在瀏覽器公開會員 Email。
+        先建立站內通知，再由 Supabase Edge Function 安全寄送 Email；寄信金鑰不會放在瀏覽器。
       </div>
     </div>
   </section>
@@ -283,39 +289,113 @@ async function publish(){
   }
 
   const row=Array.isArray(data)?data[0]:data;
-  setStatus(`✅ 發布成功，共通知 ${row?.recipient_count??0} 位會員。`,"good");
+  const recipientCount=row?.recipient_count??0;
+  const activityId=row?.activity_id;
+
+  if($("sendEmail").checked && activityId){
+    setStatus(`✅ 站內通知已發布 ${recipientCount} 位會員；正在寄送 Email…`,"good");
+    try{
+      const {data:{session:mailSession}}=await sb.auth.getSession();
+      const resp=await fetch(
+        SUPABASE_URL+"/functions/v1/joygo-send-activity-email",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+mailSession.access_token
+          },
+          body:JSON.stringify({activity_id:activityId})
+        }
+      );
+      const mailResult=await resp.json().catch(()=>({}));
+      if(!resp.ok){
+        setStatus(
+          `✅ 站內通知已發布 ${recipientCount} 位；⚠️ Email 尚未完成：${mailResult.error||"寄信服務錯誤"}`,
+          "bad"
+        );
+      }else{
+        setStatus(
+          `✅ 發布完成：站內 ${recipientCount} 位，Email 成功 ${mailResult.sent_count??0} 封，失敗 ${mailResult.failed_count??0} 封。`,
+          (mailResult.failed_count??0)>0?"bad":"good"
+        );
+      }
+    }catch(e){
+      setStatus(
+        `✅ 站內通知已發布 ${recipientCount} 位；⚠️ Email 寄送連線失敗：${e.message}`,
+        "bad"
+      );
+    }
+  }else{
+    setStatus(`✅ 站內通知發布成功，共通知 ${recipientCount} 位會員。`,"good");
+  }
+
   clearForm();
   await Promise.all([loadAdmin(),loadFeed()]);
 }
 
+async function retractActivity(id,title){
+  if(!confirm(`確定要收回「${title}」嗎？\n\n收回後會員端將立即看不到這則通知，但管理員仍可保留紀錄。`)) return;
+  setStatus("正在收回通知…");
+  const {data,error}=await sb.rpc("joygo_activity_retract",{p_activity_id:id});
+  if(error){setStatus("收回失敗："+error.message,"bad");return}
+  if(data!==true){setStatus("這則通知可能已收回，或您沒有權限。","bad");return}
+  setStatus("✅ 通知已收回，會員端不再顯示。","good");
+  await Promise.all([loadAdmin(),loadFeed()]);
+}
+window.retractActivity=retractActivity;
+
+async function deleteActivity(id,title){
+  if(!confirm(`⚠️ 確定永久刪除「${title}」嗎？\n\n此動作會同時刪除該活動的會員通知與 Email 寄送紀錄，而且無法復原。`)) return;
+  setStatus("正在永久刪除通知…");
+  const {data,error}=await sb.rpc("joygo_activity_delete",{p_activity_id:id});
+  if(error){setStatus("刪除失敗："+error.message,"bad");return}
+  if(data!==true){setStatus("找不到可刪除的通知，或您沒有權限。","bad");return}
+  setStatus("✅ 通知已永久刪除。","good");
+  await Promise.all([loadAdmin(),loadFeed()]);
+}
+window.deleteActivity=deleteActivity;
+
 async function loadAdmin(){
-  const {data,error}=await sb.rpc("joygo_activity_admin_list",{p_limit:30});
+  const {data,error}=await sb.rpc("joygo_activity_admin_list_v2",{p_limit:30});
   if(error){
     $("adminList").innerHTML='<div class="empty">管理列表讀取失敗：'+esc(error.message)+'</div>';
     return;
   }
   const rows=data||[];
   const recipients=rows.reduce((n,x)=>n+Number(x.recipient_count||0),0);
+  const active=rows.filter(x=>x.status==='published').length;
+  const recalled=rows.filter(x=>x.status==='cancelled').length;
   $("adminStats").innerHTML=
-    `<div class="stat">最近 ${rows.length} 場活動</div><div class="stat">通知人次 ${recipients}</div>`;
+    `<div class="stat">最近 ${rows.length} 場</div><div class="stat">有效 ${active}</div><div class="stat">已收回 ${recalled}</div><div class="stat">通知人次 ${recipients}</div>`;
 
   if(!rows.length){
     $("adminList").innerHTML='<div class="empty">尚未發布活動。</div>';
     return;
   }
 
-  $("adminList").innerHTML=rows.map(x=>`
-    <article class="item">
-      <h3>${esc(x.title)}</h3>
-      <div class="meta">
-        對象：${esc(x.audience_label)}　
-        收件：${x.recipient_count}　
-        已讀：${x.read_count}　
-        發布：${esc(fmt(x.published_at))}
-      </div>
-      <div class="bodytext">${esc(x.body)}</div>
-    </article>
-  `).join("");
+  $("adminList").innerHTML=rows.map(x=>{
+    const statusBadge=x.status==='published'
+      ? '<span class="badge">發布中</span>'
+      : x.status==='cancelled'
+        ? '<span class="badge">已收回</span>'
+        : '<span class="badge">已封存</span>';
+    const recallBtn=x.status==='published'
+      ? `<button class="gold" onclick='retractActivity(${JSON.stringify(x.activity_id)},${JSON.stringify(x.title)})'>收回</button>`
+      : '';
+    const deleteBtn=`<button class="danger" onclick='deleteActivity(${JSON.stringify(x.activity_id)},${JSON.stringify(x.title)})'>永久刪除</button>`;
+    return `
+      <article class="item">
+        <h3>${esc(x.title)} ${statusBadge}</h3>
+        <div class="meta">
+          對象：${esc(x.audience_label)}　
+          收件：${x.recipient_count}　
+          已讀：${x.read_count}　
+          發布：${esc(fmt(x.published_at))}
+        </div>
+        <div class="bodytext">${esc(x.body)}</div>
+        <div class="item-actions">${recallBtn}${deleteBtn}</div>
+      </article>`;
+  }).join("");
 }
 
 $("publishBtn").addEventListener("click",publish);
