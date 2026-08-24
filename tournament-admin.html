@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Joy Go 管理中心 Beta 3.2.3</title>
+<title>Joy Go 管理中心 Beta 3.2.4</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff;--amber:#e9bf61}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}button,input,select{font:inherit}.shell{width:min(1280px,100%);margin:auto;padding:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.brand h1{margin:0;color:var(--gold2);font-size:clamp(27px,4vw,42px)}.brand p{margin:5px 0 0;color:var(--muted)}.head-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}.btn.green{border:0;background:var(--green);color:#082317}.btn.red{border:0;background:var(--red);color:#3b0808}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.tab{border:1px solid var(--line);border-radius:14px;padding:12px 8px;background:#0b1510;color:var(--muted);font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(155deg,#2c3b1f,#17231a);color:var(--gold2);border-color:#8d7432}.pane{display:none}.pane.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.card-body{padding:14px}.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar input{flex:1;min-width:0;background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}.blue{background:#163d54;color:#a8ddff}.rowops{display:flex;gap:5px;flex-wrap:wrap}.mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.mini.save,.mini.approve{background:var(--green);color:#082317}.mini.wait{background:var(--blue);color:#092337}.mini.reject{background:var(--red);color:#3b0808}.mini.neutral{background:#d9bb76;color:#2d2008}.field{display:grid;gap:6px}.field label{color:var(--muted);font-size:12px}.field input,.field select{width:100%;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.room-list{display:grid;gap:8px}.room{border:1px solid #2f4638;border-radius:13px;padding:11px;background:#0a110d;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.05fr;gap:8px;align-items:center}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.quick a{border:1px solid var(--line);border-radius:15px;padding:16px;background:#0b1510;text-decoration:none;color:var(--ink);font-weight:900}.quick a span{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:5px}.muted{color:var(--muted)}@media(max-width:850px){.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.grid,.formgrid{grid-template-columns:1fr}.room{grid-template-columns:1fr 1fr}.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}}
@@ -16,7 +16,7 @@
 </head>
 <body>
 <main class="shell">
-<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.3｜瑞士制比賽代碼切換版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
+<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.4｜瑞士制重複對手防止修正版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
 <div class="tournament-switch" id="tournamentSwitchBox">
@@ -479,83 +479,81 @@ function swissByeCount(playerId){
 }
 
 function swissPairPenalty(a,b,opponents){
-  const rematch=opponents.get(Number(a.id))?.has(Number(b.id))?100000:0;
-  const score=Math.abs(Number(a.points||0)-Number(b.points||0))*1000;
-  const buch=Math.abs(Number(a.buchholz||0)-Number(b.buchholz||0))*10;
-  return rematch+score+buch;
+  const rematch=opponents.get(Number(a.id))?.has(Number(b.id))?1:0;
+  const score=Math.abs(Number(a.points||0)-Number(b.points||0));
+  const buch=Math.abs(Number(a.buchholz||0)-Number(b.buchholz||0));
+  // 重複對手是絕對高優先級；只要存在無重複完整配對，就不會選重複。
+  return rematch*1000000000 + score*1000000 + buch*1000 + Math.abs(Number(a.seed||0)-Number(b.seed||0));
 }
 
-function buildPairsForPlayers(players,opponents){
+function buildOptimalPairsForPlayers(players,opponents){
   const arr=[...players];
-  const used=new Set(), pairs=[];
-  let rematchCount=0, totalPenalty=0;
+  const n=arr.length;
+  if(n===0)return {pairs:[],rematchCount:0,totalPenalty:0};
+  if(n%2!==0)return {pairs:[],rematchCount:999,totalPenalty:Number.POSITIVE_INFINITY};
 
-  for(let board=1;board<=Math.floor(arr.length/2);board++){
-    const a=arr.find(p=>!used.has(Number(p.id)));
-    if(!a)break;
-    used.add(Number(a.id));
-
-    const candidates=arr
-      .filter(p=>!used.has(Number(p.id)))
-      .map(p=>({
-        p,
-        rematch:opponents.get(Number(a.id))?.has(Number(p.id))?1:0,
-        penalty:swissPairPenalty(a,p,opponents)
-      }))
-      .sort((x,y)=>
-        x.rematch-y.rematch ||
-        x.penalty-y.penalty
-      );
-
-    const picked=candidates[0];
-    if(!picked)break;
-
-    const b=picked.p;
-    used.add(Number(b.id));
-    rematchCount+=picked.rematch;
-    totalPenalty+=picked.penalty;
-
-    const [black,white]=chooseColors(a,b,board);
-    pairs.push({
-      board_no:board,
-      black_player_id:Number(black.id),
-      white_player_id:Number(white.id)
-    });
+  // n<=16，使用 bitmask + memo 找整輪全域最佳配對，避免舊版逐桌貪婪造成「明明可避開卻重複」。
+  const fullMask=(1<<n)-1;
+  const memo=new Map();
+  function solve(mask){
+    if(mask===0)return {cost:0,rematches:0,indexPairs:[]};
+    if(memo.has(mask))return memo.get(mask);
+    let i=0;
+    while(i<n && !(mask&(1<<i)))i++;
+    let best=null;
+    const restWithoutI=mask&~(1<<i);
+    const candidates=[];
+    for(let j=i+1;j<n;j++){
+      if(!(restWithoutI&(1<<j)))continue;
+      const rematch=opponents.get(Number(arr[i].id))?.has(Number(arr[j].id))?1:0;
+      candidates.push({j,rematch,penalty:swissPairPenalty(arr[i],arr[j],opponents)});
+    }
+    candidates.sort((a,b)=>a.rematch-b.rematch || a.penalty-b.penalty);
+    for(const c of candidates){
+      const sub=solve(restWithoutI&~(1<<c.j));
+      if(!sub)continue;
+      const candidate={
+        cost:c.penalty+sub.cost,
+        rematches:c.rematch+sub.rematches,
+        indexPairs:[[i,c.j],...sub.indexPairs]
+      };
+      if(!best || candidate.rematches<best.rematches ||
+         (candidate.rematches===best.rematches && candidate.cost<best.cost)) best=candidate;
+      // 已找到 0 重複時仍比較同層其他候選的同分品質，但 memo 會保持 iPad 可接受的速度。
+    }
+    memo.set(mask,best);
+    return best;
   }
 
-  return {pairs,rematchCount,totalPenalty};
+  const solved=solve(fullMask);
+  if(!solved)return {pairs:[],rematchCount:999,totalPenalty:Number.POSITIVE_INFINITY};
+  const pairs=solved.indexPairs.map(([i,j],k)=>{
+    const [black,white]=chooseColors(arr[i],arr[j],k+1);
+    return {board_no:k+1,black_player_id:Number(black.id),white_player_id:Number(white.id)};
+  });
+  return {pairs,rematchCount:solved.rematches,totalPenalty:solved.cost};
 }
 
 function chooseSwissRoundPlan(arr){
   const opponents=opponentSet();
-
   if(arr.length%2===0){
-    const built=buildPairsForPlayers(arr,opponents);
+    const built=buildOptimalPairsForPlayers(arr,opponents);
     return {...built,byePlayer:null,byeCount:0,byeRankPenalty:0};
   }
 
   const plans=[];
-
   for(let i=0;i<arr.length;i++){
     const byePlayer=arr[i];
     const remaining=arr.filter(p=>Number(p.id)!==Number(byePlayer.id));
-    const built=buildPairsForPlayers(remaining,opponents);
-
-    plans.push({
-      ...built,
-      byePlayer,
-      byeCount:swissByeCount(byePlayer.id),
-      byeRankPenalty:(arr.length-1-i)
-    });
+    const built=buildOptimalPairsForPlayers(remaining,opponents);
+    plans.push({...built,byePlayer,byeCount:swissByeCount(byePlayer.id),byeRankPenalty:(arr.length-1-i)});
   }
-
   plans.sort((a,b)=>
     a.rematchCount-b.rematchCount ||
     a.byeCount-b.byeCount ||
     a.totalPenalty-b.totalPenalty ||
     a.byeRankPenalty-b.byeRankPenalty
   );
-
   return plans[0];
 }
 
@@ -563,43 +561,39 @@ function makeSwissPairs(){
   const arr=swissSortedPlayers();
   const plan=chooseSwissRoundPlan(arr);
   const pairs=[...plan.pairs];
-
   if(plan.byePlayer){
-    pairs.push({
-      board_no:pairs.length+1,
-      black_player_id:Number(plan.byePlayer.id),
-      white_player_id:null
-    });
+    pairs.push({board_no:pairs.length+1,black_player_id:Number(plan.byePlayer.id),white_player_id:null});
   }
-
-  return pairs;
+  return {pairs,plan};
 }
+
 async function generateSwissRound(){
   if(staffRole!=="admin")return notice("只有主管理員可以產生配對。","bad");
-  if(swissDuplicateGroups().length)return notice("瑞士制選手表有重複會員，請先執行 Beta 3.2.2a 安全清理，再產生下一輪。","bad");
+  if(swissDuplicateGroups().length)return notice("瑞士制選手表有重複會員，請先安全清理，再產生下一輪。","bad");
   if(!swissPlayers.length)return notice("請先同步正式參賽名單。","bad");
   if(swissPlayers.length>tournamentMax())return notice(`正式選手超過 ${tournamentMax()} 人，請先處理名單。`,"bad");
   const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
   const next=latest?Number(latest.round_no)+1:1;
   if(next>5)return notice("5 輪瑞士制已完成。","bad");
   if(latest&&latest.status!=="completed")return notice(`第 ${latest.round_no} 輪尚未全部回報勝負。`,"bad");
-  const pairs=makeSwissPairs();
+
+  const {pairs,plan}=makeSwissPairs();
   if(!pairs.length)return notice("無法產生配對。","bad");
-  const rematch=opponentSet();
-  const hasRepeat=pairs.some(x=>x.white_player_id&&rematch.get(x.black_player_id)?.has(x.white_player_id));
+  if(plan.rematchCount>0){
+    return notice(`⛔ 第 ${next} 輪找不到完全無重複的合法配對，系統已停止建立輪次。請先由裁判檢查歷史配對。`,"bad");
+  }
+
   const byePair=pairs.find(x=>!x.white_player_id);
   const byeP=byePair?swissPlayer(byePair.black_player_id):null;
   const byeInfo=byeP?`\n輪空：${byeP.player_name}（過去輪空 ${swissByeCount(byeP.id)} 次）`:"";
-  const repeatInfo=hasRepeat
-    ?"\n⚠️ 已做最佳化，但目前條件仍可能出現重複對手。"
-    :"\n✅ 本輪已找到無重複對手的配對。";
-  const msg=`確定產生第 ${next} 輪？\n共 ${pairs.length} 桌${byeInfo}${repeatInfo}`;
+  const msg=`確定產生第 ${next} 輪？\n共 ${pairs.length} 桌${byeInfo}\n✅ 已通過全域檢查：本輪無重複對手。`;
   if(!confirm(msg))return;
+
   const {error}=await sb.rpc("joygo_swiss_create_round",{
     p_tournament_code:CODE,p_round_no:next,p_pairings:pairs
   });
   if(error)return notice("產生配對失敗："+error.message,"bad");
-  notice(`✅ 第 ${next} 輪配對已產生。`,"good");
+  notice(`✅ 第 ${next} 輪配對已產生，且無重複對手。`,"good");
   await loadSwiss();
 }
 window.setSwissResult=async(id,result)=>{
