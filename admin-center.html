@@ -49,6 +49,7 @@ button,.btn{display:inline-block;border:1px solid var(--line);border-radius:10px
 @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}header h1{font-size:18px}}
 </style>
+<!-- Beta 3.2.8-E 副管理員入口修正版 -->
 </head>
 <body>
 <header>
@@ -203,8 +204,16 @@ async function init(){
     return;
   }
 
+  let staffRole="staff";
+  try{
+    const {data:access}=await sb.rpc("joygo_get_staff_access");
+    const x=Array.isArray(access)?access[0]:access;
+    staffRole=x?.staff_role||"staff";
+  }catch{}
+
   $("content").classList.remove("hidden");
-  setStatus("✅ 管理中心已就緒。","good");
+  const roleLabel=staffRole==="admin"?"主管理員":staffRole==="deputy"?"副管理員":staffRole==="moderator"?"巡場管理員":"管理員";
+  setStatus(`✅ ${roleLabel}模式｜管理中心已就緒。`,"good");
   await Promise.all([loadDashboard(),loadAudit(),health()]);
 }
 

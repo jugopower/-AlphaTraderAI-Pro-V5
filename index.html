@@ -23,19 +23,11 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-feature-version" content="3.1-admin-center">
+<meta name="joygo-feature-version" content="3.0-notification-center">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
-<title>Joy Go Platform V1.0 Beta 1 測試版</title>
-<meta name="description" content="Joy Go Platform V1.0 Beta 1 測試版。輸入測試碼 JOYGO10，即可進入平台體驗與測試。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Joy Go Platform V1.0 Beta 1 測試版">
-<meta property="og:description" content="測試碼：JOYGO10｜點擊連結後輸入測試碼，按「進入 V1.0 Beta」即可。">
-<meta property="og:url" content="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Joy Go Platform V1.0 Beta 1 測試版">
-<meta name="twitter:description" content="測試碼：JOYGO10｜點擊連結後輸入測試碼即可進入測試版。">
+<title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -6182,14 +6174,14 @@ async function memberRefreshAccess(){
       const s=Array.isArray(sa)?sa[0]:sa;
       staffRole=s?.staff_role||"none";
     }catch{}
-    const expired=!["admin"].includes(data.role)&&staffRole!=="moderator"&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
+    const expired=!["admin"].includes(data.role)&&!["moderator","deputy"].includes(staffRole)&&data.expires_at&&new Date(data.expires_at).getTime()<Date.now();
     const blocked=data.status!=="active"||expired;
     const labels={admin:"管理員",member:"正式會員",trial:"試用會員"};
     memberAccess={
       role:blocked?"blocked":data.role,
       status:data.status,
       expiresAt:data.expires_at||null,
-      label:blocked?(data.status==="suspended"?"已停權":"會員已到期"):(labels[data.role]||"會員"),
+      label:blocked?(data.status==="suspended"?"已停權":"會員已到期"):(staffRole==="deputy"?"副管理員":(labels[data.role]||"會員")),
       displayName:data.display_name||"",
       staffRole
     };
@@ -6216,9 +6208,10 @@ function memberGuard(feature,action){
   openMemberModal();
   memberSetStatus(`🔒 ${reason}。`,"bad");
 }
+/* Beta 3.2.8-E：副管理員可見管理入口；副管理員不受一般會員到期限制 */
 function memberUpdateToolAccess(){
   document.querySelectorAll('[id^="adminCenterBtn_"]').forEach(button=>{
-    button.style.display=(memberAccess.role==="admin"||memberAccess.staffRole==="moderator")?"":"none";
+    button.style.display=(memberAccess.role==="admin"||["deputy","moderator"].includes(memberAccess.staffRole))?"":"none";
   });
   const featureById={teachBtn:"teach",aiBtn:"ai",humanBtn:"human",onlineBtn:"online",classicGameBtn:"classic",spectatorBtn:"spectator",cloudBtn:"cloud"};
   Object.entries(featureById).forEach(([id,feature])=>{
