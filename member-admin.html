@@ -15,7 +15,7 @@
   base-uri 'self';
   form-action 'self';
 ">
-<title>Joy Go Beta 3.2｜會員管理強化版</title>
+<title>Joy Go Beta 3.2.8-D｜會員管理介面精簡版</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff;--amber:#f0c362}
@@ -33,6 +33,10 @@ body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Pi
 select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px}
 .mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}
 .ops{display:flex;gap:5px;flex-wrap:wrap;min-width:260px}
+.team{margin-bottom:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#112219,#0a120d);padding:12px 14px}.team-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.team-head b{color:var(--gold2);font-size:17px}.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.team-item{border:1px solid #294235;border-radius:11px;padding:9px 10px;background:#09110c}.team-item span{display:block;color:var(--muted);font-size:11px}.team-item strong{display:block;margin-top:3px;font-size:13px;color:var(--ink)}
+.staffbtn{margin-top:6px;background:#2e4538;color:#e8fff1;border:1px solid #587966}.stafftag{display:inline-block;margin-top:4px;padding:3px 7px;border-radius:999px;background:#423516;color:#ffe19a;font-size:11px;font-weight:850}
+.staff-modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}.staff-modal.open{display:flex}.staff-dialog{width:min(420px,100%);border:1px solid #54705f;border-radius:18px;background:#0c1710;padding:16px;box-shadow:0 24px 80px rgba(0,0,0,.55)}.staff-dialog h3{margin:0 0 6px;color:var(--gold2)}.staff-dialog p{margin:0 0 14px;color:var(--muted);font-size:13px}.staff-menu{display:grid;gap:8px}.staff-menu button{width:100%;padding:11px 12px;border-radius:11px;border:1px solid var(--line);font-weight:900;cursor:pointer}.staff-menu .deputy{background:#735416;color:#fff0b4}.staff-menu .mod{background:#173f32;color:#adf4d1}.staff-menu .danger{background:#542626;color:#ffb3b3}.staff-menu .close{background:#172019;color:#e6eee8}
+@media(max-width:900px){.team-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.actions{width:100%}.filters{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
 </style>
@@ -42,7 +46,7 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
 <header class="head">
   <div class="brand">
     <h1>👥 Joy Go 會員管理</h1>
-    <p>Beta 3.2.1｜加入會員時間＋最近登入分開顯示</p>
+    <p>Beta 3.2.8-D｜五級權限＋管理團隊精簡介面</p>
   </div>
   <div class="actions">
     <button id="refreshBtn" class="btn">重新整理</button>
@@ -61,6 +65,16 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
     <div class="stat"><span>停權</span><b id="mSusp">0</b></div>
     <div class="stat"><span>可參賽</span><b id="mEligible">0</b></div>
   </div>
+
+  <section id="teamCard" class="team">
+    <div class="team-head"><b>🛡️ 管理團隊</b><span class="sub">只有主管理員可新增／取消管理權限</span></div>
+    <div class="team-grid">
+      <div class="team-item"><span>主管理員</span><strong id="teamAdmin">—</strong></div>
+      <div class="team-item"><span>副管理員</span><strong id="teamDeputy">—</strong></div>
+      <div class="team-item"><span>匿名巡場員 01</span><strong id="teamMod1">—</strong></div>
+      <div class="team-item"><span>匿名巡場員 02</span><strong id="teamMod2">—</strong></div>
+    </div>
+  </section>
 
   <section class="card">
     <h2>會員資料與權限</h2>
@@ -107,16 +121,85 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
 </section>
 </main>
 
+<div id="staffModal" class="staff-modal" aria-hidden="true">
+  <div class="staff-dialog">
+    <h3 id="staffModalTitle">管理權限</h3>
+    <p id="staffModalSub">—</p>
+    <div id="staffMenu" class="staff-menu"></div>
+  </div>
+</div>
+
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let me=null,members=[],staffRole="none";
+let me=null,members=[],staffRole="none",deputyIds=new Set(),moderatorIds=new Set(),staffTargetId=null;
 
 function notice(msg,type=""){ $("notice").className="notice"+(type?(" "+type):""); $("notice").textContent=msg; }
 function dateInput(ts){ if(!ts)return ""; try{return new Date(ts).toISOString().slice(0,10)}catch{return ""} }
 function fmt(ts){ if(!ts)return "—"; try{return new Date(ts).toLocaleString("zh-TW",{hour12:false})}catch{return String(ts)} }
+
+function memberNameById(id){const r=members.find(x=>x.id===id);return r?.display_name||r?.email||"—"}
+async function loadStaffTeam(){
+  deputyIds=new Set();moderatorIds=new Set();
+  try{const {data}=await sb.rpc("joygo_get_deputy_ids");(data||[]).forEach(x=>deputyIds.add(x.user_id));}catch{}
+  try{const {data}=await sb.rpc("joygo_get_moderator_ids");(data||[]).forEach(x=>moderatorIds.add(x.user_id));}catch{}
+  const admin=members.find(x=>x.role==="admin");
+  $("teamAdmin").textContent=admin?(admin.display_name||admin.email||"主管理員"):"—";
+  const dep=[...deputyIds][0];$("teamDeputy").textContent=dep?memberNameById(dep):"尚未設定";
+  const mods=[...moderatorIds];
+  $("teamMod1").textContent=mods[0]?"已設定（匿名）":"尚未設定";
+  $("teamMod2").textContent=mods[1]?"已設定（匿名）":"尚未設定";
+}
+function staffBadge(id){
+  if(deputyIds.has(id))return '<span class="stafftag">副管理員</span>';
+  if(moderatorIds.has(id))return '<span class="stafftag">匿名巡場員</span>';
+  return '';
+}
+function closeStaffModal(){$("staffModal").classList.remove("open");$("staffModal").setAttribute("aria-hidden","true");staffTargetId=null}
+async function runStaffAction(kind){
+  if(staffRole!=="admin"||!staffTargetId)return;
+  const r=members.find(x=>x.id===staffTargetId);if(!r)return;
+  if(kind==="setDeputy"){
+    if(!confirm(`確定將「${r.display_name||r.email}」設為副管理員？`))return;
+    const {error}=await sb.rpc("joygo_admin_set_deputy",{p_target_user:r.id,p_enabled:true});
+    if(error)return notice("設定副管理員失敗："+error.message,"bad");
+    notice("✅ 已設為副管理員。","good");
+  }else if(kind==="removeDeputy"){
+    if(!confirm(`確定取消「${r.display_name||r.email}」的副管理員權限？`))return;
+    const {error}=await sb.rpc("joygo_admin_set_deputy",{p_target_user:r.id,p_enabled:false});
+    if(error)return notice("取消副管理員失敗："+error.message,"bad");
+    notice("✅ 已取消副管理員。","good");
+  }else if(kind==="setModerator"){
+    const alias=prompt("請輸入對外匿名名稱，例如：巡場員01",moderatorIds.size===0?"巡場員01":"巡場員02");
+    if(alias===null)return;
+    const clean=alias.trim();if(!clean)return notice("匿名名稱不可空白。","bad");
+    const {error}=await sb.rpc("joygo_admin_set_anonymous_moderator",{p_target_user:r.id,p_alias:clean,p_enabled:true});
+    if(error)return notice("設定匿名巡場員失敗："+error.message,"bad");
+    notice("✅ 已設為匿名巡場員。","good");
+  }else if(kind==="removeModerator"){
+    if(!confirm(`確定取消「${r.display_name||r.email}」的巡場權限？`))return;
+    const {error}=await sb.rpc("joygo_admin_set_anonymous_moderator",{p_target_user:r.id,p_alias:"",p_enabled:false});
+    if(error)return notice("取消巡場失敗："+error.message,"bad");
+    notice("✅ 已取消匿名巡場員。","good");
+  }
+  closeStaffModal();await loadMembers();
+}
+function openStaffModal(id){
+  if(staffRole!=="admin")return;
+  const r=members.find(x=>x.id===id);if(!r)return;staffTargetId=id;
+  $("staffModalTitle").textContent="管理權限｜"+(r.display_name||"會員");
+  $("staffModalSub").textContent=r.email||"";
+  let html='';
+  if(deputyIds.has(id)) html+='<button class="danger" onclick="runStaffAction(\'removeDeputy\')">取消副管理員</button>';
+  else if(moderatorIds.has(id)) html+='<button class="danger" onclick="runStaffAction(\'removeModerator\')">取消匿名巡場員</button>';
+  else html+='<button class="deputy" onclick="runStaffAction(\'setDeputy\')">設為副管理員</button><button class="mod" onclick="runStaffAction(\'setModerator\')">設為匿名巡場員</button>';
+  html+='<button class="close" onclick="closeStaffModal()">關閉</button>';
+  $("staffMenu").innerHTML=html;$("staffModal").classList.add("open");$("staffModal").setAttribute("aria-hidden","false");
+}
+window.openStaffModal=openStaffModal;window.closeStaffModal=closeStaffModal;window.runStaffAction=runStaffAction;
+$("staffModal").addEventListener("click",e=>{if(e.target===$("staffModal"))closeStaffModal()});
 
 function renderMembers(){
   const q=$("memberSearch").value.trim().toLowerCase();
@@ -178,7 +261,7 @@ function renderMembers(){
     }
 
     return `<tr data-id="${r.id}">
-      <td><div class="name">${esc(r.display_name||"未命名")}${self?"（我）":""}</div><div class="sub">${esc(r.email||"")}</div></td>
+      <td><div class="name">${esc(r.display_name||"未命名")}${self?"（我）":""}</div><div class="sub">${esc(r.email||"")}</div>${staffBadge(r.id)}${staffRole==="admin"&&!self&&!isAdmin?`<div><button class="mini staffbtn" onclick="openStaffModal('${r.id}')">管理權限</button></div>`:""}</td>
       <td>${roleCell}</td>
       <td><span class="pill ${stateClass}">${stateText}</span></td>
       <td>${(staffRole==="admin"||staffRole==="deputy")&&!isAdmin?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?"disabled":""}>`:(r.expires_at?fmt(r.expires_at):"—")}</td>
@@ -196,6 +279,7 @@ async function loadMembers(){
   const {data,error}=await sb.rpc("joygo_admin_member_list",{p_limit:500});
   if(error){notice("會員資料讀取失敗："+error.message,"bad");return}
   members=data||[];
+  await loadStaffTeam();
   renderMembers();
 }
 
