@@ -142,21 +142,23 @@ function renderMembers(){
   $("memberRows").innerHTML=arr.map(r=>{
     const self=r.id===me.id;
     const isAdmin=r.role==="admin";
+    const isStaffTarget=!!r.is_staff;
     const until=r.suspended_until?new Date(r.suspended_until):null;
     const temp=until&&until.getTime()>Date.now();
     const stateText=r.status==="suspended"?(temp?`暫停至 ${fmt(r.suspended_until)}`:"永久停權"):"正常";
     const stateClass=r.status==="suspended"?"badpill":"ok";
     const eligible=r.competition_eligible!==false;
 
-    const roleCell=staffRole==="admin"
+    const canEditMember=staffRole==="admin"||staffRole==="deputy";
+    const roleCell=canEditMember && !isAdmin
       ? `<select class="role" ${self?"disabled":""}>
            <option value="trial" ${r.role==="trial"?"selected":""}>試用會員</option>
            <option value="member" ${r.role==="member"?"selected":""}>正式會員</option>
-           <option value="admin" ${r.role==="admin"?"selected":""}>管理員</option>
+           ${staffRole==="admin"?`<option value="admin" ${r.role==="admin"?"selected":""}>主管理員</option>`:""}
          </select>`
-      : `<span>${r.role==="admin"?"管理員":r.role==="trial"?"試用會員":"正式會員"}</span>`;
+      : `<span>${r.role==="admin"?"主管理員":r.role==="trial"?"試用會員":"正式會員"}</span>`;
 
-    const compCell=staffRole==="admin" && !self
+    const compCell=(staffRole==="admin"||staffRole==="deputy") && !self && !isAdmin
       ? `<select class="eligible">
            <option value="true" ${eligible?"selected":""}>可參賽</option>
            <option value="false" ${!eligible?"selected":""}>不可參賽</option>
@@ -179,12 +181,12 @@ function renderMembers(){
       <td><div class="name">${esc(r.display_name||"未命名")}${self?"（我）":""}</div><div class="sub">${esc(r.email||"")}</div></td>
       <td>${roleCell}</td>
       <td><span class="pill ${stateClass}">${stateText}</span></td>
-      <td>${staffRole==="admin"?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?"disabled":""}>`:(r.expires_at?fmt(r.expires_at):"—")}</td>
+      <td>${(staffRole==="admin"||staffRole==="deputy")&&!isAdmin?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?"disabled":""}>`:(r.expires_at?fmt(r.expires_at):"—")}</td>
       <td>${r.created_at?fmt(r.created_at):"加入時間未記錄"}</td>
       <td>${r.last_sign_in_at?fmt(r.last_sign_in_at):'<span class="sub">尚無登入紀錄</span>'}</td>
       <td>${compCell}</td>
       <td><span class="sub">${esc(r.suspension_reason||"—")}</span></td>
-      <td>${actions}${staffRole==="admin"&&!self&&!isAdmin?`<button class="mini neutral" style="margin-top:6px" onclick="saveMember('${r.id}')">儲存會員設定</button>`:""}</td>
+      <td>${actions}${(staffRole==="admin"||staffRole==="deputy")&&!self&&!isAdmin?`<button class="mini neutral" style="margin-top:6px" onclick="saveMember('${r.id}')">儲存會員設定</button>`:""}</td>
     </tr>`;
   }).join("") || '<tr><td colspan="9" class="sub">沒有符合資料。</td></tr>';
 }
@@ -210,13 +212,14 @@ async function moderateMember(id,action){
 window.moderateMember=moderateMember;
 
 async function saveMember(id){
-  if(staffRole!=="admin")return notice("只有主管理員可以修改會員設定。","bad");
+  if(!["admin","deputy"].includes(staffRole))return notice("只有主管理員或副管理員可以修改會員設定。","bad");
   const row=document.querySelector(`tr[data-id="${id}"]`);
   const role=row.querySelector(".role").value;
   const exp=row.querySelector(".expires").value;
   const eligible=row.querySelector(".eligible").value==="true";
 
-  const {error}=await sb.rpc("joygo_admin_update_member_settings",{
+  const rpcName=staffRole==="admin"?"joygo_admin_update_member_settings":"joygo_deputy_update_member_settings";
+  const {error}=await sb.rpc(rpcName,{
     p_target_user:id,
     p_role:role,
     p_expires_at:exp?new Date(exp+"T23:59:59").toISOString():null,
@@ -237,11 +240,13 @@ async function init(){
   const {data:isStaff,error:staffErr}=await sb.rpc("is_joygo_staff");
   if(staffErr||isStaff!==true){notice("此頁僅限 Joy Go 管理員使用。","bad");return}
 
-  const {data:profile}=await sb.from("profiles").select("role").eq("id",me.id).maybeSingle();
-  staffRole=profile?.role==="admin"?"admin":"moderator";
+  const {data:access,error:accessErr}=await sb.rpc("joygo_get_staff_access");
+  if(accessErr){notice("管理權限讀取失敗："+accessErr.message,"bad");return}
+  const a=Array.isArray(access)?access[0]:access;
+  staffRole=a?.staff_role||"none";
 
   $("app").hidden=false;
-  notice("✅ 會員管理已就緒。","good");
+  notice(staffRole==="admin"?"✅ 主管理員會員管理已就緒。":staffRole==="deputy"?"✅ 副管理員會員管理已就緒。":"✅ 巡場會員監控已就緒。","good");
   await loadMembers();
 }
 

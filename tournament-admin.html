@@ -210,7 +210,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab
 function updateHome(){
 const pending=regs.filter(x=>x.registration_status==='pending').length, approved=regs.filter(x=>x.registration_status==='approved').length, playing=rooms.filter(x=>x.status==='playing').length;
 $("hMembers").textContent=members.length;$("hPlaying").textContent=playing;
-if(staffRole==="admin"){
+if(staffRole==="admin"||staffRole==="deputy"){
   const max=tournamentMax();$("hPending").textContent=pending;$("hApproved").textContent=approved+" / "+max;
   const notes=[];if(pending)notes.push(`🔔 有 ${pending} 位選手等待報名審核。`);
   if(rooms.filter(x=>x.status==='ended').length)notes.push(`🧹 有 ${rooms.filter(x=>x.status==='ended').length} 局已結束尚未清除。`);
@@ -218,7 +218,7 @@ if(staffRole==="admin"){
   $("todayFocus").innerHTML=notes.map(x=>`<p>${esc(x)}</p>`).join('');
 }else{
   const ended=rooms.filter(x=>x.status==='ended').length;
-  $("todayFocus").innerHTML=`<p>🕵️ 巡場模式：對外以一般會員身分在線。</p><p>🟢 對弈中 ${playing} 局；已結束 ${ended} 局。</p><p>⚠️ 可踢出大廳、停權 1 天／7 天、解除停權與裁判終止棋局；不能修改比賽設定或會員身分。</p>`;
+  $("todayFocus").innerHTML=`<p>🕵️ 巡場模式：對外以一般會員身分在線。</p><p>🟢 對弈中 ${playing} 局；已結束 ${ended} 局。</p><p>⚠️ 可踢出大廳、停權 1 天／7 天、解除停權與裁判終止棋局。</p>`;
 }
 }
 function renderMembers(){
@@ -296,7 +296,7 @@ await Promise.all([loadMembers(),loadRooms(),loadModeration()]);
 window.moderateMember=moderateMember;
 window.saveMember=async id=>{if(staffRole!=="admin")return notice("只有主管理員可以修改會員身分。","bad");const row=document.querySelector(`tr[data-id="${id}"]`),role=row.querySelector('.role').value,exp=row.querySelector('.expires').value;const changes={role,expires_at:role==='trial'&&exp?new Date(exp+'T23:59:59').toISOString():null,updated_at:new Date().toISOString()};const {error}=await sb.from('profiles').update(changes).eq('id',id);if(error)return notice('會員更新失敗：'+error.message,'bad');notice('✅ 會員資料已更新。','good');await loadMembers()}
 const rl=s=>({pending:'待審核',approved:'正式參賽',waitlist:'候補',rejected:'未通過',cancelled:'已取消'}[s]||s),pl=s=>({pending:'待確認',paid:'已繳費',rejected:'有問題',refunded:'已退款'}[s]||s),il=s=>({pending:'待查核',verified:'已通過',rejected:'未通過'}[s]||s);
-function renderRegs(){const q=$("regSearch").value.trim().toLowerCase(),arr=regs.filter(r=>!q||[r.real_name,r.email,r.phone,r.rank,r.go_account,r.payment_last5].join(' ').toLowerCase().includes(q));$("rTotal").textContent=regs.length;$("rApproved").textContent=regs.filter(x=>x.registration_status==='approved').length;$("rPending").textContent=regs.filter(x=>x.registration_status==='pending').length;$("rOther").textContent=regs.filter(x=>['waitlist','rejected'].includes(x.registration_status)).length;$("regRows").innerHTML=arr.map((r,i)=>`<tr><td>${i+1}</td><td><div class="name">${esc(r.real_name)}</div><div class="sub">${esc(r.email)}</div></td><td><b>${esc(r.rank)}</b><div class="sub">${esc(r.phone)}<br>${esc(r.go_account||'—')}</div></td><td><b>NT$ ${Number(r.payment_amount||0).toLocaleString()}</b><div class="sub">後五碼 ${esc(r.payment_last5)}<br>${esc(pl(r.payment_status))}</div></td><td>${esc(il(r.identity_status))}</td><td><span class="pill ${r.registration_status==='approved'?'ok':r.registration_status==='pending'?'pending':r.registration_status==='waitlist'?'blue':'badpill'}">${esc(rl(r.registration_status))}</span></td><td><div class="rowops"><button class="mini approve" onclick="approveReg('${r.id}')">✓ 核准</button><button class="mini neutral" onclick="reviewReg('${r.id}','pending','pending','pending','')">待審</button><button class="mini wait" onclick="reviewReg('${r.id}','verified','paid','waitlist','正式名額未確認，暫列候補')">候補</button><button class="mini reject" onclick="rejectReg('${r.id}')">退回</button></div></td></tr>`).join('')||'<tr><td colspan="7" class="sub">目前沒有報名資料。</td></tr>'}
+function renderRegs(){const q=$("regSearch").value.trim().toLowerCase(),arr=regs.filter(r=>!q||[r.real_name,r.email,r.phone,r.rank,r.go_account,r.payment_last5].join(' ').toLowerCase().includes(q));$("rTotal").textContent=regs.length;$("rApproved").textContent=regs.filter(x=>x.registration_status==='approved').length;$("rPending").textContent=regs.filter(x=>x.registration_status==='pending').length;$("rOther").textContent=regs.filter(x=>['waitlist','rejected'].includes(x.registration_status)).length;$("regRows").innerHTML=arr.map((r,i)=>`<tr><td>${i+1}</td><td><div class="name">${esc(r.real_name)}</div><div class="sub">${esc(r.email)}</div></td><td><b>${esc(r.rank)}</b><div class="sub">${esc(r.phone)}<br>${esc(r.go_account||'—')}</div></td><td><b>NT$ ${Number(r.payment_amount||0).toLocaleString()}</b><div class="sub">後五碼 ${esc(r.payment_last5)}<br>${esc(pl(r.payment_status))}</div></td><td>${esc(il(r.identity_status))}</td><td><span class="pill ${r.registration_status==='approved'?'ok':r.registration_status==='pending'?'pending':r.registration_status==='waitlist'?'blue':'badpill'}">${esc(rl(r.registration_status))}</span></td><td>${staffRole==='admin'?`<div class="rowops"><button class="mini approve" onclick="approveReg('${r.id}')">✓ 核准</button><button class="mini neutral" onclick="reviewReg('${r.id}','pending','pending','pending','')">待審</button><button class="mini wait" onclick="reviewReg('${r.id}','verified','paid','waitlist','正式名額未確認，暫列候補')">候補</button><button class="mini reject" onclick="rejectReg('${r.id}')">退回</button></div>`:`<span class="sub">副管理員：唯讀監看</span>`}</td></tr>`).join('')||'<tr><td colspan="7" class="sub">目前沒有報名資料。</td></tr>'}
 window.approveReg=async id=>{const {error}=await sb.rpc('joygo_approve_tournament_registration',{p_registration_id:id});if(error)return notice('核准失敗：'+error.message,'bad');notice('✅ 已核准正式參賽。','good');await loadRegs()};window.reviewReg=async(id,is,pay,reg,note)=>{const {error}=await sb.rpc('joygo_review_tournament_registration',{p_registration_id:id,p_identity_status:is,p_payment_status:pay,p_registration_status:reg,p_admin_note:note});if(error)return notice('審核失敗：'+error.message,'bad');notice('✅ 報名狀態已更新。','good');await loadRegs()};window.rejectReg=id=>{const n=prompt('退回原因','資料待補正')||'資料待補正';reviewReg(id,'rejected','rejected','rejected',n)};
 function renderRooms(){
 $("lWaiting").textContent=rooms.filter(x=>x.status==='waiting').length;
@@ -633,7 +633,7 @@ $("controlRefresh")?.addEventListener("click",loadControl);
 
 const broadcastLevelLabel=l=>({info:"一般通知",important:"重要通知",emergency:"緊急通知"}[l]||l);
 async function loadBroadcasts(){
-  if(staffRole!=="admin")return;
+  if(!["admin","deputy"].includes(staffRole))return;
   const {data,error}=await sb.from("joygo_broadcasts")
     .select("id,tournament_code,level,message,active,created_at,expires_at")
     .eq("tournament_code",CODE)
@@ -657,7 +657,7 @@ async function loadBroadcasts(){
   }).join("")||'<tr><td colspan="5" class="sub">尚無廣播紀錄。</td></tr>';
 }
 async function sendBroadcast(){
-  if(staffRole!=="admin")return notice("只有主管理員可以發送廣播。","bad");
+  if(!["admin","deputy"].includes(staffRole))return notice("只有主管理員或副管理員可以發送廣播。","bad");
   const message=$("broadcastMessage").value.trim();
   const level=$("broadcastLevel").value;
   const duration=Number($("broadcastDuration").value||0);
@@ -777,14 +777,14 @@ $("loadTournamentCode")?.addEventListener("click",()=>switchTournamentCode().cat
 async function loadAll(){
 notice('正在同步管理資料…');
 await loadModeratorIds();
-if(staffRole==="admin"){
+if(staffRole==="admin"||staffRole==="deputy"){
   await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration(),loadBroadcasts(),loadSwiss()]);
   await loadAuditLogs();
   renderControl();
 }else{
   await Promise.all([loadMembers(),loadRooms()]);
 }
-notice(staffRole==="admin"?'✅ Joy Go 管理中心已同步完成。':'✅ 巡場監控資料已同步完成。','good');
+notice(staffRole==='admin'?'✅ 主管理員管理中心已同步完成。':staffRole==='deputy'?'✅ 副管理員管理中心已同步完成。':'✅ 巡場監控資料已同步完成。','good');
 }
 $("refreshAll").onclick=()=>loadAll().catch(e=>notice('重新整理失敗：'+e.message,'bad'));
 async function init(){
@@ -796,13 +796,17 @@ try{
   if(ae)throw ae;
   const a=Array.isArray(access)?access[0]:access;
   staffRole=a?.staff_role||'none';
-  if(!['admin','moderator'].includes(staffRole)){notice('此頁只有主管理員或巡場管理員可使用。','bad');return}
+  if(!['admin','deputy','moderator'].includes(staffRole)){notice('此頁只有管理工作人員可使用。','bad');return}
   $("app").hidden=false;
   const modPane=document.querySelector("#pane-moderation .sub");
   if(modPane){
     modPane.textContent=staffRole==="admin"
-      ?"主管理員可查看全部巡場處置紀錄。"
-      :"巡場管理員只能查看自己執行的處置紀錄。";
+      ?"主管理員可查看全部管理處置紀錄。"
+      :staffRole==="deputy"?"副管理員可協助會員、棋局與比賽監看；高風險設定仍由主管理員處理。":"巡場管理員只能查看自己執行的處置紀錄。";
+  }
+  if(staffRole==="deputy"){
+    document.querySelectorAll('.tab[data-tab="control"],.tab[data-tab="settings"]').forEach(x=>x.hidden=true);
+    const brand=document.querySelector('.brand p');if(brand)brand.textContent='🛡️ 副管理員模式｜可協助會員、棋局、報名監看與一般廣播';
   }
   if(staffRole==="moderator"){
     document.querySelectorAll('.tab[data-tab="control"],.tab[data-tab="registrations"],.tab[data-tab="swiss"],.tab[data-tab="settings"],.tab[data-tab="broadcast"]').forEach(x=>x.hidden=true);
