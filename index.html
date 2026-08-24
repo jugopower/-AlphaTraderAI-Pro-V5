@@ -3721,13 +3721,13 @@ html[data-joygo-guidance="1"] #gameActionRow{
   function base(){try{const raw=(localStorage.getItem('katagoApiUrl')||'https://alphatrader-katago-server-v2.onrender.com/analyze').trim();const u=new URL(raw);return u.origin}catch{return 'https://alphatrader-katago-server-v2.onrender.com'}}
   async function post(path,body={},keepalive=false){const r=await fetch(base()+path,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({client_id:sid,...body}),cache:'no-store',keepalive});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
   async function getStatus(){try{const r=await fetch(base()+'/monitor/stats',{cache:'no-store',headers:{'Accept':'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status);render(await r.json(),true)}catch{render(null,false)}}
-  function render(d,ok){const set=(id,v)=>{const b=document.querySelector('#'+id+' b');if(b)b.textContent=v};set('jmOnline',ok?Number(d.online||0):'—');set('jmAI',ok?Number(d.katago||0):'—');set('jmToday',ok?Number(d.today||0):'—');set('jmQueue',ok?Number(d.queue||0):'—');const dot=document.getElementById('jmDot');dot?.classList.toggle('off',!ok);for(const id of ['jmOnline','jmAI','jmToday','jmQueue'])document.getElementById(id)?.classList.toggle('jm-off',!ok);document.getElementById('joygoLiveMonitor')?.setAttribute('title',ok?'匿名多人測試監控｜今日訪客以同一瀏覽器裝置去重｜每 25 秒更新':'監控後端尚未啟用；不影響棋盤與 KataGo 功能')}
+  function render(d,ok){const set=(id,v)=>{const b=document.querySelector('#'+id+' b');if(b)b.textContent=v};if(window.joygoPresenceOnlineCount==null)set('jmOnline',ok?Number(d.online||0):'—');set('jmAI',ok?Number(d.katago||0):'—');set('jmToday',ok?Number(d.today||0):'—');set('jmQueue',ok?Number(d.queue||0):'—');const dot=document.getElementById('jmDot');dot?.classList.toggle('off',window.joygoPresenceOnlineCount==null&&!ok);for(const id of ['jmAI','jmToday','jmQueue'])document.getElementById(id)?.classList.toggle('jm-off',!ok);if(window.joygoPresenceOnlineCount==null)document.getElementById('jmOnline')?.classList.toggle('jm-off',!ok);document.getElementById('joygoLiveMonitor')?.setAttribute('title',ok?'匿名多人測試監控｜今日訪客以同一瀏覽器裝置去重｜每 25 秒更新':'監控後端尚未啟用；不影響棋盤與 KataGo 功能')}
   async function heartbeat(){try{await post('/monitor/heartbeat',{page:location.pathname})}catch{} }
   async function setAI(busy){if(aiBusy===busy)return;aiBusy=busy;try{await post('/monitor/ai',{busy})}catch{};setTimeout(getStatus,80)}
   function start(){if(started)return;started=true;heartbeat();getStatus();timerHeartbeat=setInterval(heartbeat,25000);timerStatus=setInterval(getStatus,10000)}
   function stop(){if(!started)return;started=false;clearInterval(timerHeartbeat);clearInterval(timerStatus);timerHeartbeat=timerStatus=null;try{post('/monitor/leave',{},true)}catch{}}
   window.joygoMonitorStart=start;window.joygoMonitorStop=stop;window.joygoMonitorSetAI=setAI;
-  addEventListener('pagehide',()=>{try{post('/monitor/leave',{},true)}catch{}},{capture:true});
+  addEventListener('pagehide',()=>{try{post('/monitor/leave',{},true)}catch{};try{joygoGlobalPresenceStop?.()}catch{}},{capture:true});
 })();
 </script>
 
@@ -6157,10 +6157,57 @@ async function memberInitClient(showMessage=false){
 function memberDisplayName(user){
   return memberAccess.displayName||user?.user_metadata?.display_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"會員";
 }
+// Beta 3.2.8-F：首頁在線人數改用 Supabase Presence，與真人弈廳共用 joygo-lobby-v1
+let joygoGlobalPresenceChannel=null;
+window.joygoPresenceOnlineCount=null;
+function joygoGlobalPresenceRender(){
+  if(!joygoGlobalPresenceChannel)return;
+  const raw=joygoGlobalPresenceChannel.presenceState?.()||{};
+  const rows=Object.values(raw).flat().filter(Boolean);
+  const ids=new Set(rows.map(r=>r.user_id).filter(Boolean));
+  window.joygoPresenceOnlineCount=ids.size;
+  const b=document.querySelector('#jmOnline b');
+  if(b)b.textContent=String(ids.size);
+  const dot=document.getElementById('jmDot');
+  if(dot)dot.classList.remove('off');
+  document.getElementById('jmOnline')?.classList.remove('jm-off');
+}
+async function joygoGlobalPresenceStart(){
+  if(!memberSupabase||!memberSession?.user)return;
+  try{
+    if(joygoGlobalPresenceChannel){
+      try{await memberSupabase.removeChannel(joygoGlobalPresenceChannel)}catch(_){}
+    }
+    joygoGlobalPresenceChannel=memberSupabase.channel('joygo-lobby-v1',{config:{presence:{key:memberSession.user.id}}})
+      .on('presence',{event:'sync'},joygoGlobalPresenceRender)
+      .on('presence',{event:'join'},joygoGlobalPresenceRender)
+      .on('presence',{event:'leave'},joygoGlobalPresenceRender)
+      .subscribe(async status=>{
+        if(status==='SUBSCRIBED'){
+          await joygoGlobalPresenceChannel.track({
+            user_id:memberSession.user.id,
+            name:memberDisplayName(memberSession.user),
+            status:state.onlineRoom?.status==='playing'?'playing':'online',
+            room_code:state.onlineRoom?.room_code||'',
+            online_at:new Date().toISOString()
+          });
+          joygoGlobalPresenceRender();
+        }
+      });
+  }catch(e){console.warn('Global presence:',e)}
+}
+async function joygoGlobalPresenceStop(){
+  window.joygoPresenceOnlineCount=null;
+  if(memberSupabase&&joygoGlobalPresenceChannel){
+    try{await memberSupabase.removeChannel(joygoGlobalPresenceChannel)}catch(_){}
+  }
+  joygoGlobalPresenceChannel=null;
+}
 async function memberRefreshAccess(){
   const user=memberSession?.user;
   if(!user||!memberSupabase){
     memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",staffRole:"none"};
+    joygoGlobalPresenceStop();
     memberUpdateToolAccess();
     return memberAccess;
   }
@@ -6189,6 +6236,7 @@ async function memberRefreshAccess(){
     console.error(err);
     memberAccess={role:"blocked",status:"error",expiresAt:null,label:"權限讀取失敗",displayName:""};
   }
+  if(memberAccess.role!=="blocked")joygoGlobalPresenceStart();
   memberUpdateToolAccess();
   return memberAccess;
 }
