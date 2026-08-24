@@ -3,18 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Joy Go 管理中心 Beta 2.6.0</title>
+<title>Joy Go 管理中心 Beta 3.2.3</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff;--amber:#e9bf61}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}button,input,select{font:inherit}.shell{width:min(1280px,100%);margin:auto;padding:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.brand h1{margin:0;color:var(--gold2);font-size:clamp(27px,4vw,42px)}.brand p{margin:5px 0 0;color:var(--muted)}.head-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}.btn.green{border:0;background:var(--green);color:#082317}.btn.red{border:0;background:var(--red);color:#3b0808}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.tab{border:1px solid var(--line);border-radius:14px;padding:12px 8px;background:#0b1510;color:var(--muted);font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(155deg,#2c3b1f,#17231a);color:var(--gold2);border-color:#8d7432}.pane{display:none}.pane.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.card-body{padding:14px}.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar input{flex:1;min-width:0;background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}.blue{background:#163d54;color:#a8ddff}.rowops{display:flex;gap:5px;flex-wrap:wrap}.mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.mini.save,.mini.approve{background:var(--green);color:#082317}.mini.wait{background:var(--blue);color:#092337}.mini.reject{background:var(--red);color:#3b0808}.mini.neutral{background:#d9bb76;color:#2d2008}.field{display:grid;gap:6px}.field label{color:var(--muted);font-size:12px}.field input,.field select{width:100%;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.room-list{display:grid;gap:8px}.room{border:1px solid #2f4638;border-radius:13px;padding:11px;background:#0a110d;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.05fr;gap:8px;align-items:center}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.quick a{border:1px solid var(--line);border-radius:15px;padding:16px;background:#0b1510;text-decoration:none;color:var(--ink);font-weight:900}.quick a span{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:5px}.muted{color:var(--muted)}@media(max-width:850px){.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.grid,.formgrid{grid-template-columns:1fr}.room{grid-template-columns:1fr 1fr}.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}}
 .control-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.control-alert{border:1px solid #6f5723;background:#231d0d;border-radius:12px;padding:10px;margin:8px 0}.control-alert.danger{border-color:#8c3d3d;background:#2a1111}.audit-list{display:grid;gap:7px}.audit-item{border:1px solid #2f4638;border-radius:11px;padding:10px;background:#08100b}.audit-item b{color:var(--gold2)}@media(max-width:850px){.control-grid{grid-template-columns:1fr 1fr}}
+
+.tournament-switch{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin:0 0 12px;border:1px solid #6f5723;border-radius:14px;background:linear-gradient(160deg,#1d2415,#0a110d)}
+.tournament-switch label{color:var(--gold2);font-weight:900}.tournament-switch select{min-width:250px;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.tournament-switch .current{color:var(--muted);font-size:12px}
+@media(max-width:850px){.tournament-switch{align-items:stretch}.tournament-switch select,.tournament-switch button{width:100%}}
 </style>
 </head>
 <body>
 <main class="shell">
-<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.2c｜輪空＋避免重複對手最佳化版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
+<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.3｜瑞士制比賽代碼切換版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
+<div class="tournament-switch" id="tournamentSwitchBox">
+  <label for="tournamentCodeSelect">🏆 比賽代碼</label>
+  <select id="tournamentCodeSelect">
+    <option value="JOYGO16-001">JOYGO16-001｜原 16 人賽</option>
+    <option value="JOYGO8-TEST-001">JOYGO8-TEST-001｜8 人虛擬測試</option>
+  </select>
+  <button class="btn gold" id="loadTournamentCode">載入比賽</button>
+  <span class="current">目前：<b id="currentTournamentCode">—</b></span>
+</div>
+
 <nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="control">🎛️ 比賽總控</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="swiss">♟️ 瑞士制</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="broadcast">📢 廣播</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
 
 <section class="pane active" id="pane-home">
@@ -41,7 +55,7 @@
 
 <section class="pane" id="pane-members"><div class="stats"><div class="stat"><span>全部會員</span><b id="mTotal">0</b></div><div class="stat"><span>正式會員</span><b id="mMember">0</b></div><div class="stat"><span>試用會員</span><b id="mTrial">0</b></div><div class="stat"><span>停權</span><b id="mSusp">0</b></div></div><section class="card"><h2>會員管理</h2><div class="card-body"><div class="toolbar"><input id="memberSearch" placeholder="搜尋姓名或 Email"><button class="btn" id="memberClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>會員</th><th>身分</th><th>狀態／處置</th><th>試用到期</th><th>建立日期</th><th>管理處置</th></tr></thead><tbody id="memberRows"></tbody></table></div></div></section></section>
 
-<section class="pane" id="pane-registrations"><div class="stats"><div class="stat"><span>全部報名</span><b id="rTotal">0</b></div><div class="stat"><span>正式參賽</span><b id="rApproved">0</b></div><div class="stat"><span>待審核</span><b id="rPending">0</b></div><div class="stat"><span>候補／未通過</span><b id="rOther">0</b></div></div><section class="card"><h2>16 人賽報名審核</h2><div class="card-body"><div class="toolbar"><input id="regSearch" placeholder="搜尋姓名、Email、電話、棋帳號"><button class="btn" id="regClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>選手</th><th>聯絡／棋力</th><th>付款</th><th>身分</th><th>資格</th><th>管理操作</th></tr></thead><tbody id="regRows"></tbody></table></div></div></section></section>
+<section class="pane" id="pane-registrations"><div class="stats"><div class="stat"><span>全部報名</span><b id="rTotal">0</b></div><div class="stat"><span>正式參賽</span><b id="rApproved">0</b></div><div class="stat"><span>待審核</span><b id="rPending">0</b></div><div class="stat"><span>候補／未通過</span><b id="rOther">0</b></div></div><section class="card"><h2 id="registrationHeading">比賽報名審核</h2><div class="card-body"><div class="toolbar"><input id="regSearch" placeholder="搜尋姓名、Email、電話、棋帳號"><button class="btn" id="regClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>選手</th><th>聯絡／棋力</th><th>付款</th><th>身分</th><th>資格</th><th>管理操作</th></tr></thead><tbody id="regRows"></tbody></table></div></div></section></section>
 
 
 <section class="pane" id="pane-swiss">
@@ -53,9 +67,9 @@
   </div>
 
   <section class="card">
-    <h2>♟️ 16 人瑞士制自動配對核心</h2>
+    <h2 id="swissHeading">♟️ 瑞士制自動配對核心</h2>
     <div class="card-body">
-      <p class="sub">流程：同步「正式參賽」名單 → 產生第 1 輪 → 輸入 8 桌勝負 → 系統重新計分 → 自動產生下一輪。預賽共 5 輪；系統會盡量避免重複對手並平衡黑白棋。</p>
+      <p class="sub">流程：同步「正式參賽」名單 → 產生第 1 輪 → 輸入本輪勝負 → 系統重新計分 → 自動產生下一輪。預賽共 5 輪；系統會盡量避免重複對手並平衡黑白棋。</p>
       <div class="toolbar">
         <button class="btn" id="syncSwissPlayers">① 同步正式名單</button>
         <button class="btn gold" id="generateSwissRound">② 產生下一輪配對</button>
@@ -148,7 +162,7 @@
 <div class="toolbar" style="margin-bottom:12px"><input id="modSearch" placeholder="搜尋會員、執行者、原因…" style="min-width:260px;flex:1"><select id="modFilter"><option value="">全部處置</option><option value="kick">踢出大廳</option><option value="suspend_1d">停權 1 天</option><option value="suspend_7d">停權 7 天</option><option value="suspend_permanent">永久停權</option><option value="unsuspend">解除停權</option><option value="end_room">裁判終止棋局</option></select><button id="refreshModeration" class="btn">重新整理紀錄</button></div>
 <div class="table-wrap"><table><thead><tr><th>時間</th><th>執行者</th><th>對象</th><th>處置</th><th>原因／備註</th><th>到期時間</th></tr></thead><tbody id="moderationRows"><tr><td colspan="6" class="sub">讀取中…</td></tr></tbody></table></div>
 </div></section></section>
-<section class="pane" id="pane-settings"><div class="grid"><section class="card"><h2>16 人比賽基本資料</h2><div class="card-body"><div class="formgrid"><div class="field"><label>比賽名稱</label><input id="eventTitle"></div><div class="field"><label>名額</label><input id="eventMax" type="number" min="2" max="512"></div><div class="field"><label>報名費 NT$</label><input id="eventFee" type="number" min="0" step="50">
+<section class="pane" id="pane-settings"><div class="grid"><section class="card"><h2 id="settingsHeading">比賽基本資料</h2><div class="card-body"><div class="formgrid"><div class="field"><label>比賽名稱</label><input id="eventTitle"></div><div class="field"><label>名額</label><input id="eventMax" type="number" min="2" max="512"></div><div class="field"><label>報名費 NT$</label><input id="eventFee" type="number" min="0" step="50">
 <div class="sub" style="margin-top:6px">可輸入任意金額；0 元會在報名頁顯示「免費」。</div>
 <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px">
 <button type="button" class="mini neutral feePreset" data-fee="0">免費</button>
@@ -161,8 +175,35 @@
 </main>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
-const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const CODE="JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],swissPlayers=[],swissRounds=[],swissPairings=[],auditLogs=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const ALLOWED_CODES=["JOYGO16-001","JOYGO8-TEST-001"];const requestedCode=new URLSearchParams(location.search).get("tournament")||localStorage.getItem("joygoTournamentCode")||"JOYGO16-001";let CODE=ALLOWED_CODES.includes(requestedCode)?requestedCode:"JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],swissPlayers=[],swissRounds=[],swissPairings=[],auditLogs=[],staffRole="none",moderatorIds=new Set();const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function notice(t,k=""){const e=$("notice");e.className="notice"+(k?" "+k:"");e.textContent=t}
+
+function tournamentMax(){if(CODE==="JOYGO8-TEST-001")return 8;return 16}
+function updateTournamentUI(){
+  const max=tournamentMax();
+  if($("tournamentCodeSelect"))$("tournamentCodeSelect").value=CODE;
+  if($("currentTournamentCode"))$("currentTournamentCode").textContent=CODE;
+  if($("registrationHeading"))$("registrationHeading").textContent=`${max} 人賽報名審核`;
+  if($("swissHeading"))$("swissHeading").textContent=`♟️ ${max} 人瑞士制自動配對核心`;
+  if($("settingsHeading"))$("settingsHeading").textContent=`${max} 人比賽基本資料`;
+  if($("sPlayers"))$("sPlayers").textContent=`${swissPlayers.length} / ${max}`;
+}
+async function switchTournamentCode(){
+  if(staffRole!=="admin")return notice("只有主管理員可以切換比賽。","bad");
+  const next=$("tournamentCodeSelect")?.value||CODE;
+  if(!ALLOWED_CODES.includes(next))return notice("不支援的比賽代碼。","bad");
+  if(next===CODE){showTab("swiss");updateTournamentUI();return notice(`目前已是 ${CODE}。`,"good")}
+  if(!confirm(`確定切換到 ${next}？\n只切換管理畫面，不會刪除或修改另一場比賽資料。`)){$("tournamentCodeSelect").value=CODE;return}
+  CODE=next;localStorage.setItem("joygoTournamentCode",CODE);
+  regs=[];broadcasts=[];swissPlayers=[];swissRounds=[];swissPairings=[];auditLogs=[];
+  updateTournamentUI();notice(`正在載入 ${CODE}…`);
+  const jobs=[loadRegs(),loadSwiss(),loadBroadcasts(),loadAuditLogs()];
+  const result=await Promise.allSettled(jobs);
+  renderControl();updateHome();updateTournamentUI();showTab("swiss");
+  const bad=result.find(x=>x.status==="rejected");
+  if(bad)return notice(`已切換到 ${CODE}，部分附屬資料讀取失敗：${bad.reason?.message||bad.reason}`,"bad");
+  notice(`✅ 已切換到 ${CODE}。`,"good");
+}
 function dateInput(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(+d))return"";return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function showTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+name))}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -170,10 +211,10 @@ function updateHome(){
 const pending=regs.filter(x=>x.registration_status==='pending').length, approved=regs.filter(x=>x.registration_status==='approved').length, playing=rooms.filter(x=>x.status==='playing').length;
 $("hMembers").textContent=members.length;$("hPlaying").textContent=playing;
 if(staffRole==="admin"){
-  $("hPending").textContent=pending;$("hApproved").textContent=approved+" / 16";
+  const max=tournamentMax();$("hPending").textContent=pending;$("hApproved").textContent=approved+" / "+max;
   const notes=[];if(pending)notes.push(`🔔 有 ${pending} 位選手等待報名審核。`);
   if(rooms.filter(x=>x.status==='ended').length)notes.push(`🧹 有 ${rooms.filter(x=>x.status==='ended').length} 局已結束尚未清除。`);
-  if(approved<16)notes.push(`🏆 正式參賽目前 ${approved}/16 人，尚有 ${16-approved} 個名額。`);else notes.push('✅ 16 人正式名額已滿。');
+  if(approved<max)notes.push(`🏆 正式參賽目前 ${approved}/${max} 人，尚有 ${max-approved} 個名額。`);else notes.push(`✅ ${max} 人正式名額已滿。`);
   $("todayFocus").innerHTML=notes.map(x=>`<p>${esc(x)}</p>`).join('');
 }else{
   const ended=rooms.filter(x=>x.status==='ended').length;
@@ -340,7 +381,7 @@ function renderSwiss(){
   const cur=swissPairings.filter(x=>Number(x.round_no)===roundNo);
   const done=cur.filter(x=>x.result!=="pending").length;
 
-  $("sPlayers").textContent=`${players.length} / 16`;
+  $("sPlayers").textContent=`${players.length} / ${tournamentMax()}`;
   $("sRound").textContent=`${roundNo} / 5`;
   $("sDone").textContent=`${done} / ${cur.length}`;
   $("sStatus").textContent=!latest?"尚未開始":latest.status==="completed"?"本輪完成":"比賽中";
@@ -537,7 +578,7 @@ async function generateSwissRound(){
   if(staffRole!=="admin")return notice("只有主管理員可以產生配對。","bad");
   if(swissDuplicateGroups().length)return notice("瑞士制選手表有重複會員，請先執行 Beta 3.2.2a 安全清理，再產生下一輪。","bad");
   if(!swissPlayers.length)return notice("請先同步正式參賽名單。","bad");
-  if(swissPlayers.length>16)return notice("正式選手超過 16 人，請先處理名單。","bad");
+  if(swissPlayers.length>tournamentMax())return notice(`正式選手超過 ${tournamentMax()} 人，請先處理名單。`,"bad");
   const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
   const next=latest?Number(latest.round_no)+1:1;
   if(next>5)return notice("5 輪瑞士制已完成。","bad");
@@ -738,6 +779,7 @@ $("memberSearch").oninput=renderMembers;$("memberClear").onclick=()=>{$("memberS
 $("modSearch")?.addEventListener("input",renderModeration);
 $("modFilter")?.addEventListener("change",renderModeration);
 $("refreshModeration")?.addEventListener("click",()=>loadModeration());
+$("loadTournamentCode")?.addEventListener("click",()=>switchTournamentCode().catch(e=>notice("切換比賽失敗："+(e?.message||e),"bad")));
 async function loadAll(){
 notice('正在同步管理資料…');
 await loadModeratorIds();
@@ -775,7 +817,9 @@ try{
     document.querySelectorAll('.quick a[href="tournament-register.html"],.quick a[href="tournament-admin.html"]').forEach(x=>x.hidden=true);
     const brand=document.querySelector('.brand p');if(brand)brand.textContent='🕵️ 巡場監控模式｜對外不顯示管理員標記';
   }
+  updateTournamentUI();
   await loadAll();
+  updateTournamentUI();
 }catch(e){notice('系統錯誤：'+(e?.message||e),'bad')}
 }init();
 </script>
