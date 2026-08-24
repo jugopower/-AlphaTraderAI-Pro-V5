@@ -27,7 +27,7 @@
 <body>
 <div class="page">
   <div class="top">
-    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.2.5｜邀請可收回・90 秒自動失效</p></div>
+    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.2.6｜多人在線同步・邀請可收回</p></div>
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
@@ -91,6 +91,7 @@
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let session=null,meName="會員",meRole="member",presence=null,inviteChannel=null,roomChannel=null,refreshTimer=null,moderationTimer=null,moderationKickVersion=null,broadcastTimer=null,lastBroadcastId=null;
+let presenceSubscribed=false,presenceConnecting=false,presenceRetryTimer=null;
 const $=id=>document.getElementById(id);
 function msg(t,type=""){const n=$("notice");n.textContent=t;n.className="notice "+type;if(!t)n.style.display="none";else n.style.display="block"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -99,8 +100,65 @@ async function loadProfile(){const {data}=await sb.from("profiles").select("disp
 async function checkModeration(initial=false){const {data,error}=await sb.rpc("joygo_get_my_moderation_state");if(error)return true;const s=Array.isArray(data)?data[0]:data;if(!s)return true;if(initial)moderationKickVersion=Number(s.kick_version||0);if(!s.online_allowed){if(presence){try{await presence.untrack()}catch{} try{await sb.removeChannel(presence)}catch{} presence=null}msg("⛔ "+(s.message||"目前無法使用真人大廳。"),"bad");if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null}if(moderationTimer){clearInterval(moderationTimer);moderationTimer=null}setTimeout(()=>location.href="index.html",1800);return false}if(!initial&&moderationKickVersion!==null&&Number(s.kick_version||0)>moderationKickVersion){if(presence){try{await presence.untrack()}catch{} try{await sb.removeChannel(presence)}catch{} presence=null}msg("⛔ 管理員已將您移出真人大廳。","bad");if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null}if(moderationTimer){clearInterval(moderationTimer);moderationTimer=null}setTimeout(()=>location.href="index.html",1500);return false}moderationKickVersion=Number(s.kick_version||0);return true}
 function presRows(){return Object.values(presence?.presenceState?.()||{}).flat().filter(Boolean)}
 function renderPlayers(){const rows=presRows(),map=new Map();rows.forEach(r=>{if(r.user_id&&!map.has(r.user_id))map.set(r.user_id,r)});const list=[...map.values()].sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"zh-Hant")).slice(0,16);$("onlineCount").textContent=list.length;const box=$("players");box.innerHTML="";if(!list.length){box.innerHTML='<div class="empty">目前沒有在線棋友</div>';return}list.forEach(r=>{const mine=r.user_id===session.user.id,playing=r.status==="playing";const d=document.createElement("div");d.className="player";d.innerHTML=`<div><div class="pname"><span class="dot"></span>${esc(r.name||"棋友")}${mine?"（我）":""}</div><div class="pmeta">${playing&&r.room_code?"正在房間 "+esc(r.room_code):"Joy Go 會員"}</div></div>`;const right=document.createElement("div");if(mine){right.innerHTML='<span class="pill">本人</span>'}else if(playing){right.innerHTML='<span class="pill playing">對弈中</span>'}else{const b=document.createElement("button");b.className="btn primary";b.textContent="邀請";b.onclick=()=>sendInvite(r.user_id,r.name||"棋友");right.appendChild(b)}d.appendChild(right);box.appendChild(d)})}
-async function track(){if(!presence||!session)return;await presence.track({user_id:session.user.id,name:meName,status:"online",room_code:"",online_at:new Date().toISOString()}).catch(()=>{})}
-async function connectPresence(){presence=sb.channel("joygo-lobby-v21",{config:{presence:{key:session.user.id}}}).on("presence",{event:"sync"},renderPlayers).on("presence",{event:"join"},renderPlayers).on("presence",{event:"leave"},renderPlayers).subscribe(async st=>{if(st==="SUBSCRIBED"){await track();renderPlayers()}})}
+async function track(){
+  if(!presence||!session||!presenceSubscribed)return;
+  try{
+    await presence.track({
+      user_id:session.user.id,
+      name:meName,
+      status:"online",
+      room_code:"",
+      online_at:new Date().toISOString(),
+      page:"lobby"
+    });
+  }catch(e){console.warn("JoyGo presence track:",e)}
+}
+function schedulePresenceReconnect(){
+  if(document.hidden||!session)return;
+  if(presenceRetryTimer)clearTimeout(presenceRetryTimer);
+  presenceRetryTimer=setTimeout(()=>connectPresence(true),1200);
+}
+async function disconnectPresence(){
+  presenceSubscribed=false;
+  presenceConnecting=false;
+  if(presenceRetryTimer){clearTimeout(presenceRetryTimer);presenceRetryTimer=null}
+  if(presence){
+    const ch=presence;presence=null;
+    try{await ch.untrack()}catch(_){}
+    try{await sb.removeChannel(ch)}catch(_){}
+  }
+}
+async function connectPresence(force=false){
+  if(!session||document.hidden)return;
+  if(presenceConnecting&&!force)return;
+  if(presence&&presenceSubscribed&&!force){await track();renderPlayers();return}
+  presenceConnecting=true;
+  if(presence)await disconnectPresence();
+  presenceConnecting=true;
+  // Beta 3.2.6：與主平台共用同一 Presence topic，避免主平台與獨立弈廳各自只看到自己。
+  const ch=sb.channel("joygo-lobby-v1",{config:{presence:{key:session.user.id}}});
+  presence=ch;
+  ch.on("presence",{event:"sync"},()=>{if(presence===ch)renderPlayers()})
+    .on("presence",{event:"join"},()=>{if(presence===ch)renderPlayers()})
+    .on("presence",{event:"leave"},()=>{if(presence===ch)renderPlayers()})
+    .subscribe(async st=>{
+      if(presence!==ch)return;
+      if(st==="SUBSCRIBED"){
+        presenceSubscribed=true;presenceConnecting=false;
+        await track();
+        setTimeout(renderPlayers,120);
+        setTimeout(renderPlayers,650);
+      }else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT"||st==="CLOSED"){
+        presenceSubscribed=false;presenceConnecting=false;
+        schedulePresenceReconnect();
+      }
+    });
+}
+async function ensurePresence(){
+  if(document.hidden||!session)return;
+  if(!presence||!presenceSubscribed){await connectPresence(true);return}
+  await track();renderPlayers();
+}
 async function sendInvite(toId,toName){const mins=Math.max(0,Number($("mainMinutes").value||20)),byo=Math.max(5,Number($("byoSeconds").value||30)),periods=Math.max(1,Number($("byoPeriods").value||3));if(!confirm(`邀請「${toName}」進行真人對局？\n${$("boardSize").value}路｜${mins}分鐘｜${byo}秒 × ${periods}次｜貼${Number($("komi").value)}目`))return;const {data,error}=await sb.rpc("joygo_send_invite_v211",{p_to_id:toId,p_to_name:toName,p_from_name:meName,p_board_size:Number($("boardSize").value),p_komi:Number($("komi").value),p_main_seconds:Math.round(mins*60),p_byo_seconds:Math.round(byo),p_byo_periods:Math.round(periods)});if(error){msg("邀請失敗："+error.message,"bad");return}msg("✅ 已送出邀請給 "+toName,"ok");await loadInvites()}
 async function replyInvite(id,accept){const {data,error}=await sb.rpc("joygo_reply_invite",{p_invite_id:id,p_accept:!!accept});if(error){msg("處理邀請失敗："+error.message,"bad");return}const row=Array.isArray(data)?data[0]:data;if(accept&&row?.status==="expired"){msg("邀請已逾 90 秒，自動失效。","bad");loadInvites();return}if(accept&&row?.room_code){msg("✅ 配對成功，正在進入棋局…","ok");setTimeout(()=>goRoom(row.room_code),250)}else{msg("已婉拒邀請","ok");loadInvites()}}
 async function cancelInvite(id,toName){if(!confirm(`確定收回給「${toName||"棋友"}」的邀請？`))return;const {data,error}=await sb.rpc("joygo_cancel_invite",{p_invite_id:id});if(error){msg("收回邀請失敗："+error.message,"bad");return}const row=Array.isArray(data)?data[0]:data;if(row?.status==="accepted"){msg("對方已接受，邀請不能收回。","bad");return}msg("✅ 邀請已收回","ok");loadInvites()}
@@ -168,8 +226,13 @@ function setPreset(prefix,mins,byo,periods){if(prefix==="free"){$("mainMinutes")
 async function loadTournamentSettings(){const {data,error}=await sb.from("tournament_settings").select("board_size,komi,main_seconds,byo_seconds,byo_periods,updated_at").eq("user_id",session.user.id).maybeSingle();if(error){$("tournamentStatus").textContent="比賽設定讀取失敗："+error.message;return}if(data){$("tBoardSize").value=String(data.board_size||19);$("tKomi").value=String(data.komi??7.5);$("tMainMinutes").value=String(Math.round(Number(data.main_seconds||1200)/60));$("tByoSeconds").value=String(data.byo_seconds||30);$("tByoPeriods").value=String(data.byo_periods||3);$("tournamentStatus").textContent="已載入上次比賽計時設定。"}}
 async function saveTournamentSettings(){const payload={p_board_size:Number($("tBoardSize").value),p_komi:Number($("tKomi").value),p_main_seconds:Math.max(0,Math.round(Number($("tMainMinutes").value||20)*60)),p_byo_seconds:Math.max(5,Math.round(Number($("tByoSeconds").value||30))),p_byo_periods:Math.max(1,Math.round(Number($("tByoPeriods").value||3)))};const {error}=await sb.rpc("joygo_save_tournament_settings",payload);if(error){$("tournamentStatus").textContent="❌ 儲存失敗："+error.message;return}$("tournamentStatus").textContent=`✅ 已儲存：${payload.p_main_seconds/60}分＋${payload.p_byo_seconds}秒×${payload.p_byo_periods}；之後瑞士制將套用此設定。`}
 async function connectRealtime(){inviteChannel=sb.channel("joygo-invites-ui-"+session.user.id).on("postgres_changes",{event:"*",schema:"public",table:"online_invites",filter:"to_id=eq."+session.user.id},loadInvites).on("postgres_changes",{event:"*",schema:"public",table:"online_invites",filter:"from_id=eq."+session.user.id},loadInvites).subscribe();roomChannel=sb.channel("joygo-lobby-room-ui").on("postgres_changes",{event:"*",schema:"public",table:"online_rooms"},loadRooms).subscribe()}
-async function init(){const {data,error}=await sb.auth.getSession();session=data?.session||null;if(error||!session){msg("請先回 Joy Go Platform 登入會員，再進入真人大廳。","bad");return}if(!await checkModeration(true))return;await loadProfile();await connectPresence();await connectRealtime();const jobs=[loadInvites(),loadRooms()];if(meRole==="admin")jobs.push(loadTournamentSettings());await Promise.all(jobs);refreshTimer=setInterval(()=>{track();loadInvites();loadRooms()},5000);moderationTimer=setInterval(()=>checkModeration(false),5000)}
-$("refreshBtn").onclick=()=>{track();loadInvites();loadRooms()};$("backBtn").onclick=()=>location.href="index.html";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if($("saveTournamentBtn"))$("saveTournamentBtn").onclick=()=>{if(meRole!=="admin"){msg("只有管理員可以修改比賽設定。","bad");return}saveTournamentSettings()};document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(moderationTimer)clearInterval(moderationTimer)},{passive:true});init();
+async function init(){const {data,error}=await sb.auth.getSession();session=data?.session||null;if(error||!session){msg("請先回 Joy Go Platform 登入會員，再進入真人大廳。","bad");return}if(!await checkModeration(true))return;await loadProfile();await connectPresence();await connectRealtime();const jobs=[loadInvites(),loadRooms()];if(meRole==="admin")jobs.push(loadTournamentSettings());await Promise.all(jobs);refreshTimer=setInterval(()=>{ensurePresence();loadInvites();loadRooms()},5000);moderationTimer=setInterval(()=>checkModeration(false),5000)}
+$("refreshBtn").onclick=()=>{ensurePresence();loadInvites();loadRooms()};$("backBtn").onclick=()=>location.href="index.html";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if($("saveTournamentBtn"))$("saveTournamentBtn").onclick=()=>{if(meRole!=="admin"){msg("只有管理員可以修改比賽設定。","bad");return}saveTournamentSettings()};document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(()=>ensurePresence(),120)});
+window.addEventListener("pageshow",()=>setTimeout(()=>ensurePresence(),150),{passive:true});
+window.addEventListener("online",()=>setTimeout(()=>connectPresence(true),150),{passive:true});
+window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(moderationTimer)clearInterval(moderationTimer);disconnectPresence()},{passive:true});
+init();
 startBroadcastPolling();
 loadMyTournamentGame();
 setInterval(loadMyTournamentGame,5000);
