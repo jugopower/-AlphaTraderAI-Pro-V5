@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.3e｜精簡會員表格＋工具列四欄等寬</title>
+<title>Joy Go Beta 3.3.3f｜精簡會員表格＋巡場員設定</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -39,7 +39,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.3e｜工具列四欄等寬</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.3f｜恢復巡場員設定</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
@@ -103,7 +103,14 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
    <div class="adminrow"><label>會員身分</label><div class="field"><select id="detailRole"><option value="trial">試用會員</option><option value="member">正式會員</option><option value="admin">管理員</option></select></div></div>
    <div class="adminrow"><label>會員到期</label><div class="field"><input id="detailExpires" type="date"></div></div>
    <div class="adminrow"><label>參賽資格</label><div class="field"><select id="detailEligible"><option value="true">可參賽</option><option value="false">不可參賽</option></select></div></div>
-   <div class="ops"><button id="saveMemberBtn" class="mini neutral">儲存會員設定</button><button id="suspend1Btn" class="mini wait">停1天</button><button id="suspend7Btn" class="mini wait">停7天</button><button id="suspendForeverBtn" class="mini reject">永久停權</button><button id="unsuspendBtn" class="mini save">解除停權</button></div>
+   <div class="ops">
+    <button id="saveMemberBtn" class="mini neutral">儲存會員設定</button>
+    <button id="moderatorBtn" class="mini neutral">設為巡場員</button>
+    <button id="suspend1Btn" class="mini wait">停1天</button>
+    <button id="suspend7Btn" class="mini wait">停7天</button>
+    <button id="suspendForeverBtn" class="mini reject">永久停權</button>
+    <button id="unsuspendBtn" class="mini save">解除停權</button>
+   </div>
   </div>
  </div>
 </div>
@@ -161,6 +168,7 @@ async function openMember(id){
  $("adminSection").hidden=staffRole!=="admin"||id===me.id||r.role==="admin";
  $("detailRankSelect").value=x.rank_code&&x.rank_code!=="UNRATED"?x.rank_code:"1D";
  $("detailRole").value=r.role||"member";$("detailExpires").value=dateVal(r.expires_at);$("detailEligible").value=String(r.competition_eligible!==false);
+ if($("moderatorBtn")) $("moderatorBtn").textContent=moderatorIds.has(id)?"取消巡場員":"設為巡場員";
  $("detailModal").classList.add("open");
 }
 window.openMember=openMember;
@@ -172,6 +180,18 @@ async function saveRank(){
 async function saveMember(){
  if(staffRole!=="admin"||!selectedId)return;const {error}=await sb.rpc("joygo_admin_update_member_settings",{p_target_user:selectedId,p_role:$("detailRole").value,p_expires_at:$("detailExpires").value?new Date($("detailExpires").value+"T23:59:59").toISOString():null,p_competition_eligible:$("detailEligible").value==="true"});if(error)return alert("會員設定更新失敗："+error.message);await loadMembers();await openMember(selectedId)
 }
+
+async function toggleModerator(){
+ if(staffRole!=="admin"||!selectedId)return;
+ const r=members.find(x=>x.id===selectedId);if(!r)return;
+ const enabled=!moderatorIds.has(selectedId);
+ if(!confirm(`${enabled?"設為":"取消"}「${r.display_name||r.email||"會員"}」的巡場員權限？`))return;
+ const {error}=await sb.rpc("joygo_admin_set_moderator",{p_target_user:selectedId,p_enabled:enabled});
+ if(error)return alert("巡場員權限更新失敗："+error.message);
+ await loadMembers();
+ await openMember(selectedId);
+}
+
 async function moderate(action){
  if(!selectedId)return;const r=members.find(x=>x.id===selectedId);if(!confirm(`確定對「${r?.display_name||"會員"}」執行這項處置？`))return;const reason=prompt("管理備註／停權原因（可留空）","")||"";const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:selectedId,p_action:action,p_reason:reason});if(error)return alert("處置失敗："+error.message);await loadMembers();await openMember(selectedId)
 }
@@ -183,7 +203,7 @@ async function init(){
 }
 ["memberSearch","roleFilter","statusFilter","competitionFilter"].forEach(id=>$(id).addEventListener(id==="memberSearch"?"input":"change",render));
 $("refreshBtn").onclick=loadMembers;$("closeModal").onclick=closeMember;$("detailModal").onclick=e=>{if(e.target===$("detailModal"))closeMember()};
-$("saveRankBtn").onclick=saveRank;$("saveMemberBtn").onclick=saveMember;$("suspend1Btn").onclick=()=>moderate("suspend_1d");$("suspend7Btn").onclick=()=>moderate("suspend_7d");$("suspendForeverBtn").onclick=()=>moderate("suspend_permanent");$("unsuspendBtn").onclick=()=>moderate("unsuspend");
+$("saveRankBtn").onclick=saveRank;$("saveMemberBtn").onclick=saveMember;$("moderatorBtn").onclick=toggleModerator;$("suspend1Btn").onclick=()=>moderate("suspend_1d");$("suspend7Btn").onclick=()=>moderate("suspend_7d");$("suspendForeverBtn").onclick=()=>moderate("suspend_permanent");$("unsuspendBtn").onclick=()=>moderate("unsuspend");
 init();
 </script>
 </body></html>
