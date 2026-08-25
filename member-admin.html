@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.3f｜精簡會員表格＋巡場員設定</title>
+<title>Joy Go Beta 3.3.3g｜會員管理分頁</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -34,6 +34,25 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 .save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}.ops{display:flex;gap:6px;flex-wrap:wrap}
 @media(max-width:850px){.stats{grid-template-columns:repeat(5,1fr)}.toolbar{grid-template-columns:repeat(4,1fr)}.profilegrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr}.profilegrid{grid-template-columns:1fr}}
+
+.pagination-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex-wrap:wrap;margin-top:10px;padding:10px 11px;border:1px solid var(--line);
+  border-radius:11px;background:#0a120d
+}
+.pagination-info{font-size:12px;color:var(--muted)}
+.pagination-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pagination-controls button{
+  border:1px solid var(--line);background:#101a13;color:var(--ink);
+  border-radius:8px;padding:7px 10px;font-weight:800;cursor:pointer
+}
+.pagination-controls button.active{
+  background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400;border:0
+}
+.pagination-controls button:disabled{opacity:.4;cursor:default}
+.page-size{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.page-size select{padding:6px 8px}
+
 </style>
 </head>
 <body>
@@ -63,6 +82,24 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
    <tbody id="memberRows"><tr><td colspan="8">讀取中…</td></tr></tbody>
   </table>
  </div>
+
+<div class="pagination-bar">
+  <div id="paginationInfo" class="pagination-info">目前顯示 0–0，共 0 位會員</div>
+  <div class="pagination-controls">
+    <button id="prevPageBtn" type="button">上一頁</button>
+    <div id="pageButtons" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+    <button id="nextPageBtn" type="button">下一頁</button>
+  </div>
+  <label class="page-size">每頁
+    <select id="pageSizeSelect">
+      <option value="20" selected>20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
+    人
+  </label>
+</div>
+
 </section>
 </main>
 
@@ -120,6 +157,7 @@ const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0D
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let me=null,members=[],rankRows=new Map(),staffRole="none",deputyIds=new Set(),moderatorIds=new Set(),selectedId=null;
+let currentPage=1,pageSize=20,filteredMembers=[];
 
 function notice(t,type=""){$("notice").className="notice"+(type?" "+type:"");$("notice").textContent=t}
 function fmt(x){if(!x)return "—";try{return new Date(x).toLocaleString("zh-TW",{hour12:false})}catch{return String(x)}}
@@ -128,16 +166,82 @@ function rr(id){return rankRows.get(id)||{}}
 function permission(r){if(r.role==="admin")return ["主管理員","goldpill"];if(deputyIds.has(r.id))return ["副管理員","deppill"];if(moderatorIds.has(r.id))return ["巡場員","modpill"];return ["一般",""]}
 function roleText(r){return r.role==="admin"?"主管理員":r.role==="trial"?"試用會員":"正式會員"}
 
+function renderPagination(total){
+  const totalPages=Math.max(1,Math.ceil(total/pageSize));
+  if(currentPage>totalPages)currentPage=totalPages;
+  if(currentPage<1)currentPage=1;
+
+  const start=total?((currentPage-1)*pageSize+1):0;
+  const end=Math.min(currentPage*pageSize,total);
+  if($("paginationInfo"))$("paginationInfo").textContent=`目前顯示 ${start}–${end}，共 ${total} 位會員｜第 ${currentPage} 頁 / 共 ${totalPages} 頁`;
+
+  if($("prevPageBtn"))$("prevPageBtn").disabled=currentPage<=1;
+  if($("nextPageBtn"))$("nextPageBtn").disabled=currentPage>=totalPages;
+
+  const box=$("pageButtons");
+  if(box){
+    box.innerHTML="";
+    let pages=[];
+    if(totalPages<=7){
+      pages=Array.from({length:totalPages},(_,i)=>i+1);
+    }else{
+      const set=new Set([1,totalPages,currentPage-1,currentPage,currentPage+1]);
+      pages=[...set].filter(p=>p>=1&&p<=totalPages).sort((a,b)=>a-b);
+    }
+    let prev=null;
+    pages.forEach(p=>{
+      if(prev!==null&&p-prev>1){
+        const dots=document.createElement("span");dots.textContent="…";dots.className="sub";box.appendChild(dots);
+      }
+      const b=document.createElement("button");b.type="button";b.textContent=String(p);
+      if(p===currentPage)b.classList.add("active");
+      b.onclick=()=>{currentPage=p;render();window.scrollTo({top:0,behavior:"smooth"})};
+      box.appendChild(b);prev=p;
+    });
+  }
+}
+
 function render(){
- const q=$("memberSearch").value.trim().toLowerCase(),rf=$("roleFilter").value,sf=$("statusFilter").value,cf=$("competitionFilter").value;
- const arr=members.filter(x=>{const e=x.competition_eligible!==false;return(!q||[x.display_name,x.email].join(" ").toLowerCase().includes(q))&&(rf==="all"||x.role===rf)&&(sf==="all"||x.status===sf)&&(cf==="all"||(cf==="eligible"&&e)||(cf==="blocked"&&!e))});
- $("mTotal").textContent=members.length;$("mMember").textContent=members.filter(x=>x.role==="member"&&x.status==="active").length;$("mTrial").textContent=members.filter(x=>x.role==="trial").length;$("mSusp").textContent=members.filter(x=>x.status==="suspended").length;$("mEligible").textContent=members.filter(x=>x.competition_eligible!==false&&x.status!=="suspended").length;
- $("memberRows").innerHTML=arr.map(r=>{const x=rr(r.id),w=Number(x.rating_total_wins||0),l=Number(x.rating_total_losses||0),n=w+l,p=n?Math.round(w*1000/n)/10:0,[pt,pc]=permission(r),eligible=r.competition_eligible!==false;return `<tr>
-  <td><div class="clickname" onclick="openMember('${r.id}')">${esc(r.display_name||"未命名")}${r.id===me.id?"（我）":""}</div><div class="email">${esc(r.email||"")}</div></td>
-  <td><span class="pill ${pc}">${pt}</span></td><td>${esc(x.rank_label||"未設定")}</td><td class="record">${w}勝 ${l}敗</td><td>${p}%</td>
-  <td><span class="pill ${r.status==="suspended"?"badpill":"ok"}">${r.status==="suspended"?"停權":"正常"}</span></td>
-  <td><span class="pill ${eligible?"bluepill":"badpill"}">${eligible?"可參賽":"不可參賽"}</span></td>
-  <td><button class="mini detailbtn" onclick="openMember('${r.id}')">查看</button></td></tr>`}).join("")||'<tr><td colspan="8">沒有符合資料。</td></tr>';
+ const q=$("memberSearch").value.trim().toLowerCase();
+ const rf=$("roleFilter").value,sf=$("statusFilter").value,cf=$("competitionFilter").value;
+
+ filteredMembers=members.filter(x=>{
+   const eligible=x.competition_eligible!==false;
+   const qok=!q||[x.display_name,x.email].join(" ").toLowerCase().includes(q);
+   const rok=rf==="all"||x.role===rf;
+   const sok=sf==="all"||x.status===sf;
+   const cok=cf==="all"||(cf==="eligible"&&eligible)||(cf==="blocked"&&!eligible);
+   return qok&&rok&&sok&&cok;
+ });
+
+ $("mTotal").textContent=members.length;
+ $("mMember").textContent=members.filter(x=>x.role==="member"&&x.status==="active").length;
+ $("mTrial").textContent=members.filter(x=>x.role==="trial").length;
+ $("mSusp").textContent=members.filter(x=>x.status==="suspended").length;
+ $("mEligible").textContent=members.filter(x=>x.competition_eligible!==false&&x.status!=="suspended").length;
+
+ const start=(currentPage-1)*pageSize;
+ const arr=filteredMembers.slice(start,start+pageSize);
+
+ $("memberRows").innerHTML=arr.map(r=>{
+   const x=rankRows.get(r.id)||{},w=Number(x.rating_total_wins||0),l=Number(x.rating_total_losses||0),n=w+l;
+   const p=n?Math.round(w*1000/n)/10:0;
+   const eligible=r.competition_eligible!==false;
+   const pt=r.role==="admin"?"主管理員":deputyIds.has(r.id)?"副管理員":moderatorIds.has(r.id)?"巡場員":"一般";
+   const pc=r.role==="admin"?"goldpill":deputyIds.has(r.id)?"deppill":moderatorIds.has(r.id)?"modpill":"";
+   return `<tr>
+    <td><div class="clickname" onclick="openMember('${r.id}')">${esc(r.display_name||"未命名")}${r.id===me.id?"（我）":""}</div><div class="email">${esc(r.email||"")}</div></td>
+    <td><span class="pill ${pc}">${pt}</span></td>
+    <td>${esc(x.rank_label||"未設定")}</td>
+    <td class="record">${w}勝 ${l}敗</td>
+    <td>${p}%</td>
+    <td><span class="pill ${r.status==="suspended"?"badpill":"ok"}">${r.status==="suspended"?"停權":"正常"}</span></td>
+    <td><span class="pill ${eligible?"bluepill":"badpill"}">${eligible?"可參賽":"不可參賽"}</span></td>
+    <td><button class="mini detailbtn" onclick="openMember('${r.id}')">查看</button></td>
+   </tr>`;
+ }).join("")||'<tr><td colspan="8">沒有符合資料。</td></tr>';
+
+ renderPagination(filteredMembers.length);
 }
 
 async function loadStaff(){
@@ -201,9 +305,19 @@ async function init(){
  const {data:access,error:ae}=await sb.rpc("joygo_get_staff_access");if(ae)return notice("管理權限讀取失敗："+ae.message,"bad");const a=Array.isArray(access)?access[0]:access;staffRole=a?.staff_role||"none";
  if(!["admin","deputy","moderator"].includes(staffRole))return notice("此頁僅限管理團隊使用。","bad");$("app").hidden=false;await loadMembers()
 }
-["memberSearch","roleFilter","statusFilter","competitionFilter"].forEach(id=>$(id).addEventListener(id==="memberSearch"?"input":"change",render));
+["memberSearch","roleFilter","statusFilter","competitionFilter"].forEach(id=>{
+  $(id).addEventListener(id==="memberSearch"?"input":"change",()=>{
+    currentPage=1;
+    render();
+  });
+});
 $("refreshBtn").onclick=loadMembers;$("closeModal").onclick=closeMember;$("detailModal").onclick=e=>{if(e.target===$("detailModal"))closeMember()};
 $("saveRankBtn").onclick=saveRank;$("saveMemberBtn").onclick=saveMember;$("moderatorBtn").onclick=toggleModerator;$("suspend1Btn").onclick=()=>moderate("suspend_1d");$("suspend7Btn").onclick=()=>moderate("suspend_7d");$("suspendForeverBtn").onclick=()=>moderate("suspend_permanent");$("unsuspendBtn").onclick=()=>moderate("unsuspend");
+
+$("prevPageBtn").onclick=()=>{if(currentPage>1){currentPage--;render();window.scrollTo({top:0,behavior:"smooth"})}};
+$("nextPageBtn").onclick=()=>{const totalPages=Math.max(1,Math.ceil(filteredMembers.length/pageSize));if(currentPage<totalPages){currentPage++;render();window.scrollTo({top:0,behavior:"smooth"})}};
+$("pageSizeSelect").onchange=()=>{pageSize=Number($("pageSizeSelect").value)||20;currentPage=1;render()};
+
 init();
 </script>
 </body></html>
