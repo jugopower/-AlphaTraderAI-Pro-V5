@@ -3656,6 +3656,24 @@ html[data-joygo-guidance="1"] #gameActionRow{
   box-shadow:0 3px 12px #0008;
 }
 #memberConfigPanel{display:none!important}
+
+<style id="joygoBeta329RankStyle">
+/* Joy Go Platform Beta 3.2.9：會員棋力必填 */
+.rank-required-note{
+  padding:10px 12px;margin:8px 0;border:1px solid #c99535;border-radius:10px;
+  background:#2a1c0d;color:#ffe1a0;font-size:13px;line-height:1.5;font-weight:700
+}
+.rank-required-note.ok{border-color:#4f8e5e;background:#102016;color:#c9f2d1}
+.rank-select-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:8px}
+.rank-select-row select{width:100%}
+.rank-badge{
+  display:inline-flex;align-items:center;padding:3px 8px;margin-left:5px;
+  border:1px solid #9b733a;border-radius:999px;background:#25180f;color:#ffd970;
+  font-size:11px;font-weight:900;vertical-align:middle
+}
+@media(max-width:620px){.rank-select-row{grid-template-columns:1fr}}
+</style>
+
 </style>
 
 </head>
@@ -4062,7 +4080,7 @@ html[data-joygo-guidance="1"] #gameActionRow{
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 1.9.4｜會員中心</h2>
+  <h2>👤 Beta 3.2.9｜會員中心・棋力必填</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -4082,6 +4100,48 @@ html[data-joygo-guidance="1"] #gameActionRow{
 
     <div id="memberSignupForm" class="member-form">
       <label>會員名稱<input id="memberSignupName" type="text" maxlength="40" placeholder="例如：朱老師"></label>
+      <label>棋力（必填）
+        <select id="memberSignupRank" required>
+          <option value="">請選擇棋力</option>
+        <option value="30K">30級</option>
+        <option value="29K">29級</option>
+        <option value="28K">28級</option>
+        <option value="27K">27級</option>
+        <option value="26K">26級</option>
+        <option value="25K">25級</option>
+        <option value="24K">24級</option>
+        <option value="23K">23級</option>
+        <option value="22K">22級</option>
+        <option value="21K">21級</option>
+        <option value="20K">20級</option>
+        <option value="19K">19級</option>
+        <option value="18K">18級</option>
+        <option value="17K">17級</option>
+        <option value="16K">16級</option>
+        <option value="15K">15級</option>
+        <option value="14K">14級</option>
+        <option value="13K">13級</option>
+        <option value="12K">12級</option>
+        <option value="11K">11級</option>
+        <option value="10K">10級</option>
+        <option value="9K">9級</option>
+        <option value="8K">8級</option>
+        <option value="7K">7級</option>
+        <option value="6K">6級</option>
+        <option value="5K">5級</option>
+        <option value="4K">4級</option>
+        <option value="3K">3級</option>
+        <option value="2K">2級</option>
+        <option value="1K">1級</option>
+        <option value="1D">初段</option>
+        <option value="2D">2段</option>
+        <option value="3D">3段</option>
+        <option value="4D">4段</option>
+        <option value="5D">5段</option>
+        <option value="6D">6段</option>
+        <option value="7D">7段</option>
+        </select>
+      </label>
       <label>Email<input id="memberSignupEmail" type="email" autocomplete="email" placeholder="name@example.com"></label>
       <label>密碼<input id="memberSignupPassword" type="password" autocomplete="new-password" placeholder="至少 6 碼"></label>
       <button id="memberSignupBtn" class="action" type="button">註冊會員</button>
@@ -4098,6 +4158,53 @@ html[data-joygo-guidance="1"] #gameActionRow{
       <div><b>會員名稱：</b><span id="memberAccountName">—</span></div>
       <div><b>Email：</b><span id="memberAccountEmail">—</span></div>
       <div><b>權限：</b><span id="memberAccessLabel">讀取中…</span></div>
+      <div><b>棋力：</b><span id="memberRankLabel">未設定</span></div>
+      <div id="memberRankRequiredNote" class="rank-required-note">⚠️ 請先設定棋力，完成後才能進入真人弈廳。</div>
+      <div class="rank-select-row">
+        <label>設定／更改棋力
+          <select id="memberRankSelect">
+            <option value="">請選擇棋力</option>
+        <option value="30K">30級</option>
+        <option value="29K">29級</option>
+        <option value="28K">28級</option>
+        <option value="27K">27級</option>
+        <option value="26K">26級</option>
+        <option value="25K">25級</option>
+        <option value="24K">24級</option>
+        <option value="23K">23級</option>
+        <option value="22K">22級</option>
+        <option value="21K">21級</option>
+        <option value="20K">20級</option>
+        <option value="19K">19級</option>
+        <option value="18K">18級</option>
+        <option value="17K">17級</option>
+        <option value="16K">16級</option>
+        <option value="15K">15級</option>
+        <option value="14K">14級</option>
+        <option value="13K">13級</option>
+        <option value="12K">12級</option>
+        <option value="11K">11級</option>
+        <option value="10K">10級</option>
+        <option value="9K">9級</option>
+        <option value="8K">8級</option>
+        <option value="7K">7級</option>
+        <option value="6K">6級</option>
+        <option value="5K">5級</option>
+        <option value="4K">4級</option>
+        <option value="3K">3級</option>
+        <option value="2K">2級</option>
+        <option value="1K">1級</option>
+        <option value="1D">初段</option>
+        <option value="2D">2段</option>
+        <option value="3D">3段</option>
+        <option value="4D">4段</option>
+        <option value="5D">5段</option>
+        <option value="6D">6段</option>
+        <option value="7D">7段</option>
+          </select>
+        </label>
+        <button id="memberSaveRankBtn" class="action" type="button">儲存棋力</button>
+      </div>
       <label style="display:block;margin-top:12px">更改 Email
         <input id="memberNewEmail" type="email" autocomplete="email" placeholder="請輸入新的 Email">
       </label>
@@ -6075,7 +6182,7 @@ let onlineLastPassMove=0;
 let onlineClockTimer=null;
 let onlineTimeoutClaimed=false;
 let onlineLastResult="";
-let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",staffRole:"none"};
+let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",rankCode:"UNRATED",rankLabel:"未設定",rankSort:0,staffRole:"none"};
 const MEMBER_CONFIG_KEY="joygo-member-supabase-v1";
 const MEMBER_DEFAULT_CONFIG={
   url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",
@@ -6187,6 +6294,9 @@ async function joygoGlobalPresenceStart(){
           await joygoGlobalPresenceChannel.track({
             user_id:memberSession.user.id,
             name:memberDisplayName(memberSession.user),
+            rank_code:memberAccess.rankCode||"UNRATED",
+            rank_label:memberAccess.rankLabel||"未設定",
+            rank_sort:Number(memberAccess.rankSort||0),
             status:state.onlineRoom?.status==='playing'?'playing':'online',
             room_code:state.onlineRoom?.room_code||'',
             online_at:new Date().toISOString()
@@ -6206,14 +6316,14 @@ async function joygoGlobalPresenceStop(){
 async function memberRefreshAccess(){
   const user=memberSession?.user;
   if(!user||!memberSupabase){
-    memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",staffRole:"none"};
+    memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",rankCode:"UNRATED",rankLabel:"未設定",rankSort:0,staffRole:"none"};
     joygoGlobalPresenceStop();
     memberUpdateToolAccess();
     return memberAccess;
   }
   try{
     const {data,error}=await memberSupabase.from("profiles")
-      .select("role,status,expires_at,display_name").eq("id",user.id).single();
+      .select("role,status,expires_at,display_name,rank_code,rank_label,rank_sort").eq("id",user.id).single();
     if(error)throw error;
     let staffRole="none";
     try{
@@ -6230,11 +6340,14 @@ async function memberRefreshAccess(){
       expiresAt:data.expires_at||null,
       label:blocked?(data.status==="suspended"?"已停權":"會員已到期"):(staffRole==="deputy"?"副管理員":(labels[data.role]||"會員")),
       displayName:data.display_name||"",
+      rankCode:data.rank_code||"UNRATED",
+      rankLabel:data.rank_label||"未設定",
+      rankSort:Number(data.rank_sort||0),
       staffRole
     };
   }catch(err){
     console.error(err);
-    memberAccess={role:"blocked",status:"error",expiresAt:null,label:"權限讀取失敗",displayName:""};
+    memberAccess={role:"blocked",status:"error",expiresAt:null,label:"權限讀取失敗",displayName:"",rankCode:"UNRATED",rankLabel:"未設定",rankSort:0,staffRole:"none"};
   }
   if(memberAccess.role!=="blocked")joygoGlobalPresenceStart();
   memberUpdateToolAccess();
@@ -6279,7 +6392,14 @@ function memberRenderSession(){
     if($("memberAccountName"))$("memberAccountName").textContent=memberDisplayName(u);
     if($("memberAccountEmail"))$("memberAccountEmail").textContent=u.email||"—";
     if($("memberAccessLabel"))$("memberAccessLabel").textContent=memberAccess.label;
-    if($("memberChipText"))$("memberChipText").textContent="👤 "+memberDisplayName(u);
+    if($("memberRankLabel"))$("memberRankLabel").textContent=memberAccess.rankLabel||"未設定";
+    if($("memberRankSelect") && memberAccess.rankCode && memberAccess.rankCode!=="UNRATED")$("memberRankSelect").value=memberAccess.rankCode;
+    const rankReady=!!memberAccess.rankCode && memberAccess.rankCode!=="UNRATED";
+    if($("memberRankRequiredNote")){
+      $("memberRankRequiredNote").textContent=rankReady?"✅ 棋力已設定，可進入真人弈廳。":"⚠️ 請先設定棋力，完成後才能進入真人弈廳。";
+      $("memberRankRequiredNote").classList.toggle("ok",rankReady);
+    }
+    if($("memberChipText"))$("memberChipText").textContent="👤 "+memberDisplayName(u)+(rankReady?"｜"+memberAccess.rankLabel:"｜棋力未設定");
   }else{
     if($("memberChipText"))$("memberChipText").textContent="👤 尚未登入";
   }
@@ -6314,13 +6434,15 @@ async function memberLogin(){
 async function memberSignup(){
   if(!await memberEnsureClient())return;
   const name=String($("memberSignupName")?.value||"").trim();
+  const rankCode=String($("memberSignupRank")?.value||"").trim();
   const email=String($("memberSignupEmail")?.value||"").trim();
   const password=String($("memberSignupPassword")?.value||"");
+  if(!rankCode){memberSetStatus("請先選擇棋力。","bad");return}
   if(!email||password.length<6){memberSetStatus("請輸入 Email，密碼至少 6 碼。","bad");return}
   memberSetStatus("建立會員中…");
   const {data,error}=await memberSupabase.auth.signUp({
     email,password,
-    options:{data:{display_name:name||email.split("@")[0]},emailRedirectTo:location.origin+location.pathname}
+    options:{data:{display_name:name||email.split("@")[0],rank_code:rankCode},emailRedirectTo:location.origin+location.pathname}
   });
   if(error){memberSetStatus("註冊失敗："+error.message,"bad");return}
   if(data.session)memberSetStatus("✅ 註冊成功，已登入。","ok");
@@ -6337,6 +6459,38 @@ async function memberResetPassword(){
   if(error){memberSetStatus("寄送失敗："+error.message,"bad");return}
   memberSetStatus("✅ 已寄出重設密碼信，請查看 Email。","ok");
 }
+
+function joygoRankValid(code){
+  return /^(?:[1-9]|[12][0-9]|30)K$|^[1-7]D$/.test(String(code||""));
+}
+async function memberSaveRank(code,showStatus=true){
+  if(!await memberEnsureClient())return false;
+  if(!memberSession?.user){if(showStatus)memberSetStatus("請先登入會員。","bad");return false}
+  code=String(code||"").trim();
+  if(!joygoRankValid(code)){if(showStatus)memberSetStatus("請選擇有效棋力。","bad");return false}
+  const {error}=await memberSupabase.from("profiles").update({rank_code:code}).eq("id",memberSession.user.id);
+  if(error){if(showStatus)memberSetStatus("棋力儲存失敗："+error.message,"bad");return false}
+  await memberRefreshAccess();
+  memberRenderSession();
+  try{await joygoGlobalPresenceTrack?.()}catch(_){}
+  try{await onlineLobbyTrackPresence?.()}catch(_){}
+  if(showStatus)memberSetStatus("✅ 棋力已儲存："+(memberAccess.rankLabel||code),"ok");
+  return true;
+}
+async function memberEnsureRank(){
+  if(!memberSession?.user)return false;
+  if(memberAccess.rankCode && memberAccess.rankCode!=="UNRATED")return true;
+  const metaCode=String(memberSession.user.user_metadata?.rank_code||"").trim();
+  if(joygoRankValid(metaCode)){
+    const ok=await memberSaveRank(metaCode,false);
+    if(ok)return true;
+  }
+  openMemberModal();
+  memberSetStatus("⚠️ 第一次登入請先設定棋力，完成後才能進入真人弈廳。","bad");
+  setTimeout(()=>$("memberRankSelect")?.focus(),120);
+  return false;
+}
+
 async function memberPromptNewPassword(){
   setTimeout(async()=>{
     if(!memberSupabase)return;
@@ -6425,6 +6579,7 @@ async function onlineReady(){
   }
   if(!memberSession?.user){onlineSetStatus("請先登入會員，再使用真人對弈。","bad");openMemberModal();return false}
   if(memberAccess.role==="blocked"){onlineSetStatus("目前會員狀態無法使用真人對弈："+memberAccess.label,"bad");return false}
+  if(!await memberEnsureRank()){onlineSetStatus("請先設定棋力，再進入真人弈廳。","bad");return false}
   return true;
 }
 async function openOnlineLobby(){
@@ -6586,6 +6741,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
   $("onlineClearEndedBtn")?.addEventListener("click",onlineClearEndedRoom);
   $("onlineJoinCode")?.addEventListener("input",e=>{e.target.value=onlineNormalizeCode(e.target.value)});
+  $("memberSaveRankBtn")?.addEventListener("click",()=>memberSaveRank($("memberRankSelect")?.value));
 });
 
 // ===== Joy Go Platform Beta 2.0.0: 真人對弈大廳 V1 =====
@@ -6612,6 +6768,7 @@ function onlineLobbyRenderFriends(){
     const info=document.createElement("div");
     const name=document.createElement("div");name.className="online-friend-name";name.innerHTML='<span class="online-presence-dot"></span>';
     const nt=document.createElement("span");nt.textContent=(r.name||"棋友")+(r.user_id===memberSession?.user?.id?"（我）":"");name.appendChild(nt);
+    if(r.rank_label && r.rank_label!=="未設定"){const rb=document.createElement("span");rb.className="rank-badge";rb.textContent=r.rank_label;name.appendChild(rb)}
     const meta=document.createElement("div");meta.className="online-friend-meta";meta.textContent=r.status==="playing"&&r.room_code?"房間 "+r.room_code:"Joy Go 會員";
     info.append(name,meta);
     const pill=document.createElement("span");pill.className="online-status-pill"+(r.status==="playing"?" playing":"");pill.textContent=r.status==="playing"?"對弈中":"在線";
@@ -6624,6 +6781,9 @@ async function onlineLobbyTrackPresence(){
     await onlineLobbyPresenceChannel.track({
       user_id:memberSession.user.id,
       name:onlineMemberName(),
+      rank_code:memberAccess.rankCode||"UNRATED",
+      rank_label:memberAccess.rankLabel||"未設定",
+      rank_sort:Number(memberAccess.rankSort||0),
       status:state.onlineRoom?.status==="playing"?"playing":"online",
       room_code:state.onlineRoom?.room_code||"",
       online_at:new Date().toISOString()
