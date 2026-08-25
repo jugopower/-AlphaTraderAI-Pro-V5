@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.3d｜精簡會員表格＋工具列比例美化</title>
+<title>Joy Go Beta 3.3.3e｜精簡會員表格＋工具列四欄等寬</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -22,7 +22,7 @@ h1{margin:0;color:var(--gold);font-size:clamp(24px,4vw,36px)}.subtitle{color:var
 .btn{border:1px solid var(--line);background:#0a120d;color:var(--ink);padding:9px 12px;border-radius:10px;text-decoration:none;font-weight:850;cursor:pointer}.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}
 .notice{padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#0a120d;color:var(--muted);margin-bottom:9px}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:9px}.stat{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#0d1811}.stat span{font-size:11px;color:var(--muted)}.stat b{display:block;color:var(--gold);font-size:21px}
-.toolbar{display:grid;grid-template-columns:30% 23% 23% 24%;gap:7px;margin-bottom:8px}input,select{background:#050806;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px}
+.toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:8px}input,select{background:#050806;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px}
 .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#08100b}table{width:100%;border-collapse:collapse;min-width:920px}th,td{padding:8px 9px;border-bottom:1px solid #24372b;text-align:left;vertical-align:middle;font-size:12px}th{background:#17271c;color:#ffe083;position:sticky;top:0;z-index:2}
 tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}.email{font-size:10px;color:var(--muted);margin-top:2px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pill{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900}.ok{background:#10472f;color:#90efbd}.badpill{background:#542626;color:#ffb0b0}.bluepill{background:#193b51;color:#a8ddff}.goldpill{background:#46360e;color:#ffe395}.deppill{background:#102f43;color:#aee1ff}.modpill{background:#251e3e;color:#d9caff}
@@ -32,14 +32,14 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 .profilegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.box{border:1px solid #2d4738;border-radius:11px;background:#08100b;padding:9px}.box small{display:block;color:var(--muted);font-size:10px}.box b{display:block;margin-top:3px;color:#fff5d0}
 .section{margin-top:12px;border-top:1px solid #2b4133;padding-top:11px}.section h3{margin:0 0 8px;color:#ffe083;font-size:15px}.adminrow{display:grid;grid-template-columns:1fr auto;gap:7px;margin-bottom:7px;align-items:center}.adminrow label{font-size:11px;color:var(--muted)}.adminrow .field{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}.ops{display:flex;gap:6px;flex-wrap:wrap}
-@media(max-width:850px){.stats{grid-template-columns:repeat(5,1fr)}.toolbar{grid-template-columns:30% 23% 23% 24%}.profilegrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:850px){.stats{grid-template-columns:repeat(5,1fr)}.toolbar{grid-template-columns:repeat(4,1fr)}.profilegrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr}.profilegrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.3d｜精簡表格＋工具列比例美化</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.3e｜工具列四欄等寬</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
