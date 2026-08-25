@@ -15,30 +15,40 @@
   base-uri 'self';
   form-action 'self';
 ">
-<title>Joy Go Beta 3.2.8-D｜會員管理介面精簡版</title>
+<title>Joy Go Beta 3.3.3a｜會員棋力與戰績管理</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff;--amber:#f0c362}
+:root{--bg:#07100b;--panel:#0e1912;--line:#365543;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
 *{box-sizing:border-box}
 body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}
-.shell{width:min(1280px,100%);margin:auto;padding:16px}
-.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.brand h1{margin:0;color:var(--gold2);font-size:clamp(26px,4vw,40px)}.brand p{margin:5px 0 0;color:var(--muted)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}
-.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px;background:#0b130e}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}
+.shell{width:min(1400px,100%);margin:auto;padding:16px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.brand h1{margin:0;color:var(--gold2);font-size:clamp(26px,4vw,40px)}.brand p{margin:5px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}
+.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}
+.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px;background:#0b130e}
+.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:12px}
+.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}
+.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}
 .card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.body{padding:14px}
-.filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:8px;margin-bottom:10px}.filters input,.filters select{background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}
-.table-wrap{overflow:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;min-width:1280px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}
-.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}.bluepill{background:#193b51;color:#a8ddff}
-select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px}
+.filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:8px;margin-bottom:10px}
+.filters input,.filters select,select,input[type=date]{background:#050806;border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:8px}
+.table-wrap{overflow:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;min-width:1500px}
+th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}
+.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}
+.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.badpill{background:#542626;color:#ffb0b0}.bluepill{background:#193b51;color:#a8ddff}
 .mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}
 .ops{display:flex;gap:5px;flex-wrap:wrap;min-width:260px}
-.team{margin-bottom:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#112219,#0a120d);padding:12px 14px}.team-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.team-head b{color:var(--gold2);font-size:17px}.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.team-item{border:1px solid #294235;border-radius:11px;padding:9px 10px;background:#09110c}.team-item span{display:block;color:var(--muted);font-size:11px}.team-item strong{display:block;margin-top:3px;font-size:13px;color:var(--ink)}
-.staffbtn{margin-top:6px;background:#2e4538;color:#e8fff1;border:1px solid #587966}.stafftag{display:inline-block;margin-top:4px;padding:3px 7px;border-radius:999px;background:#423516;color:#ffe19a;font-size:11px;font-weight:850}
-.staff-modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}.staff-modal.open{display:flex}.staff-dialog{width:min(420px,100%);border:1px solid #54705f;border-radius:18px;background:#0c1710;padding:16px;box-shadow:0 24px 80px rgba(0,0,0,.55)}.staff-dialog h3{margin:0 0 6px;color:var(--gold2)}.staff-dialog p{margin:0 0 14px;color:var(--muted);font-size:13px}.staff-menu{display:grid;gap:8px}.staff-menu button{width:100%;padding:11px 12px;border-radius:11px;border:1px solid var(--line);font-weight:900;cursor:pointer}.staff-menu .deputy{background:#735416;color:#fff0b4}.staff-menu .mod{background:#173f32;color:#adf4d1}.staff-menu .danger{background:#542626;color:#ffb3b3}.staff-menu .close{background:#172019;color:#e6eee8}
-@media(max-width:900px){.team-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.actions{width:100%}.filters{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+.team{margin-bottom:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#112219,#0a120d);padding:12px 14px}
+.team-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.team-head b{color:var(--gold2);font-size:17px}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.team-item{border:1px solid #294235;border-radius:11px;padding:9px 10px;background:#09110c}.team-item span{display:block;color:var(--muted);font-size:11px}
+.team-item strong{display:block;margin-top:3px;font-size:13px}.stafftag{display:inline-block;margin-top:4px;padding:3px 7px;border-radius:999px;background:#423516;color:#ffe19a;font-size:11px;font-weight:850}
+.rankbox{display:flex;gap:6px;align-items:center;min-width:180px}.rankbox select{min-width:90px}
+.record{white-space:nowrap;font-weight:800}.record small{display:block;color:var(--muted);font-weight:600;margin-top:3px}
+@media(max-width:900px){.team-grid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.filters{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -46,7 +56,7 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
 <header class="head">
   <div class="brand">
     <h1>👥 Joy Go 會員管理</h1>
-    <p>Beta 3.2.8-D｜五級權限＋管理團隊精簡介面</p>
+    <p>Beta 3.3.3a｜棋力下拉選單＋升降賽戰績</p>
   </div>
   <div class="actions">
     <button id="refreshBtn" class="btn">重新整理</button>
@@ -66,8 +76,8 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
     <div class="stat"><span>可參賽</span><b id="mEligible">0</b></div>
   </div>
 
-  <section id="teamCard" class="team">
-    <div class="team-head"><b>🛡️ 管理團隊</b><span class="sub">只有主管理員可新增／取消管理權限</span></div>
+  <section class="team">
+    <div class="team-head"><b>🛡️ 管理團隊</b><span class="sub">主管理員與副管理員均可調整會員棋力</span></div>
     <div class="team-grid">
       <div class="team-item"><span>主管理員</span><strong id="teamAdmin">—</strong></div>
       <div class="team-item"><span>副管理員</span><strong id="teamDeputy">—</strong></div>
@@ -81,39 +91,17 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
     <div class="body">
       <div class="filters">
         <input id="memberSearch" placeholder="搜尋姓名或 Email">
-        <select id="roleFilter">
-          <option value="all">全部身分</option>
-          <option value="member">正式會員</option>
-          <option value="trial">試用會員</option>
-          <option value="admin">管理員</option>
-        </select>
-        <select id="statusFilter">
-          <option value="all">全部狀態</option>
-          <option value="active">正常</option>
-          <option value="suspended">停權</option>
-        </select>
-        <select id="competitionFilter">
-          <option value="all">全部參賽資格</option>
-          <option value="eligible">可參賽</option>
-          <option value="blocked">不可參賽</option>
-        </select>
+        <select id="roleFilter"><option value="all">全部身分</option><option value="member">正式會員</option><option value="trial">試用會員</option><option value="admin">管理員</option></select>
+        <select id="statusFilter"><option value="all">全部狀態</option><option value="active">正常</option><option value="suspended">停權</option></select>
+        <select id="competitionFilter"><option value="all">全部參賽資格</option><option value="eligible">可參賽</option><option value="blocked">不可參賽</option></select>
       </div>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>會員</th>
-              <th>身分</th>
-              <th>狀態</th>
-              <th>試用／會員到期</th>
-              <th>加入會員時間</th>
-              <th>最近登入</th>
-              <th>參賽資格</th>
-              <th>停權原因</th>
-              <th>管理處置</th>
-            </tr>
-          </thead>
-          <tbody id="memberRows"><tr><td colspan="9" class="sub">讀取中…</td></tr></tbody>
+          <thead><tr>
+            <th>會員</th><th>身分</th><th>棋力</th><th>升降賽戰績</th><th>狀態</th>
+            <th>試用／會員到期</th><th>加入會員時間</th><th>最近登入</th><th>參賽資格</th><th>管理處置</th>
+          </tr></thead>
+          <tbody id="memberRows"><tr><td colspan="10" class="sub">讀取中…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -121,26 +109,17 @@ select,input[type=date]{background:#050806;color:var(--ink);border:1px solid var
 </section>
 </main>
 
-<div id="staffModal" class="staff-modal" aria-hidden="true">
-  <div class="staff-dialog">
-    <h3 id="staffModalTitle">管理權限</h3>
-    <p id="staffModalSub">—</p>
-    <div id="staffMenu" class="staff-menu"></div>
-  </div>
-</div>
-
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let me=null,members=[],staffRole="none",deputyIds=new Set(),moderatorIds=new Set(),staffTargetId=null;
+let me=null,members=[],rankRows=new Map(),staffRole="none",deputyIds=new Set(),moderatorIds=new Set();
 
 function notice(msg,type=""){ $("notice").className="notice"+(type?(" "+type):""); $("notice").textContent=msg; }
-function dateInput(ts){ if(!ts)return ""; try{return new Date(ts).toISOString().slice(0,10)}catch{return ""} }
-function fmt(ts){ if(!ts)return "—"; try{return new Date(ts).toLocaleString("zh-TW",{hour12:false})}catch{return String(ts)} }
-
+function fmt(ts){if(!ts)return "—";try{return new Date(ts).toLocaleString("zh-TW",{hour12:false})}catch{return String(ts)}}
 function memberNameById(id){const r=members.find(x=>x.id===id);return r?.display_name||r?.email||"—"}
+
 async function loadStaffTeam(){
   deputyIds=new Set();moderatorIds=new Set();
   try{const {data}=await sb.rpc("joygo_get_deputy_ids");(data||[]).forEach(x=>deputyIds.add(x.user_id));}catch{}
@@ -157,56 +136,43 @@ function staffBadge(id){
   if(moderatorIds.has(id))return '<span class="stafftag">匿名巡場員</span>';
   return '';
 }
-function closeStaffModal(){$("staffModal").classList.remove("open");$("staffModal").setAttribute("aria-hidden","true");staffTargetId=null}
-async function runStaffAction(kind){
-  if(staffRole!=="admin"||!staffTargetId)return;
-  const r=members.find(x=>x.id===staffTargetId);if(!r)return;
-  if(kind==="setDeputy"){
-    if(!confirm(`確定將「${r.display_name||r.email}」設為副管理員？`))return;
-    const {error}=await sb.rpc("joygo_admin_set_deputy",{p_target_user:r.id,p_enabled:true});
-    if(error)return notice("設定副管理員失敗："+error.message,"bad");
-    notice("✅ 已設為副管理員。","good");
-  }else if(kind==="removeDeputy"){
-    if(!confirm(`確定取消「${r.display_name||r.email}」的副管理員權限？`))return;
-    const {error}=await sb.rpc("joygo_admin_set_deputy",{p_target_user:r.id,p_enabled:false});
-    if(error)return notice("取消副管理員失敗："+error.message,"bad");
-    notice("✅ 已取消副管理員。","good");
-  }else if(kind==="setModerator"){
-    const alias=prompt("請輸入對外匿名名稱，例如：巡場員01",moderatorIds.size===0?"巡場員01":"巡場員02");
-    if(alias===null)return;
-    const clean=alias.trim();if(!clean)return notice("匿名名稱不可空白。","bad");
-    const {error}=await sb.rpc("joygo_admin_set_anonymous_moderator",{p_target_user:r.id,p_alias:clean,p_enabled:true});
-    if(error)return notice("設定匿名巡場員失敗："+error.message,"bad");
-    notice("✅ 已設為匿名巡場員。","good");
-  }else if(kind==="removeModerator"){
-    if(!confirm(`確定取消「${r.display_name||r.email}」的巡場權限？`))return;
-    const {error}=await sb.rpc("joygo_admin_set_anonymous_moderator",{p_target_user:r.id,p_alias:"",p_enabled:false});
-    if(error)return notice("取消巡場失敗："+error.message,"bad");
-    notice("✅ 已取消匿名巡場員。","good");
-  }
-  closeStaffModal();await loadMembers();
+
+function rankCell(r){
+  const rr=rankRows.get(r.id)||{};
+  const label=rr.rank_label||"未設定";
+  if(!["admin","deputy"].includes(staffRole))return esc(label);
+  return `<div class="rankbox">
+    <select class="rankSelect">
+      <option value="">${esc(label)}</option>
+      <option value="30K">30級</option><option value="29K">29級</option><option value="28K">28級</option><option value="27K">27級</option><option value="26K">26級</option><option value="25K">25級</option><option value="24K">24級</option><option value="23K">23級</option><option value="22K">22級</option><option value="21K">21級</option><option value="20K">20級</option><option value="19K">19級</option><option value="18K">18級</option><option value="17K">17級</option><option value="16K">16級</option><option value="15K">15級</option><option value="14K">14級</option><option value="13K">13級</option><option value="12K">12級</option><option value="11K">11級</option><option value="10K">10級</option><option value="9K">9級</option><option value="8K">8級</option><option value="7K">7級</option><option value="6K">6級</option><option value="5K">5級</option><option value="4K">4級</option><option value="3K">3級</option><option value="2K">2級</option><option value="1K">1級</option><option value="1D">初段</option><option value="2D">2段</option><option value="3D">3段</option><option value="4D">4段</option><option value="5D">5段</option><option value="6D">6段</option><option value="7D">7段</option>
+    </select>
+    <button class="mini save" onclick="saveRank('${r.id}')">儲存棋力</button>
+  </div>`;
 }
-function openStaffModal(id){
-  if(staffRole!=="admin")return;
-  const r=members.find(x=>x.id===id);if(!r)return;staffTargetId=id;
-  $("staffModalTitle").textContent="管理權限｜"+(r.display_name||"會員");
-  $("staffModalSub").textContent=r.email||"";
-  let html='';
-  if(deputyIds.has(id)) html+='<button class="danger" onclick="runStaffAction(\'removeDeputy\')">取消副管理員</button>';
-  else if(moderatorIds.has(id)) html+='<button class="danger" onclick="runStaffAction(\'removeModerator\')">取消匿名巡場員</button>';
-  else html+='<button class="deputy" onclick="runStaffAction(\'setDeputy\')">設為副管理員</button><button class="mod" onclick="runStaffAction(\'setModerator\')">設為匿名巡場員</button>';
-  html+='<button class="close" onclick="closeStaffModal()">關閉</button>';
-  $("staffMenu").innerHTML=html;$("staffModal").classList.add("open");$("staffModal").setAttribute("aria-hidden","false");
+function recordCell(r){
+  const rr=rankRows.get(r.id)||{};
+  const w=Number(rr.rating_total_wins||0),l=Number(rr.rating_total_losses||0),n=w+l;
+  const pct=n?Math.round(w*1000/n)/10:0;
+  return `<div class="record">${w}勝 ${l}敗<small>勝率 ${pct}%</small></div>`;
 }
-window.openStaffModal=openStaffModal;window.closeStaffModal=closeStaffModal;window.runStaffAction=runStaffAction;
-$("staffModal").addEventListener("click",e=>{if(e.target===$("staffModal"))closeStaffModal()});
+async function saveRank(id){
+  if(!["admin","deputy"].includes(staffRole))return notice("只有主管理員或副管理員可以修改棋力。","bad");
+  const row=document.querySelector(`tr[data-id="${id}"]`);
+  const sel=row?.querySelector(".rankSelect"),code=sel?.value;
+  if(!code)return notice("請先選擇新的棋力。","bad");
+  const m=members.find(x=>x.id===id),old=rankRows.get(id)?.rank_label||"未設定";
+  const newLabel=sel.options[sel.selectedIndex]?.text||code;
+  if(!confirm(`確定將「${m?.display_name||m?.email||"會員"}」由 ${old} 改為 ${newLabel}？`))return;
+  const {error}=await sb.rpc("joygo_staff_set_member_rank_v333",{p_target_id:id,p_rank_code:code});
+  if(error)return notice("棋力修改失敗："+error.message,"bad");
+  notice(`✅ 棋力已修改：${old} → ${newLabel}。`,"good");
+  await loadMembers();
+}
+window.saveRank=saveRank;
 
 function renderMembers(){
   const q=$("memberSearch").value.trim().toLowerCase();
-  const rf=$("roleFilter").value;
-  const sf=$("statusFilter").value;
-  const cf=$("competitionFilter").value;
-
+  const rf=$("roleFilter").value,sf=$("statusFilter").value,cf=$("competitionFilter").value;
   const arr=members.filter(x=>{
     const qok=!q||[x.display_name,x.email].join(" ").toLowerCase().includes(q);
     const rok=rf==="all"||x.role===rf;
@@ -215,7 +181,6 @@ function renderMembers(){
     const cok=cf==="all"||(cf==="eligible"&&eligible)||(cf==="blocked"&&!eligible);
     return qok&&rok&&sok&&cok;
   });
-
   $("mTotal").textContent=members.length;
   $("mMember").textContent=members.filter(x=>x.role==="member"&&x.status==="active").length;
   $("mTrial").textContent=members.filter(x=>x.role==="trial").length;
@@ -223,120 +188,57 @@ function renderMembers(){
   $("mEligible").textContent=members.filter(x=>x.competition_eligible!==false&&x.status!=="suspended").length;
 
   $("memberRows").innerHTML=arr.map(r=>{
-    const self=r.id===me.id;
-    const isAdmin=r.role==="admin";
-    const isStaffTarget=!!r.is_staff;
-    const until=r.suspended_until?new Date(r.suspended_until):null;
-    const temp=until&&until.getTime()>Date.now();
-    const stateText=r.status==="suspended"?(temp?`暫停至 ${fmt(r.suspended_until)}`:"永久停權"):"正常";
-    const stateClass=r.status==="suspended"?"badpill":"ok";
-    const eligible=r.competition_eligible!==false;
-
-    const canEditMember=staffRole==="admin"||staffRole==="deputy";
-    const roleCell=canEditMember && !isAdmin
-      ? `<select class="role" ${self?"disabled":""}>
-           <option value="trial" ${r.role==="trial"?"selected":""}>試用會員</option>
-           <option value="member" ${r.role==="member"?"selected":""}>正式會員</option>
-           ${staffRole==="admin"?`<option value="admin" ${r.role==="admin"?"selected":""}>主管理員</option>`:""}
-         </select>`
-      : `<span>${r.role==="admin"?"主管理員":r.role==="trial"?"試用會員":"正式會員"}</span>`;
-
-    const compCell=(staffRole==="admin"||staffRole==="deputy") && !self && !isAdmin
-      ? `<select class="eligible">
-           <option value="true" ${eligible?"selected":""}>可參賽</option>
-           <option value="false" ${!eligible?"selected":""}>不可參賽</option>
-         </select>`
-      : `<span class="pill ${eligible?"bluepill":"badpill"}">${eligible?"可參賽":"不可參賽"}</span>`;
-
-    let actions="";
-    if(self || isAdmin){
-      actions=`<span class="sub">${self?"自己的帳號不可處置":"主管理員帳號不可處置"}</span>`;
-    }else{
-      actions=`<div class="ops">
-        <button class="mini wait" onclick="moderateMember('${r.id}','suspend_1d')">停 1 天</button>
-        <button class="mini wait" onclick="moderateMember('${r.id}','suspend_7d')">停 7 天</button>
-        ${staffRole==="admin"?`<button class="mini reject" onclick="moderateMember('${r.id}','suspend_permanent')">永久停權</button>`:""}
-        <button class="mini save" onclick="moderateMember('${r.id}','unsuspend')">解除</button>
-      </div>`;
-    }
-
+    const self=r.id===me.id,isAdmin=r.role==="admin",eligible=r.competition_eligible!==false;
+    const roleText=isAdmin?"主管理員":deputyIds.has(r.id)?"副管理員":r.role==="trial"?"試用會員":"正式會員";
     return `<tr data-id="${r.id}">
-      <td><div class="name">${esc(r.display_name||"未命名")}${self?"（我）":""}</div><div class="sub">${esc(r.email||"")}</div>${staffBadge(r.id)}${staffRole==="admin"&&!self&&!isAdmin?`<div><button class="mini staffbtn" onclick="openStaffModal('${r.id}')">管理權限</button></div>`:""}</td>
-      <td>${roleCell}</td>
-      <td><span class="pill ${stateClass}">${stateText}</span></td>
-      <td>${(staffRole==="admin"||staffRole==="deputy")&&!isAdmin?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?"disabled":""}>`:(r.expires_at?fmt(r.expires_at):"—")}</td>
-      <td>${r.created_at?fmt(r.created_at):"加入時間未記錄"}</td>
-      <td>${r.last_sign_in_at?fmt(r.last_sign_in_at):'<span class="sub">尚無登入紀錄</span>'}</td>
-      <td>${compCell}</td>
-      <td><span class="sub">${esc(r.suspension_reason||"—")}</span></td>
-      <td>${actions}${(staffRole==="admin"||staffRole==="deputy")&&!self&&!isAdmin?`<button class="mini neutral" style="margin-top:6px" onclick="saveMember('${r.id}')">儲存會員設定</button>`:""}</td>
+      <td><div class="name">${esc(r.display_name||"未命名")}${self?"（我）":""}</div><div class="sub">${esc(r.email||"")}</div>${staffBadge(r.id)}</td>
+      <td>${roleText}</td>
+      <td>${rankCell(r)}</td>
+      <td>${recordCell(r)}</td>
+      <td><span class="pill ${r.status==="suspended"?"badpill":"ok"}">${r.status==="suspended"?"停權":"正常"}</span></td>
+      <td>${r.expires_at?fmt(r.expires_at):"—"}</td>
+      <td>${r.created_at?fmt(r.created_at):"—"}</td>
+      <td>${r.last_sign_in_at?fmt(r.last_sign_in_at):"—"}</td>
+      <td><span class="pill ${eligible?"bluepill":"badpill"}">${eligible?"可參賽":"不可參賽"}</span></td>
+      <td>${self||isAdmin?'<span class="sub">不可處置</span>':`<div class="ops"><button class="mini wait" onclick="moderateMember('${r.id}','suspend_1d')">停1天</button><button class="mini save" onclick="moderateMember('${r.id}','unsuspend')">解除</button></div>`}</td>
     </tr>`;
-  }).join("") || '<tr><td colspan="9" class="sub">沒有符合資料。</td></tr>';
+  }).join("")||'<tr><td colspan="10" class="sub">沒有符合資料。</td></tr>';
 }
-
-async function loadMembers(){
-  try{await sb.rpc("joygo_admin_cleanup_expired_suspensions")}catch{}
-  const {data,error}=await sb.rpc("joygo_admin_member_list",{p_limit:500});
-  if(error){notice("會員資料讀取失敗："+error.message,"bad");return}
-  members=data||[];
-  await loadStaffTeam();
-  renderMembers();
-}
-
 async function moderateMember(id,action){
-  const r=members.find(x=>x.id===id); if(!r)return;
-  if(!confirm(`確定要對「${r.display_name||r.email}」執行這項處置？`))return;
-  const reason=prompt("管理備註／停權原因（可留空）","")||"";
-  notice("正在更新會員狀態…");
-  const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:id,p_action:action,p_reason:reason});
-  if(error){notice("會員處置失敗："+error.message,"bad");return}
-  notice("✅ 會員狀態已更新。","good");
-  await loadMembers();
+  const r=members.find(x=>x.id===id);if(!r)return;
+  if(!confirm(`確定對「${r.display_name||r.email}」執行此處置？`))return;
+  const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:id,p_action:action,p_reason:""});
+  if(error)return notice("會員處置失敗："+error.message,"bad");
+  notice("✅ 會員狀態已更新。","good");await loadMembers();
 }
 window.moderateMember=moderateMember;
 
-async function saveMember(id){
-  if(!["admin","deputy"].includes(staffRole))return notice("只有主管理員或副管理員可以修改會員設定。","bad");
-  const row=document.querySelector(`tr[data-id="${id}"]`);
-  const role=row.querySelector(".role").value;
-  const exp=row.querySelector(".expires").value;
-  const eligible=row.querySelector(".eligible").value==="true";
-
-  const rpcName=staffRole==="admin"?"joygo_admin_update_member_settings":"joygo_deputy_update_member_settings";
-  const {error}=await sb.rpc(rpcName,{
-    p_target_user:id,
-    p_role:role,
-    p_expires_at:exp?new Date(exp+"T23:59:59").toISOString():null,
-    p_competition_eligible:eligible
-  });
-
-  if(error){notice("會員更新失敗："+error.message,"bad");return}
-  notice("✅ 會員設定已更新。","good");
-  await loadMembers();
+async function loadMembers(){
+  const [mres,rres]=await Promise.all([
+    sb.rpc("joygo_admin_member_list",{p_limit:500}),
+    sb.rpc("joygo_staff_list_member_ranks_v333")
+  ]);
+  if(mres.error)return notice("會員資料讀取失敗："+mres.error.message,"bad");
+  if(rres.error)return notice("棋力資料讀取失敗："+rres.error.message,"bad");
+  members=mres.data||[];
+  rankRows=new Map((rres.data||[]).map(x=>[x.user_id,x]));
+  await loadStaffTeam();
+  renderMembers();
 }
-window.saveMember=saveMember;
-
 async function init(){
   const {data:{session},error}=await sb.auth.getSession();
-  if(error||!session){notice("請先登入 Joy Go 管理員帳號。","bad");return}
+  if(error||!session)return notice("請先登入 Joy Go 管理員帳號。","bad");
   me=session.user;
-
-  const {data:isStaff,error:staffErr}=await sb.rpc("is_joygo_staff");
-  if(staffErr||isStaff!==true){notice("此頁僅限 Joy Go 管理員使用。","bad");return}
-
-  const {data:access,error:accessErr}=await sb.rpc("joygo_get_staff_access");
-  if(accessErr){notice("管理權限讀取失敗："+accessErr.message,"bad");return}
+  const {data:access,error:ae}=await sb.rpc("joygo_get_staff_access");
+  if(ae)return notice("管理權限讀取失敗："+ae.message,"bad");
   const a=Array.isArray(access)?access[0]:access;
   staffRole=a?.staff_role||"none";
-
+  if(!["admin","deputy","moderator"].includes(staffRole))return notice("此頁僅限管理團隊使用。","bad");
   $("app").hidden=false;
   notice(staffRole==="admin"?"✅ 主管理員會員管理已就緒。":staffRole==="deputy"?"✅ 副管理員會員管理已就緒。":"✅ 巡場會員監控已就緒。","good");
   await loadMembers();
 }
-
-["memberSearch","roleFilter","statusFilter","competitionFilter"].forEach(id=>{
-  $(id).addEventListener(id==="memberSearch"?"input":"change",renderMembers);
-});
+["memberSearch","roleFilter","statusFilter","competitionFilter"].forEach(id=>$(id).addEventListener(id==="memberSearch"?"input":"change",renderMembers));
 $("refreshBtn").onclick=loadMembers;
 init();
 </script>
