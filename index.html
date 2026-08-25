@@ -6771,7 +6771,20 @@ function onlineLobbyRenderFriends(){
   const box=$("onlineFriendsList"),count=$("onlineLobbyCount");if(!box)return;
   const rows=onlineLobbyPresenceRows();
   const byUser=new Map();
-  rows.forEach(r=>{if(r.user_id&&!byUser.has(r.user_id))byUser.set(r.user_id,r)});
+  // Beta 3.2.9b：同一會員可能同時存在多筆 Presence。
+  // 優先保留「有棋力」且 online_at 較新的資料，避免舊 Presence 蓋掉棋力。
+  rows.forEach(r=>{
+    if(!r.user_id)return;
+    const prev=byUser.get(r.user_id);
+    if(!prev){byUser.set(r.user_id,r);return}
+    const prevHasRank=!!prev.rank_label && prev.rank_label!=="未設定";
+    const currHasRank=!!r.rank_label && r.rank_label!=="未設定";
+    const prevTime=Date.parse(prev.online_at||"")||0;
+    const currTime=Date.parse(r.online_at||"")||0;
+    if((currHasRank&&!prevHasRank) || (currHasRank===prevHasRank && currTime>=prevTime)){
+      byUser.set(r.user_id,r);
+    }
+  });
   const list=[...byUser.values()].sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),'zh-Hant')).slice(0,16);
   if(count)count.textContent=String(list.length);
   box.innerHTML="";
