@@ -38,7 +38,7 @@
 <body>
 <div class="page">
   <div class="top">
-    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.1｜友誼賽・升降賽</p></div>
+    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.3｜棋力・升降戰績</p></div>
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
@@ -112,7 +112,7 @@
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let session=null,meName="會員",meRole="member",meRankCode="UNRATED",meRankLabel="未設定",meRankSort=0,presence=null,inviteChannel=null,roomChannel=null,refreshTimer=null,moderationTimer=null,moderationKickVersion=null,broadcastTimer=null,lastBroadcastId=null;
+let session=null,meName="會員",meRole="member",meRankCode="UNRATED",meRankLabel="未設定",meRankSort=0,meRatingWins=0,meRatingLosses=0,presence=null,inviteChannel=null,roomChannel=null,refreshTimer=null,moderationTimer=null,moderationKickVersion=null,broadcastTimer=null,lastBroadcastId=null;
 let presenceSubscribed=false,presenceConnecting=false,presenceRetryTimer=null;
 const $=id=>document.getElementById(id);
 function msg(t,type=""){const n=$("notice");n.textContent=t;n.className="notice "+type;if(!t)n.style.display="none";else n.style.display="block"}
@@ -128,12 +128,12 @@ function syncMatchTypeUI(){
 
 function goRoom(code){location.href="index.html?room="+encodeURIComponent(code)}
 async function loadProfile(){
-  const {data}=await sb.from("profiles").select("display_name,role,status,rank_code,rank_label,rank_sort").eq("id",session.user.id).maybeSingle();
+  const {data}=await sb.from("profiles").select("display_name,role,status,rank_code,rank_label,rank_sort,rating_total_wins,rating_total_losses").eq("id",session.user.id).maybeSingle();
   meName=data?.display_name||session.user.user_metadata?.display_name||session.user.email?.split("@")[0]||"會員";
   meRole=String(data?.role||"member").toLowerCase();
   meRankCode=String(data?.rank_code||"UNRATED");
   meRankLabel=String(data?.rank_label||"未設定");
-  meRankSort=Number(data?.rank_sort||0);
+  meRankSort=Number(data?.rank_sort||0);meRatingWins=Number(data?.rating_total_wins||0);meRatingLosses=Number(data?.rating_total_losses||0);
   try{const {data:a}=await sb.rpc("joygo_get_my_moderator_alias");const alias=Array.isArray(a)?a[0]:a;if(alias&&String(alias).trim())meName=String(alias).trim()}catch(_){}
   const admin=meRole==="admin";if($("adminTournamentPanel"))$("adminTournamentPanel").hidden=!admin
 }
@@ -158,8 +158,10 @@ function renderPlayers(){
   list.forEach(r=>{
     const mine=r.user_id===session.user.id,playing=r.status==="playing";
     const rank=(r.rank_label&&r.rank_label!=="未設定")?String(r.rank_label):"棋力未設定";
+    const wins=Number(r.rating_wins||0),losses=Number(r.rating_losses||0),games=wins+losses;
+    const pct=games?Math.round(wins*1000/games)/10:0;
     const d=document.createElement("div");d.className="player";
-    d.innerHTML=`<div><div class="pname"><span class="dot"></span>${esc(r.name||"棋友")}${mine?"（我）":""}</div><div class="pmeta">${esc(rank)}｜${playing&&r.room_code?"正在房間 "+esc(r.room_code):"Joy Go 會員"}</div></div>`;
+    d.innerHTML=`<div><div class="pname"><span class="dot"></span>${esc(r.name||"棋友")}${mine?"（我）":""}</div><div class="pmeta">${esc(rank)}｜${wins}勝${losses}敗｜${pct}%｜${playing&&r.room_code?"正在房間 "+esc(r.room_code):"Joy Go 會員"}</div></div>`;
     const right=document.createElement("div");
     if(mine)right.innerHTML='<span class="pill">本人</span>';
     else if(playing)right.innerHTML='<span class="pill playing">對弈中</span>';
@@ -176,6 +178,8 @@ async function track(){
       rank_code:meRankCode,
       rank_label:meRankLabel,
       rank_sort:meRankSort,
+      rating_wins:meRatingWins,
+      rating_losses:meRatingLosses,
       status:"online",
       room_code:"",
       online_at:new Date().toISOString(),
