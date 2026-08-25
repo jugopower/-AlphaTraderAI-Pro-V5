@@ -11,37 +11,38 @@
  style-src 'self' 'unsafe-inline';
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
- object-src 'none'; base-uri 'self'; form-action 'self';">
-<title>Joy Go Beta 3.3.3b｜會員權限・棋力與戰績管理</title>
+ object-src 'none';base-uri 'self';form-action 'self';">
+<title>Joy Go Beta 3.3.3c｜精簡會員表格＋資料戰績查詢</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
+:root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
 *{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}
-.shell{width:min(1350px,100%);margin:auto;padding:14px}.head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
-h1{margin:0;color:var(--gold);font-size:clamp(25px,4vw,38px)}.subtitle{color:var(--muted);margin-top:4px}
-.actions{display:flex;gap:7px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0a120d;color:var(--ink);padding:9px 12px;border-radius:11px;text-decoration:none;font-weight:850;cursor:pointer}.gold{background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400;border:0}
-.notice{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#0a120d;color:var(--muted);margin-bottom:10px}.good{border-color:#257657;color:#9cebc7}.bad{border-color:#914343;color:#ffb0b0}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0}.stat{border:1px solid var(--line);border-radius:14px;padding:12px;background:#0d1811}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{font-size:24px;color:var(--gold)}
-.team{border:1px solid var(--line);border-radius:16px;padding:12px;background:#0b150e;margin-bottom:10px}.team h2{margin:0 0 8px;color:var(--gold);font-size:18px}.teamgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.teamitem{border:1px solid #2c4738;border-radius:10px;padding:8px}.teamitem small{display:block;color:var(--muted)}.teamitem b{display:block;margin-top:3px}
-.card{border:1px solid var(--line);border-radius:16px;background:#0a120d;overflow:hidden}.cardhead{padding:13px;border-bottom:1px solid #2a3e31;font-weight:900;color:var(--gold)}
-.body{padding:12px}.filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:7px;margin-bottom:10px}
-input,select{background:#050806;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px;max-width:100%}
-.tablewrap{overflow:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;min-width:1180px}th,td{padding:9px;border-bottom:1px solid #24372b;text-align:left;vertical-align:middle;font-size:13px}th{background:#17271c;color:#ffe083;position:sticky;top:0}
-.name{font-weight:900}.sub{font-size:11px;color:var(--muted);line-height:1.4}.pill,.perm{display:inline-block;padding:4px 7px;border-radius:999px;font-size:11px;font-weight:900}.okpill{background:#10472f;color:#90efbd}.badpill{background:#542626;color:#ffb0b0}.bluepill{background:#193b51;color:#a8ddff}.perm{border:1px solid #735c32;background:#281f0d;color:#ffe19a}.perm.dep{border-color:#397eaa;background:#102f43;color:#aee1ff}.perm.mod{border-color:#6b5d91;background:#251e3e;color:#d9caff}
-.rankbox{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.mini{border:0;border-radius:8px;padding:7px 8px;font-weight:850;cursor:pointer}.save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}.ops{display:flex;gap:5px;flex-wrap:wrap}.record{font-weight:850;white-space:nowrap}.record small{display:block;color:var(--muted);font-weight:600}
-@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.teamgrid{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}table{min-width:0}thead{display:none}tbody,tr,td{display:block;width:100%}tr{border:1px solid var(--line);border-radius:13px;padding:9px;margin-bottom:9px;background:#09110c}td{border:0;padding:5px 0}td::before{content:attr(data-label);display:block;color:#d7bd7c;font-size:10px;font-weight:900;margin-bottom:2px}}
-@media(max-width:600px){.head{align-items:flex-start;flex-direction:column}.filters{grid-template-columns:1fr}.stats,.teamgrid{grid-template-columns:1fr 1fr}}
+.shell{width:min(1250px,100%);margin:auto;padding:14px}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+h1{margin:0;color:var(--gold);font-size:clamp(24px,4vw,36px)}.subtitle{color:var(--muted);margin-top:4px}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#0a120d;color:var(--ink);padding:9px 12px;border-radius:10px;text-decoration:none;font-weight:850;cursor:pointer}.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}
+.notice{padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#0a120d;color:var(--muted);margin-bottom:9px}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:9px}.stat{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#0d1811}.stat span{font-size:11px;color:var(--muted)}.stat b{display:block;color:var(--gold);font-size:21px}
+.toolbar{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:7px;margin-bottom:8px}input,select{background:#050806;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#08100b}table{width:100%;border-collapse:collapse;min-width:920px}th,td{padding:8px 9px;border-bottom:1px solid #24372b;text-align:left;vertical-align:middle;font-size:12px}th{background:#17271c;color:#ffe083;position:sticky;top:0;z-index:2}
+tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}.email{font-size:10px;color:var(--muted);margin-top:2px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900}.ok{background:#10472f;color:#90efbd}.badpill{background:#542626;color:#ffb0b0}.bluepill{background:#193b51;color:#a8ddff}.goldpill{background:#46360e;color:#ffe395}.deppill{background:#102f43;color:#aee1ff}.modpill{background:#251e3e;color:#d9caff}
+.mini{border:0;border-radius:7px;padding:6px 8px;font-weight:850;cursor:pointer}.detailbtn{background:#d9bb76;color:#2d2008}.record{white-space:nowrap;font-weight:800}.sub{font-size:11px;color:var(--muted);line-height:1.45}
+.modal-bg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:99}.modal-bg.open{display:flex}.modal{width:min(760px,96vw);max-height:90vh;overflow:auto;background:#0b140e;border:1px solid #54705e;border-radius:18px;box-shadow:0 25px 80px #000;padding:16px}
+.modal-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;border-bottom:1px solid #2c4134;padding-bottom:10px;margin-bottom:12px}.modal h2{margin:0;color:var(--gold)}.close{border:1px solid #4d5c51;background:#111c15;color:white;border-radius:9px;padding:7px 9px;cursor:pointer}
+.profilegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.box{border:1px solid #2d4738;border-radius:11px;background:#08100b;padding:9px}.box small{display:block;color:var(--muted);font-size:10px}.box b{display:block;margin-top:3px;color:#fff5d0}
+.section{margin-top:12px;border-top:1px solid #2b4133;padding-top:11px}.section h3{margin:0 0 8px;color:#ffe083;font-size:15px}.adminrow{display:grid;grid-template-columns:1fr auto;gap:7px;margin-bottom:7px;align-items:center}.adminrow label{font-size:11px;color:var(--muted)}.adminrow .field{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.save{background:var(--green);color:#082317}.wait{background:var(--blue);color:#092337}.reject{background:var(--red);color:#3b0808}.neutral{background:#d9bb76;color:#2d2008}.ops{display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:850px){.stats{grid-template-columns:repeat(5,1fr)}.toolbar{grid-template-columns:2fr 1fr 1fr 1fr}.profilegrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr}.profilegrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.3b｜權限恢復＋棋力＋升降戰績</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.3c｜精簡表格＋點選會員查資料／戰績</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
-<div class="notice"><b>權限：</b>主管理員＝完整會員管理＋棋力；副管理員＝棋力調整；匿名巡場員＝既有巡場處置。一般會員已設定棋力後不能自行更改。</div>
-
 <section id="app" hidden>
  <div class="stats">
   <div class="stat"><span>全部會員</span><b id="mTotal">0</b></div>
@@ -50,89 +51,139 @@ input,select{background:#050806;border:1px solid var(--line);border-radius:8px;c
   <div class="stat"><span>停權</span><b id="mSusp">0</b></div>
   <div class="stat"><span>可參賽</span><b id="mEligible">0</b></div>
  </div>
-
- <section class="team">
-  <h2>🛡️ 管理團隊</h2>
-  <div class="teamgrid">
-   <div class="teamitem"><small>主管理員</small><b id="teamAdmin">—</b></div>
-   <div class="teamitem"><small>副管理員</small><b id="teamDeputy">—</b></div>
-   <div class="teamitem"><small>匿名巡場員 01</small><b id="teamMod1">—</b></div>
-   <div class="teamitem"><small>匿名巡場員 02</small><b id="teamMod2">—</b></div>
-  </div>
- </section>
-
- <section class="card">
-  <div class="cardhead">會員資料、權限、棋力與戰績</div>
-  <div class="body">
-   <div class="filters">
-    <input id="memberSearch" placeholder="搜尋姓名或 Email">
-    <select id="roleFilter"><option value="all">全部身分</option><option value="member">正式會員</option><option value="trial">試用會員</option><option value="admin">管理員</option></select>
-    <select id="statusFilter"><option value="all">全部狀態</option><option value="active">正常</option><option value="suspended">停權</option></select>
-    <select id="competitionFilter"><option value="all">全部參賽資格</option><option value="eligible">可參賽</option><option value="blocked">不可參賽</option></select>
-   </div>
-   <div class="tablewrap">
-    <table><thead><tr><th>會員</th><th>管理權限</th><th>身分</th><th>棋力</th><th>升降戰績</th><th>狀態</th><th>到期</th><th>參賽</th><th>管理處置</th></tr></thead>
-    <tbody id="memberRows"><tr><td colspan="9">讀取中…</td></tr></tbody></table>
-   </div>
-  </div>
- </section>
+ <div class="toolbar">
+  <input id="memberSearch" placeholder="搜尋姓名或 Email">
+  <select id="roleFilter"><option value="all">全部身分</option><option value="member">正式會員</option><option value="trial">試用會員</option><option value="admin">管理員</option></select>
+  <select id="statusFilter"><option value="all">全部狀態</option><option value="active">正常</option><option value="suspended">停權</option></select>
+  <select id="competitionFilter"><option value="all">全部參賽資格</option><option value="eligible">可參賽</option><option value="blocked">不可參賽</option></select>
+ </div>
+ <div class="tablewrap">
+  <table>
+   <thead><tr><th>會員</th><th>權限</th><th>棋力</th><th>戰績</th><th>勝率</th><th>狀態</th><th>參賽</th><th>查看</th></tr></thead>
+   <tbody id="memberRows"><tr><td colspan="8">讀取中…</td></tr></tbody>
+  </table>
+ </div>
 </section>
 </main>
+
+<div id="detailModal" class="modal-bg" role="dialog" aria-modal="true">
+ <div class="modal">
+  <div class="modal-head">
+   <div><h2 id="detailName">會員資料</h2><div id="detailEmail" class="sub"></div></div>
+   <button id="closeModal" class="close">關閉</button>
+  </div>
+  <div class="profilegrid">
+   <div class="box"><small>目前棋力</small><b id="dRank">—</b></div>
+   <div class="box"><small>升降賽戰績</small><b id="dRecord">—</b></div>
+   <div class="box"><small>勝率</small><b id="dPct">—</b></div>
+   <div class="box"><small>會員身分</small><b id="dRole">—</b></div>
+   <div class="box"><small>管理權限</small><b id="dPerm">—</b></div>
+   <div class="box"><small>會員狀態</small><b id="dStatus">—</b></div>
+   <div class="box"><small>加入時間</small><b id="dCreated">—</b></div>
+   <div class="box"><small>最近登入</small><b id="dLast">—</b></div>
+   <div class="box"><small>參賽資格</small><b id="dEligible">—</b></div>
+  </div>
+
+  <div class="section">
+   <h3>🏅 升降賽詳細</h3>
+   <div class="profilegrid">
+    <div class="box"><small>總局數</small><b id="dGames">0</b></div>
+    <div class="box"><small>本期進度</small><b id="dCycle">—</b></div>
+    <div class="box"><small>目前連勝</small><b id="dStreak">—</b></div>
+   </div>
+  </div>
+
+  <div id="rankAdminSection" class="section" hidden>
+   <h3>🎯 主／副管理員棋力調整</h3>
+   <div class="adminrow"><label>修改棋力</label><div class="field"><select id="detailRankSelect"><option value="30K">30級</option><option value="29K">29級</option><option value="28K">28級</option><option value="27K">27級</option><option value="26K">26級</option><option value="25K">25級</option><option value="24K">24級</option><option value="23K">23級</option><option value="22K">22級</option><option value="21K">21級</option><option value="20K">20級</option><option value="19K">19級</option><option value="18K">18級</option><option value="17K">17級</option><option value="16K">16級</option><option value="15K">15級</option><option value="14K">14級</option><option value="13K">13級</option><option value="12K">12級</option><option value="11K">11級</option><option value="10K">10級</option><option value="9K">9級</option><option value="8K">8級</option><option value="7K">7級</option><option value="6K">6級</option><option value="5K">5級</option><option value="4K">4級</option><option value="3K">3級</option><option value="2K">2級</option><option value="1K">1級</option><option value="1D">初段</option><option value="2D">2段</option><option value="3D">3段</option><option value="4D">4段</option><option value="5D">5段</option><option value="6D">6段</option><option value="7D">7段</option></select><button id="saveRankBtn" class="mini save">儲存棋力</button></div></div>
+  </div>
+
+  <div id="adminSection" class="section" hidden>
+   <h3>👑 主管理員會員管理</h3>
+   <div class="adminrow"><label>會員身分</label><div class="field"><select id="detailRole"><option value="trial">試用會員</option><option value="member">正式會員</option><option value="admin">管理員</option></select></div></div>
+   <div class="adminrow"><label>會員到期</label><div class="field"><input id="detailExpires" type="date"></div></div>
+   <div class="adminrow"><label>參賽資格</label><div class="field"><select id="detailEligible"><option value="true">可參賽</option><option value="false">不可參賽</option></select></div></div>
+   <div class="ops"><button id="saveMemberBtn" class="mini neutral">儲存會員設定</button><button id="suspend1Btn" class="mini wait">停1天</button><button id="suspend7Btn" class="mini wait">停7天</button><button id="suspendForeverBtn" class="mini reject">永久停權</button><button id="unsuspendBtn" class="mini save">解除停權</button></div>
+  </div>
+ </div>
+</div>
 
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let me=null,members=[],rankRows=new Map(),staffRole="none",deputyIds=new Set(),moderatorIds=new Set();
+let me=null,members=[],rankRows=new Map(),staffRole="none",deputyIds=new Set(),moderatorIds=new Set(),selectedId=null;
+
 function notice(t,type=""){$("notice").className="notice"+(type?" "+type:"");$("notice").textContent=t}
 function fmt(x){if(!x)return "—";try{return new Date(x).toLocaleString("zh-TW",{hour12:false})}catch{return String(x)}}
-function nameById(id){const r=members.find(x=>x.id===id);return r?.display_name||r?.email||"—"}
+function dateVal(x){if(!x)return "";try{return new Date(x).toISOString().slice(0,10)}catch{return ""}}
+function rr(id){return rankRows.get(id)||{}}
+function permission(r){if(r.role==="admin")return ["主管理員","goldpill"];if(deputyIds.has(r.id))return ["副管理員","deppill"];if(moderatorIds.has(r.id))return ["巡場員","modpill"];return ["一般",""]}
+function roleText(r){return r.role==="admin"?"主管理員":r.role==="trial"?"試用會員":"正式會員"}
+
+function render(){
+ const q=$("memberSearch").value.trim().toLowerCase(),rf=$("roleFilter").value,sf=$("statusFilter").value,cf=$("competitionFilter").value;
+ const arr=members.filter(x=>{const e=x.competition_eligible!==false;return(!q||[x.display_name,x.email].join(" ").toLowerCase().includes(q))&&(rf==="all"||x.role===rf)&&(sf==="all"||x.status===sf)&&(cf==="all"||(cf==="eligible"&&e)||(cf==="blocked"&&!e))});
+ $("mTotal").textContent=members.length;$("mMember").textContent=members.filter(x=>x.role==="member"&&x.status==="active").length;$("mTrial").textContent=members.filter(x=>x.role==="trial").length;$("mSusp").textContent=members.filter(x=>x.status==="suspended").length;$("mEligible").textContent=members.filter(x=>x.competition_eligible!==false&&x.status!=="suspended").length;
+ $("memberRows").innerHTML=arr.map(r=>{const x=rr(r.id),w=Number(x.rating_total_wins||0),l=Number(x.rating_total_losses||0),n=w+l,p=n?Math.round(w*1000/n)/10:0,[pt,pc]=permission(r),eligible=r.competition_eligible!==false;return `<tr>
+  <td><div class="clickname" onclick="openMember('${r.id}')">${esc(r.display_name||"未命名")}${r.id===me.id?"（我）":""}</div><div class="email">${esc(r.email||"")}</div></td>
+  <td><span class="pill ${pc}">${pt}</span></td><td>${esc(x.rank_label||"未設定")}</td><td class="record">${w}勝 ${l}敗</td><td>${p}%</td>
+  <td><span class="pill ${r.status==="suspended"?"badpill":"ok"}">${r.status==="suspended"?"停權":"正常"}</span></td>
+  <td><span class="pill ${eligible?"bluepill":"badpill"}">${eligible?"可參賽":"不可參賽"}</span></td>
+  <td><button class="mini detailbtn" onclick="openMember('${r.id}')">查看</button></td></tr>`}).join("")||'<tr><td colspan="8">沒有符合資料。</td></tr>';
+}
 
 async function loadStaff(){
  deputyIds=new Set();moderatorIds=new Set();
  try{const {data}=await sb.rpc("joygo_get_deputy_ids");(data||[]).forEach(x=>deputyIds.add(x.user_id))}catch{}
  try{const {data}=await sb.rpc("joygo_get_moderator_ids");(data||[]).forEach(x=>moderatorIds.add(x.user_id))}catch{}
- const a=members.find(x=>x.role==="admin");$("teamAdmin").textContent=a?(a.display_name||a.email):"—";
- const d=[...deputyIds];$("teamDeputy").textContent=d[0]?nameById(d[0]):"尚未設定";
- const m=[...moderatorIds];$("teamMod1").textContent=m[0]?"已設定（匿名）":"尚未設定";$("teamMod2").textContent=m[1]?"已設定（匿名）":"尚未設定";
 }
-function perm(r){if(r.role==="admin")return '<span class="perm">主管理員</span>';if(deputyIds.has(r.id))return '<span class="perm dep">副管理員</span>';if(moderatorIds.has(r.id))return '<span class="perm mod">匿名巡場員</span>';return '<span class="sub">一般會員</span>'}
-function roleCell(r){const self=r.id===me.id;if(staffRole==="admin")return `<select class="role" ${self?"disabled":""}><option value="trial" ${r.role==="trial"?"selected":""}>試用會員</option><option value="member" ${r.role==="member"?"selected":""}>正式會員</option><option value="admin" ${r.role==="admin"?"selected":""}>管理員</option></select>`;return r.role==="admin"?"主管理員":r.role==="trial"?"試用會員":"正式會員"}
-function rankCell(r){const rr=rankRows.get(r.id)||{},label=rr.rank_label||"未設定";if(!["admin","deputy"].includes(staffRole))return esc(label);return `<div class="rankbox"><select class="rankSelect"><option value="">${esc(label)}</option><option value="30K">30級</option><option value="29K">29級</option><option value="28K">28級</option><option value="27K">27級</option><option value="26K">26級</option><option value="25K">25級</option><option value="24K">24級</option><option value="23K">23級</option><option value="22K">22級</option><option value="21K">21級</option><option value="20K">20級</option><option value="19K">19級</option><option value="18K">18級</option><option value="17K">17級</option><option value="16K">16級</option><option value="15K">15級</option><option value="14K">14級</option><option value="13K">13級</option><option value="12K">12級</option><option value="11K">11級</option><option value="10K">10級</option><option value="9K">9級</option><option value="8K">8級</option><option value="7K">7級</option><option value="6K">6級</option><option value="5K">5級</option><option value="4K">4級</option><option value="3K">3級</option><option value="2K">2級</option><option value="1K">1級</option><option value="1D">初段</option><option value="2D">2段</option><option value="3D">3段</option><option value="4D">4段</option><option value="5D">5段</option><option value="6D">6段</option><option value="7D">7段</option></select><button class="mini save" onclick="saveRank('${r.id}')">儲存棋力</button></div>`}
-function recordCell(r){const rr=rankRows.get(r.id)||{},w=Number(rr.rating_total_wins||0),l=Number(rr.rating_total_losses||0),n=w+l,p=n?Math.round(w*1000/n)/10:0;return `<div class="record">${w}勝 ${l}敗<small>勝率 ${p}%</small></div>`}
-function expiryCell(r){if(staffRole!=="admin")return r.expires_at?fmt(r.expires_at):"—";let v="";try{if(r.expires_at)v=new Date(r.expires_at).toISOString().slice(0,10)}catch{}return `<input class="expires" type="date" value="${v}" ${r.id===me.id?"disabled":""}>`}
-function eligibleCell(r){const e=r.competition_eligible!==false;if(staffRole==="admin"&&r.id!==me.id&&r.role!=="admin")return `<select class="eligible"><option value="true" ${e?"selected":""}>可參賽</option><option value="false" ${!e?"selected":""}>不可參賽</option></select>`;return `<span class="pill ${e?"bluepill":"badpill"}">${e?"可參賽":"不可參賽"}</span>`}
-function actions(r){const self=r.id===me.id,admin=r.role==="admin";if(self||admin)return `<span class="sub">${self?"自己的帳號不可處置":"主管理員帳號不可處置"}</span>`;const mod=moderatorIds.has(r.id);let s='<div class="ops">';s+=`<button class="mini wait" onclick="moderateMember('${r.id}','suspend_1d')">停1天</button><button class="mini wait" onclick="moderateMember('${r.id}','suspend_7d')">停7天</button>`;if(staffRole==="admin")s+=`<button class="mini reject" onclick="moderateMember('${r.id}','suspend_permanent')">永久停權</button><button class="mini neutral" onclick="setModerator('${r.id}',${mod?"false":"true"})">${mod?"取消巡場":"設為巡場"}</button>`;s+=`<button class="mini save" onclick="moderateMember('${r.id}','unsuspend')">解除</button>`;if(staffRole==="admin")s+=`<button class="mini neutral" onclick="saveMember('${r.id}')">儲存會員設定</button>`;return s+"</div>"}
-
-function render(){
- const q=$("memberSearch").value.trim().toLowerCase(),rf=$("roleFilter").value,sf=$("statusFilter").value,cf=$("competitionFilter").value;
- const arr=members.filter(x=>{const qok=!q||[x.display_name,x.email].join(" ").toLowerCase().includes(q),rok=rf==="all"||x.role===rf,sok=sf==="all"||x.status===sf,e=x.competition_eligible!==false,cok=cf==="all"||(cf==="eligible"&&e)||(cf==="blocked"&&!e);return qok&&rok&&sok&&cok});
- $("mTotal").textContent=members.length;$("mMember").textContent=members.filter(x=>x.role==="member"&&x.status==="active").length;$("mTrial").textContent=members.filter(x=>x.role==="trial").length;$("mSusp").textContent=members.filter(x=>x.status==="suspended").length;$("mEligible").textContent=members.filter(x=>x.competition_eligible!==false&&x.status!=="suspended").length;
- $("memberRows").innerHTML=arr.map(r=>{const until=r.suspended_until?new Date(r.suspended_until):null,temp=until&&until.getTime()>Date.now(),st=r.status==="suspended"?(temp?`暫停至 ${fmt(r.suspended_until)}`:"永久停權"):"正常";return `<tr data-id="${r.id}"><td data-label="會員"><div class="name">${esc(r.display_name||"未命名")}${r.id===me.id?"（我）":""}</div><div class="sub">${esc(r.email||"")}</div></td><td data-label="管理權限">${perm(r)}</td><td data-label="身分">${roleCell(r)}</td><td data-label="棋力">${rankCell(r)}</td><td data-label="升降戰績">${recordCell(r)}</td><td data-label="狀態"><span class="pill ${r.status==="suspended"?"badpill":"okpill"}">${st}</span><div class="sub">${esc(r.suspension_reason||"")}</div></td><td data-label="到期">${expiryCell(r)}</td><td data-label="參賽">${eligibleCell(r)}</td><td data-label="管理處置">${actions(r)}</td></tr>`}).join("")||'<tr><td colspan="9">沒有符合資料。</td></tr>';
-}
-
-async function saveRank(id){if(!["admin","deputy"].includes(staffRole))return notice("只有主管理員或副管理員可以修改棋力。","bad");const row=document.querySelector(`tr[data-id="${id}"]`),sel=row?.querySelector(".rankSelect"),code=sel?.value;if(!code)return notice("請先選擇新棋力。","bad");const m=members.find(x=>x.id===id),old=rankRows.get(id)?.rank_label||"未設定",nl=sel.options[sel.selectedIndex]?.text||code;if(!confirm(`確定將「${m?.display_name||m?.email||"會員"}」由 ${old} 改為 ${nl}？`))return;const {error}=await sb.rpc("joygo_staff_set_member_rank_v333",{p_target_id:id,p_rank_code:code});if(error)return notice("棋力修改失敗："+error.message,"bad");notice(`✅ 棋力已修改：${old} → ${nl}`,"good");await loadMembers()}
-window.saveRank=saveRank;
-
-async function moderateMember(id,action){const r=members.find(x=>x.id===id);if(!r)return;if(!confirm(`確定對「${r.display_name||r.email}」執行此處置？`))return;const reason=prompt("管理備註／停權原因（可留空）","")||"";const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:id,p_action:action,p_reason:reason});if(error)return notice("會員處置失敗："+error.message,"bad");notice("✅ 會員狀態已更新。","good");await loadMembers()}
-window.moderateMember=moderateMember;
-
-async function saveMember(id){if(staffRole!=="admin")return notice("只有主管理員可以修改會員身分、期限與參賽資格。","bad");const r=members.find(x=>x.id===id),row=document.querySelector(`tr[data-id="${id}"]`),role=row?.querySelector(".role")?.value||r.role,exp=row?.querySelector(".expires")?.value||"",eligible=(row?.querySelector(".eligible")?.value??String(r.competition_eligible!==false))==="true";const {error}=await sb.rpc("joygo_admin_update_member_settings",{p_target_user:id,p_role:role,p_expires_at:exp?new Date(exp+"T23:59:59").toISOString():null,p_competition_eligible:eligible});if(error)return notice("會員設定更新失敗："+error.message,"bad");notice("✅ 身分／期限／參賽資格已更新。","good");await loadMembers()}
-window.saveMember=saveMember;
-
-async function setModerator(id,enabled){if(staffRole!=="admin")return notice("只有主管理員可以設定巡場管理員。","bad");const r=members.find(x=>x.id===id);if(!confirm(`${enabled?"設為":"取消"}「${r?.display_name||r?.email}」的匿名巡場權限？`))return;const {error}=await sb.rpc("joygo_admin_set_moderator",{p_target_user:id,p_enabled:enabled});if(error)return notice("巡場權限更新失敗："+error.message,"bad");notice(enabled?"✅ 已設為匿名巡場員。":"✅ 已取消巡場權限。","good");await loadMembers()}
-window.setModerator=setModerator;
-
 async function loadMembers(){
  try{await sb.rpc("joygo_admin_cleanup_expired_suspensions")}catch{}
  const mres=await sb.rpc("joygo_admin_member_list",{p_limit:500});if(mres.error)return notice("會員資料讀取失敗："+mres.error.message,"bad");members=mres.data||[];
- rankRows=new Map();
- if(["admin","deputy"].includes(staffRole)){const rr=await sb.rpc("joygo_staff_list_member_ranks_v333");if(rr.error)return notice("棋力資料讀取失敗："+rr.error.message,"bad");rankRows=new Map((rr.data||[]).map(x=>[x.user_id,x]))}
- else{try{const {data}=await sb.from("profiles").select("id,rank_code,rank_label,rating_total_wins,rating_total_losses").in("id",members.map(x=>x.id));rankRows=new Map((data||[]).map(x=>[x.id,{user_id:x.id,...x}]))}catch{}}
- await loadStaff();render();
+ const rres=await sb.rpc("joygo_staff_list_member_ranks_v333");if(rres.error)return notice("棋力資料讀取失敗："+rres.error.message,"bad");rankRows=new Map((rres.data||[]).map(x=>[x.user_id,x]));
+ await loadStaff();render();notice(staffRole==="admin"?"✅ 主管理員會員管理已就緒。":staffRole==="deputy"?"✅ 副管理員棋力管理已就緒。":"✅ 巡場會員查詢已就緒。","good");
 }
 
-async function init(){const {data:{session},error}=await sb.auth.getSession();if(error||!session)return notice("請先登入 Joy Go 管理員帳號。","bad");me=session.user;const {data:access,error:ae}=await sb.rpc("joygo_get_staff_access");if(ae)return notice("管理權限讀取失敗："+ae.message,"bad");const a=Array.isArray(access)?access[0]:access;staffRole=a?.staff_role||"none";if(!["admin","deputy","moderator"].includes(staffRole))return notice("此頁僅限管理團隊使用。","bad");$("app").hidden=false;notice(staffRole==="admin"?"✅ 主管理員完整權限已恢復。":staffRole==="deputy"?"✅ 副管理員權限已恢復：可調整會員棋力。":"✅ 匿名巡場權限已就緒。","good");await loadMembers()}
-["memberSearch","roleFilter","statusFilter","competitionFilter"].forEach(id=>$(id).addEventListener(id==="memberSearch"?"input":"change",render));$("refreshBtn").onclick=loadMembers;init();
+async function openMember(id){
+ selectedId=id;const r=members.find(x=>x.id===id);if(!r)return;const x=rr(id),w=Number(x.rating_total_wins||0),l=Number(x.rating_total_losses||0),n=w+l,p=n?Math.round(w*1000/n)/10:0,[pt]=permission(r);
+ $("detailName").textContent=(r.display_name||"未命名")+(id===me.id?"（我）":"");$("detailEmail").textContent=r.email||"";
+ $("dRank").textContent=x.rank_label||"未設定";$("dRecord").textContent=`${w}勝 ${l}敗`;$("dPct").textContent=`${p}%`;$("dRole").textContent=roleText(r);$("dPerm").textContent=pt;$("dStatus").textContent=r.status==="suspended"?"停權":"正常";$("dCreated").textContent=fmt(r.created_at);$("dLast").textContent=fmt(r.last_sign_in_at);$("dEligible").textContent=r.competition_eligible!==false?"可參賽":"不可參賽";$("dGames").textContent=String(n);
+
+ $("dCycle").textContent="讀取中…";$("dStreak").textContent="讀取中…";
+ try{
+   const {data,error}=await sb.from("profiles").select("rating_cycle_games,rating_cycle_wins,rating_cycle_losses,rating_win_streak").eq("id",id).maybeSingle();
+   if(!error&&data){$("dCycle").textContent=`${Number(data.rating_cycle_games||0)}/10（${Number(data.rating_cycle_wins||0)}勝${Number(data.rating_cycle_losses||0)}敗）`;$("dStreak").textContent=`${Number(data.rating_win_streak||0)}局`}
+   else{$("dCycle").textContent="—";$("dStreak").textContent="—"}
+ }catch{$("dCycle").textContent="—";$("dStreak").textContent="—"}
+
+ $("rankAdminSection").hidden=!["admin","deputy"].includes(staffRole);
+ $("adminSection").hidden=staffRole!=="admin"||id===me.id||r.role==="admin";
+ $("detailRankSelect").value=x.rank_code&&x.rank_code!=="UNRATED"?x.rank_code:"1D";
+ $("detailRole").value=r.role||"member";$("detailExpires").value=dateVal(r.expires_at);$("detailEligible").value=String(r.competition_eligible!==false);
+ $("detailModal").classList.add("open");
+}
+window.openMember=openMember;
+function closeMember(){$("detailModal").classList.remove("open");selectedId=null}
+
+async function saveRank(){
+ if(!selectedId||!["admin","deputy"].includes(staffRole))return;const r=members.find(x=>x.id===selectedId),x=rr(selectedId),code=$("detailRankSelect").value,nl=$("detailRankSelect").selectedOptions[0]?.text||code;if(!confirm(`確定將「${r?.display_name||"會員"}」由 ${x.rank_label||"未設定"} 改為 ${nl}？`))return;const {error}=await sb.rpc("joygo_staff_set_member_rank_v333",{p_target_id:selectedId,p_rank_code:code});if(error)return alert("棋力修改失敗："+error.message);await loadMembers();await openMember(selectedId)
+}
+async function saveMember(){
+ if(staffRole!=="admin"||!selectedId)return;const {error}=await sb.rpc("joygo_admin_update_member_settings",{p_target_user:selectedId,p_role:$("detailRole").value,p_expires_at:$("detailExpires").value?new Date($("detailExpires").value+"T23:59:59").toISOString():null,p_competition_eligible:$("detailEligible").value==="true"});if(error)return alert("會員設定更新失敗："+error.message);await loadMembers();await openMember(selectedId)
+}
+async function moderate(action){
+ if(!selectedId)return;const r=members.find(x=>x.id===selectedId);if(!confirm(`確定對「${r?.display_name||"會員"}」執行這項處置？`))return;const reason=prompt("管理備註／停權原因（可留空）","")||"";const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:selectedId,p_action:action,p_reason:reason});if(error)return alert("處置失敗："+error.message);await loadMembers();await openMember(selectedId)
+}
+
+async function init(){
+ const {data:{session},error}=await sb.auth.getSession();if(error||!session)return notice("請先登入 Joy Go 管理員帳號。","bad");me=session.user;
+ const {data:access,error:ae}=await sb.rpc("joygo_get_staff_access");if(ae)return notice("管理權限讀取失敗："+ae.message,"bad");const a=Array.isArray(access)?access[0]:access;staffRole=a?.staff_role||"none";
+ if(!["admin","deputy","moderator"].includes(staffRole))return notice("此頁僅限管理團隊使用。","bad");$("app").hidden=false;await loadMembers()
+}
+["memberSearch","roleFilter","statusFilter","competitionFilter"].forEach(id=>$(id).addEventListener(id==="memberSearch"?"input":"change",render));
+$("refreshBtn").onclick=loadMembers;$("closeModal").onclick=closeMember;$("detailModal").onclick=e=>{if(e.target===$("detailModal"))closeMember()};
+$("saveRankBtn").onclick=saveRank;$("saveMemberBtn").onclick=saveMember;$("suspend1Btn").onclick=()=>moderate("suspend_1d");$("suspend7Btn").onclick=()=>moderate("suspend_7d");$("suspendForeverBtn").onclick=()=>moderate("suspend_permanent");$("unsuspendBtn").onclick=()=>moderate("unsuspend");
+init();
 </script>
 </body></html>
