@@ -25,6 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
+<meta name="joygo-rating-auto-version" content="3.3.2">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -6743,7 +6744,7 @@ async function onlineLeaveRoom(){
 }
 async function onlineResign(){
   const r=state.onlineRoom;if(!r||r.status!=="playing")return;
-  if(!confirm("確定要投降嗎？\n多人指導棋只會結束目前這一盤。"))return;
+  if(!confirm("確定要投降嗎？\n升降賽若未滿20手，這盤不計升降成績。"))return;
 
   let guidanceEmbed=false;
   try{
@@ -6751,11 +6752,28 @@ async function onlineResign(){
     guidanceEmbed=(window.self!==window.top && q.get("guidance_embed")==="1");
   }catch(_){}
 
-  const rpcName=guidanceEmbed ? "joygo_guidance_resign_one_room" : "joygo_resign_room";
-  const {data,error}=await memberSupabase.rpc(rpcName,{p_room_id:r.id});
+  if(guidanceEmbed){
+    const {data,error}=await memberSupabase.rpc("joygo_guidance_resign_one_room",{p_room_id:r.id});
+    if(error){toast("投降失敗："+error.message);return}
+    state.onlineRoom=onlineRpcRow(data);
+    await onlineSyncRoom();
+    return;
+  }
+
+  const {data,error}=await memberSupabase.rpc("joygo_resign_and_rate_v332",{p_room_id:r.id});
   if(error){toast("投降失敗："+error.message);return}
-  state.onlineRoom=onlineRpcRow(data);
+
+  const result=Array.isArray(data)?data[0]:data;
   await onlineSyncRoom();
+
+  if(result?.match_type==="friendly"){
+    toast("🤝 友誼賽已結束，不計升降成績");
+  }else if(result?.counted){
+    const w=result?.winner_action||"KEEP",l=result?.loser_action||"KEEP";
+    toast("🏅 升降賽成績已自動登錄｜勝方："+w+"｜敗方："+l);
+  }else{
+    toast("🏅 本盤不計升降："+(result?.reason||"未達有效計分條件"));
+  }
 }
 async function onlineClearEndedRoom(){
   const r=state.onlineRoom;
