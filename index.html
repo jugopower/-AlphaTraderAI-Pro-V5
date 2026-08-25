@@ -3656,6 +3656,7 @@ html[data-joygo-guidance="1"] #gameActionRow{
   box-shadow:0 3px 12px #0008;
 }
 #memberConfigPanel{display:none!important}
+</style>
 
 <style id="joygoBeta329RankStyle">
 /* Joy Go Platform Beta 3.2.9：會員棋力必填 */
@@ -3672,8 +3673,6 @@ html[data-joygo-guidance="1"] #gameActionRow{
   font-size:11px;font-weight:900;vertical-align:middle
 }
 @media(max-width:620px){.rank-select-row{grid-template-columns:1fr}}
-</style>
-
 </style>
 
 </head>
@@ -4080,7 +4079,7 @@ html[data-joygo-guidance="1"] #gameActionRow{
 
 <div id="memberModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="memberModal">✕</button>
-  <h2>👤 Beta 3.2.9｜會員中心・棋力必填</h2>
+  <h2>👤 Beta 3.2.9a｜會員中心・棋力必填</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
     已完成 Email 註冊、登入、登出與四級會員權限。試用會員與正式會員依身分開放功能。
   </p>
@@ -6468,12 +6467,26 @@ async function memberSaveRank(code,showStatus=true){
   if(!memberSession?.user){if(showStatus)memberSetStatus("請先登入會員。","bad");return false}
   code=String(code||"").trim();
   if(!joygoRankValid(code)){if(showStatus)memberSetStatus("請選擇有效棋力。","bad");return false}
-  const {error}=await memberSupabase.from("profiles").update({rank_code:code}).eq("id",memberSession.user.id);
+  const {data,error}=await memberSupabase.rpc("joygo_set_my_rank",{p_rank_code:code});
   if(error){if(showStatus)memberSetStatus("棋力儲存失敗："+error.message,"bad");return false}
   await memberRefreshAccess();
   memberRenderSession();
-  try{await joygoGlobalPresenceTrack?.()}catch(_){}
-  try{await onlineLobbyTrackPresence?.()}catch(_){}
+  try{
+    if(joygoGlobalPresenceChannel){
+      await joygoGlobalPresenceChannel.track({
+        user_id:memberSession.user.id,
+        name:memberDisplayName(memberSession.user),
+        rank_code:memberAccess.rankCode||code,
+        rank_label:memberAccess.rankLabel||code,
+        rank_sort:Number(memberAccess.rankSort||0),
+        status:state.onlineRoom?.status==="playing"?"playing":"online",
+        room_code:state.onlineRoom?.room_code||"",
+        online_at:new Date().toISOString()
+      });
+      joygoGlobalPresenceRender?.();
+    }
+  }catch(_){}
+  try{await onlineLobbyTrackPresence?.();onlineLobbyRenderFriends?.()}catch(_){}
   if(showStatus)memberSetStatus("✅ 棋力已儲存："+(memberAccess.rankLabel||code),"ok");
   return true;
 }
