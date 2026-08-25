@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.3g｜會員管理分頁</title>
+<title>Joy Go Beta 3.3.4｜管理紀錄整合</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -58,8 +58,8 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.3f｜恢復巡場員設定</div></div>
- <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.4｜管理紀錄整合</div></div>
+ <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="management-audit.html">🛡️ 權限／管理紀錄</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
 <section id="app" hidden>
@@ -278,11 +278,22 @@ async function openMember(id){
 window.openMember=openMember;
 function closeMember(){$("detailModal").classList.remove("open");selectedId=null}
 
+
+async function auditV334(action,targetId,detail=""){
+  try{
+    await sb.rpc("joygo_admin_log_action_v334",{
+      p_action:action,
+      p_target_user:targetId||null,
+      p_detail:String(detail||"")
+    });
+  }catch(_){}
+}
+
 async function saveRank(){
  if(!selectedId||!["admin","deputy"].includes(staffRole))return;const r=members.find(x=>x.id===selectedId),x=rr(selectedId),code=$("detailRankSelect").value,nl=$("detailRankSelect").selectedOptions[0]?.text||code;if(!confirm(`確定將「${r?.display_name||"會員"}」由 ${x.rank_label||"未設定"} 改為 ${nl}？`))return;const {error}=await sb.rpc("joygo_staff_set_member_rank_v333",{p_target_id:selectedId,p_rank_code:code});if(error)return alert("棋力修改失敗："+error.message);await loadMembers();await openMember(selectedId)
 }
 async function saveMember(){
- if(staffRole!=="admin"||!selectedId)return;const {error}=await sb.rpc("joygo_admin_update_member_settings",{p_target_user:selectedId,p_role:$("detailRole").value,p_expires_at:$("detailExpires").value?new Date($("detailExpires").value+"T23:59:59").toISOString():null,p_competition_eligible:$("detailEligible").value==="true"});if(error)return alert("會員設定更新失敗："+error.message);await loadMembers();await openMember(selectedId)
+ if(staffRole!=="admin"||!selectedId)return;const {error}=await sb.rpc("joygo_admin_update_member_settings",{p_target_user:selectedId,p_role:$("detailRole").value,p_expires_at:$("detailExpires").value?new Date($("detailExpires").value+"T23:59:59").toISOString():null,p_competition_eligible:$("detailEligible").value==="true"});if(error)return alert("會員設定更新失敗："+error.message);await auditV334("member_settings",selectedId,`身分=${$("detailRole").value}；到期=${$("detailExpires").value||"未設定"}；參賽=${$("detailEligible").value}`);await loadMembers();await openMember(selectedId)
 }
 
 async function toggleModerator(){
@@ -292,12 +303,13 @@ async function toggleModerator(){
  if(!confirm(`${enabled?"設為":"取消"}「${r.display_name||r.email||"會員"}」的巡場員權限？`))return;
  const {error}=await sb.rpc("joygo_admin_set_moderator",{p_target_user:selectedId,p_enabled:enabled});
  if(error)return alert("巡場員權限更新失敗："+error.message);
+ await auditV334(enabled?"moderator_grant":"moderator_revoke",selectedId,enabled?"設為巡場員":"取消巡場員");
  await loadMembers();
  await openMember(selectedId);
 }
 
 async function moderate(action){
- if(!selectedId)return;const r=members.find(x=>x.id===selectedId);if(!confirm(`確定對「${r?.display_name||"會員"}」執行這項處置？`))return;const reason=prompt("管理備註／停權原因（可留空）","")||"";const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:selectedId,p_action:action,p_reason:reason});if(error)return alert("處置失敗："+error.message);await loadMembers();await openMember(selectedId)
+ if(!selectedId)return;const r=members.find(x=>x.id===selectedId);if(!confirm(`確定對「${r?.display_name||"會員"}」執行這項處置？`))return;const reason=prompt("管理備註／停權原因（可留空）","")||"";const {error}=await sb.rpc("joygo_admin_moderate_member",{p_target_user:selectedId,p_action:action,p_reason:reason});if(error)return alert("處置失敗："+error.message);await auditV334("moderation_"+action,selectedId,reason);await loadMembers();await openMember(selectedId)
 }
 
 async function init(){
