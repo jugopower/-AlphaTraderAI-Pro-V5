@@ -38,7 +38,7 @@
 <body>
 <div class="page">
   <div class="top">
-    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.6c｜記住上次賽別</p></div>
+    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.6d｜修正賽別記憶</p></div>
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
@@ -63,7 +63,7 @@
           </label>
           <label class="match-type-choice" id="ratingChoice">
             <input type="radio" name="matchType" value="rating">
-            <span><b>🏅 升降賽</b><small>有效完賽才計入升降｜會記住上次選擇</small></span>
+            <span><b>🏅 升降賽</b><small>有效完賽才計入升降｜會正確記住上次選擇</small></span>
           </label>
         </div>
         <div id="ratingRuleHint" class="rating-rule-hint" hidden>升降賽：每10局評定；70%以上升1階、30%以下降1階；20手以下投降不計。</div>
@@ -119,8 +119,10 @@ function msg(t,type=""){const n=$("notice");n.textContent=t;n.className="notice 
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 const MATCH_TYPE_STORAGE_KEY="joygo_lobby_last_match_type_v336c";
+let matchTypePreferenceLoaded=false;
 
 function saveMatchTypePreference(){
+  if(!matchTypePreferenceLoaded)return;
   try{
     localStorage.setItem(MATCH_TYPE_STORAGE_KEY,getMatchType());
   }catch(_){}
@@ -135,6 +137,8 @@ function loadMatchTypePreference(){
 
   const input=document.querySelector(`input[name="matchType"][value="${saved}"]`);
   if(input)input.checked=true;
+
+  matchTypePreferenceLoaded=true;
   syncMatchTypeUI();
 }
 
@@ -429,7 +433,6 @@ async function init(){
   loadMatchTypePreference();const {data,error}=await sb.auth.getSession();session=data?.session||null;if(error||!session){msg("請先回 Joy Go Platform 登入會員，再進入真人大廳。","bad");return}if(!await checkModeration(true))return;await loadProfile();await connectPresence();await connectRealtime();const jobs=[loadInvites(),loadRooms()];if(meRole==="admin")jobs.push(loadTournamentSettings());await Promise.all(jobs);refreshTimer=setInterval(()=>{ensurePresence();loadInvites();loadRooms()},5000);moderationTimer=setInterval(()=>checkModeration(false),5000)}
 $("refreshBtn").onclick=()=>{ensurePresence();loadInvites();loadRooms()};$("backBtn").onclick=()=>location.href="index.html?from=lobby&v=331";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if($("saveTournamentBtn"))$("saveTournamentBtn").onclick=()=>{if(meRole!=="admin"){msg("只有管理員可以修改比賽設定。","bad");return}saveTournamentSettings()};document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});
 document.querySelectorAll('input[name="matchType"]').forEach(r=>r.addEventListener("change",syncMatchTypeUI));
-syncMatchTypeUI();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(()=>ensurePresence(),120)});
 window.addEventListener("pageshow",()=>setTimeout(()=>ensurePresence(),150),{passive:true});
 window.addEventListener("online",()=>setTimeout(()=>connectPresence(true),150),{passive:true});
@@ -440,11 +443,6 @@ loadMyTournamentGame();
 setInterval(loadMyTournamentGame,5000);
 
 
-document.querySelectorAll('input[name="matchType"]').forEach(el=>{
-  if(el.dataset.bound336c)return;
-  el.addEventListener("change",syncMatchTypeUI);
-  el.dataset.bound336c="1";
-});
 
 </script>
 </body></html>
