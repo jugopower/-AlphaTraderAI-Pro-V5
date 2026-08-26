@@ -27,6 +27,7 @@
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
 <meta name="joygo-beta333-version" content="3.3.3">
+<meta name="joygo-move-confirm-version" content="3.3.5">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -3709,6 +3710,74 @@ html[data-joygo-guidance="1"] #gameActionRow{
 }
 </style>
 
+
+<style id="joygoMoveConfirm335Style">
+#moveConfirmMarker{
+  position:fixed;
+  width:32px;height:32px;border-radius:50%;
+  transform:translate(-50%,-50%);
+  z-index:145;
+  pointer-events:none;
+  opacity:.58;
+  border:2px solid #ffd970;
+  box-shadow:0 0 0 3px #0008,0 4px 14px #000b;
+}
+#moveConfirmMarker.black{background:#111}
+#moveConfirmMarker.white{background:#f3f3f3}
+#moveConfirmBar{
+  position:fixed;
+  left:50%;
+  bottom:calc(18px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:150;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:9px 11px;
+  border:1px solid #d5a443;
+  border-radius:14px;
+  background:#17100eef;
+  box-shadow:0 10px 28px #000c;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+#moveConfirmBar[hidden],#moveConfirmMarker[hidden]{display:none!important}
+#moveConfirmText{
+  min-width:120px;
+  color:#ffe7a0;
+  font-weight:900;
+  font-size:13px;
+  text-align:center;
+}
+#moveConfirmOk,#moveConfirmCancel{
+  border-radius:10px;
+  min-height:42px;
+  padding:8px 14px;
+  font-weight:900;
+}
+#moveConfirmOk{
+  border:0;
+  background:linear-gradient(135deg,#ffd970,#e4aa2d);
+  color:#241407;
+}
+#moveConfirmCancel{
+  border:1px solid #76512f;
+  background:#2a1b12;
+  color:#fff7e7;
+}
+@media(max-width:700px){
+  #moveConfirmBar{
+    width:min(94vw,520px);
+    justify-content:center;
+    gap:7px;
+    padding:8px;
+  }
+  #moveConfirmText{min-width:0;flex:1;font-size:12px}
+  #moveConfirmOk,#moveConfirmCancel{padding:8px 11px}
+  #moveConfirmMarker{width:28px;height:28px}
+}
+</style>
+
 </head>
 <body>
 <div id="joygoSecurityBadge">🔒 Beta 2.9.0 資安強化</div>
@@ -6866,10 +6935,12 @@ async function onlinePlayAt(x,y,isPass=false){
   await onlineSyncRoom();
 }
 async function onlineLeaveRoom(){
+  joygoClearPendingMove();
   await onlineUnsubscribe();if(onlineClockTimer)clearInterval(onlineClockTimer);onlineClockTimer=null;onlineLastResult="";state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";onlineLastPassMove=0;state.casualMode=true;
   onlineRenderRoom();closeModal("onlineModal");syncUI();toast("已離開真人對弈");
 }
 async function onlineResign(){
+  joygoClearPendingMove();
   const r=state.onlineRoom;if(!r||r.status!=="playing")return;
   if(!confirm("確定要投降嗎？\n升降賽若未滿20手，這盤不計升降成績。"))return;
 
@@ -9486,7 +9557,9 @@ $("undoGameBtn").onclick=undoGameMove;
 
 $("resultOkBtn").onclick=()=>closeModal("resultModal");
 $("resultDetailBtn").onclick=()=>{const d=$("resultDetail");d.classList.toggle("open");$("resultDetailBtn").textContent=d.classList.contains("open")?"收起詳細計算":"查看詳細計算";};
-$("passGameBtn").onclick=()=>state.onlineMode?onlinePlayAt(null,null,true):humanGamePass();
+$("moveConfirmOk")?.addEventListener("click",joygoConfirmPendingMove);
+$("moveConfirmCancel")?.addEventListener("click",()=>{joygoClearPendingMove();toast("已取消落子")});
+$("passGameBtn").onclick=()=>{joygoClearPendingMove();return state.onlineMode?onlinePlayAt(null,null,true):humanGamePass()};
 $("resignGameBtn").onclick=()=>state.onlineMode?onlineResign():humanGameResign();
 
 function saveClockPreferences(){
@@ -9597,6 +9670,89 @@ function boardInputPointFromEvent(e){
   y=Math.max(0,Math.min(state.size-1,y));
   return {x,y,rect,css,pad,step};
 }
+
+/* ============================================================
+   Joy Go Beta 3.3.5｜真人對弈落子確認
+   點棋盤只建立 pending move；按確定後才真正送出。
+   ============================================================ */
+let joygoPendingOnlineMove=null;
+
+function joygoClearPendingMove(){
+  joygoPendingOnlineMove=null;
+  const bar=$("moveConfirmBar"),marker=$("moveConfirmMarker");
+  if(bar)bar.hidden=true;
+  if(marker)marker.hidden=true;
+}
+
+function joygoShowPendingOnlineMove(x,y,point){
+  const r=state.onlineRoom;
+  if(!state.onlineMode||!r)return;
+
+  if(r.status!=="playing"){toast("等待另一位棋友加入");return}
+  if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
+
+  const current=positionAtMove(state.index).board;
+  const prev=state.index>0?positionAtMove(state.index-1).board:null;
+  const result=executeMove(
+    current,
+    emptyProvenance(state.size),
+    {c:r.turn,x,y},
+    state.index+1,
+    {rejectSuicide:true,koHash:prev?positionHash(prev):null}
+  );
+  if(!result.ok){toast(result.error);return}
+
+  const rect=canvas.getBoundingClientRect();
+  const css=point?.css||canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
+  const pad=point?.pad ?? css*(state.showCoords?0.085:0.055);
+  const step=point?.step ?? (css-pad*2)/(state.size-1);
+  const localX=pad+x*step;
+  const localY=pad+y*step;
+  const clientX=rect.left+localX*(rect.width/css);
+  const clientY=rect.top+localY*(rect.height/css);
+
+  joygoPendingOnlineMove={
+    x,y,
+    color:r.turn,
+    roomId:r.id,
+    expectedMove:Number(r.move_count||0)
+  };
+
+  const marker=$("moveConfirmMarker"),bar=$("moveConfirmBar"),text=$("moveConfirmText");
+  if(marker){
+    marker.className=r.turn==="B"?"black":"white";
+    marker.style.left=clientX+"px";
+    marker.style.top=clientY+"px";
+    marker.hidden=false;
+  }
+  if(text){
+    text.textContent=`${r.turn==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`;
+  }
+  if(bar)bar.hidden=false;
+}
+
+async function joygoConfirmPendingMove(){
+  const p=joygoPendingOnlineMove;
+  if(!p)return;
+  const r=state.onlineRoom;
+
+  /* 棋局狀態若已改變，不送出舊的 pending move */
+  if(!state.onlineMode||!r||r.id!==p.roomId){
+    joygoClearPendingMove();
+    toast("棋局狀態已改變，請重新落子");
+    return;
+  }
+  if(r.status!=="playing"||r.turn!==p.color||Number(r.move_count||0)!==p.expectedMove){
+    joygoClearPendingMove();
+    await onlineSyncRoom();
+    toast("棋局已更新，請重新選擇落點");
+    return;
+  }
+
+  joygoClearPendingMove();
+  await onlinePlayAt(p.x,p.y,false);
+}
+
 function handleBoardInput(e){
   if(state.spectatorMode){toast("觀戰模式只能觀看，不能落子");return;}
   if(state.scoringMode){handleScoringBoardInput(e);return;}
@@ -9629,7 +9785,7 @@ function handleBoardInput(e){
     return;
   }
   if(state.onlineMode){
-    onlinePlayAt(x,y,false);
+    joygoShowPendingOnlineMove(x,y,point);
     return;
   }
 
@@ -9691,7 +9847,7 @@ if(window.PointerEvent){
   },{passive:false});
 }
 // Build028.1.12：切換方向、分頁或返回頁面時清除殘留觸控鎖，避免下一次試下無法落子或誤判重複。
-window.addEventListener('orientationchange',resetBoardInputGuard,{passive:true});
+window.addEventListener('orientationchange',()=>{joygoClearPendingMove();resetBoardInputGuard()},{passive:true});
 window.addEventListener('pageshow',resetBoardInputGuard,{passive:true});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)resetBoardInputGuard();},{passive:true});
 
@@ -10028,6 +10184,14 @@ document.addEventListener("DOMContentLoaded",()=>{
   else harden();
 })();
 </script>
+
+
+<div id="moveConfirmMarker" hidden></div>
+<div id="moveConfirmBar" hidden aria-live="polite">
+  <div id="moveConfirmText">確認落子</div>
+  <button id="moveConfirmOk" type="button">✓ 確定落子</button>
+  <button id="moveConfirmCancel" type="button">取消</button>
+</div>
 
 </body>
 </html>
