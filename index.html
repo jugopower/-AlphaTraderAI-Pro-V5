@@ -28,6 +28,7 @@
 <meta name="joygo-rating-auto-version" content="3.3.2">
 <meta name="joygo-beta333-version" content="3.3.3">
 <meta name="joygo-move-confirm-version" content="3.3.5b">
+<meta name="joygo-rating-normal-result-version" content="3.3.6">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -6880,6 +6881,8 @@ async function onlineSyncRoom(){
       onlineLastResult=room.result;
       const message="🏁 對局結束\n"+onlineResultText(room.result);
       toast(message.replace("\n","："));setTimeout(()=>{alert(message);openModal("onlineModal")},120);
+    }else if(room.status==="ended"&&!room.result){
+      toast("🏁 對局已結束，請按「正式數地／計算勝負」並由雙方確認結果");
     }
   }catch(err){console.error(err);onlineSetStatus("同步失敗："+(err?.message||err),"bad")}
   finally{state.onlineSyncing=false}
@@ -9156,7 +9159,10 @@ function resultCommentForMargin(margin){
   if(margin<=15)return "勝方明顯領先";
   return "勝方大勝";
 }
+let joygoLastResultData=null;
+
 function showResultModal(data){
+  joygoLastResultData={...data};
   const black=Number(data.black||0),white=Number(data.white||0),komi=Number(data.komi||0);
   const rawLead=Number(data.rawLead||0),finalLead=Number(data.finalLead||0);
   const margin=Math.abs(finalLead);
@@ -9170,6 +9176,7 @@ function showResultModal(data){
   $("resultDetail").textContent=data.detail||""; $("resultDetail").style.color="#2b1a0f";
   $("resultDetail").classList.remove("open");
   $("resultDetailBtn").textContent="查看詳細計算";
+  if($("resultOkBtn"))$("resultOkBtn").textContent=state.onlineMode?"確認結果":"確定";
   openModal("resultModal");
 }
 
@@ -9557,7 +9564,71 @@ $("undoGameBtn").onclick=undoGameMove;
   }
 }
 
-$("resultOkBtn").onclick=()=>closeModal("resultModal");
+async function joygoConfirmScoredResultV336(){
+  if(!state.onlineMode||!state.onlineRoom){
+    closeModal("resultModal");
+    return;
+  }
+
+  const data=joygoLastResultData;
+  if(!data){
+    toast("尚未取得勝負資料");
+    return;
+  }
+
+  const lead=Number(data.finalLead||0);
+  if(!Number.isFinite(lead)||lead===0){
+    toast("目前沒有明確勝方，請重新數地");
+    return;
+  }
+
+  const winnerColor=lead>0?"B":"W";
+  const margin=Math.abs(lead);
+
+  if(!confirm(`確認本局結果：${winnerColor==="B"?"黑":"白"}勝 ${margin.toFixed(1)} 目？\n\n雙方都確認相同結果後，升降賽才會正式計入勝敗。`))return;
+
+  const btn=$("resultOkBtn");
+  if(btn){btn.disabled=true;btn.textContent="送出中…"}
+
+  const {data:rpcData,error}=await memberSupabase.rpc("joygo_confirm_room_result_v336",{
+    p_room_id:state.onlineRoom.id,
+    p_winner_color:winnerColor,
+    p_final_lead:margin
+  });
+
+  if(btn){btn.disabled=false;btn.textContent="確認結果"}
+
+  if(error){
+    toast("結果確認失敗："+error.message);
+    return;
+  }
+
+  const r=Array.isArray(rpcData)?rpcData[0]:rpcData;
+  const status=r?.status||"";
+
+  if(status==="waiting_other"){
+    closeModal("resultModal");
+    toast("✅ 您已確認結果，等待另一位棋友確認");
+    await onlineSyncRoom();
+    return;
+  }
+
+  if(status==="disputed"){
+    toast("⚠️ 雙方結果不同，請重新數地或請管理員裁定");
+    return;
+  }
+
+  if(status==="finalized"||status==="already_processed"){
+    closeModal("resultModal");
+    await onlineSyncRoom();
+    toast(r?.message||"✅ 對局結果已確認");
+    return;
+  }
+
+  toast(r?.message||"結果確認已送出");
+}
+
+$("resultOkBtn").onclick=joygoConfirmScoredResultV336;
 $("resultDetailBtn").onclick=()=>{const d=$("resultDetail");d.classList.toggle("open");$("resultDetailBtn").textContent=d.classList.contains("open")?"收起詳細計算":"查看詳細計算";};
 $("passGameBtn").onclick=()=>{joygoClearPendingMove();return state.onlineMode?onlinePlayAt(null,null,true):humanGamePass()};
 $("resignGameBtn").onclick=()=>state.onlineMode?onlineResign():humanGameResign();
