@@ -29,6 +29,7 @@
 <meta name="joygo-beta333-version" content="3.3.3">
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
+<meta name="joygo-resign-rating-version" content="3.3.6a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -6773,6 +6774,16 @@ function onlineSetStatus(text,type=""){
 function onlineNormalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6)}
 function onlineRpcRow(data){return Array.isArray(data)?(data[0]||null):data}
 function onlineMemberName(){return memberDisplayName(memberSession?.user)}
+
+function joygoEndedRoomMessageV336a(room){
+  if(!room)return "🏁 對局已結束";
+  const result=String(room.result||"").trim();
+  if(result){
+    return "🏁 對局結束："+onlineResultText(result);
+  }
+  return "🏁 對局已結束";
+}
+
 function onlineResultText(result){
   const labels={"W+R":"黑方投降，白方勝","B+R":"白方投降，黑方勝","W+T":"黑方超時，白方勝","B+T":"白方超時，黑方勝"};
   return labels[result]||result||"對局已結束";
@@ -6871,7 +6882,7 @@ async function onlineSyncRoom(){
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
-    onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"已同步，等待對方落子。"),myTurn?"ok":"");
+    onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"🏁 對局已結束。"),myTurn?"ok":"");
     const lastMove=(moves||[]).at(-1);
     if(lastMove?.is_pass&&Number(lastMove.move_no)!==onlineLastPassMove){
       onlineLastPassMove=Number(lastMove.move_no);
@@ -6944,36 +6955,92 @@ async function onlineLeaveRoom(){
 }
 async function onlineResign(){
   joygoClearPendingMove();
-  const r=state.onlineRoom;if(!r||r.status!=="playing")return;
-  if(!confirm("確定要投降嗎？\n升降賽若未滿20手，這盤不計升降成績。"))return;
 
-  let guidanceEmbed=false;
-  try{
-    const q=new URLSearchParams(location.search);
-    guidanceEmbed=(window.self!==window.top && q.get("guidance_embed")==="1");
-  }catch(_){}
-
-  if(guidanceEmbed){
-    const {data,error}=await memberSupabase.rpc("joygo_guidance_resign_one_room",{p_room_id:r.id});
-    if(error){toast("投降失敗："+error.message);return}
-    state.onlineRoom=onlineRpcRow(data);
-    await onlineSyncRoom();
+  const r=state.onlineRoom;
+  if(!state.onlineMode||!r){
+    toast("目前沒有真人棋局");
     return;
   }
 
-  const {data,error}=await memberSupabase.rpc("joygo_resign_and_rate_v332",{p_room_id:r.id});
-  if(error){toast("投降失敗："+error.message);return}
+  if(r.status!=="playing"){
+    toast("這盤棋已經結束");
+    return;
+  }
 
-  const result=Array.isArray(data)?data[0]:data;
-  await onlineSyncRoom();
+  const moveCount=Number(r.move_count||0);
+  const matchType=String(r.match_type||"friendly").toLowerCase();
 
-  if(result?.match_type==="friendly"){
-    toast("🤝 友誼賽已結束，不計升降成績");
-  }else if(result?.counted){
-    const w=result?.winner_action||"KEEP",l=result?.loser_action||"KEEP";
-    toast("🏅 升降賽成績已自動登錄｜勝方："+w+"｜敗方："+l);
+  let confirmText="確定投降嗎？";
+  if(matchType==="rating"){
+    if(moveCount<20){
+      confirmText=`確定投降嗎？\n\n目前 ${moveCount} 手，未滿 20 手，這盤不計升降戰績。`;
+    }else{
+      confirmText=`確定投降嗎？\n\n目前 ${moveCount} 手，這盤升降賽將直接計入一勝一敗。`;
+    }
   }else{
-    toast("🏅 本盤不計升降："+(result?.reason||"未達有效計分條件"));
+    confirmText=`確定投降嗎？\n\n這盤是友誼賽，不計升降戰績。`;
+  }
+
+  if(!confirm(confirmText))return;
+
+  try{
+    /*
+      Beta 3.3.6a
+      統一改走 Beta 3.3.2 的安全投降＋計分 RPC。
+      伺服器會自行判定：
+      - 誰投降
+      - 誰獲勝
+      - 是否友誼賽
+      - 是否滿 20 手
+      - 是否已重複處理
+    */
+    const {data,error}=await memberSupabase.rpc("joygo_resign_and_rate_v336a",{
+      p_room_id:r.id
+    });
+
+    if(error){
+      /*
+        如果伺服器端仍沒有新版 RPC，避免棋局卡住：
+        不自動退回舊 RPC，因為舊 RPC 會造成
+        「棋局結束但升降戰績漏算」。
+      */
+      toast("投降處理失敗："+error.message);
+      return;
+    }
+
+    const result=Array.isArray(data)?data[0]:data;
+    const counted=!!result?.counted;
+    const reason=String(result?.reason||"");
+    const type=String(result?.match_type||matchType);
+
+    await onlineSyncRoom();
+
+    if(counted){
+      toast("🏅 投降成立，升降賽勝敗已計入");
+      setTimeout(()=>{
+        alert(
+          "🏁 投降結束\n\n"+
+          "本局已計入升降賽戰績。\n"+
+          "勝方 +1 勝／敗方 +1 敗。"
+        );
+      },120);
+    }else{
+      let msg="🏁 投降成立";
+      if(type==="friendly"){
+        msg+="，友誼賽不計升降";
+      }else if(reason){
+        msg+="，"+reason;
+      }else if(moveCount<20){
+        msg+="，20手以下不計升降";
+      }
+      toast(msg);
+      setTimeout(()=>alert(msg),120);
+    }
+
+    return result;
+
+  }catch(err){
+    toast("投降處理失敗："+(err?.message||err));
   }
 }
 async function onlineClearEndedRoom(){
