@@ -38,7 +38,7 @@
 <body>
 <div class="page">
   <div class="top">
-    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.6b｜升降賽賽別原子化</p></div>
+    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.6c｜記住上次賽別</p></div>
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
@@ -63,7 +63,7 @@
           </label>
           <label class="match-type-choice" id="ratingChoice">
             <input type="radio" name="matchType" value="rating">
-            <span><b>🏅 升降賽</b><small>有效完賽才計入升降</small></span>
+            <span><b>🏅 升降賽</b><small>有效完賽才計入升降｜會記住上次選擇</small></span>
           </label>
         </div>
         <div id="ratingRuleHint" class="rating-rule-hint" hidden>升降賽：每10局評定；70%以上升1階、30%以下降1階；20手以下投降不計。</div>
@@ -117,6 +117,27 @@ let presenceSubscribed=false,presenceConnecting=false,presenceRetryTimer=null;
 const $=id=>document.getElementById(id);
 function msg(t,type=""){const n=$("notice");n.textContent=t;n.className="notice "+type;if(!t)n.style.display="none";else n.style.display="block"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+const MATCH_TYPE_STORAGE_KEY="joygo_lobby_last_match_type_v336c";
+
+function saveMatchTypePreference(){
+  try{
+    localStorage.setItem(MATCH_TYPE_STORAGE_KEY,getMatchType());
+  }catch(_){}
+}
+
+function loadMatchTypePreference(){
+  let saved="friendly";
+  try{
+    const v=localStorage.getItem(MATCH_TYPE_STORAGE_KEY);
+    if(v==="rating"||v==="friendly")saved=v;
+  }catch(_){}
+
+  const input=document.querySelector(`input[name="matchType"][value="${saved}"]`);
+  if(input)input.checked=true;
+  syncMatchTypeUI();
+}
+
 function getMatchType(){return document.querySelector('input[name="matchType"]:checked')?.value==="rating"?"rating":"friendly"}
 function matchTypeLabel(v){return v==="rating"?"🏅 升降賽":"🤝 友誼賽"}
 function syncMatchTypeUI(){
@@ -124,6 +145,7 @@ function syncMatchTypeUI(){
   $("friendlyChoice")?.classList.toggle("active",type==="friendly");
   $("ratingChoice")?.classList.toggle("active",type==="rating");
   if($("ratingRuleHint"))$("ratingRuleHint").hidden=type!=="rating";
+  saveMatchTypePreference();
 }
 
 function goRoom(code){location.href="index.html?room="+encodeURIComponent(code)}
@@ -403,7 +425,8 @@ function setPreset(prefix,mins,byo,periods){if(prefix==="free"){$("mainMinutes")
 async function loadTournamentSettings(){const {data,error}=await sb.from("tournament_settings").select("board_size,komi,main_seconds,byo_seconds,byo_periods,updated_at").eq("user_id",session.user.id).maybeSingle();if(error){$("tournamentStatus").textContent="比賽設定讀取失敗："+error.message;return}if(data){$("tBoardSize").value=String(data.board_size||19);$("tKomi").value=String(data.komi??7.5);$("tMainMinutes").value=String(Math.round(Number(data.main_seconds||1200)/60));$("tByoSeconds").value=String(data.byo_seconds||30);$("tByoPeriods").value=String(data.byo_periods||3);$("tournamentStatus").textContent="已載入上次比賽計時設定。"}}
 async function saveTournamentSettings(){const payload={p_board_size:Number($("tBoardSize").value),p_komi:Number($("tKomi").value),p_main_seconds:Math.max(0,Math.round(Number($("tMainMinutes").value||20)*60)),p_byo_seconds:Math.max(5,Math.round(Number($("tByoSeconds").value||30))),p_byo_periods:Math.max(1,Math.round(Number($("tByoPeriods").value||3)))};const {error}=await sb.rpc("joygo_save_tournament_settings",payload);if(error){$("tournamentStatus").textContent="❌ 儲存失敗："+error.message;return}$("tournamentStatus").textContent=`✅ 已儲存：${payload.p_main_seconds/60}分＋${payload.p_byo_seconds}秒×${payload.p_byo_periods}；之後瑞士制將套用此設定。`}
 async function connectRealtime(){inviteChannel=sb.channel("joygo-invites-ui-"+session.user.id).on("postgres_changes",{event:"*",schema:"public",table:"online_invites",filter:"to_id=eq."+session.user.id},loadInvites).on("postgres_changes",{event:"*",schema:"public",table:"online_invites",filter:"from_id=eq."+session.user.id},loadInvites).subscribe();roomChannel=sb.channel("joygo-lobby-room-ui").on("postgres_changes",{event:"*",schema:"public",table:"online_rooms"},loadRooms).subscribe()}
-async function init(){const {data,error}=await sb.auth.getSession();session=data?.session||null;if(error||!session){msg("請先回 Joy Go Platform 登入會員，再進入真人大廳。","bad");return}if(!await checkModeration(true))return;await loadProfile();await connectPresence();await connectRealtime();const jobs=[loadInvites(),loadRooms()];if(meRole==="admin")jobs.push(loadTournamentSettings());await Promise.all(jobs);refreshTimer=setInterval(()=>{ensurePresence();loadInvites();loadRooms()},5000);moderationTimer=setInterval(()=>checkModeration(false),5000)}
+async function init(){
+  loadMatchTypePreference();const {data,error}=await sb.auth.getSession();session=data?.session||null;if(error||!session){msg("請先回 Joy Go Platform 登入會員，再進入真人大廳。","bad");return}if(!await checkModeration(true))return;await loadProfile();await connectPresence();await connectRealtime();const jobs=[loadInvites(),loadRooms()];if(meRole==="admin")jobs.push(loadTournamentSettings());await Promise.all(jobs);refreshTimer=setInterval(()=>{ensurePresence();loadInvites();loadRooms()},5000);moderationTimer=setInterval(()=>checkModeration(false),5000)}
 $("refreshBtn").onclick=()=>{ensurePresence();loadInvites();loadRooms()};$("backBtn").onclick=()=>location.href="index.html?from=lobby&v=331";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if($("saveTournamentBtn"))$("saveTournamentBtn").onclick=()=>{if(meRole!=="admin"){msg("只有管理員可以修改比賽設定。","bad");return}saveTournamentSettings()};document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});
 document.querySelectorAll('input[name="matchType"]').forEach(r=>r.addEventListener("change",syncMatchTypeUI));
 syncMatchTypeUI();
@@ -415,5 +438,13 @@ init();
 startBroadcastPolling();
 loadMyTournamentGame();
 setInterval(loadMyTournamentGame,5000);
+
+
+document.querySelectorAll('input[name="matchType"]').forEach(el=>{
+  if(el.dataset.bound336c)return;
+  el.addEventListener("change",syncMatchTypeUI);
+  el.dataset.bound336c="1";
+});
+
 </script>
 </body></html>
