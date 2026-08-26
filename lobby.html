@@ -38,7 +38,7 @@
 <body>
 <div class="page">
   <div class="top">
-    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.3｜棋力・升降戰績</p></div>
+    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.3.6b｜升降賽賽別原子化</p></div>
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
@@ -242,34 +242,58 @@ async function sendInvite(toId,toName){
 
   if(!confirm(`邀請「${toName}」進行${label}？\n${$("boardSize").value}路｜${mins}分鐘｜${byo}秒 × ${periods}次｜貼${Number($("komi").value)}目`))return;
 
-  const {data,error}=await sb.rpc("joygo_send_invite_v211",{
-    p_to_id:toId,p_to_name:toName,p_from_name:meName,
-    p_board_size:Number($("boardSize").value),p_komi:Number($("komi").value),
-    p_main_seconds:Math.round(mins*60),p_byo_seconds:Math.round(byo),p_byo_periods:Math.round(periods)
+  const {data,error}=await sb.rpc("joygo_send_invite_v336b",{
+    p_to_id:toId,
+    p_to_name:toName,
+    p_from_name:meName,
+    p_board_size:Number($("boardSize").value),
+    p_komi:Number($("komi").value),
+    p_main_seconds:Math.round(mins*60),
+    p_byo_seconds:Math.round(byo),
+    p_byo_periods:Math.round(periods),
+    p_match_type:matchType
   });
-  if(error){msg("邀請失敗："+error.message,"bad");return}
 
-  const {error:typeError}=await sb.rpc("joygo_set_latest_invite_match_type_v331",{
-    p_to_id:toId,p_match_type:matchType
-  });
-  if(typeError){msg("邀請已送出，但賽別設定失敗："+typeError.message,"bad");return}
+  if(error){
+    msg("邀請失敗："+error.message,"bad");
+    return;
+  }
+
+  const row=Array.isArray(data)?data[0]:data;
+  if(row?.match_type && row.match_type!==matchType){
+    msg("邀請賽別寫入異常，請重新邀請。","bad");
+    return;
+  }
 
   msg(`✅ 已送出${label}邀請給 ${toName}`,"ok");
   await loadInvites();
 }
 async function replyInvite(id,accept){
-  const {data,error}=await sb.rpc("joygo_reply_invite",{p_invite_id:id,p_accept:!!accept});
-  if(error){msg("處理邀請失敗："+error.message,"bad");return}
+  const {data,error}=await sb.rpc("joygo_reply_invite_v336b",{
+    p_invite_id:id,
+    p_accept:!!accept
+  });
+
+  if(error){
+    msg("處理邀請失敗："+error.message,"bad");
+    return;
+  }
+
   const row=Array.isArray(data)?data[0]:data;
 
-  if(accept&&row?.status==="expired"){msg("邀請已逾 90 秒，自動失效。","bad");loadInvites();return}
+  if(accept&&row?.status==="expired"){
+    msg("邀請已逾 90 秒，自動失效。","bad");
+    loadInvites();
+    return;
+  }
 
   if(accept&&row?.room_code){
-    try{await sb.rpc("joygo_sync_invite_room_match_type_v331",{p_invite_id:id})}catch(_){}
-    msg("✅ 配對成功，正在進入棋局…","ok");
+    const label=matchTypeLabel(row?.match_type);
+    msg(`✅ ${label}配對成功，正在進入棋局…`,"ok");
     setTimeout(()=>goRoom(row.room_code),250);
   }else{
-    msg("已婉拒邀請","ok");loadInvites();
+    msg("已婉拒邀請","ok");
+    loadInvites();
   }
 }
 async function cancelInvite(id,toName){if(!confirm(`確定收回給「${toName||"棋友"}」的邀請？`))return;const {data,error}=await sb.rpc("joygo_cancel_invite",{p_invite_id:id});if(error){msg("收回邀請失敗："+error.message,"bad");return}const row=Array.isArray(data)?data[0]:data;if(row?.status==="accepted"){msg("對方已接受，邀請不能收回。","bad");return}msg("✅ 邀請已收回","ok");loadInvites()}
@@ -373,7 +397,7 @@ function startBroadcastPolling(){
   broadcastTimer=setInterval(loadBroadcast,2500);
 }
 
-async function loadRooms(){const {data,error}=await sb.from("online_rooms").select("room_code,black_id,black_name,board_size,komi,main_seconds,byo_seconds,byo_periods,match_type,status,created_at").eq("status","waiting").order("created_at",{ascending:false}).limit(16);const box=$("rooms");if(error){box.innerHTML='<div class="empty">房間讀取失敗</div>';return}const rows=data||[];$("roomCount").textContent=rows.length;box.innerHTML="";if(!rows.length){box.innerHTML='<div class="empty">目前沒有開放房間</div>';return}rows.forEach(r=>{const d=document.createElement("div");d.className="room";d.innerHTML=`<strong>${esc(r.black_name||"棋友")} 的房間</strong><span class="small">${esc(r.room_code)}｜${r.board_size} 路｜${Math.round(Number(r.main_seconds||1200)/60)}分＋${Number(r.byo_seconds||30)}秒×${Number(r.byo_periods||3)}｜貼 ${Number(r.komi)} 目</span><div class="rowbtns"><button class="btn primary">加入</button></div>`;d.querySelector("button").onclick=()=>joinRoom(r.room_code);box.appendChild(d)})}
+async function loadRooms(){const {data,error}=await sb.from("online_rooms").select("room_code,black_id,black_name,board_size,komi,main_seconds,byo_seconds,byo_periods,match_type,status,created_at").eq("status","waiting").order("created_at",{ascending:false}).limit(16);const box=$("rooms");if(error){box.innerHTML='<div class="empty">房間讀取失敗</div>';return}const rows=data||[];$("roomCount").textContent=rows.length;box.innerHTML="";if(!rows.length){box.innerHTML='<div class="empty">目前沒有開放房間</div>';return}rows.forEach(r=>{const d=document.createElement("div");d.className="room";d.innerHTML=`<strong>${esc(r.black_name||"棋友")} 的房間</strong><span class="small">${esc(r.room_code)}｜${matchTypeLabel(r.match_type)}｜${r.board_size} 路｜${Math.round(Number(r.main_seconds||1200)/60)}分＋${Number(r.byo_seconds||30)}秒×${Number(r.byo_periods||3)}｜貼 ${Number(r.komi)} 目</span><div class="rowbtns"><button class="btn primary">加入</button></div>`;d.querySelector("button").onclick=()=>joinRoom(r.room_code);box.appendChild(d)})}
 async function joinRoom(code){code=String(code||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);if(code.length!==6){msg("請輸入六碼房號","bad");return}const {data,error}=await sb.rpc("joygo_join_room",{p_code:code,p_name:meName});if(error){msg("加入失敗："+error.message,"bad");return}const row=Array.isArray(data)?data[0]:data;goRoom(row?.room_code||code)}
 function setPreset(prefix,mins,byo,periods){if(prefix==="free"){$("mainMinutes").value=mins;$("byoSeconds").value=byo;$("byoPeriods").value=periods}else{$("tMainMinutes").value=mins;$("tByoSeconds").value=byo;$("tByoPeriods").value=periods}}
 async function loadTournamentSettings(){const {data,error}=await sb.from("tournament_settings").select("board_size,komi,main_seconds,byo_seconds,byo_periods,updated_at").eq("user_id",session.user.id).maybeSingle();if(error){$("tournamentStatus").textContent="比賽設定讀取失敗："+error.message;return}if(data){$("tBoardSize").value=String(data.board_size||19);$("tKomi").value=String(data.komi??7.5);$("tMainMinutes").value=String(Math.round(Number(data.main_seconds||1200)/60));$("tByoSeconds").value=String(data.byo_seconds||30);$("tByoPeriods").value=String(data.byo_periods||3);$("tournamentStatus").textContent="已載入上次比賽計時設定。"}}
