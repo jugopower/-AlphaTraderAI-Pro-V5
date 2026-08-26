@@ -27,7 +27,7 @@
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
 <meta name="joygo-beta333-version" content="3.3.3">
-<meta name="joygo-move-confirm-version" content="3.3.5a">
+<meta name="joygo-move-confirm-version" content="3.3.5b">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -1482,7 +1482,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 }
 .ai-thinking-overlay[hidden]{display:none!important}
 .ai-thinking-card{
-  min-width:172px;max-width:min(72vw,250px);padding:9px 12px;border-radius:999px;
+  min-width:172px;max-width:min(72vw,250px);padding:10px 13px;border-radius:999px;
   border:1px solid rgba(229,180,72,.72);background:rgba(27,16,10,.88);color:#f7e8c7;
   display:grid;grid-template-columns:20px 1fr;column-gap:8px;align-items:center;
   text-align:left;box-shadow:0 8px 24px rgba(0,0,0,.28);
@@ -3774,7 +3774,6 @@ html[data-joygo-guidance="1"] #gameActionRow{
   }
   #moveConfirmText{min-width:0;flex:1;font-size:12px}
   #moveConfirmOk,#moveConfirmCancel{padding:8px 11px}
-  #moveConfirmMarker{width:28px;height:28px}
 }
 </style>
 
@@ -8388,6 +8387,8 @@ function drawBoard(snapshot=state.currentSnapshot||activateSnapshot(state.index)
   state.rendererVerified=state.renderedHash===snapshot.hash;
 }
 function syncUI(){
+  try{joygoUpdateMoveConfirmToggle()}catch(_){ }
+
   const snapshot=activateSnapshot(state.index);
   $("moveSlider").max=state.moves.length;$("moveSlider").value=state.index;
   $("sliderText").textContent=`${state.index} / ${state.moves.length}`;
@@ -9695,7 +9696,11 @@ function joygoSaveMoveConfirmSetting(){
 
 function joygoIsHumanGameMode(){
   try{
-    return !!state.humanGameMode || !!state.aiMode || !!state.vsAI;
+    return !!state.humanMode
+      && !state.onlineMode
+      && !state.teachingMode
+      && !state.trialMode
+      && !state.casualMode;
   }catch(_){
     return false;
   }
@@ -9787,6 +9792,14 @@ function joygoShowPendingMove(x,y,point,mode){
     marker.className=color==="B"?"black":"white";
     marker.style.left=clientX+"px";
     marker.style.top=clientY+"px";
+
+    /* Beta 3.3.5b：手機預覽棋子縮小，不遮住鄰近交叉點。
+       依目前棋盤格距縮放；約為正式棋子的 55～60%。 */
+    const visualStep=step*(rect.width/css);
+    const previewSize=Math.max(12,Math.min(22,visualStep*0.58));
+    marker.style.width=previewSize+"px";
+    marker.style.height=previewSize+"px";
+
     marker.hidden=false;
   }
   if(text){
@@ -9795,6 +9808,51 @@ function joygoShowPendingMove(x,y,point,mode){
   if(bar)bar.hidden=false;
 }
 
+
+
+async function joygoExecuteLocalHumanMove(x,y){
+  const current=positionAtMove(state.index).board;
+  const prev=state.index>0?positionAtMove(state.index-1).board:null;
+  const previousHash=prev?positionHash(prev):null;
+  const move={c:state.turn,x,y};
+  const movedColor=state.turn;
+  const result=executeMove(
+    current,
+    emptyProvenance(state.size),
+    move,
+    state.index+1,
+    {rejectSuicide:true,koHash:previousHash}
+  );
+  if(!result.ok){toast(result.error);return false}
+
+  const hintBefore=state.hintBaseBlackWin;
+  state.moves=state.moves.slice(0,state.index);
+  state.actions=[];
+  state.replayCache=[];
+  state.moves.push(move);
+  state.index++;
+  state.turn=state.turn==="B"?"W":"B";
+  completeTurnClock(movedColor);
+  state.hintPoints=[];
+  syncUI();
+
+  if(state.sound){
+    try{
+      const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();
+      o.frequency.value=result.captured?180:260;
+      g.gain.value=.08;
+      o.connect(g);g.connect(a.destination);
+      o.start();o.stop(a.currentTime+.06);
+    }catch(_){}
+  }
+
+  if(state.hintEnabled){
+    evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
+  }else{
+    scheduleLocalAiMove(350);
+  }
+  return true;
+}
 
 async function joygoConfirmPendingMove(){
   const p=joygoPendingOnlineMove;
@@ -9823,20 +9881,7 @@ async function joygoConfirmPendingMove(){
     const x=p.x,y=p.y;
     joygoClearPendingMove();
     try{
-      // 直接走原本人機對弈的落子流程
-      if(typeof humanGamePlayAt==="function"){
-        await humanGamePlayAt(x,y);
-        return;
-      }
-      if(typeof aiHumanPlayAt==="function"){
-        await aiHumanPlayAt(x,y);
-        return;
-      }
-      if(typeof playHumanMove==="function"){
-        await playHumanMove(x,y);
-        return;
-      }
-      toast("找不到人機落子函式，請回報此畫面");
+      await joygoExecuteLocalHumanMove(x,y);
     }catch(err){
       toast("落子失敗："+(err?.message||err));
     }
@@ -10317,7 +10362,7 @@ window.addEventListener("pageshow",()=>{joygoBindMoveConfirmControls();joygoUpda
 <div id="moveConfirmToggleWrap" style="
   position:fixed;
   right:16px;
-  bottom:calc(74px + env(safe-area-inset-bottom));
+  bottom:calc(155px + env(safe-area-inset-bottom));
   z-index:148;
   display:none;
 ">
