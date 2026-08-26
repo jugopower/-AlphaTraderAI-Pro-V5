@@ -27,7 +27,7 @@
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
 <meta name="joygo-beta333-version" content="3.3.3">
-<meta name="joygo-move-confirm-version" content="3.3.5">
+<meta name="joygo-move-confirm-version" content="3.3.5a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -6847,6 +6847,7 @@ async function onlineSubscribe(roomId){
     .subscribe(status=>{if(status==="SUBSCRIBED")onlineSetStatus("✅ 即時連線成功，等待棋步。","ok")});
 }
 async function onlineSyncRoom(){
+  joygoUpdateMoveConfirmToggle();
   const roomId=state.onlineRoom?.id;if(!roomId||!memberSupabase||state.onlineSyncing)return;
   state.onlineSyncing=true;
   try{
@@ -9557,8 +9558,6 @@ $("undoGameBtn").onclick=undoGameMove;
 
 $("resultOkBtn").onclick=()=>closeModal("resultModal");
 $("resultDetailBtn").onclick=()=>{const d=$("resultDetail");d.classList.toggle("open");$("resultDetailBtn").textContent=d.classList.contains("open")?"收起詳細計算":"查看詳細計算";};
-$("moveConfirmOk")?.addEventListener("click",joygoConfirmPendingMove);
-$("moveConfirmCancel")?.addEventListener("click",()=>{joygoClearPendingMove();toast("已取消落子")});
 $("passGameBtn").onclick=()=>{joygoClearPendingMove();return state.onlineMode?onlinePlayAt(null,null,true):humanGamePass()};
 $("resignGameBtn").onclick=()=>state.onlineMode?onlineResign():humanGameResign();
 
@@ -9675,7 +9674,62 @@ function boardInputPointFromEvent(e){
    Joy Go Beta 3.3.5｜真人對弈落子確認
    點棋盤只建立 pending move；按確定後才真正送出。
    ============================================================ */
+
 let joygoPendingOnlineMove=null;
+let joygoMoveConfirmEnabled=true;
+
+function joygoLoadMoveConfirmSetting(){
+  try{
+    const saved=localStorage.getItem("joygo_move_confirm_enabled");
+    if(saved==="0")joygoMoveConfirmEnabled=false;
+    else if(saved==="1")joygoMoveConfirmEnabled=true;
+  }catch(_){}
+  joygoUpdateMoveConfirmToggle();
+}
+
+function joygoSaveMoveConfirmSetting(){
+  try{
+    localStorage.setItem("joygo_move_confirm_enabled",joygoMoveConfirmEnabled?"1":"0");
+  }catch(_){}
+}
+
+function joygoIsHumanGameMode(){
+  try{
+    return !!state.humanGameMode || !!state.aiMode || !!state.vsAI;
+  }catch(_){
+    return false;
+  }
+}
+
+function joygoShouldConfirmMove(){
+  if(state.onlineMode)return true;
+  if(joygoIsHumanGameMode())return joygoMoveConfirmEnabled;
+  return false;
+}
+
+function joygoUpdateMoveConfirmToggle(){
+  const wrap=$("moveConfirmToggleWrap"),btn=$("moveConfirmToggleBtn");
+  if(!wrap||!btn)return;
+  const show=state.onlineMode||joygoIsHumanGameMode();
+  wrap.style.display=show?"block":"none";
+  btn.textContent="落子確認："+(state.onlineMode||joygoMoveConfirmEnabled?"開":"關");
+  btn.disabled=!!state.onlineMode;
+  btn.style.opacity=state.onlineMode?".72":"1";
+  btn.title=state.onlineMode?"真人對弈／比賽固定開啟":"點此切換人機對弈落子確認";
+}
+
+function joygoToggleMoveConfirm(){
+  if(state.onlineMode){
+    toast("真人對弈／比賽的落子確認固定開啟");
+    return;
+  }
+  joygoMoveConfirmEnabled=!joygoMoveConfirmEnabled;
+  joygoSaveMoveConfirmSetting();
+  joygoClearPendingMove();
+  joygoUpdateMoveConfirmToggle();
+  toast("落子確認："+(joygoMoveConfirmEnabled?"開":"關"));
+}
+
 
 function joygoClearPendingMove(){
   joygoPendingOnlineMove=null;
@@ -9684,24 +9738,8 @@ function joygoClearPendingMove(){
   if(marker)marker.hidden=true;
 }
 
-function joygoShowPendingOnlineMove(x,y,point){
-  const r=state.onlineRoom;
-  if(!state.onlineMode||!r)return;
 
-  if(r.status!=="playing"){toast("等待另一位棋友加入");return}
-  if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
-
-  const current=positionAtMove(state.index).board;
-  const prev=state.index>0?positionAtMove(state.index-1).board:null;
-  const result=executeMove(
-    current,
-    emptyProvenance(state.size),
-    {c:r.turn,x,y},
-    state.index+1,
-    {rejectSuicide:true,koHash:prev?positionHash(prev):null}
-  );
-  if(!result.ok){toast(result.error);return}
-
+function joygoShowPendingMove(x,y,point,mode){
   const rect=canvas.getBoundingClientRect();
   const css=point?.css||canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
   const pad=point?.pad ?? css*(state.showCoords?0.085:0.055);
@@ -9711,48 +9749,116 @@ function joygoShowPendingOnlineMove(x,y,point){
   const clientX=rect.left+localX*(rect.width/css);
   const clientY=rect.top+localY*(rect.height/css);
 
-  joygoPendingOnlineMove={
-    x,y,
-    color:r.turn,
-    roomId:r.id,
-    expectedMove:Number(r.move_count||0)
-  };
+  let color="B";
+  let roomId=null;
+  let expectedMove=null;
+
+  if(mode==="online"){
+    const r=state.onlineRoom;
+    if(!r)return;
+    if(r.status!=="playing"){toast("等待另一位棋友加入");return}
+    if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
+
+    const current=positionAtMove(state.index).board;
+    const prev=state.index>0?positionAtMove(state.index-1).board:null;
+    const result=executeMove(
+      current,
+      emptyProvenance(state.size),
+      {c:r.turn,x,y},
+      state.index+1,
+      {rejectSuicide:true,koHash:prev?positionHash(prev):null}
+    );
+    if(!result.ok){toast(result.error);return}
+
+    color=r.turn;
+    roomId=r.id;
+    expectedMove=Number(r.move_count||0);
+  }else{
+    // 人機對弈：以目前輪到的一方顯示預覽棋子
+    try{
+      color=(state.toPlay||state.turn||"B")==="W"?"W":"B";
+    }catch(_){ color="B"; }
+  }
+
+  joygoPendingOnlineMove={x,y,color,mode,roomId,expectedMove};
 
   const marker=$("moveConfirmMarker"),bar=$("moveConfirmBar"),text=$("moveConfirmText");
   if(marker){
-    marker.className=r.turn==="B"?"black":"white";
+    marker.className=color==="B"?"black":"white";
     marker.style.left=clientX+"px";
     marker.style.top=clientY+"px";
     marker.hidden=false;
   }
   if(text){
-    text.textContent=`${r.turn==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`;
+    text.textContent=`${color==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`;
   }
   if(bar)bar.hidden=false;
 }
 
+
 async function joygoConfirmPendingMove(){
   const p=joygoPendingOnlineMove;
   if(!p)return;
-  const r=state.onlineRoom;
 
-  /* 棋局狀態若已改變，不送出舊的 pending move */
-  if(!state.onlineMode||!r||r.id!==p.roomId){
+  if(p.mode==="online"){
+    const r=state.onlineRoom;
+    if(!state.onlineMode||!r||r.id!==p.roomId){
+      joygoClearPendingMove();
+      toast("棋局狀態已改變，請重新落子");
+      return;
+    }
+    if(r.status!=="playing"||r.turn!==p.color||Number(r.move_count||0)!==p.expectedMove){
+      joygoClearPendingMove();
+      await onlineSyncRoom();
+      toast("棋局已更新，請重新選擇落點");
+      return;
+    }
+
     joygoClearPendingMove();
-    toast("棋局狀態已改變，請重新落子");
+    await onlinePlayAt(p.x,p.y,false);
     return;
   }
-  if(r.status!=="playing"||r.turn!==p.color||Number(r.move_count||0)!==p.expectedMove){
-    joygoClearPendingMove();
-    await onlineSyncRoom();
-    toast("棋局已更新，請重新選擇落點");
-    return;
-  }
 
-  joygoClearPendingMove();
-  await onlinePlayAt(p.x,p.y,false);
+  if(p.mode==="human"){
+    const x=p.x,y=p.y;
+    joygoClearPendingMove();
+    try{
+      // 直接走原本人機對弈的落子流程
+      if(typeof humanGamePlayAt==="function"){
+        await humanGamePlayAt(x,y);
+        return;
+      }
+      if(typeof aiHumanPlayAt==="function"){
+        await aiHumanPlayAt(x,y);
+        return;
+      }
+      if(typeof playHumanMove==="function"){
+        await playHumanMove(x,y);
+        return;
+      }
+      toast("找不到人機落子函式，請回報此畫面");
+    }catch(err){
+      toast("落子失敗："+(err?.message||err));
+    }
+  }
 }
 
+function joygoBindMoveConfirmControls(){
+  const ok=$("moveConfirmOk"),cancel=$("moveConfirmCancel"),toggle=$("moveConfirmToggleBtn");
+  if(ok && !ok.dataset.bound335a){
+    ok.addEventListener("click",joygoConfirmPendingMove);
+    ok.dataset.bound335a="1";
+  }
+  if(cancel && !cancel.dataset.bound335a){
+    cancel.addEventListener("click",()=>{joygoClearPendingMove();toast("已取消落子")});
+    cancel.dataset.bound335a="1";
+  }
+  if(toggle && !toggle.dataset.bound335a){
+    toggle.addEventListener("click",joygoToggleMoveConfirm);
+    toggle.dataset.bound335a="1";
+  }
+  joygoLoadMoveConfirmSetting();
+}
 function handleBoardInput(e){
   if(state.spectatorMode){toast("觀戰模式只能觀看，不能落子");return;}
   if(state.scoringMode){handleScoringBoardInput(e);return;}
@@ -9785,7 +9891,12 @@ function handleBoardInput(e){
     return;
   }
   if(state.onlineMode){
-    joygoShowPendingOnlineMove(x,y,point);
+    joygoShowPendingMove(x,y,point,"online");
+    return;
+  }
+
+  if(joygoIsHumanGameMode() && joygoMoveConfirmEnabled){
+    joygoShowPendingMove(x,y,point,"human");
     return;
   }
 
@@ -10183,6 +10294,15 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",harden,{once:true});
   else harden();
 })();
+
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",joygoBindMoveConfirmControls,{once:true});
+}else{
+  joygoBindMoveConfirmControls();
+}
+window.addEventListener("pageshow",()=>{joygoBindMoveConfirmControls();joygoUpdateMoveConfirmToggle()});
+
 </script>
 
 
@@ -10191,6 +10311,25 @@ document.addEventListener("DOMContentLoaded",()=>{
   <div id="moveConfirmText">確認落子</div>
   <button id="moveConfirmOk" type="button">✓ 確定落子</button>
   <button id="moveConfirmCancel" type="button">取消</button>
+</div>
+
+
+<div id="moveConfirmToggleWrap" style="
+  position:fixed;
+  right:16px;
+  bottom:calc(74px + env(safe-area-inset-bottom));
+  z-index:148;
+  display:none;
+">
+  <button id="moveConfirmToggleBtn" type="button" style="
+    border:1px solid #7a552f;
+    background:#1b120d;
+    color:#ffe7a0;
+    border-radius:12px;
+    padding:9px 12px;
+    font-weight:900;
+    box-shadow:0 6px 18px #0008;
+  ">落子確認：開</button>
 </div>
 
 </body>
