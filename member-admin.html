@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.7｜會員編號＋快速查詢</title>
+<title>Joy Go Beta 3.3.7aa｜修正會員編號欄位</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -53,12 +53,22 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 .page-size{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .page-size select{padding:6px 8px}
 
+
+.member-no-cell{
+  width:58px;
+  min-width:58px;
+  text-align:center;
+  font-weight:900;
+  color:#ffe083;
+  white-space:nowrap;
+}
+
 </style>
 </head>
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.7｜會員編號＋快速查詢</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.7a｜修正會員編號欄位</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="management-audit.html">🛡️ 權限／管理紀錄</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
@@ -78,7 +88,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
  </div>
  <div class="tablewrap">
   <table>
-   <thead><tr><th style="width:58px">編號</th><th>會員</th><th>權限</th><th>棋力</th><th>戰績</th><th>勝率</th><th>狀態</th><th>參賽</th><th>查看</th></tr></thead>
+   <thead><tr><th style="width:58px;text-align:center">編號</th><th>會員</th><th>權限</th><th>棋力</th><th>戰績</th><th>勝率</th><th>狀態</th><th>參賽</th><th>查看</th></tr></thead>
    <tbody id="memberRows"><tr><td colspan="9">讀取中…</td></tr></tbody>
   </table>
  </div>
@@ -241,7 +251,7 @@ function render(){
    const pt=r.role==="admin"?"主管理員":deputyIds.has(r.id)?"副管理員":moderatorIds.has(r.id)?"巡場員":"一般";
    const pc=r.role==="admin"?"goldpill":deputyIds.has(r.id)?"deppill":moderatorIds.has(r.id)?"modpill":"";
    return `<tr>
-    <td><div class="clickname" onclick="openMember('${r.id}')">${esc(r.display_name||"未命名")}${r.id===me.id?"（我）":""}</div><div class="email">${esc(r.email||"")}</div></td>
+    <td class="member-no-cell">${memberNoShort(r.id)}</td><td><div class="clickname" onclick="openMember('${r.id}')">${esc(r.display_name||"未命名")}${r.id===me.id?"（我）":""}</div><div class="email">${esc(r.email||"")}</div></td>
     <td><span class="pill ${pc}">${pt}</span></td>
     <td>${esc(x.rank_label||"未設定")}</td>
     <td class="record">${w}勝 ${l}敗</td>
