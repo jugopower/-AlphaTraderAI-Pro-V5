@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Joy Go 管理中心 Beta 3.2.5g</title>
+<title>Joy Go 管理中心 Beta 3.2.5h</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff;--amber:#e9bf61}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}button,input,select{font:inherit}.shell{width:min(1280px,100%);margin:auto;padding:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.brand h1{margin:0;color:var(--gold2);font-size:clamp(27px,4vw,42px)}.brand p{margin:5px 0 0;color:var(--muted)}.head-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}.btn.green{border:0;background:var(--green);color:#082317}.btn.red{border:0;background:var(--red);color:#3b0808}.btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.35)}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.tab{border:1px solid var(--line);border-radius:14px;padding:12px 8px;background:#0b1510;color:var(--muted);font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(155deg,#2c3b1f,#17231a);color:var(--gold2);border-color:#8d7432}.pane{display:none}.pane.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.card-body{padding:14px}.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar input{flex:1;min-width:0;background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}.blue{background:#163d54;color:#a8ddff}.rowops{display:flex;gap:5px;flex-wrap:wrap}.mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.mini.save,.mini.approve{background:var(--green);color:#082317}.mini.wait{background:var(--blue);color:#092337}.mini.reject{background:var(--red);color:#3b0808}.mini.neutral{background:#d9bb76;color:#2d2008}.field{display:grid;gap:6px}.field label{color:var(--muted);font-size:12px}.field input,.field select{width:100%;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.room-list{display:grid;gap:8px}.room{border:1px solid #2f4638;border-radius:13px;padding:11px;background:#0a110d;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.05fr;gap:8px;align-items:center}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.quick a{border:1px solid var(--line);border-radius:15px;padding:16px;background:#0b1510;text-decoration:none;color:var(--ink);font-weight:900}.quick a span{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:5px}.muted{color:var(--muted)}@media(max-width:850px){.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.grid,.formgrid{grid-template-columns:1fr}.room{grid-template-columns:1fr 1fr}.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}}
@@ -12,13 +12,40 @@
 .tournament-switch{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin:0 0 12px;border:1px solid #6f5723;border-radius:14px;background:linear-gradient(160deg,#1d2415,#0a110d)}
 .tournament-switch label{color:var(--gold2);font-weight:900}.tournament-switch select{min-width:250px;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.tournament-switch .current{color:var(--muted);font-size:12px}
 @media(max-width:850px){.tournament-switch{align-items:stretch}.tournament-switch select,.tournament-switch button{width:100%}}
+@media print{
+  body{background:#fff!important;color:#000!important}
+  .head,.notice,.tournament-switch,.tabs,
+  #pane-home,#pane-control,#pane-members,#pane-registrations,
+  #pane-live,#pane-broadcast,#pane-moderation,#pane-settings,
+  #pane-swiss .card:first-of-type,
+  #pane-swiss .card:nth-of-type(2),
+  .no-print{display:none!important}
+  .shell{width:100%;padding:0}
+  #app{display:block!important}
+  #pane-swiss{display:block!important}
+  .card{border:0!important;background:#fff!important;overflow:visible!important}
+  .card h2{color:#000!important;border-bottom:1px solid #999!important}
+  .card-body{padding:8px 0!important}
+  .table-wrap{overflow:visible!important}
+  table{min-width:0!important;width:100%!important}
+  th,td{color:#000!important;background:#fff!important;border-bottom:1px solid #bbb!important;font-size:11px!important;padding:6px!important}
+  .top4-row{background:#f2f2f2!important}
+  .qualify-badge,.champ-badge{background:#eee!important;color:#000!important;border:1px solid #999!important}
+  #printHeader{display:block!important;margin-bottom:14px}
+}
+#printHeader{display:none}
+
 </style>
 </head>
 <body>
 <main class="shell">
-<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.5g｜四副分公平排名版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
+<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.5h｜副分說明＋最終排名列印版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
+<div id="printHeader">
+  <h1 id="printTitle">Joy Go 瑞士制最終排名</h1>
+  <div id="printMeta" style="font-size:13px"></div>
+</div>
 <div class="tournament-switch" id="tournamentSwitchBox">
   <label for="tournamentCodeSelect">🏆 比賽代碼</label>
   <select id="tournamentCodeSelect">
@@ -83,11 +110,24 @@
         <span class="current">目前設定：<b id="currentSwissRounds">5 輪</b></span>
       </div>
 
+      <details style="margin:12px 0;border:1px solid #6f5723;border-radius:12px;padding:10px 12px;background:#12180f">
+        <summary style="cursor:pointer;color:var(--gold2);font-weight:900">📘 副分計算說明</summary>
+        <div class="sub" style="margin-top:10px;line-height:1.8">
+          <div><b>主分：</b>每勝 1 局得 1 分，負棋 0 分。</div>
+          <div><b>第一副分（Buchholz）：</b>所有對手的主分總和。</div>
+          <div><b>第二副分（Median Buchholz）：</b>扣除最高與最低一位對手主分後，其餘對手主分總和。</div>
+          <div><b>第三副分（Sonneborn-Berger）：</b>把自己擊敗過的對手主分加總。</div>
+          <div><b>第四副分（累進分）：</b>每輪結束時自己的累積主分再全部加總。</div>
+          <div style="margin-top:6px"><b>排名順序：</b>主分 → 第一副分 → 第二副分 → 第三副分 → 第四副分。五項完全相同則標示「完全同分」。</div>
+        </div>
+      </details>
+
       <div class="toolbar">
         <button class="btn" id="syncSwissPlayers">① 同步正式名單</button>
         <button class="btn gold" id="generateSwissRound">② 產生下一輪配對</button>
         <button class="btn gold" id="createSwissRooms">③ 建立本輪正式棋局</button>
         <button class="btn" id="exportSwissFinal">📥 匯出最終排名 CSV</button>
+        <button class="btn" id="printSwissFinal">🖨️ 列印最終排名</button>
         <button class="btn" id="refreshSwiss">重新整理</button>
       </div>
       <div id="swissNote" class="sub" style="margin-top:10px">尚未載入。</div>
@@ -554,6 +594,12 @@ function updateSwissCompletionLock(){
     exportBtn.disabled=!finished;
     exportBtn.title=finished?"匯出本場最終排名 CSV":"比賽完成後才能匯出最終排名";
   }
+
+  const printBtn=$("printSwissFinal");
+  if(printBtn){
+    printBtn.disabled=!finished;
+    printBtn.title=finished?"列印本場最終排名":"比賽完成後才能列印最終排名";
+  }
 }
 
 
@@ -619,6 +665,17 @@ function exportSwissFinalRanking(){
   setTimeout(()=>URL.revokeObjectURL(url),1500);
 
   notice(`✅ 已匯出 ${CODE} 最終排名，共 ${players.length} 位選手。`,"good");
+}
+
+
+function printSwissFinalRanking(){
+  if(staffRole!=="admin")return notice("只有主管理員可以列印最終排名。","bad");
+  if(!swissIsFinished())return notice("比賽尚未完成，完成最後一輪後才能列印最終排名。","bad");
+
+  const title=$("eventTitle")?.value?.trim() || CODE;
+  if($("printTitle"))$("printTitle").textContent=`${title}｜最終排名`;
+  if($("printMeta"))$("printMeta").textContent=`比賽代碼：${CODE}｜瑞士制 ${swissTotalRounds} 輪｜排名依主分與四副分依序判定`;
+  window.print();
 }
 
 function renderSwiss(){
@@ -920,6 +977,7 @@ $("generateSwissRound")?.addEventListener("click",generateSwissRound);
 $("createSwissRooms")?.addEventListener("click",createSwissRooms);
 $("refreshSwiss")?.addEventListener("click",loadSwiss);
 $("exportSwissFinal")?.addEventListener("click",exportSwissFinalRanking);
+$("printSwissFinal")?.addEventListener("click",printSwissFinalRanking);
 $("saveSwissRounds")?.addEventListener("click",saveSwissRoundSetting);
 $("controlRefresh")?.addEventListener("click",loadControl);
 
