@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Joy Go 管理中心 Beta 3.2.5b</title>
+<title>Joy Go 管理中心 Beta 3.2.5c</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff;--amber:#e9bf61}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}button,input,select{font:inherit}.shell{width:min(1280px,100%);margin:auto;padding:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.brand h1{margin:0;color:var(--gold2);font-size:clamp(27px,4vw,42px)}.brand p{margin:5px 0 0;color:var(--muted)}.head-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}.btn.green{border:0;background:var(--green);color:#082317}.btn.red{border:0;background:var(--red);color:#3b0808}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.tab{border:1px solid var(--line);border-radius:14px;padding:12px 8px;background:#0b1510;color:var(--muted);font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(155deg,#2c3b1f,#17231a);color:var(--gold2);border-color:#8d7432}.pane{display:none}.pane.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.card-body{padding:14px}.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar input{flex:1;min-width:0;background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}.blue{background:#163d54;color:#a8ddff}.rowops{display:flex;gap:5px;flex-wrap:wrap}.mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.mini.save,.mini.approve{background:var(--green);color:#082317}.mini.wait{background:var(--blue);color:#092337}.mini.reject{background:var(--red);color:#3b0808}.mini.neutral{background:#d9bb76;color:#2d2008}.field{display:grid;gap:6px}.field label{color:var(--muted);font-size:12px}.field input,.field select{width:100%;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.room-list{display:grid;gap:8px}.room{border:1px solid #2f4638;border-radius:13px;padding:11px;background:#0a110d;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.05fr;gap:8px;align-items:center}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.quick a{border:1px solid var(--line);border-radius:15px;padding:16px;background:#0b1510;text-decoration:none;color:var(--ink);font-weight:900}.quick a span{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:5px}.muted{color:var(--muted)}@media(max-width:850px){.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.grid,.formgrid{grid-template-columns:1fr}.room{grid-template-columns:1fr 1fr}.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}}
@@ -16,7 +16,7 @@
 </head>
 <body>
 <main class="shell">
-<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.5b｜瑞士制 4／5／6 輪可設定版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
+<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.5c｜瑞士制 4／5／6 輪＋測試賽資料修正版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
 <div class="tournament-switch" id="tournamentSwitchBox">
@@ -210,6 +210,9 @@ async function switchTournamentCode(){
   CODE=next;localStorage.setItem("joygoTournamentCode",CODE);
   swissTotalRounds=5;
   regs=[];broadcasts=[];swissPlayers=[];swissRounds=[];swissPairings=[];auditLogs=[];
+  if($("eventMax"))$("eventMax").value=tournamentMax();
+  if($("eventFee"))$("eventFee").value="0";
+  if($("eventOpen"))$("eventOpen").value="false";
   updateTournamentUI();notice(`正在載入 ${CODE}…`);
   const jobs=[loadRegs(),loadSwiss(),loadBroadcasts(),loadAuditLogs()];
   const result=await Promise.allSettled(jobs);
@@ -831,10 +834,76 @@ async function loadControl(){
   renderControl();
 }
 async function loadRooms(){const {data,error}=await sb.from('online_rooms').select('id,room_code,black_id,black_name,white_id,white_name,board_size,status,main_seconds,byo_seconds,byo_periods,created_at,updated_at').order('created_at',{ascending:false}).limit(100);if(error)throw error;rooms=data||[];renderRooms();updateHome();renderControl()}
-async function loadEvent(){const {data,error}=await sb.from('tournament_events').select('*').eq('code',CODE).single();if(error)throw error;$("eventTitle").value=data.title||'';$("eventMax").value=data.max_players||16;$("eventFee").value=data.entry_fee||0;$("eventDate").value=data.event_date||'';$("eventOpen").value=String(data.registration_open!==false);$("eventVenue").value=data.venue||''}
+async function loadEvent(){
+  let {data,error}=await sb.from('tournament_events').select('*').eq('code',CODE).maybeSingle();
+
+  if(error){
+    const msg=String(error.message||"");
+    if(msg.includes("Cannot coerce") || msg.includes("multiple")){
+      const fallback=await sb.from('tournament_events').select('*').eq('code',CODE).order('updated_at',{ascending:false}).limit(1);
+      if(fallback.error)throw fallback.error;
+      data=(fallback.data||[])[0]||null;
+      error=null;
+      notice(`⚠️ ${CODE} 的比賽基本資料疑似有重複列，目前暫時讀取最新一筆；之後可再做資料清理。`);
+    }else{
+      throw error;
+    }
+  }
+
+  const defaults={
+    code:CODE,
+    title:CODE==="JOYGO8-TEST-001"?"Joy Go 8 人虛擬測試賽":
+          CODE==="JOYGO16-TEST-001"?"Joy Go 16 人虛擬測試賽":
+          "Joy Go 16 人瑞士制比賽",
+    max_players:tournamentMax(),
+    entry_fee:0,
+    event_date:null,
+    registration_open:false,
+    venue:""
+  };
+  const ev=data||defaults;
+
+  $("eventTitle").value=ev.title||defaults.title;
+  $("eventMax").value=Number(ev.max_players||defaults.max_players);
+  $("eventFee").value=Number(ev.entry_fee||0);
+  $("eventDate").value=ev.event_date||'';
+  $("eventOpen").value=String(ev.registration_open===true);
+  $("eventVenue").value=ev.venue||'';
+
+  if(!data){
+    const note=CODE.includes("-TEST-")
+      ?`ℹ️ ${CODE} 尚未建立比賽基本資料；目前先顯示測試賽預設值。第一次按「儲存比賽資料」時會自動建立。`
+      :`ℹ️ ${CODE} 尚未建立比賽基本資料；第一次儲存時會自動建立。`;
+    notice(note);
+  }
+}
 async function loadTimer(){const {data,error}=await sb.from('tournament_settings').select('board_size,komi,main_seconds,byo_seconds,byo_periods').eq('user_id',me.id).maybeSingle();if(error){$("timerNote").textContent='計時設定讀取失敗：'+error.message;return}if(data){$("tBoard").value=String(data.board_size||19);$("tKomi").value=String(data.komi??7.5);$("tMain").value=String(Math.round(Number(data.main_seconds||1200)/60));$("tByo").value=String(data.byo_seconds||30);$("tPeriods").value=String(data.byo_periods||3)}else{$("tBoard").value='19';$("tKomi").value='7.5';$("tMain").value='20';$("tByo").value='30';$("tPeriods").value='3'}$("timerNote").textContent='目前設定已載入。'}
 document.querySelectorAll(".feePreset").forEach(b=>b.onclick=()=>{$("eventFee").value=b.dataset.fee});
-$("saveEvent").onclick=async()=>{const fee=Math.max(0,Math.round(Number($("eventFee").value||0)));$("eventFee").value=String(fee);const payload={title:$("eventTitle").value.trim(),max_players:Number($("eventMax").value),entry_fee:fee,event_date:$("eventDate").value||null,registration_open:$("eventOpen").value==='true',venue:$("eventVenue").value.trim(),updated_at:new Date().toISOString()};const {error}=await sb.from('tournament_events').update(payload).eq('code',CODE);if(error)return notice('比賽資料儲存失敗：'+error.message,'bad');notice('✅ 比賽基本資料已儲存。','good');await loadEvent()};
+$("saveEvent").onclick=async()=>{
+  const fee=Math.max(0,Math.round(Number($("eventFee").value||0)));
+  $("eventFee").value=String(fee);
+
+  const payload={
+    code:CODE,
+    title:$("eventTitle").value.trim()||(
+      CODE==="JOYGO8-TEST-001"?"Joy Go 8 人虛擬測試賽":
+      CODE==="JOYGO16-TEST-001"?"Joy Go 16 人虛擬測試賽":
+      "Joy Go 16 人瑞士制比賽"
+    ),
+    max_players:Number($("eventMax").value)||tournamentMax(),
+    entry_fee:fee,
+    event_date:$("eventDate").value||null,
+    registration_open:$("eventOpen").value==='true',
+    venue:$("eventVenue").value.trim(),
+    updated_at:new Date().toISOString()
+  };
+
+  const {error}=await sb.from('tournament_events').upsert(payload,{onConflict:'code'});
+  if(error)return notice('比賽資料儲存失敗：'+error.message,'bad');
+
+  notice(`✅ ${CODE} 比賽基本資料已儲存。`,'good');
+  await loadEvent();
+};
 $("saveTimer").onclick=async()=>{const payload={p_board_size:Number($("tBoard").value),p_komi:Number($("tKomi").value),p_main_seconds:Math.max(0,Math.round(Number($("tMain").value||20)*60)),p_byo_seconds:Math.max(5,Math.round(Number($("tByo").value||30))),p_byo_periods:Math.max(1,Math.round(Number($("tPeriods").value||3)))};const {error}=await sb.rpc('joygo_save_tournament_settings',payload);if(error)return notice('計時設定儲存失敗：'+error.message,'bad');notice('✅ 比賽計時設定已儲存。','good');await loadTimer()};
 $("clearEndedRooms").onclick=()=>{if(staffRole!=="admin")return notice("巡場員不能刪除棋局資料。","bad");clearAllEndedRooms()};
 $("memberSearch").oninput=renderMembers;$("memberClear").onclick=()=>{$("memberSearch").value='';renderMembers()};$("regSearch").oninput=renderRegs;$("regClear").onclick=()=>{$("regSearch").value='';renderRegs()};
