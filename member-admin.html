@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.7aa｜修正會員編號欄位</title>
+<title>Joy Go Beta 3.3.7ba｜修正會員編號欄位</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -68,7 +68,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.7a｜修正會員編號欄位</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.7b｜會員編號排序修正</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="management-audit.html">🛡️ 權限／管理紀錄</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
@@ -233,6 +233,12 @@ function render(){
    const sok=sf==="all"||x.status===sf;
    const cok=cf==="all"||(cf==="eligible"&&eligible)||(cf==="blocked"&&!eligible);
    return qok&&rok&&sok&&cok;
+ });
+
+ filteredMembers.sort((a,b)=>{
+   const an=memberNoInfo(a.id).member_no ?? Number.MAX_SAFE_INTEGER;
+   const bn=memberNoInfo(b.id).member_no ?? Number.MAX_SAFE_INTEGER;
+   return an-bn;
  });
 
  $("mTotal").textContent=members.length;
