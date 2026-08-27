@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.4｜管理紀錄整合</title>
+<title>Joy Go Beta 3.3.7｜會員編號＋快速查詢</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -58,7 +58,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.4｜管理紀錄整合</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.7｜會員編號＋快速查詢</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="management-audit.html">🛡️ 權限／管理紀錄</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
@@ -71,15 +71,15 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
   <div class="stat"><span>可參賽</span><b id="mEligible">0</b></div>
  </div>
  <div class="toolbar">
-  <input id="memberSearch" placeholder="搜尋姓名或 Email">
+  <input id="memberSearch" placeholder="搜尋編號／姓名／Email">
   <select id="roleFilter"><option value="all">全部身分</option><option value="member">正式會員</option><option value="trial">試用會員</option><option value="admin">管理員</option></select>
   <select id="statusFilter"><option value="all">全部狀態</option><option value="active">正常</option><option value="suspended">停權</option></select>
   <select id="competitionFilter"><option value="all">全部參賽資格</option><option value="eligible">可參賽</option><option value="blocked">不可參賽</option></select>
  </div>
  <div class="tablewrap">
   <table>
-   <thead><tr><th>會員</th><th>權限</th><th>棋力</th><th>戰績</th><th>勝率</th><th>狀態</th><th>參賽</th><th>查看</th></tr></thead>
-   <tbody id="memberRows"><tr><td colspan="8">讀取中…</td></tr></tbody>
+   <thead><tr><th style="width:58px">編號</th><th>會員</th><th>權限</th><th>棋力</th><th>戰績</th><th>勝率</th><th>狀態</th><th>參賽</th><th>查看</th></tr></thead>
+   <tbody id="memberRows"><tr><td colspan="9">讀取中…</td></tr></tbody>
   </table>
  </div>
 
@@ -110,6 +110,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
    <button id="closeModal" class="close">關閉</button>
   </div>
   <div class="profilegrid">
+   <div class="box"><small>Joy Go 會員編號</small><b id="dMemberNo">—</b></div>
    <div class="box"><small>目前棋力</small><b id="dRank">—</b></div>
    <div class="box"><small>升降賽戰績</small><b id="dRecord">—</b></div>
    <div class="box"><small>勝率</small><b id="dPct">—</b></div>
@@ -156,7 +157,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let me=null,members=[],rankRows=new Map(),staffRole="none",deputyIds=new Set(),moderatorIds=new Set(),selectedId=null;
+let me=null,members=[],rankRows=new Map(),staffRole="none",deputyIds=new Set(),moderatorIds=new Set(),memberNoMap=new Map(),selectedId=null;
 let currentPage=1,pageSize=20,filteredMembers=[];
 
 function notice(t,type=""){$("notice").className="notice"+(type?" "+type:"");$("notice").textContent=t}
@@ -165,6 +166,14 @@ function dateVal(x){if(!x)return "";try{return new Date(x).toISOString().slice(0
 function rr(id){return rankRows.get(id)||{}}
 function permission(r){if(r.role==="admin")return ["主管理員","goldpill"];if(deputyIds.has(r.id))return ["副管理員","deppill"];if(moderatorIds.has(r.id))return ["巡場員","modpill"];return ["一般",""]}
 function roleText(r){return r.role==="admin"?"主管理員":r.role==="trial"?"試用會員":"正式會員"}
+
+
+function memberNoInfo(id){return memberNoMap.get(id)||{member_no:null,member_code:"—"}}
+function memberNoShort(id){
+  const x=memberNoInfo(id);
+  return x.member_no?String(x.member_no).padStart(3,"0"):"—";
+}
+function memberNoCode(id){return memberNoInfo(id).member_code||"—"}
 
 function renderPagination(total){
   const totalPages=Math.max(1,Math.ceil(total/pageSize));
@@ -207,7 +216,9 @@ function render(){
 
  filteredMembers=members.filter(x=>{
    const eligible=x.competition_eligible!==false;
-   const qok=!q||[x.display_name,x.email].join(" ").toLowerCase().includes(q);
+   const no=memberNoInfo(x.id);
+   const shortNo=no.member_no?String(no.member_no).padStart(3,"0"):"";
+   const qok=!q||[shortNo,no.member_code,x.display_name,x.email].join(" ").toLowerCase().includes(q);
    const rok=rf==="all"||x.role===rf;
    const sok=sf==="all"||x.status===sf;
    const cok=cf==="all"||(cf==="eligible"&&eligible)||(cf==="blocked"&&!eligible);
@@ -239,7 +250,7 @@ function render(){
     <td><span class="pill ${eligible?"bluepill":"badpill"}">${eligible?"可參賽":"不可參賽"}</span></td>
     <td><button class="mini detailbtn" onclick="openMember('${r.id}')">查看</button></td>
    </tr>`;
- }).join("")||'<tr><td colspan="8">沒有符合資料。</td></tr>';
+ }).join("")||'<tr><td colspan="9">沒有符合資料。</td></tr>';
 
  renderPagination(filteredMembers.length);
 }
@@ -252,6 +263,10 @@ async function loadStaff(){
 async function loadMembers(){
  try{await sb.rpc("joygo_admin_cleanup_expired_suspensions")}catch{}
  const mres=await sb.rpc("joygo_admin_member_list",{p_limit:500});if(mres.error)return notice("會員資料讀取失敗："+mres.error.message,"bad");members=mres.data||[];
+ const nres=await sb.rpc("joygo_staff_member_numbers_v337");
+ if(nres.error)return notice("會員編號讀取失敗："+nres.error.message,"bad");
+ memberNoMap=new Map((nres.data||[]).map(x=>[x.user_id,x]));
+
  const rres=await sb.rpc("joygo_staff_list_member_ranks_v333");if(rres.error)return notice("棋力資料讀取失敗："+rres.error.message,"bad");rankRows=new Map((rres.data||[]).map(x=>[x.user_id,x]));
  await loadStaff();render();notice(staffRole==="admin"?"✅ 主管理員會員管理已就緒。":staffRole==="deputy"?"✅ 副管理員棋力管理已就緒。":"✅ 巡場會員查詢已就緒。","good");
 }
@@ -259,6 +274,7 @@ async function loadMembers(){
 async function openMember(id){
  selectedId=id;const r=members.find(x=>x.id===id);if(!r)return;const x=rr(id),w=Number(x.rating_total_wins||0),l=Number(x.rating_total_losses||0),n=w+l,p=n?Math.round(w*1000/n)/10:0,[pt]=permission(r);
  $("detailName").textContent=(r.display_name||"未命名")+(id===me.id?"（我）":"");$("detailEmail").textContent=r.email||"";
+ $("dMemberNo").textContent=memberNoCode(id);
  $("dRank").textContent=x.rank_label||"未設定";$("dRecord").textContent=`${w}勝 ${l}敗`;$("dPct").textContent=`${p}%`;$("dRole").textContent=roleText(r);$("dPerm").textContent=pt;$("dStatus").textContent=r.status==="suspended"?"停權":"正常";$("dCreated").textContent=fmt(r.created_at);$("dLast").textContent=fmt(r.last_sign_in_at);$("dEligible").textContent=r.competition_eligible!==false?"可參賽":"不可參賽";$("dGames").textContent=String(n);
 
  $("dCycle").textContent="讀取中…";$("dStreak").textContent="讀取中…";
