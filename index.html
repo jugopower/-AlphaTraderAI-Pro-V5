@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.9">
+<meta name="joygo-mobile-ui-version" content="3.3.9a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -3934,8 +3934,44 @@ html[data-joygo-guidance="1"] #gameActionRow{
 }
 </style>
 
+
+<style id="joygoBeta339aReturnStyle">
+#joygoMobileReturn339a{
+  display:none;
+}
+@media (orientation:portrait),(max-width:700px){
+  #joygoMobileReturn339a{
+    display:block;
+    position:fixed;
+    top:max(8px,env(safe-area-inset-top));
+    left:8px;
+    z-index:99999;
+    min-height:34px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid #7a5a35;
+    background:#18110ddd;
+    color:#f4dfb4;
+    font-size:12px;
+    font-weight:800;
+    box-shadow:0 4px 14px #0008;
+    backdrop-filter:blur(6px);
+  }
+  #joygoMobileReturn339a:active{
+    transform:scale(.98);
+  }
+  /* 手機版改用左上固定返回鈕，舊底部返回避免重複 */
+  #joygoBetaExit{
+    display:none!important;
+  }
+}
+</style>
+
 </head>
 <body>
+
+<button id="joygoMobileReturn339a" type="button" aria-label="返回平台">← 返回平台</button>
+
 <div id="joygoSecurityBadge" hidden aria-hidden="true"></div>
 
 
@@ -10765,6 +10801,50 @@ window.addEventListener("pageshow",()=>{joygoBindMoveConfirmControls();joygoUpda
     box-shadow:0 6px 18px #0008;
   ">落子確認：開</button>
 </div>
+
+
+<script id="joygoBeta339aReturnScript">
+function joygoIsLiveHumanGame339a(){
+  try{
+    const hm=!!state?.humanMode;
+    const started=(Array.isArray(moves)&&moves.length>0) || Number(state?.moveNumber||0)>0;
+    const ended=!!state?.gameEnded || !!state?.ended;
+    return hm && started && !ended;
+  }catch(_){
+    return false;
+  }
+}
+
+function joygoReturnToPlatform339a(){
+  if(joygoIsLiveHumanGame339a()){
+    const ok=confirm("目前真人對局尚未結束，確定要離開棋局並返回平台嗎？");
+    if(!ok)return;
+  }
+
+  try{
+    if(typeof joygoExitBeta==="function"){
+      joygoExitBeta();
+      return;
+    }
+  }catch(_){}
+
+  try{
+    if(document.referrer && document.referrer!==location.href){
+      history.back();
+      return;
+    }
+  }catch(_){}
+
+  location.href="./";
+}
+
+document.addEventListener("click",(ev)=>{
+  const b=ev.target?.closest?.("#joygoMobileReturn339a");
+  if(!b)return;
+  ev.preventDefault();
+  joygoReturnToPlatform339a();
+});
+</script>
 
 </body>
 </html>
