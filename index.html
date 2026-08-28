@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.9d">
+<meta name="joygo-mobile-ui-version" content="3.3.9e">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -4635,6 +4635,199 @@ body .app #topbar{
 }
 </style>
 
+
+<style id="joygoBeta339eCollapsibleToolbar">
+/* =========================================================
+   Joy Go Beta 3.3.9e
+   伸縮功能列：任何狀態都不遮棋盤
+   ========================================================= */
+
+/* 核心原則：功能列永遠在文件流內 */
+#joygoToolbarShell339e,
+#topbar,
+.board-wrap{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+}
+
+/* 伸縮控制列 */
+#joygoToolbarShell339e{
+  z-index:30!important;
+  width:100%!important;
+  margin:0 0 6px!important;
+  padding:0!important;
+  display:flex!important;
+  justify-content:flex-start!important;
+  align-items:center!important;
+}
+
+#joygoToolbarToggle339e{
+  min-height:38px!important;
+  height:38px!important;
+  padding:7px 14px!important;
+  border-radius:999px!important;
+  border:1px solid rgba(230,181,83,.70)!important;
+  background:linear-gradient(180deg,#1a2c2f,#0d1a1c)!important;
+  color:#f7dfaa!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  box-shadow:0 5px 14px #0005!important;
+}
+
+/* 預設收合：topbar 完全不佔高度 */
+#topbar{
+  display:none!important;
+  width:100%!important;
+  margin:0 0 8px!important;
+  padding:6px!important;
+  z-index:25!important;
+  border:1px solid rgba(222,172,72,.45)!important;
+  border-radius:14px!important;
+  background:#0b1719f2!important;
+}
+
+/* 展開時才出現，仍舊在棋盤前面正常佔位 */
+body.joygo-toolbar-open339e #topbar{
+  display:grid!important;
+}
+
+/* 功能鍵 */
+#topbar > *{
+  min-width:0!important;
+  width:100%!important;
+  margin:0!important;
+}
+#topbar button,
+#topbar .tool{
+  min-width:0!important;
+  width:100%!important;
+  min-height:52px!important;
+  height:52px!important;
+  padding:5px 4px!important;
+  border-radius:10px!important;
+  border:1px solid rgba(211,164,71,.45)!important;
+  background:linear-gradient(180deg,#15272a,#0d1c1e)!important;
+  color:#f8ead0!important;
+  font-size:11px!important;
+  font-weight:850!important;
+  white-space:normal!important;
+  text-align:center!important;
+  overflow:hidden!important;
+}
+#topbar button span,
+#topbar .tool span{
+  display:block!important;
+  margin-bottom:1px!important;
+  font-size:18px!important;
+  line-height:1.05!important;
+}
+
+/* 棋盤必須完整在功能列後方 */
+.board-wrap{
+  z-index:1!important;
+  clear:both!important;
+  width:100%!important;
+  margin-top:0!important;
+  overflow:visible!important;
+}
+
+/* iPad 直式：4欄，兩/三排，自然把棋盤往下推 */
+@media (min-width:701px) and (orientation:portrait){
+  .app{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "toolbarShell"
+      "topbar"
+      "board"
+      "right"
+      "player"!important;
+    gap:8px!important;
+  }
+
+  #joygoToolbarShell339e{grid-area:toolbarShell!important}
+  #topbar{
+    grid-area:topbar!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  .board-wrap{
+    grid-area:board!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+  #rightTools{
+    grid-area:right!important;
+    width:100%!important;
+    margin:0!important;
+  }
+  .player{
+    grid-area:player!important;
+    width:100%!important;
+    margin:0!important;
+  }
+}
+
+/* iPad 橫式：展開 6欄，不硬塞9欄，閱讀更舒服 */
+@media (min-width:701px) and (orientation:landscape){
+  .app{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "toolbarShell"
+      "topbar"
+      "board"
+      "right"
+      "player"!important;
+    gap:8px!important;
+  }
+  #joygoToolbarShell339e{grid-area:toolbarShell!important}
+  #topbar{
+    grid-area:topbar!important;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  .board-wrap{grid-area:board!important}
+  #rightTools{grid-area:right!important}
+  .player{grid-area:player!important}
+}
+
+/* 手機：3欄，收合時只留一顆功能選單 */
+@media (max-width:700px){
+  #joygoToolbarShell339e{
+    margin-bottom:4px!important;
+  }
+  #joygoToolbarToggle339e{
+    min-height:34px!important;
+    height:34px!important;
+    padding:5px 10px!important;
+    font-size:11px!important;
+  }
+  #topbar{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:4px!important;
+    padding:4px!important;
+  }
+  #topbar button,
+  #topbar .tool{
+    min-height:46px!important;
+    height:46px!important;
+    font-size:10px!important;
+  }
+}
+
+/* 明確覆蓋舊版可能殘留的 fixed/sticky */
+body .app #topbar{
+  position:relative!important;
+  top:auto!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -4753,6 +4946,11 @@ body .app #topbar{
 
 <div class="app">
 <button id="infoCollapseBtn" class="info-collapse" type="button" aria-label="收合資訊欄">‹</button>
+  
+<div id="joygoToolbarShell339e" class="joygo-toolbar-shell339e">
+  <button id="joygoToolbarToggle339e" type="button" aria-expanded="false">☰ 功能選單</button>
+</div>
+
   <nav class="topbar" id="topbar"></nav>
 
   <aside class="left">
@@ -11599,6 +11797,39 @@ document.addEventListener("click",(ev)=>{
 
   window.joygoShowPlatformHome339c=showPlatformHome;
   window.joygoResumePlatform339c=resumePlatform;
+})();
+</script>
+
+
+<script id="joygoBeta339eCollapsibleToolbarScript">
+(()=>{
+  const btn=document.getElementById("joygoToolbarToggle339e");
+  const KEY="joygo_toolbar_open_339e";
+
+  function setOpen(open){
+    document.body.classList.toggle("joygo-toolbar-open339e",!!open);
+    if(btn){
+      btn.setAttribute("aria-expanded",open?"true":"false");
+      btn.textContent=open?"▲ 收合功能":"☰ 功能選單";
+    }
+    try{localStorage.setItem(KEY,open?"1":"0")}catch(_){}
+    requestAnimationFrame(()=>{
+      try{window.dispatchEvent(new Event("resize"))}catch(_){}
+    });
+  }
+
+  if(btn){
+    btn.addEventListener("click",()=>{
+      setOpen(!document.body.classList.contains("joygo-toolbar-open339e"));
+    });
+  }
+
+  /* 預設收合；若使用者上次展開則記住 */
+  let saved=false;
+  try{saved=localStorage.getItem(KEY)==="1"}catch(_){}
+  setOpen(saved);
+
+  window.joygoSetToolbarOpen339e=setOpen;
 })();
 </script>
 
