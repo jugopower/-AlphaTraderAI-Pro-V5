@@ -30,6 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
+<meta name="joygo-mobile-ui-version" content="3.3.9">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -2469,7 +2470,7 @@ body.api-inspector-open #teachBarToggle{display:none!important}
 
 <style id="joygo-beta-shell-css">
 #joygoBetaGate{position:fixed;inset:0;z-index:100000;background:linear-gradient(145deg,#081b22,#10333b 55%,#173d37);display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f5f7f7}
-#joygoBetaGate[hidden]{display:none!important}.jg-card{width:min(760px,94vw);background:rgba(8,26,31,.94);border:1px solid rgba(255,255,255,.16);border-radius:28px;padding:38px;box-shadow:0 24px 80px rgba(0,0,0,.4);text-align:center}.jg-mark{font-size:13px;letter-spacing:.18em;color:#a8d7cd}.jg-card h1{font-size:clamp(32px,6vw,58px);margin:8px 0 4px}.jg-card h2{font-size:clamp(18px,3vw,28px);font-weight:600;margin:0 0 10px}.jg-welcome{margin:4px auto 22px;color:#c8d9d6;font-size:15px;line-height:1.7}.jg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:12px 0 24px}.jg-feature{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px;border-radius:16px;font-size:16px}.jg-login{display:flex;gap:10px;max-width:520px;margin:0 auto}.jg-login input{flex:1;min-width:0;border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 16px;font-size:18px;background:#fff;color:#111}.jg-login button{border:0;border-radius:14px;padding:14px 20px;font-size:17px;font-weight:800;background:#d9b15f;color:#10252a}.jg-msg{min-height:22px;margin:10px 0 0;color:#ffd2a1}.jg-motto{margin-top:10px;color:#d9c895;font-size:14px;line-height:1.6}.jg-note{font-size:11px;color:#71898c;margin-top:14px}.jg-exit{position:fixed;right:12px;bottom:12px;z-index:99999;border:0;border-radius:999px;padding:8px 12px;background:rgba(7,30,36,.82);color:white;font-size:12px}
+#joygoBetaGate[hidden]{display:none!important}.jg-card{width:min(760px,94vw);background:rgba(8,26,31,.94);border:1px solid rgba(255,255,255,.16);border-radius:28px;padding:38px;box-shadow:0 24px 80px rgba(0,0,0,.4);text-align:center}.jg-mark{font-size:13px;letter-spacing:.18em;color:#a8d7cd}.jg-card h1{font-size:clamp(32px,6vw,58px);margin:8px 0 4px}.jg-card h2{font-size:clamp(18px,3vw,28px);font-weight:600;margin:0 0 10px}.jg-beta{display:inline-block;padding:7px 14px;border-radius:999px;background:#d9b15f;color:#10252a;font-weight:800;margin:8px 0 24px}.jg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:12px 0 24px}.jg-feature{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px;border-radius:16px;font-size:16px}.jg-login{display:flex;gap:10px;max-width:480px;margin:0 auto}.jg-login input{flex:1;min-width:0;border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:14px 16px;font-size:18px;background:#fff;color:#111}.jg-login button{border:0;border-radius:14px;padding:14px 20px;font-size:17px;font-weight:800;background:#d9b15f;color:#10252a}.jg-msg{min-height:22px;margin:10px 0 0;color:#ffd2a1}.jg-note{font-size:12px;color:#9db1b4;margin-top:18px}.jg-exit{position:fixed;right:12px;bottom:12px;z-index:99999;border:0;border-radius:999px;padding:8px 12px;background:rgba(7,30,36,.82);color:white;font-size:12px}
 @media(max-width:620px){.jg-card{padding:26px 18px}.jg-grid{grid-template-columns:1fr}.jg-login{flex-direction:column}}
 #joygoLiveMonitor{position:fixed;left:12px;top:10px;z-index:99998;display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:min(94vw,720px);font:600 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;pointer-events:none}
 #joygoLiveMonitor[hidden]{display:none!important}.jm-chip{background:rgba(7,30,36,.88);border:1px solid rgba(255,255,255,.16);color:#f7f7f7;border-radius:999px;padding:7px 10px;box-shadow:0 4px 16px rgba(0,0,0,.18);backdrop-filter:blur(10px)}.jm-chip b{color:#f4c96a}.jm-off{opacity:.72}.jm-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5ed487;margin-right:5px}.jm-dot.off{background:#999}
@@ -3779,9 +3780,163 @@ html[data-joygo-guidance="1"] #gameActionRow{
 }
 </style>
 
+
+<style id="joygoBeta339MobileCleanStyle">
+/* ============================================================
+   Joy Go Platform Beta 3.3.9
+   手機介面整理 + 會員權限按鈕
+   ============================================================ */
+
+/* 舊版資訊不再顯示，但原有資安設定仍保留 */
+#joygoSecurityBadge,
+#apiInspectorToggle,
+#apiInspectorPanel{
+  display:none!important;
+}
+
+/* 返回平台縮小、避免壓住操作區 */
+#joygoBetaExit{
+  right:8px!important;
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  min-height:34px!important;
+  padding:6px 10px!important;
+  font-size:11px!important;
+  opacity:.9;
+}
+
+/* AI 教學工具收合鈕：桌機預設不顯示 */
+#mobileAiToggle339{display:none}
+
+/* 權限隱藏 */
+.joygo-permission-hidden339{display:none!important}
+
+/* 手機：已鎖定的平台大按鈕直接隱藏，減少雜亂 */
+@media (orientation:portrait),(max-width:700px){
+  .topbar .member-locked{
+    display:none!important;
+  }
+
+  /* 整體留白縮小 */
+  .app{
+    gap:5px!important;
+    padding:5px!important;
+  }
+
+  /* 棋盤下方控制區改成較緊湊 */
+  .player{
+    padding:5px!important;
+    gap:5px!important;
+    border-radius:13px!important;
+  }
+
+  #moveTools{
+    padding:5px!important;
+    border-radius:10px!important;
+  }
+
+  /* 棋譜播放：維持一排 5 鍵 */
+  .controls{
+    gap:4px!important;
+  }
+  .controls button{
+    min-height:39px!important;
+    height:39px!important;
+    font-size:20px!important;
+    border-radius:9px!important;
+  }
+
+  /* 對局主要操作：3 欄，按鈕大小一致 */
+  #gameActionRow{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-auto-rows:42px!important;
+    gap:5px!important;
+    min-height:0!important;
+    padding:4px 0 0!important;
+    margin:0!important;
+  }
+  #gameActionRow > button{
+    min-width:0!important;
+    width:100%!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:5px 3px!important;
+    border-radius:9px!important;
+    font-size:13px!important;
+    font-weight:850!important;
+    white-space:nowrap!important;
+  }
+
+  /* 常用對局按鈕給明確顏色，但避免過度花俏 */
+  #scoreGameBtn{
+    background:linear-gradient(135deg,#397fc0,#225d96)!important;
+    border-color:#70a9d9!important;
+    color:#fff!important;
+  }
+  #calculateResultBtn{
+    background:linear-gradient(135deg,#7253c8,#513493)!important;
+    border-color:#9b83dc!important;
+    color:#fff!important;
+  }
+  #resignGameBtn{
+    background:#291112!important;
+    border-color:#914747!important;
+  }
+  #saveSgfBtn{
+    background:#132718!important;
+    border-color:#4f8e5e!important;
+  }
+
+  /* AI 工具收合鈕 */
+  #mobileAiToggle339{
+    display:none;
+    grid-column:1/-1!important;
+    min-height:38px!important;
+    height:38px!important;
+    background:#20170f!important;
+    border:1px solid #85622f!important;
+    color:#ffd978!important;
+    font-size:12px!important;
+  }
+  body.joygo-ai-authorized339 #mobileAiToggle339{
+    display:block!important;
+  }
+
+  /* 有 AI 權限者，AI 工具預設收合；按下才展開 */
+  body.joygo-ai-authorized339:not(.joygo-show-ai339)
+    #gameActionRow > .joygo-ai-tool339{
+      display:none!important;
+  }
+
+  /* 非 AI 權限者永遠不顯示 */
+  body:not(.joygo-ai-authorized339)
+    #gameActionRow > .joygo-ai-tool339{
+      display:none!important;
+  }
+
+  /* 返回平台不再帶 Beta/鎖頭字樣 */
+  #joygoBetaExit{
+    border:1px solid #6c4b2c!important;
+    background:#19110cdd!important;
+    color:#f4dfb4!important;
+  }
+}
+
+/* 超窄手機再縮一點 */
+@media(max-width:390px){
+  #gameActionRow{
+    gap:4px!important;
+  }
+  #gameActionRow > button{
+    font-size:12px!important;
+    padding:4px 2px!important;
+  }
+}
+</style>
+
 </head>
 <body>
-<div id="joygoSecurityBadge">🔒 Beta 2.9.0 資安強化</div>
+<div id="joygoSecurityBadge" hidden aria-hidden="true"></div>
 
 
 <script id="joygoGuidanceEmbed275Boot">
@@ -3797,23 +3952,22 @@ html[data-joygo-guidance="1"] #gameActionRow{
 })();
 </script>
 
-<div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform 平台入口">
+<div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
   <div class="jg-card">
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
-    <h2>智慧圍棋・教學・對弈・競賽平台</h2>
-    <p class="jg-welcome">輸入您的平台通行碼，開啟 Joy Go 圍棋世界。</p>
+    <h2>朱老師圍棋 AI 教學平台</h2>
+    <div class="jg-beta">V1.0 Beta 2.1.1｜自由對弈・比賽計時設定</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
     </div>
-    <div class="jg-login"><input id="joygoBetaCode" type="password" inputmode="text" autocomplete="off" aria-label="平台通行碼" placeholder="輸入平台通行碼"><button id="joygoBetaEnter" type="button">進入 Joy Go Platform</button></div>
+    <div class="jg-login"><input id="joygoBetaCode" type="password" inputmode="text" autocomplete="off" placeholder="輸入 Beta 測試碼"><button id="joygoBetaEnter" type="button">進入 V1.0 Beta</button></div>
     <div class="jg-msg" id="joygoBetaMsg"></div>
-    <div class="jg-motto">棋不問年齡，只要心懷熱愛，落子處處皆是新的開始。</div>
-    <div class="jg-note">V1.0 Beta 2.1.1｜Build 028.3.7 Stable</div>
+    <div class="jg-note">Beta 測試版｜核心：Build 028.3.7 Stable</div>
   </div>
 </div>
-<button id="joygoBetaExit" class="jg-exit" type="button" hidden>🔒 離開 Beta</button>
+<button id="joygoBetaExit" class="jg-exit" type="button" hidden>← 返回平台</button>
 <div id="joygoLiveMonitor" hidden aria-label="多人測試監控">
   <span class="jm-chip" id="jmOnline"><i class="jm-dot off" id="jmDot"></i>在線 <b>—</b></span>
   <span class="jm-chip" id="jmAI">🤖 KataGo <b>—</b></span>
@@ -3853,7 +4007,7 @@ html[data-joygo-guidance="1"] #gameActionRow{
    try{sessionStorage.removeItem(KEY);localStorage.removeItem(PERSIST_KEY)}catch{}
    setTimeout(()=>input.focus(),80)
  }
- function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='平台通行碼不正確，請重新輸入。';input.select()}}
+ function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='測試碼不正確，請重新輸入。';input.select()}}
  enter.addEventListener('click',check);input.addEventListener('keydown',e=>{if(e.key==='Enter')check()});exit.addEventListener('click',lock);
  if(guidanceEmbed){openGuidanceEmbed()}
  else{if(hasBetaAccess())open();else setTimeout(()=>input.focus(),120)}
@@ -3959,6 +4113,7 @@ html[data-joygo-guidance="1"] #gameActionRow{
       <button id="resignGameBtn">投降</button>
       <button id="calculateResultBtn">計算勝負</button>
       <button id="saveSgfBtn">存檔 SGF</button>
+      <button id="mobileAiToggle339" type="button" aria-expanded="false">✨ AI 教學工具 ▾</button>
       <button id="trialModeBtn">🧪 試下</button>
       <button id="firstChoiceBtn">第一選</button>
       <button id="secondChoiceBtn">第二選</button>
@@ -6547,7 +6702,101 @@ function memberUpdateToolAccess(){
       button.setAttribute("aria-label",locked?`${button.textContent.trim()}（需${memberRequiredLabel(feature)}）`:button.textContent.trim());
     });
   });
+  joygoApplyButtonPermissions339();
 }
+
+/* ============================================================
+   Beta 3.3.9：手機按鈕依會員權限顯示
+   - 試用會員：基本對局
+   - 正式會員／巡場員：基本對局 + SGF 存檔
+   - 主管理員／副管理員：全部 + AI 教學工具
+   注意：這是前端操作權限整理；資料庫敏感操作仍應由 RPC/RLS 保護。
+   ============================================================ */
+const JOYGO_AI_TOOL_IDS_339=[
+  "trialModeBtn","firstChoiceBtn","secondChoiceBtn",
+  "badMoveBtn","positionJudgeBtn","hintToggleBtn"
+];
+const JOYGO_MEMBER_TOOL_IDS_339=["saveSgfBtn"];
+const JOYGO_BASIC_GAME_IDS_339=[
+  "undoGameBtn","scoreGameBtn","passGameBtn",
+  "resignGameBtn","calculateResultBtn"
+];
+
+function joygoPermissionTier339(){
+  if(memberAccess.role==="blocked"||memberAccess.role==="visitor")return "visitor";
+  if(memberAccess.role==="admin"||memberAccess.staffRole==="deputy")return "staff";
+  if(memberAccess.role==="member"||memberAccess.staffRole==="moderator")return "member";
+  if(memberAccess.role==="trial")return "trial";
+  return "visitor";
+}
+
+function joygoApplyButtonPermissions339(){
+  const tier=joygoPermissionTier339();
+  const canMember=tier==="member"||tier==="staff";
+  const canAi=tier==="staff";
+  const canBasic=tier!=="visitor";
+
+  JOYGO_BASIC_GAME_IDS_339.forEach(id=>{
+    const b=document.getElementById(id);
+    if(!b)return;
+    b.classList.toggle("joygo-permission-hidden339",!canBasic);
+    b.dataset.joygoAllowed339=canBasic?"1":"0";
+  });
+
+  JOYGO_MEMBER_TOOL_IDS_339.forEach(id=>{
+    const b=document.getElementById(id);
+    if(!b)return;
+    b.classList.toggle("joygo-permission-hidden339",!canMember);
+    b.dataset.joygoAllowed339=canMember?"1":"0";
+  });
+
+  JOYGO_AI_TOOL_IDS_339.forEach(id=>{
+    const b=document.getElementById(id);
+    if(!b)return;
+    b.classList.add("joygo-ai-tool339");
+    b.classList.toggle("joygo-permission-hidden339",!canAi);
+    b.dataset.joygoAllowed339=canAi?"1":"0";
+  });
+
+  document.body.classList.toggle("joygo-ai-authorized339",canAi);
+  if(!canAi)document.body.classList.remove("joygo-show-ai339");
+
+  const aiToggle=document.getElementById("mobileAiToggle339");
+  if(aiToggle){
+    aiToggle.hidden=!canAi;
+    aiToggle.setAttribute("aria-expanded",document.body.classList.contains("joygo-show-ai339")?"true":"false");
+    aiToggle.textContent=document.body.classList.contains("joygo-show-ai339")
+      ?"✨ 收合 AI 教學工具 ▴"
+      :"✨ AI 教學工具 ▾";
+  }
+}
+
+/* 捕捉層：無權限時即使按鈕因快取短暫出現，也阻止執行 */
+document.addEventListener("click",(ev)=>{
+  const target=ev.target?.closest?.("button");
+  if(!target||!target.id)return;
+  const protectedIds=[
+    ...JOYGO_BASIC_GAME_IDS_339,
+    ...JOYGO_MEMBER_TOOL_IDS_339,
+    ...JOYGO_AI_TOOL_IDS_339
+  ];
+  if(!protectedIds.includes(target.id))return;
+  if(target.dataset.joygoAllowed339==="0"){
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    toast("🔒 目前會員權限未開放此功能");
+  }
+},true);
+
+document.addEventListener("click",(ev)=>{
+  const b=ev.target?.closest?.("#mobileAiToggle339");
+  if(!b)return;
+  document.body.classList.toggle("joygo-show-ai339");
+  const opened=document.body.classList.contains("joygo-show-ai339");
+  b.setAttribute("aria-expanded",opened?"true":"false");
+  b.textContent=opened?"✨ 收合 AI 教學工具 ▴":"✨ AI 教學工具 ▾";
+});
+
 function memberRenderSession(){
   const signed=!!memberSession?.user;
   if($("memberSignedOut"))$("memberSignedOut").style.display=signed?"none":"block";
@@ -7223,6 +7472,7 @@ function buildTools(container){
 }
 buildTools($("rightTools")); buildTools($("topbar"));
 memberUpdateToolAccess();
+joygoApplyButtonPermissions339();
 
 /* Beta 2.4.2：橫式平台功能列按下任一功能後自動收合 */
 $("topbar")?.addEventListener("click",()=>{
@@ -10294,7 +10544,7 @@ if(state.engineVerified&&state.rendererVerified){
 </div>
 
 
-<button id="apiInspectorToggle" class="api-inspector-toggle" type="button">API 資料</button>
+<button id="apiInspectorToggle" class="api-inspector-toggle" type="button" hidden aria-hidden="true">API 資料</button>
 <section id="apiInspectorPanel" class="api-inspector-panel" hidden aria-label="Render API Inspector">
   <div class="api-inspector-head"><strong>Build027.0 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
   <div class="api-inspector-status"><span id="apiInspectorDot" class="api-inspector-dot"></span><span id="apiInspectorStatus">尚未執行分析</span></div>
