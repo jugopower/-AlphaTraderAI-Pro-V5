@@ -30,11 +30,11 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.9a">
+<meta name="joygo-mobile-ui-version" content="3.3.9b">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
-<title>Joy Go Platform V1.0 Beta｜朱老師圍棋 AI 教學平台</title>
+<title>Joy Go Platform V1.0 Beta｜Joy Go Platform｜朱老師圍棋 AI 教學平台</title>
 <style>
 :root{
   --bg:#0b0806;--panel:#18100b;--panel2:#24160e;--line:#8a6a3d;
@@ -3967,6 +3967,136 @@ html[data-joygo-guidance="1"] #gameActionRow{
 }
 </style>
 
+
+<style id="joygoBeta339bHeaderFix">
+/* Beta 3.3.9b：手機上方狀態列重新排版 */
+@media (orientation:portrait),(max-width:700px){
+  /* 返回平台固定在左上，但不再壓住會員資料 */
+  #joygoMobileReturn339a{
+    top:max(6px,env(safe-area-inset-top))!important;
+    left:6px!important;
+    min-height:30px!important;
+    padding:5px 8px!important;
+    font-size:11px!important;
+    z-index:99999!important;
+  }
+
+  /* 頂部會員/狀態區往下留空間 */
+  .topbar{
+    padding-top:40px!important;
+  }
+
+  /* 會員 chip 置中獨立一行 */
+  #memberChip,
+  .member-chip{
+    position:relative!important;
+    inset:auto!important;
+    margin:0 auto 4px!important;
+    max-width:calc(100vw - 24px)!important;
+    width:max-content!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    z-index:10!important;
+  }
+
+  /* 上線/排隊狀態改為獨立一行 */
+  #onlineStatus,
+  #presenceStatus,
+  #queueStatus,
+  #queueCount,
+  .online-status,
+  .presence-status,
+  .queue-status{
+    position:relative!important;
+    inset:auto!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:2px auto!important;
+    text-align:center!important;
+    white-space:normal!important;
+    line-height:1.35!important;
+    z-index:9!important;
+  }
+
+  /* 若原本使用 flex/absolute 的頂部資訊容器，強制直向排列 */
+  .topbar-status,
+  .member-status-wrap,
+  .presence-wrap,
+  .online-meta,
+  .lobby-status{
+    position:relative!important;
+    inset:auto!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    gap:3px!important;
+    width:100%!important;
+  }
+
+  /* 主功能列與上方狀態保持距離 */
+  .topbar-tools,
+  .toolbar,
+  .quick-tools{
+    margin-top:5px!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta339bGateStyle">
+/* Beta 3.3.9b：入口頁現代化 */
+#betaGate,
+.beta-gate,
+#gate,
+.gate-screen{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(173,118,52,.20),transparent 42%),
+    linear-gradient(180deg,#130e0b 0%,#0b0908 100%)!important;
+}
+#betaGate .panel,
+.beta-gate .panel,
+.gate-card,
+#gateCard{
+  max-width:420px!important;
+  width:calc(100% - 28px)!important;
+  margin:auto!important;
+  border:1px solid #7f5a35!important;
+  border-radius:22px!important;
+  background:#17110edb!important;
+  box-shadow:0 18px 60px #0009!important;
+}
+#betaGate h1,
+.beta-gate h1,
+.gate-card h1,
+#gateCard h1{
+  color:#ffe19a!important;
+  letter-spacing:.5px!important;
+}
+#betaGate input,
+.beta-gate input,
+.gate-card input,
+#gateCard input{
+  min-height:48px!important;
+  border-radius:14px!important;
+  border:1px solid #9a6c3b!important;
+  background:#211711!important;
+  color:#fff0c8!important;
+}
+#betaGate button,
+.beta-gate button,
+.gate-card button,
+#gateCard button{
+  min-height:48px!important;
+  border-radius:14px!important;
+  font-weight:900!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -3993,12 +4123,12 @@ html[data-joygo-guidance="1"] #gameActionRow{
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">V1.0 Beta 2.1.1｜自由對弈・比賽計時設定</div>
+    <div class="jg-beta">Joy Go Platform｜會員棋局・AI 教學・真人對弈</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
     </div>
-    <div class="jg-login"><input id="joygoBetaCode" type="password" inputmode="text" autocomplete="off" placeholder="輸入 Beta 測試碼"><button id="joygoBetaEnter" type="button">進入 V1.0 Beta</button></div>
+    <div class="jg-login"><input id="joygoBetaCode" type="password" inputmode="text" autocomplete="off" placeholder="輸入平台通行碼"><button id="joygoBetaEnter" type="button">進入 Joy Go Platform</button></div>
     <div class="jg-msg" id="joygoBetaMsg"></div>
     <div class="jg-note">Beta 測試版｜核心：Build 028.3.7 Stable</div>
   </div>
@@ -10844,6 +10974,27 @@ document.addEventListener("click",(ev)=>{
   ev.preventDefault();
   joygoReturnToPlatform339a();
 });
+</script>
+
+
+<script id="joygoBeta339bCacheFix">
+/* Beta 3.3.9b：降低手機讀到舊入口/舊畫面的機率 */
+(()=>{
+  try{
+    const BUILD="3.3.9b";
+    const KEY="joygo_last_build";
+    const old=localStorage.getItem(KEY);
+    if(old!==BUILD){
+      localStorage.setItem(KEY,BUILD);
+      if("caches" in window){
+        caches.keys().then(keys=>Promise.all(
+          keys.filter(k=>/joygo|alpha|beta|github/i.test(k))
+              .map(k=>caches.delete(k))
+        )).catch(()=>{});
+      }
+    }
+  }catch(_){}
+})();
 </script>
 
 </body>
