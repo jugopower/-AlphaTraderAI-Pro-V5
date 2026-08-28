@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.9c">
+<meta name="joygo-mobile-ui-version" content="3.3.9d">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -4517,6 +4517,122 @@ body{
 /* Avoid old 3.3.9b layout rules fighting the approved layout */
 #joygoBeta339bHeaderFix,
 #joygoBeta339bGateStyle{all:unset}
+</style>
+
+
+<style id="joygoBeta339dNoCoverFix">
+/* =========================================================
+   Beta 3.3.9d
+   修正 iPad / 手機功能列遮住棋盤
+   原則：按鍵整齊固定於版面中，但不浮在棋盤上
+   ========================================================= */
+
+/* 頂部狀態資訊仍保留固定，但主功能列回到正常文件流 */
+#topbar{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  z-index:20!important;
+  margin:0 0 10px!important;
+}
+
+/* 棋盤永遠排在 topbar 之後 */
+.board-wrap{
+  position:relative!important;
+  z-index:1!important;
+  clear:both!important;
+  margin-top:0!important;
+}
+
+/* iPad 直式 */
+@media (min-width:701px) and (orientation:portrait){
+  body:not(.guidance-embed-mode) .app{
+    padding-top:74px!important;
+  }
+
+  .app{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "topbar"
+      "board"
+      "right"
+      "player"!important;
+    gap:10px!important;
+  }
+
+  #topbar{
+    grid-area:topbar!important;
+    position:relative!important;
+    top:auto!important;
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;
+    width:100%!important;
+    margin:0!important;
+    padding:6px!important;
+  }
+
+  #topbar button,
+  #topbar .tool{
+    height:56px!important;
+    min-height:56px!important;
+    font-size:11px!important;
+  }
+
+  .board-wrap{
+    grid-area:board!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0 auto!important;
+  }
+
+  #rightTools{
+    grid-area:right!important;
+    width:100%!important;
+    margin:0!important;
+  }
+
+  .player{
+    grid-area:player!important;
+    width:100%!important;
+    margin:0!important;
+  }
+}
+
+/* 手機直式：主工具列同樣不 sticky、不遮棋盤 */
+@media (max-width:700px){
+  body:not(.guidance-embed-mode) .app{
+    padding-top:80px!important;
+  }
+
+  #topbar{
+    position:relative!important;
+    top:auto!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    margin:0 0 6px!important;
+  }
+
+  .board-wrap{
+    margin-top:0!important;
+  }
+}
+
+/* iPad 橫式：一排排列，仍在棋盤上方正常佔位 */
+@media (min-width:701px) and (orientation:landscape){
+  #topbar{
+    position:relative!important;
+    top:auto!important;
+    grid-template-columns:repeat(9,minmax(0,1fr))!important;
+    margin:0 0 10px!important;
+  }
+}
+
+/* 避免任何舊版 sticky 規則再次蓋過 */
+body .app #topbar{
+  position:relative!important;
+}
 </style>
 
 </head>
