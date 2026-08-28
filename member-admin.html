@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.7ba｜修正會員編號欄位</title>
+<title>Joy Go Beta 3.3.8a｜修正會員編號欄位</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -68,7 +68,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.7b｜會員編號排序修正</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.8｜主管理員會員控制中心</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="management-audit.html">🛡️ 權限／管理紀錄</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
@@ -147,10 +147,11 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
   </div>
 
   <div id="adminSection" class="section" hidden>
-   <h3>👑 主管理員會員管理</h3>
-   <div class="adminrow"><label>會員身分</label><div class="field"><select id="detailRole"><option value="trial">試用會員</option><option value="member">正式會員</option><option value="admin">管理員</option></select></div></div>
+   <h3>👑 主管理員會員控制中心</h3><div style="margin:-4px 0 12px;color:#9fb0a7;font-size:13px">可管理棋力、會員身分、到期日、參賽資格、巡場權限、停權與密碼重設。</div>
+   <div class="adminrow"><label>會員身分／權限</label><div class="field"><select id="detailRole"><option value="trial">試用會員</option><option value="member">正式會員</option><option value="admin">管理員</option></select></div></div>
    <div class="adminrow"><label>會員到期</label><div class="field"><input id="detailExpires" type="date"></div></div>
    <div class="adminrow"><label>參賽資格</label><div class="field"><select id="detailEligible"><option value="true">可參賽</option><option value="false">不可參賽</option></select></div></div>
+   <div class="adminrow"><label>密碼安全</label><div class="field"><button id="resetPasswordBtn" class="mini neutral" type="button">寄送重設密碼信</button><small style="display:block;margin-top:7px;color:#9fb0a7">主管理員看不到會員原密碼，只能寄送安全重設信。</small></div></div>
    <div class="ops">
     <button id="saveMemberBtn" class="mini neutral">儲存會員設定</button>
     <button id="moderatorBtn" class="mini neutral">設為巡場員</button>
@@ -328,6 +329,24 @@ async function saveMember(){
  if(staffRole!=="admin"||!selectedId)return;const {error}=await sb.rpc("joygo_admin_update_member_settings",{p_target_user:selectedId,p_role:$("detailRole").value,p_expires_at:$("detailExpires").value?new Date($("detailExpires").value+"T23:59:59").toISOString():null,p_competition_eligible:$("detailEligible").value==="true"});if(error)return alert("會員設定更新失敗："+error.message);await auditV334("member_settings",selectedId,`身分=${$("detailRole").value}；到期=${$("detailExpires").value||"未設定"}；參賽=${$("detailEligible").value}`);await loadMembers();await openMember(selectedId)
 }
 
+
+async function sendPasswordReset(){
+ if(staffRole!=="admin"||!selectedId)return;
+ const r=members.find(x=>x.id===selectedId);
+ if(!r||!r.email)return alert("此會員沒有可用的 Email。");
+ if(!confirm(`確定寄送「重設密碼」郵件給 ${r.display_name||r.email}？\n\n寄送至：${r.email}`))return;
+ const btn=$("resetPasswordBtn");
+ if(btn){btn.disabled=true;btn.textContent="寄送中…";}
+ try{
+   const {error}=await sb.auth.resetPasswordForEmail(r.email);
+   if(error)return alert("重設密碼信寄送失敗："+error.message);
+   await auditV334("password_reset_email",selectedId,`寄送重設密碼信至 ${r.email}`);
+   alert("✅ 已寄送重設密碼信。\n\n會員收到信後自行設定新密碼；主管理員不會看到會員密碼。");
+ }finally{
+   if(btn){btn.disabled=false;btn.textContent="寄送重設密碼信";}
+ }
+}
+
 async function toggleModerator(){
  if(staffRole!=="admin"||!selectedId)return;
  const r=members.find(x=>x.id===selectedId);if(!r)return;
@@ -356,7 +375,7 @@ async function init(){
   });
 });
 $("refreshBtn").onclick=loadMembers;$("closeModal").onclick=closeMember;$("detailModal").onclick=e=>{if(e.target===$("detailModal"))closeMember()};
-$("saveRankBtn").onclick=saveRank;$("saveMemberBtn").onclick=saveMember;$("moderatorBtn").onclick=toggleModerator;$("suspend1Btn").onclick=()=>moderate("suspend_1d");$("suspend7Btn").onclick=()=>moderate("suspend_7d");$("suspendForeverBtn").onclick=()=>moderate("suspend_permanent");$("unsuspendBtn").onclick=()=>moderate("unsuspend");
+$("saveRankBtn").onclick=saveRank;$("saveMemberBtn").onclick=saveMember;$("resetPasswordBtn").onclick=sendPasswordReset;$("moderatorBtn").onclick=toggleModerator;$("suspend1Btn").onclick=()=>moderate("suspend_1d");$("suspend7Btn").onclick=()=>moderate("suspend_7d");$("suspendForeverBtn").onclick=()=>moderate("suspend_permanent");$("unsuspendBtn").onclick=()=>moderate("unsuspend");
 
 $("prevPageBtn").onclick=()=>{if(currentPage>1){currentPage--;render();window.scrollTo({top:0,behavior:"smooth"})}};
 $("nextPageBtn").onclick=()=>{const totalPages=Math.max(1,Math.ceil(filteredMembers.length/pageSize));if(currentPage<totalPages){currentPage++;render();window.scrollTo({top:0,behavior:"smooth"})}};
