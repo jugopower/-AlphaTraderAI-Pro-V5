@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10a">
+<meta name="joygo-mobile-ui-version" content="3.3.10b">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -4911,6 +4911,102 @@ body.landscape-platform-menu #joygoBetaGate{
     width:100%!important;
     margin:0!important;
     z-index:2!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3310bMobileDomOrder">
+/* =========================================================
+   Joy Go Platform Beta 3.3.10b
+   手機版 DOM 真正重排
+   完整棋盤 -> 棋鐘 -> 棋譜播放 -> AI工具 -> 對局按鍵
+   iPad橫式完全不動
+   ========================================================= */
+
+@media (max-width:699px){
+  body:not(.guidance-embed-mode) .app{
+    display:block!important;
+    padding-top:78px!important;
+  }
+
+  #joygoMoreShell3310,
+  #topbar,
+  .board-wrap,
+  #gameClockPanel,
+  #mobilePlaybackHost3310b,
+  #mobileAiHost3310b,
+  #mobileActionHost3310b{
+    width:100%!important;
+    margin-left:0!important;
+    margin-right:0!important;
+  }
+
+  .board-wrap{
+    position:relative!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:flex-start!important;
+    width:100%!important;
+    height:var(--board-size)!important;
+    min-height:var(--board-size)!important;
+    max-height:none!important;
+    margin:6px 0 0!important;
+    padding:0!important;
+    overflow:visible!important;
+    z-index:1!important;
+  }
+
+  #board{
+    position:relative!important;
+    display:block!important;
+    width:var(--board-size)!important;
+    height:var(--board-size)!important;
+    min-width:var(--board-size)!important;
+    min-height:var(--board-size)!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0 auto!important;
+    flex:0 0 auto!important;
+  }
+
+  #gameClockPanel{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    display:grid!important;
+    grid-template-columns:1fr auto 1fr!important;
+    align-items:center!important;
+    gap:6px!important;
+    width:100%!important;
+    margin:6px 0 0!important;
+    padding:8px 9px!important;
+    z-index:2!important;
+  }
+
+  #mobilePlaybackHost3310b,
+  #mobileAiHost3310b,
+  #mobileActionHost3310b{
+    position:relative!important;
+    display:block!important;
+    margin-top:6px!important;
+    z-index:2!important;
+  }
+
+  /* 手機版不再使用原本可能插在棋盤區的 side/player 容器 */
+  #rightTools{
+    display:none!important;
+  }
+
+  .player{
+    display:none!important;
+  }
+
+  #mobilePlaybackHost3310b > *,
+  #mobileAiHost3310b > *,
+  #mobileActionHost3310b > *{
+    width:100%!important;
+    max-width:none!important;
   }
 }
 </style>
@@ -12076,6 +12172,140 @@ document.addEventListener("click",(ev)=>{
   }
 
   window.joygoBoardHeight3310a=run;
+})();
+</script>
+
+
+<script id="joygoBeta3310bMobileDomManager">
+(()=>{
+  const isMobile=()=> (window.innerWidth||0) < 700;
+
+  function makeHost(id, cls){
+    let el=document.getElementById(id);
+    if(!el){
+      el=document.createElement("div");
+      el.id=id;
+      el.className=cls;
+    }
+    return el;
+  }
+
+  function moveIfFound(host, selectors){
+    for(const sel of selectors){
+      const el=document.querySelector(sel);
+      if(el && !host.contains(el)){
+        host.appendChild(el);
+      }
+    }
+  }
+
+  function reorderMobile(){
+    if(!isMobile()) return;
+
+    const app=document.querySelector(".app");
+    const board=document.querySelector(".board-wrap");
+    const clock=document.getElementById("gameClockPanel");
+    if(!app || !board || !clock) return;
+
+    const playbackHost=makeHost("mobilePlaybackHost3310b","mobile-playback-host3310b");
+    const aiHost=makeHost("mobileAiHost3310b","mobile-ai-host3310b");
+    const actionHost=makeHost("mobileActionHost3310b","mobile-action-host3310b");
+
+    /* 先把三個新區塊依序插在棋鐘後 */
+    if(clock.parentElement!==app || clock.previousElementSibling!==board){
+      board.insertAdjacentElement("afterend",clock);
+    }
+
+    if(playbackHost.parentElement!==app){
+      clock.insertAdjacentElement("afterend",playbackHost);
+    }
+    if(aiHost.parentElement!==app){
+      playbackHost.insertAdjacentElement("afterend",aiHost);
+    }
+    if(actionHost.parentElement!==app){
+      aiHost.insertAdjacentElement("afterend",actionHost);
+    }
+
+    /* 棋譜播放控制 */
+    moveIfFound(playbackHost,[
+      "#moveNav",
+      "#moveNavBar",
+      ".move-nav",
+      ".move-controls",
+      ".playback-controls",
+      "#playbackControls"
+    ]);
+
+    /* AI 教學工具 */
+    moveIfFound(aiHost,[
+      "#aiTeachingTools",
+      "#aiTools",
+      ".ai-teaching-tools",
+      ".ai-tools",
+      "#analysisTools",
+      ".analysis-tools"
+    ]);
+
+    /* 對局操作鍵 */
+    moveIfFound(actionHost,[
+      "#compactActionPanel",
+      "#gameActions",
+      ".game-actions",
+      ".action-grid"
+    ]);
+
+    /* 若對局按鍵仍在 player 內，直接搬常用按鍵 */
+    const ids=[
+      "undoGameBtn","scoreGameBtn","calculateResultBtn",
+      "passGameBtn","resignGameBtn","saveSgfBtn",
+      "tryMoveBtn","shapeJudgeBtn"
+    ];
+    for(const id of ids){
+      const el=document.getElementById(id);
+      if(el && !actionHost.contains(el)){
+        actionHost.appendChild(el);
+      }
+    }
+
+    /* 棋盤容器高度再次同步實際 board */
+    const size =
+      parseFloat(getComputedStyle(document.getElementById("board")).width) ||
+      document.getElementById("board")._cssSize ||
+      0;
+    if(size>0){
+      board.style.setProperty("--board-size",size+"px");
+      board.style.setProperty("height",size+"px","important");
+      board.style.setProperty("min-height",size+"px","important");
+    }
+  }
+
+  function run(){
+    try{reorderMobile()}catch(_){}
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(run,120),{once:true});
+  }else{
+    setTimeout(run,120);
+  }
+
+  let t=0;
+  const schedule=()=>{
+    clearTimeout(t);
+    t=setTimeout(run,160);
+  };
+
+  window.addEventListener("resize",schedule,{passive:true});
+  window.addEventListener("orientationchange",()=>setTimeout(run,260),{passive:true});
+  window.addEventListener("pageshow",()=>setTimeout(run,120),{passive:true});
+
+  const obs=new MutationObserver(()=>schedule());
+  setTimeout(()=>{
+    const app=document.querySelector(".app");
+    if(app) obs.observe(app,{childList:true,subtree:true});
+  },500);
+
+  window.joygoMobileLayout3310b=run;
 })();
 </script>
 
