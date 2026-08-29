@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.9e">
+<meta name="joygo-mobile-ui-version" content="3.3.9g">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -4828,6 +4828,114 @@ body .app #topbar{
 }
 </style>
 
+
+<style id="joygoBeta339gClassicLayout">
+#joygoToolbarShell339e,#joygoToolbarToggle339e{display:none!important}
+body.joygo-toolbar-open339e #topbar,#topbar{
+  display:grid!important;position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+  transform:none!important;margin:0!important;z-index:20!important
+}
+.board-wrap,#gameClockPanel,#rightTools,.player{
+  position:relative!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important
+}
+
+@media (min-width:701px) and (orientation:portrait){
+  .app{
+    display:grid!important;grid-template-columns:1fr!important;
+    grid-template-areas:"topbar" "board" "right" "player"!important;
+    gap:8px!important;padding-top:72px!important
+  }
+  .left{display:none!important}
+  #topbar{
+    grid-area:topbar!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;
+    gap:4px!important;width:100%!important;padding:5px!important;
+    border:1px solid rgba(222,172,72,.42)!important;border-radius:13px!important;
+    background:#0b1719f3!important;box-shadow:0 6px 18px #0005!important
+  }
+  #topbar>*{min-width:0!important;width:100%!important;margin:0!important}
+  #topbar button,#topbar .tool{
+    min-width:0!important;width:100%!important;min-height:48px!important;height:48px!important;
+    padding:3px 2px!important;border-radius:9px!important;font-size:10px!important;font-weight:850!important;
+    white-space:normal!important;overflow:hidden!important
+  }
+  #topbar button span,#topbar .tool span{display:block!important;font-size:16px!important;line-height:1!important;margin-bottom:1px!important}
+  .board-wrap{grid-area:board!important;width:100%!important;max-width:none!important;margin:0!important}
+  #rightTools{grid-area:right!important;width:100%!important;margin:0!important}
+  #gameClockPanel{
+    width:100%!important;margin:0!important;display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:center!important;gap:8px!important
+  }
+  .player{grid-area:player!important;width:100%!important;margin:0!important}
+}
+
+@media (min-width:701px) and (orientation:landscape){
+  body:not(.guidance-embed-mode) .app{padding-top:64px!important}
+  .app{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 280px!important;
+    grid-template-rows:auto 1fr auto!important;
+    grid-template-areas:"board topbar" "board right" "player right"!important;
+    gap:10px!important;align-items:start!important
+  }
+  .left{display:none!important}
+  .board-wrap{grid-area:board!important;width:100%!important;max-width:none!important;margin:0!important;align-self:start!important}
+  #topbar{
+    grid-area:topbar!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;width:280px!important;min-width:280px!important;max-width:280px!important;padding:7px!important;
+    border:1px solid rgba(222,172,72,.45)!important;border-radius:14px!important;
+    background:#0b1719f5!important;box-shadow:0 8px 22px #0006!important;align-self:start!important
+  }
+  #topbar>*{min-width:0!important;width:100%!important;margin:0!important}
+  #topbar button,#topbar .tool{
+    min-width:0!important;width:100%!important;height:54px!important;min-height:54px!important;padding:5px 4px!important;
+    border-radius:10px!important;border:1px solid rgba(211,164,71,.42)!important;
+    background:linear-gradient(180deg,#15272a,#0d1c1e)!important;color:#f8ead0!important;
+    font-size:11px!important;font-weight:850!important;white-space:normal!important;text-align:center!important;overflow:hidden!important
+  }
+  #topbar button span,#topbar .tool span{display:block!important;font-size:18px!important;line-height:1.05!important;margin-bottom:1px!important}
+  #rightTools{
+    grid-area:right!important;width:280px!important;min-width:280px!important;max-width:280px!important;
+    margin:0!important;display:flex!important;flex-direction:column!important;gap:8px!important;align-self:start!important
+  }
+  #gameClockPanel{
+    order:-100!important;width:100%!important;display:grid!important;grid-template-columns:1fr!important;gap:8px!important;
+    padding:10px!important;border:1px solid rgba(226,179,80,.5)!important;border-radius:14px!important;
+    background:linear-gradient(180deg,#0d2023,#091719)!important;box-shadow:0 8px 20px #0006!important
+  }
+  #gameClockPanel .clock-side{
+    display:grid!important;grid-template-columns:auto 1fr!important;
+    grid-template-areas:"stone name" "stone time" "stone byo"!important;
+    align-items:center!important;column-gap:8px!important;min-height:82px!important;padding:8px!important;
+    border-radius:10px!important;background:#0b1517!important
+  }
+  #gameClockPanel .clock-stone{grid-area:stone!important}
+  #gameClockPanel .clock-name{grid-area:name!important;font-size:12px!important}
+  #gameClockPanel .clock-time{grid-area:time!important;font-size:26px!important;line-height:1!important}
+  #gameClockPanel .clock-byo{grid-area:byo!important;font-size:11px!important}
+  #clockSoundIcon{display:none!important}
+  #redrawBtn,#aiHintPanel{display:none!important}
+  .player{grid-area:player!important;width:100%!important;margin:0!important}
+}
+
+@media (max-width:700px){
+  .app{
+    display:grid!important;grid-template-columns:1fr!important;
+    grid-template-areas:"topbar" "board" "right" "player"!important;
+    gap:6px!important;padding-top:80px!important
+  }
+  #topbar{
+    grid-area:topbar!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;padding:4px!important
+  }
+  #topbar button,#topbar .tool{height:46px!important;min-height:46px!important;font-size:10px!important}
+  .board-wrap{grid-area:board!important}
+  #rightTools{grid-area:right!important}
+  .player{grid-area:player!important}
+}
+
+body .app #topbar,body .app .board-wrap,body .app #rightTools,body .app #gameClockPanel{
+  position:relative!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important
+}
+</style>
+
 </head>
 <body>
 
@@ -4947,9 +5055,6 @@ body .app #topbar{
 <div class="app">
 <button id="infoCollapseBtn" class="info-collapse" type="button" aria-label="收合資訊欄">‹</button>
   
-<div id="joygoToolbarShell339e" class="joygo-toolbar-shell339e">
-  <button id="joygoToolbarToggle339e" type="button" aria-expanded="false">☰ 功能選單</button>
-</div>
 
   <nav class="topbar" id="topbar"></nav>
 
@@ -11830,6 +11935,19 @@ document.addEventListener("click",(ev)=>{
   setOpen(saved);
 
   window.joygoSetToolbarOpen339e=setOpen;
+})();
+</script>
+
+
+<script id="joygoBeta339gClassicBoot">
+(()=>{
+  try{
+    document.body.classList.remove("joygo-toolbar-open339e");
+    localStorage.removeItem("joygo_toolbar_open_339e");
+  }catch(_){}
+  document.getElementById("joygoToolbarToggle339e")?.remove();
+  document.getElementById("joygoToolbarShell339e")?.remove();
+  requestAnimationFrame(()=>{try{window.dispatchEvent(new Event("resize"))}catch(_){}});
 })();
 </script>
 
