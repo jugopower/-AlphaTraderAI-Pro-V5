@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.9g">
+<meta name="joygo-mobile-ui-version" content="3.3.9h">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -4936,6 +4936,172 @@ body .app #topbar,body .app .board-wrap,body .app #rightTools,body .app #gameClo
 }
 </style>
 
+
+<style id="joygoBeta339hResponsiveToolbar">
+/* =========================================================
+   Joy Go Platform Beta 3.3.9h
+   手機 / iPad直式：常用第一排 + 更多功能收合
+   iPad橫式：右側功能鍵 + 棋鐘，不收合
+   ========================================================= */
+
+#joygoMoreShell339h{
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  margin:0 0 5px!important;
+  position:relative!important;
+  z-index:30!important;
+}
+#joygoMoreToggle339h{
+  min-height:34px!important;
+  height:34px!important;
+  padding:5px 11px!important;
+  border-radius:999px!important;
+  border:1px solid rgba(230,181,83,.68)!important;
+  background:linear-gradient(180deg,#182a2d,#0d1a1c)!important;
+  color:#f7dfaa!important;
+  font-size:11px!important;
+  font-weight:900!important;
+  box-shadow:0 4px 12px #0005!important;
+}
+
+/* 返回平台永遠固定且最高層 */
+#joygoMobileReturn339a{
+  display:block!important;
+  position:fixed!important;
+  z-index:99999!important;
+  border:1px solid rgba(230,181,83,.78)!important;
+  background:#17130ff2!important;
+  color:#f7dfaa!important;
+  font-weight:900!important;
+  box-shadow:0 5px 16px #0007!important;
+}
+
+/* ===== iPad 直式 ===== */
+@media (min-width:701px) and (orientation:portrait){
+  .app{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "more"
+      "topbar"
+      "board"
+      "right"
+      "player"!important;
+    gap:7px!important;
+  }
+
+  #joygoMoreShell339h{grid-area:more!important}
+
+  #topbar{
+    grid-area:topbar!important;
+    display:grid!important;
+    grid-template-columns:repeat(8,minmax(0,1fr))!important;
+    gap:4px!important;
+  }
+
+  /* iPad直式：預設只顯示前8個（第一排） */
+  body:not(.joygo-more-open339h) #topbar > :nth-child(n+9){
+    display:none!important;
+  }
+
+  .board-wrap{grid-area:board!important}
+  #rightTools{grid-area:right!important}
+  .player{grid-area:player!important}
+
+  #joygoMobileReturn339a{
+    top:14px!important;
+    right:14px!important;
+    left:auto!important;
+    min-height:34px!important;
+    height:34px!important;
+    padding:6px 12px!important;
+    font-size:11px!important;
+  }
+}
+
+/* ===== 手機 ===== */
+@media (max-width:700px){
+  .app{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "more"
+      "topbar"
+      "board"
+      "right"
+      "player"!important;
+    gap:5px!important;
+  }
+
+  #joygoMoreShell339h{grid-area:more!important}
+
+  #topbar{
+    grid-area:topbar!important;
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:4px!important;
+  }
+
+  /* 手機：預設只顯示前4個（第一排） */
+  body:not(.joygo-more-open339h) #topbar > :nth-child(n+5){
+    display:none!important;
+  }
+
+  #joygoMoreToggle339h{
+    height:32px!important;
+    min-height:32px!important;
+    padding:4px 9px!important;
+    font-size:10px!important;
+  }
+
+  #joygoMobileReturn339a{
+    top:8px!important;
+    right:8px!important;
+    left:auto!important;
+    min-height:30px!important;
+    height:30px!important;
+    padding:5px 8px!important;
+    font-size:10px!important;
+  }
+
+  .board-wrap{grid-area:board!important}
+  #rightTools{grid-area:right!important}
+  .player{grid-area:player!important}
+}
+
+/* ===== iPad 橫式 ===== */
+@media (min-width:701px) and (orientation:landscape){
+  /* 橫式不收合：右側功能鍵全部顯示 */
+  #joygoMoreShell339h{
+    display:none!important;
+  }
+  #topbar > *{
+    display:block!important;
+  }
+  #joygoMobileReturn339a{
+    top:14px!important;
+    right:14px!important;
+    left:auto!important;
+    min-height:34px!important;
+    height:34px!important;
+    padding:6px 12px!important;
+    font-size:11px!important;
+  }
+}
+
+/* 展開功能時，工具列仍留在正常版面流程內，不遮棋盤 */
+#topbar,.board-wrap,#rightTools,.player{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -5055,6 +5221,11 @@ body .app #topbar,body .app .board-wrap,body .app #rightTools,body .app #gameClo
 <div class="app">
 <button id="infoCollapseBtn" class="info-collapse" type="button" aria-label="收合資訊欄">‹</button>
   
+
+  
+<div id="joygoMoreShell339h" class="joygo-more-shell339h">
+  <button id="joygoMoreToggle339h" type="button" aria-expanded="false">＋ 更多功能</button>
+</div>
 
   <nav class="topbar" id="topbar"></nav>
 
@@ -11948,6 +12119,54 @@ document.addEventListener("click",(ev)=>{
   document.getElementById("joygoToolbarToggle339e")?.remove();
   document.getElementById("joygoToolbarShell339e")?.remove();
   requestAnimationFrame(()=>{try{window.dispatchEvent(new Event("resize"))}catch(_){}});
+})();
+</script>
+
+
+<script id="joygoBeta339hResponsiveToolbarScript">
+(()=>{
+  const btn=document.getElementById("joygoMoreToggle339h");
+  const KEY="joygo_more_open_339h";
+
+  function isLandscapeTablet(){
+    return window.matchMedia("(min-width:701px) and (orientation:landscape)").matches;
+  }
+
+  function setOpen(open){
+    if(isLandscapeTablet()){
+      document.body.classList.remove("joygo-more-open339h");
+      if(btn){
+        btn.setAttribute("aria-expanded","false");
+        btn.textContent="＋ 更多功能";
+      }
+      return;
+    }
+
+    document.body.classList.toggle("joygo-more-open339h",!!open);
+    if(btn){
+      btn.setAttribute("aria-expanded",open?"true":"false");
+      btn.textContent=open?"－ 收合功能":"＋ 更多功能";
+    }
+    try{localStorage.setItem(KEY,open?"1":"0")}catch(_){}
+    requestAnimationFrame(()=>{try{window.dispatchEvent(new Event("resize"))}catch(_){}});
+  }
+
+  if(btn){
+    btn.addEventListener("click",()=>{
+      setOpen(!document.body.classList.contains("joygo-more-open339h"));
+    });
+  }
+
+  let saved=false;
+  try{saved=localStorage.getItem(KEY)==="1"}catch(_){}
+  setOpen(saved);
+
+  window.addEventListener("orientationchange",()=>setTimeout(()=>setOpen(false),180));
+  window.addEventListener("resize",()=>{
+    if(isLandscapeTablet()) setOpen(false);
+  });
+
+  window.joygoSetMoreOpen339h=setOpen;
 })();
 </script>
 
