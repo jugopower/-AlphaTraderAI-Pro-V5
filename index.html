@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10i">
+<meta name="joygo-mobile-ui-version" content="3.3.10j">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5188,6 +5188,35 @@ body{
  #jgMore3310i{right:10px;bottom:10px;width:320px;grid-template-columns:repeat(2,1fr);max-height:60vh}
  #jgPlat3310i{right:10px;bottom:10px;width:420px;grid-template-columns:repeat(4,1fr);max-height:65vh}
 }
+</style>
+
+
+<style id="joygoBeta3310jStableCoreCSS">
+@media (max-width:699px){
+  #gameClockPanel .clock-time{font-size:clamp(24px,6.8vw,28px)!important;letter-spacing:-.5px!important}
+  #gameClockPanel .clock-byo{font-size:7.5px!important}
+  #clockSoundIcon{font-size:15px!important}
+}
+body.jg-mobile-landscape-3310j .app{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 190px!important;
+  grid-template-areas:"board clock" "board quick"!important;gap:6px!important;padding:48px 6px 6px!important;align-items:start!important
+}
+body.jg-mobile-landscape-3310j .board-wrap{grid-area:board!important;justify-self:center!important}
+body.jg-mobile-landscape-3310j #joygoClockDock3310g{grid-area:clock!important;width:190px!important}
+body.jg-mobile-landscape-3310j #gameClockPanel{grid-template-columns:1fr!important;gap:4px!important;padding:5px!important}
+body.jg-mobile-landscape-3310j #gameClockPanel .clock-side{min-height:56px!important;padding:4px 5px!important}
+body.jg-mobile-landscape-3310j #gameClockPanel .clock-time{font-size:22px!important}
+body.jg-mobile-landscape-3310j #joygoQuick3310i{grid-area:quick!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:190px!important;margin:0!important}
+body.jg-mobile-landscape-3310j #joygoQuick3310i button{min-height:36px!important;font-size:10px!important}
+body.jg-mobile-landscape-3310j #jgPlatform3310i{top:6px!important;right:6px!important;font-size:10px!important;padding:5px 9px!important}
+body.jg-mobile-landscape-3310j #jgMore3310i,
+body.jg-mobile-landscape-3310j #jgPlat3310i{
+  right:6px!important;left:auto!important;bottom:6px!important;width:260px!important;max-height:78vh!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important
+}
+#jgMore3310i,#jgPlat3310i{opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .16s ease,transform .16s ease}
+#jgMore3310i.open,#jgPlat3310i.open{opacity:1;transform:translateY(0);pointer-events:auto}
+#joygoQuick3310i{z-index:30}
 </style>
 
 </head>
@@ -12145,99 +12174,95 @@ document.addEventListener("click",(ev)=>{
 
 
 
-<script id="joygoBeta3310iSmartManager">
+
+<script id="joygoBeta3310jStableCoreManager">
 (()=>{
  const $=id=>document.getElementById(id);
- let t=0;
+ let timer=0, inited=false;
 
- function dock(){
-  const app=document.querySelector(".app"), clock=$("gameClockPanel");
-  if(!app||!clock)return false;
-  let cd=$("joygoClockDock3310g");
-  if(!cd){cd=document.createElement("section");cd.id="joygoClockDock3310g";app.appendChild(cd)}
-  if(clock.parentElement!==cd)cd.appendChild(clock);
-
-  let ad=$("joygoActionDock3310g");
-  if(!ad){ad=document.createElement("section");ad.id="joygoActionDock3310g";app.appendChild(ad)}
-  ["coordToggleBtn","undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
-    const e=$(id); if(e&&e.parentElement!==ad)ad.appendChild(e);
-  });
-  const c=$("moveConfirmToggleWrap"); if(c&&c.parentElement!==ad)ad.appendChild(c);
-  return true;
+ function isPhone(){
+   const w=innerWidth||0,h=innerHeight||0;
+   return Math.min(w,h)<700;
+ }
+ function updateMode(){
+   document.body.classList.toggle("jg-mobile-landscape-3310j", isPhone() && innerWidth>innerHeight);
  }
 
- function btn(id,txt){
-  let b=$(id); if(!b){b=document.createElement("button");b.id=id;b.type="button"} b.textContent=txt; return b;
+ function doPass(){
+   try{
+     if(state?.onlineMode && typeof onlinePass==="function") return onlinePass();
+     if(typeof passMove==="function") return passMove();
+     const b=$("passGameBtn"); if(b) return b.click();
+   }catch(e){console.error("3310j pass",e)}
+ }
+ function doUndo(){
+   try{
+     if(typeof humanGameUndo==="function") return humanGameUndo();
+     if(typeof undoMove==="function") return undoMove();
+     const b=$("undoGameBtn"); if(b) return b.click();
+   }catch(e){console.error("3310j undo",e)}
+ }
+ function doResign(){
+   try{
+     if(state?.onlineMode && typeof onlineResign==="function") return onlineResign();
+     if(typeof humanGameResign==="function") return humanGameResign();
+     if(typeof resignGame==="function") return resignGame();
+     const b=$("resignGameBtn"); if(b) return b.click();
+   }catch(e){console.error("3310j resign",e);try{toast("投降功能暫時無法執行")}catch(_){}}
  }
 
- function quick(){
-  const app=document.querySelector(".app"); if(!app)return;
-  let q=$("joygoQuick3310i");
-  if(!q){
-    q=document.createElement("section");q.id="joygoQuick3310i";
-    q.append(btn("jqPass","Pass"),btn("jqResign","投降"),btn("jqUndo","悔棋"),btn("jqMore","更多"));
-    app.appendChild(q);
-  }
-  if(!$("jqPass").dataset.b){$("jqPass").dataset.b=1;$("jqPass").onclick=()=>$("passGameBtn")?.click()}
-  if(!$("jqResign").dataset.b){$("jqResign").dataset.b=1;$("jqResign").onclick=()=>$("resignGameBtn")?.click()}
-  if(!$("jqUndo").dataset.b){$("jqUndo").dataset.b=1;$("jqUndo").onclick=()=>$("undoGameBtn")?.click()}
-  if(!$("jqMore").dataset.b){$("jqMore").dataset.b=1;$("jqMore").onclick=()=>toggle("jgMore3310i","jgPlat3310i")}
+ function bindOnce(el,key,fn){
+   if(!el||el.dataset[key])return;
+   el.dataset[key]="1";
+   el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();fn()},false);
  }
-
- function drawer(id,title){
-  let d=$(id);
-  if(!d){
-   d=document.createElement("section");d.id=id;
-   const h=document.createElement("div");h.className="jgHead3310i";h.innerHTML="<span>"+title+"</span>";
-   const c=document.createElement("button");c.className="jgClose3310i";c.textContent="收合";c.onclick=()=>d.classList.remove("open");
-   h.appendChild(c);d.appendChild(h);document.body.appendChild(d);
-  }
-  return d;
- }
-
- function drawers(){
-  const more=drawer("jgMore3310i","更多對局功能");
-  ["coordToggleBtn","scoreGameBtn","calculateResultBtn","saveSgfBtn"].forEach(id=>{const e=$(id);if(e&&e.parentElement!==more)more.appendChild(e)});
-  const mc=$("moveConfirmToggleWrap");if(mc&&mc.parentElement!==more)more.appendChild(mc);
-
-  const plat=drawer("jgPlat3310i","Joy Go Platform");
-  const top=$("topbar");
-  if(top)[...top.children].forEach(e=>{if(e.parentElement!==plat)plat.appendChild(e)});
-
-  let p=$("jgPlatform3310i");
-  if(!p){p=btn("jgPlatform3310i","平台");document.body.appendChild(p);p.onclick=()=>toggle("jgPlat3310i","jgMore3310i")}
- }
-
- function toggle(a,b){
-  $(b)?.classList.remove("open");
-  $(a)?.classList.toggle("open");
- }
-
- function resign(){
-  const b=$("resignGameBtn"); if(!b||b.dataset.i)return;
-  b.dataset.i=1;b.textContent="投降";b.style.setProperty("color","#fff","important");
-  b.addEventListener("click",e=>{
-   e.preventDefault();e.stopPropagation();
-   try{ if(state?.onlineMode)return onlineResign(); return humanGameResign(); }catch(err){console.error(err)}
-  },true);
+ function bind(){
+   bindOnce($("jqPass"),"j",doPass);
+   bindOnce($("jqUndo"),"j",doUndo);
+   bindOnce($("jqResign"),"j",doResign);
+   bindOnce($("jqMore"),"j",()=>{
+     $("jgPlat3310i")?.classList.remove("open");
+     $("jgMore3310i")?.classList.toggle("open");
+   });
+   bindOnce($("jgPlatform3310i"),"j",()=>{
+     $("jgMore3310i")?.classList.remove("open");
+     $("jgPlat3310i")?.classList.toggle("open");
+   });
+   document.querySelectorAll(".jgClose3310i").forEach(el=>bindOnce(el,"j",()=>{
+     $("jgMore3310i")?.classList.remove("open");
+     $("jgPlat3310i")?.classList.remove("open");
+   }));
+   const r=$("resignGameBtn");
+   if(r){r.textContent="投降";r.style.setProperty("color","#fff","important")}
  }
 
  function redraw(){
-  try{resizeBoard(false);const s=state.currentSnapshot||activateSnapshot(state.index);drawBoard(s);syncUI()}catch(e){console.error(e)}
+   try{
+     if(typeof resizeBoard==="function") resizeBoard(false);
+     const s=state?.currentSnapshot || (typeof activateSnapshot==="function" ? activateSnapshot(state.index) : null);
+     if(s&&typeof drawBoard==="function") drawBoard(s);
+     if(typeof syncUI==="function") syncUI();
+   }catch(e){console.error("3310j redraw",e)}
  }
-
- function apply(){
-  if(!dock())return;
-  quick();drawers();resign();
-  $("jgMore3310i")?.classList.remove("open");$("jgPlat3310i")?.classList.remove("open");
-  redraw();
+ function apply(){updateMode();bind();redraw()}
+ function schedule(ms=180){clearTimeout(timer);timer=setTimeout(apply,ms)}
+ function init(){
+   if(inited)return;inited=true;
+   bind();updateMode();
+   document.addEventListener("click",e=>{
+     if(e.target?.id==="board"){
+       $("jgMore3310i")?.classList.remove("open");
+       $("jgPlat3310i")?.classList.remove("open");
+     }
+   },true);
+   addEventListener("resize",()=>schedule(220),{passive:true});
+   addEventListener("orientationchange",()=>schedule(360),{passive:true});
+   addEventListener("pageshow",()=>schedule(120),{passive:true});
  }
- function schedule(ms=160){clearTimeout(t);t=setTimeout(apply,ms)}
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>schedule(120),{once:true});else schedule(120);
- addEventListener("resize",()=>schedule(220),{passive:true});
- addEventListener("orientationchange",()=>schedule(360),{passive:true});
- addEventListener("pageshow",()=>schedule(140),{passive:true});
- document.addEventListener("click",e=>{if(e.target?.id==="board"){$("jgMore3310i")?.classList.remove("open");$("jgPlat3310i")?.classList.remove("open")}},true);
+ if(document.readyState==="loading"){
+   document.addEventListener("DOMContentLoaded",()=>{init();schedule(100)},{once:true});
+ }else{init();schedule(100)}
+ window.joygo3310j={doPass,doUndo,doResign,apply};
 })();
 </script>
 
