@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10e">
+<meta name="joygo-mobile-ui-version" content="3.3.10f">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5466,6 +5466,84 @@ body.landscape-platform-menu #joygoBetaGate{
 }
 </style>
 
+
+<style id="joygoBeta3310fSmallBoardLayout">
+/* =========================================================
+   Joy Go Platform Beta 3.3.10f
+   9/13路小棋盤 + 返回平台修正版
+   ========================================================= */
+
+@media (min-width:700px) and (orientation:portrait){
+
+  .board-wrap{
+    width:100%!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:flex-start!important;
+    background:transparent!important;
+    border:none!important;
+    margin:4px auto 0!important;
+  }
+
+  #board{
+    margin:0 auto!important;
+    border-radius:16px!important;
+  }
+
+  #gameClockPanel{
+    width:min(100%,860px)!important;
+    margin:7px auto 0!important;
+    padding:6px 10px!important;
+    border-radius:13px!important;
+  }
+
+  #gameClockPanel .clock-side{
+    min-height:58px!important;
+    padding:3px 5px!important;
+  }
+
+  #gameClockPanel .clock-time{
+    font-size:24px!important;
+  }
+
+  #gameClockPanel .clock-byo{
+    font-size:8.5px!important;
+  }
+
+  #ipadPortraitActions3310e{
+    width:min(100%,860px)!important;
+    margin:7px auto 0!important;
+    padding:7px!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+
+  #ipadPortraitActions3310e #undoGameBtn,
+  #ipadPortraitActions3310e #scoreGameBtn,
+  #ipadPortraitActions3310e #calculateResultBtn,
+  #ipadPortraitActions3310e #passGameBtn,
+  #ipadPortraitActions3310e #resignGameBtn,
+  #ipadPortraitActions3310e #saveSgfBtn{
+    min-height:42px!important;
+    font-size:11px!important;
+  }
+
+  /* 9/13路時不要製造多餘的大空白 */
+  body.joygo-smallboard3310f .board-wrap{
+    min-height:0!important;
+    max-height:none!important;
+  }
+}
+
+/* 返回平台按鈕保持清楚可按 */
+#joygoMobileReturn339a,
+#landscapeBackPlatformBtn,
+#joygoBetaExit{
+  touch-action:manipulation!important;
+  cursor:pointer!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -9861,10 +9939,19 @@ function resizeBoard(force=false){
     const vertical = Math.max(320, vh - 92);
     css = Math.floor(Math.min(horizontal, vertical));
   }else{
-    /* 手機 / iPad 直式：棋盤以可用寬度為準 */
+    /* 手機 / iPad 直式：棋盤以可用寬度為準
+       Beta 3.3.10f：iPad小棋盤不再硬撐成19路同樣大小 */
     const maxW = Math.max(280, vw - 12);
     const maxH = Math.max(320, vh * 0.78);
-    css = Math.floor(Math.min(maxW, maxH));
+
+    if(vw >= 700){
+      let boardCap = Infinity;
+      if(state.size <= 9) boardCap = 620;
+      else if(state.size <= 13) boardCap = 780;
+      css = Math.floor(Math.min(maxW, maxH, boardCap));
+    }else{
+      css = Math.floor(Math.min(maxW, maxH));
+    }
   }
 
   css=Math.max(280,css);
@@ -13051,6 +13138,130 @@ document.addEventListener("click",(ev)=>{
   window.addEventListener("pageshow",()=>setTimeout(run,140),{passive:true});
 
   window.joygoIPadLayout3310e=run;
+})();
+</script>
+
+
+<script id="joygoBeta3310fPlatformAndBoardManager">
+(()=>{
+  function isLandscapeTablet(){
+    const vw=window.innerWidth||0, vh=window.innerHeight||0;
+    return vw>=700 && vh>=500 && vw>vh;
+  }
+
+  function markBoardSize(){
+    try{
+      const small = Number(state?.size||19) <= 13;
+      document.body.classList.toggle("joygo-smallboard3310f",small);
+      document.body.dataset.joygoBoardSize=String(state?.size||19);
+    }catch(_){}
+  }
+
+  function redrawBoard3310f(){
+    try{
+      markBoardSize();
+      const changed=resizeBoard(false);
+      const snap=state.currentSnapshot||activateSnapshot(state.index);
+      drawBoard(snap);
+      requestAnimationFrame(()=>{
+        try{
+          resizeBoard(false);
+          drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+          syncUI();
+        }catch(_){}
+      });
+      return changed;
+    }catch(err){
+      console.error("JoyGo 3.3.10f redraw error",err);
+      try{syncUI()}catch(_){}
+    }
+  }
+
+  function openPlatform3310f(){
+    try{
+      const gate=document.getElementById("joygoBetaGate");
+      if(gate) gate.hidden=true;
+      document.documentElement.classList.remove("joygo-platform-home339c");
+
+      if(isLandscapeTablet()){
+        document.body.classList.add("landscape-platform-menu");
+        document.body.classList.remove("joygo-more-open3310");
+      }else{
+        document.body.classList.remove("landscape-platform-menu");
+        document.body.classList.add("joygo-more-open3310");
+
+        const more=document.getElementById("joygoMoreToggle3310");
+        if(more){
+          more.setAttribute("aria-expanded","true");
+          more.textContent="－ 收合功能";
+        }
+
+        const top=document.getElementById("topbar");
+        if(top){
+          top.style.setProperty("display","grid","important");
+          setTimeout(()=>top.scrollIntoView({behavior:"smooth",block:"start"}),30);
+        }
+      }
+    }catch(err){
+      console.error("JoyGo return platform error",err);
+    }
+  }
+
+  function closePlatform3310f(){
+    document.body.classList.remove("landscape-platform-menu");
+    setTimeout(redrawBoard3310f,80);
+  }
+
+  /* Capture 階段直接接管三種返回鍵，避免舊版 clone/rebind 後失效 */
+  document.addEventListener("click",(e)=>{
+    const t=e.target?.closest?.(
+      "#joygoMobileReturn339a,#landscapeBackPlatformBtn,#joygoBetaExit"
+    );
+    if(!t) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openPlatform3310f();
+  },true);
+
+  document.addEventListener("click",(e)=>{
+    const t=e.target?.closest?.("#landscapePlatformCloseBtn");
+    if(!t)return;
+    e.preventDefault();
+    e.stopPropagation();
+    closePlatform3310f();
+  },true);
+
+  function run(){
+    markBoardSize();
+    redrawBoard3310f();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(run,160),{once:true});
+  }else{
+    setTimeout(run,160);
+  }
+
+  let timer=0;
+  const schedule=()=>{
+    clearTimeout(timer);
+    timer=setTimeout(run,180);
+  };
+
+  window.addEventListener("resize",schedule,{passive:true});
+  window.addEventListener("orientationchange",()=>setTimeout(run,320),{passive:true});
+  window.addEventListener("pageshow",()=>setTimeout(run,140),{passive:true});
+
+  /* 棋盤大小切換後，舊程式會更新 state.size；以 UI 變化做一次安全重排 */
+  const observer=new MutationObserver(()=>schedule());
+  setTimeout(()=>{
+    const app=document.querySelector(".app");
+    if(app) observer.observe(app,{childList:true,subtree:true});
+  },600);
+
+  window.joygoReturnPlatform3310f=openPlatform3310f;
+  window.joygoRedraw3310f=redrawBoard3310f;
 })();
 </script>
 
