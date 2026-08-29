@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10">
+<meta name="joygo-mobile-ui-version" content="3.3.10a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -4864,6 +4864,54 @@ body{
 /* 平台面板時永遠不顯示通行碼入口 */
 body.landscape-platform-menu #joygoBetaGate{
   display:none!important;
+}
+</style>
+
+
+<style id="joygoBeta3310aPortraitBoardHeightFix">
+/* =========================================================
+   Joy Go Platform Beta 3.3.10a
+   手機 / iPad直式：棋盤容器高度 = 實際棋盤高度
+   iPad橫式完全不動
+   ========================================================= */
+
+@media (max-width:899px), (orientation:portrait){
+
+  .board-wrap{
+    position:relative!important;
+    width:100%!important;
+    min-height:var(--board-size)!important;
+    height:var(--board-size)!important;
+    max-height:none!important;
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    overflow:visible!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  #board{
+    position:relative!important;
+    display:block!important;
+    width:var(--board-size)!important;
+    height:var(--board-size)!important;
+    min-width:var(--board-size)!important;
+    min-height:var(--board-size)!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0 auto!important;
+    flex:0 0 auto!important;
+  }
+
+  #gameClockPanel{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+    z-index:2!important;
+  }
 }
 </style>
 
@@ -11970,6 +12018,64 @@ document.addEventListener("click",(ev)=>{
   });
 
   window.joygoLayout3310=redraw;
+})();
+</script>
+
+
+<script id="joygoBeta3310aBoardHeightSync">
+(()=>{
+  function syncPortraitBoardHeight(){
+    const vw=window.innerWidth||0, vh=window.innerHeight||0;
+    const portraitLike = vw < 900 || vh > vw;
+    if(!portraitLike) return;
+
+    const wrap=document.querySelector(".board-wrap");
+    const canvas=document.getElementById("board");
+    if(!wrap || !canvas) return;
+
+    const size =
+      parseFloat(canvas.style.width) ||
+      parseFloat(getComputedStyle(canvas).width) ||
+      canvas._cssSize ||
+      0;
+
+    if(size>0){
+      wrap.style.setProperty("--board-size", size+"px");
+      wrap.style.setProperty("height", size+"px", "important");
+      wrap.style.setProperty("min-height", size+"px", "important");
+    }
+  }
+
+  function run(){
+    try{ syncPortraitBoardHeight(); }catch(_){}
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(run,60),{once:true});
+  }else{
+    setTimeout(run,60);
+  }
+
+  let t=0;
+  const schedule=()=>{
+    clearTimeout(t);
+    t=setTimeout(run,120);
+  };
+
+  window.addEventListener("resize",schedule,{passive:true});
+  window.addEventListener("orientationchange",()=>setTimeout(run,220),{passive:true});
+  window.addEventListener("pageshow",()=>setTimeout(run,80),{passive:true});
+
+  const old=window.joygoLayout3310;
+  if(typeof old==="function"){
+    window.joygoLayout3310=function(){
+      const r=old.apply(this,arguments);
+      setTimeout(run,30);
+      return r;
+    };
+  }
+
+  window.joygoBoardHeight3310a=run;
 })();
 </script>
 
