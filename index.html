@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.9h">
+<meta name="joygo-mobile-ui-version" content="3.3.9i">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5099,6 +5099,138 @@ body .app #topbar,body .app .board-wrap,body .app #rightTools,body .app #gameClo
   right:auto!important;
   bottom:auto!important;
   transform:none!important;
+}
+</style>
+
+
+<style id="joygoBeta339iMobileClockFix">
+/* =========================================================
+   Joy Go Platform Beta 3.3.9i
+   手機版棋鐘固定在棋盤下方，絕不遮棋盤
+   ========================================================= */
+
+@media (max-width:700px){
+  .app{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "more"
+      "topbar"
+      "board"
+      "clock"
+      "right"
+      "player"!important;
+    gap:6px!important;
+    padding-top:80px!important;
+  }
+
+  #joygoMoreShell339h{grid-area:more!important}
+  #topbar{grid-area:topbar!important}
+  .board-wrap{
+    grid-area:board!important;
+    position:relative!important;
+    width:100%!important;
+    margin:0!important;
+    z-index:1!important;
+    overflow:visible!important;
+  }
+
+  /* 棋鐘獨立放在棋盤下方 */
+  #gameClockPanel{
+    grid-area:clock!important;
+    position:relative!important;
+    top:auto!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+    z-index:2!important;
+
+    display:grid!important;
+    grid-template-columns:1fr auto 1fr!important;
+    align-items:center!important;
+    gap:6px!important;
+
+    padding:8px 10px!important;
+    border:1px solid rgba(226,179,80,.50)!important;
+    border-radius:14px!important;
+    background:linear-gradient(180deg,#0d2023,#091719)!important;
+    box-shadow:0 6px 18px #0006!important;
+  }
+
+  #gameClockPanel .clock-side{
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:auto 1fr!important;
+    grid-template-areas:
+      "stone name"
+      "stone time"
+      "stone byo"!important;
+    column-gap:7px!important;
+    align-items:center!important;
+    padding:4px!important;
+  }
+
+  #gameClockPanel .clock-stone{grid-area:stone!important}
+  #gameClockPanel .clock-name{
+    grid-area:name!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+  #gameClockPanel .clock-time{
+    grid-area:time!important;
+    font-size:24px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  #gameClockPanel .clock-byo{
+    grid-area:byo!important;
+    font-size:9px!important;
+    line-height:1.1!important;
+    white-space:nowrap!important;
+  }
+
+  #clockSoundIcon{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    font-size:18px!important;
+    width:auto!important;
+    height:auto!important;
+  }
+
+  #rightTools{
+    grid-area:right!important;
+    position:relative!important;
+    top:auto!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+  }
+
+  .player{
+    grid-area:player!important;
+    position:relative!important;
+    top:auto!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+  }
+
+  /* 再次覆蓋舊版可能把棋鐘浮起來的規則 */
+  body #gameClockPanel{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+  }
 }
 </style>
 
