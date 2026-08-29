@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10b">
+<meta name="joygo-mobile-ui-version" content="3.3.10c">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5007,6 +5007,78 @@ body.landscape-platform-menu #joygoBetaGate{
   #mobileActionHost3310b > *{
     width:100%!important;
     max-width:none!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3310cMobilePolish">
+@media (max-width:699px){
+  body:not(.guidance-embed-mode) .app{padding-top:68px!important;}
+
+  #joygoMoreShell3310{margin:2px 0 5px!important;}
+  #joygoMoreToggle3310{
+    min-height:32px!important;height:32px!important;
+    padding:5px 10px!important;font-size:10px!important;
+  }
+
+  #topbar{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:4px!important;padding:4px!important;margin:0 0 5px!important;
+    position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+    transform:none!important;z-index:3!important;
+  }
+  body:not(.joygo-more-open3310) #topbar > :nth-child(n+5){display:none!important;}
+  body.joygo-more-open3310 #topbar{
+    position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+    transform:none!important;max-height:none!important;overflow:visible!important;
+  }
+  #topbar .tool,#topbar button{
+    min-height:44px!important;height:44px!important;padding:3px 2px!important;font-size:9px!important;
+  }
+
+  .board-wrap{z-index:1!important;margin-top:4px!important;}
+
+  #gameClockPanel{
+    padding:6px 7px!important;gap:4px!important;border-radius:12px!important;margin-top:5px!important;
+  }
+  #gameClockPanel .clock-side{padding:3px!important;min-height:58px!important;}
+  #gameClockPanel .clock-name{font-size:10px!important;}
+  #gameClockPanel .clock-time{font-size:clamp(20px,6.7vw,26px)!important;line-height:1!important;}
+  #gameClockPanel .clock-byo{font-size:8px!important;line-height:1.15!important;}
+  #clockSoundIcon{font-size:16px!important;}
+
+  #mobilePlaybackHost3310b,#mobileAiHost3310b{display:none!important;}
+
+  #mobileActionHost3310b{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;padding:5px!important;margin-top:5px!important;
+    border:1px solid rgba(217,168,62,.32)!important;
+    border-radius:12px!important;background:#120d0ae8!important;
+  }
+  #mobileActionHost3310b > button,
+  #mobileActionHost3310b #undoGameBtn,
+  #mobileActionHost3310b #scoreGameBtn,
+  #mobileActionHost3310b #calculateResultBtn,
+  #mobileActionHost3310b #passGameBtn,
+  #mobileActionHost3310b #resignGameBtn,
+  #mobileActionHost3310b #saveSgfBtn{
+    width:100%!important;min-height:42px!important;margin:0!important;padding:6px 4px!important;
+    border-radius:9px!important;font-size:11px!important;font-weight:900!important;display:block!important;
+  }
+
+  #resignGameBtn{
+    display:block!important;visibility:visible!important;opacity:1!important;
+    background:#321315!important;border-color:#a34b52!important;
+  }
+
+  #joygoMobileReturn339a{
+    display:block!important;position:fixed!important;
+    top:max(8px,env(safe-area-inset-top))!important;right:8px!important;left:auto!important;
+    z-index:95000!important;min-height:32px!important;height:32px!important;
+    padding:5px 10px!important;font-size:10px!important;
   }
 }
 </style>
@@ -12306,6 +12378,65 @@ document.addEventListener("click",(ev)=>{
   },500);
 
   window.joygoMobileLayout3310b=run;
+})();
+</script>
+
+
+<script id="joygoBeta3310cMobileFix">
+(()=>{
+  function openPlatformMobile(){
+    const gate=document.getElementById("joygoBetaGate");
+    if(gate) gate.hidden=true;
+    document.body.classList.add("joygo-more-open3310");
+    const top=document.getElementById("topbar");
+    if(top) top.scrollIntoView({behavior:"smooth",block:"start"});
+    const btn=document.getElementById("joygoMoreToggle3310");
+    if(btn){btn.setAttribute("aria-expanded","true");btn.textContent="－ 收合功能";}
+  }
+
+  function rebindMobileReturn(){
+    if((window.innerWidth||0)>=700) return;
+    const old=document.getElementById("joygoMobileReturn339a");
+    if(!old || old.dataset.joygo3310c==="1") return;
+    const neo=old.cloneNode(true);
+    neo.dataset.joygo3310c="1";
+    old.replaceWith(neo);
+    neo.addEventListener("click",(e)=>{
+      e.preventDefault();e.stopPropagation();openPlatformMobile();
+    });
+  }
+
+  function ensureActions(){
+    if((window.innerWidth||0)>=700) return;
+    const host=document.getElementById("mobileActionHost3310b");
+    if(!host) return;
+    const ids=["undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"];
+    for(const id of ids){
+      const el=document.getElementById(id);
+      if(el && el.parentElement!==host) host.appendChild(el);
+    }
+    const resign=document.getElementById("resignGameBtn");
+    if(resign){
+      resign.style.setProperty("display","block","important");
+      resign.style.setProperty("visibility","visible","important");
+      resign.style.setProperty("opacity","1","important");
+    }
+  }
+
+  function run(){rebindMobileReturn();ensureActions();}
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(run,100),{once:true});
+  }else setTimeout(run,100);
+
+  window.addEventListener("pageshow",()=>setTimeout(run,100),{passive:true});
+  window.addEventListener("orientationchange",()=>setTimeout(run,220),{passive:true});
+  window.addEventListener("resize",()=>{
+    clearTimeout(window.__joygo3310c);
+    window.__joygo3310c=setTimeout(run,140);
+  },{passive:true});
+
+  window.joygoOpenPlatform3310c=openPlatformMobile;
 })();
 </script>
 
