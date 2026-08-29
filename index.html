@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10c">
+<meta name="joygo-mobile-ui-version" content="3.3.10d">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5083,6 +5083,208 @@ body.landscape-platform-menu #joygoBetaGate{
 }
 </style>
 
+
+<style id="joygoBeta3310dActionOwnership">
+/* =========================================================
+   Joy Go Platform Beta 3.3.10d
+   對局按鍵統一控制版
+   ========================================================= */
+
+/* ---------- 手機 ---------- */
+@media (max-width:699px){
+  #mobileActionHost3310b{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:6px!important;
+    margin-top:5px!important;
+    border:1px solid rgba(224,177,77,.42)!important;
+    border-radius:12px!important;
+    background:#100c0a!important;
+    overflow:visible!important;
+  }
+
+  #mobileActionHost3310b #undoGameBtn,
+  #mobileActionHost3310b #scoreGameBtn,
+  #mobileActionHost3310b #calculateResultBtn,
+  #mobileActionHost3310b #passGameBtn,
+  #mobileActionHost3310b #resignGameBtn,
+  #mobileActionHost3310b #saveSgfBtn{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:100%!important;
+    height:42px!important;
+    min-height:42px!important;
+    margin:0!important;
+    padding:5px!important;
+    border-radius:9px!important;
+    font-size:12px!important;
+    line-height:1.1!important;
+    font-weight:900!important;
+    color:#fff!important;
+    text-shadow:0 1px 1px #0009!important;
+  }
+
+  #mobileActionHost3310b #undoGameBtn{
+    background:#2b2118!important;border-color:#9f7441!important;
+  }
+  #mobileActionHost3310b #scoreGameBtn{
+    background:#1767c4!important;border-color:#58a4ef!important;
+  }
+  #mobileActionHost3310b #calculateResultBtn{
+    background:#6335c7!important;border-color:#9b7be4!important;
+  }
+  #mobileActionHost3310b #passGameBtn{
+    background:#38241d!important;border-color:#9c6851!important;
+  }
+  #mobileActionHost3310b #resignGameBtn{
+    background:#7b1e27!important;border:2px solid #df6c75!important;
+    color:#fff!important;
+  }
+  #mobileActionHost3310b #saveSgfBtn{
+    background:#15572f!important;border-color:#53ae78!important;
+  }
+
+  /* 落子確認不再浮在按鍵上 */
+  #mobileActionHost3310b #moveConfirmToggleWrap{
+    grid-column:1/-1!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+    z-index:2!important;
+  }
+  #mobileActionHost3310b #moveConfirmToggleBtn{
+    width:100%!important;
+    min-height:34px!important;
+    border-radius:9px!important;
+    font-size:11px!important;
+  }
+}
+
+/* ---------- iPad / 平板橫式 ----------
+   門檻改為 700px，避免 Safari 實際 viewport 未達 900 時誤套直式版 */
+@media (min-width:700px) and (min-height:500px) and (orientation:landscape){
+  body:not(.guidance-embed-mode) .app{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 248px!important;
+    grid-template-areas:"board side"!important;
+    gap:10px!important;
+    padding-top:56px!important;
+    width:100%!important;
+    align-items:start!important;
+  }
+
+  .left{display:none!important}
+  #joygoMoreShell3310{display:none!important}
+
+  body:not(.landscape-platform-menu) #topbar{
+    display:none!important;
+  }
+
+  .board-wrap{
+    grid-area:board!important;
+    width:100%!important;
+    height:calc(100dvh - 72px)!important;
+    max-height:calc(100dvh - 72px)!important;
+    min-height:0!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:flex-start!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+    background:#160d08!important;
+    border-radius:16px!important;
+  }
+
+  #rightTools{
+    grid-area:side!important;
+    display:flex!important;
+    flex-direction:column!important;
+    width:248px!important;
+    min-width:248px!important;
+    max-width:248px!important;
+    margin:0!important;
+    padding:8px!important;
+    gap:8px!important;
+    border:1px solid rgba(217,168,62,.45)!important;
+    border-radius:15px!important;
+    background:#0a1517f4!important;
+  }
+
+  #gameClockPanel{
+    order:-100!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+  }
+
+  /* 舊 player 播放列 / AI工具不得出現在棋盤中間 */
+  .player{
+    display:none!important;
+  }
+
+  #compactActionPanel{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    width:100%!important;
+    margin:0!important;
+    padding:8px!important;
+  }
+
+  #compactActionPanel #landscapeBackPlatformBtn,
+  #compactActionPanel .compact-action-title,
+  #compactActionPanel #moveConfirmToggleWrap{
+    grid-column:1/-1!important;
+  }
+
+  #compactActionPanel #undoGameBtn,
+  #compactActionPanel #scoreGameBtn,
+  #compactActionPanel #calculateResultBtn,
+  #compactActionPanel #passGameBtn,
+  #compactActionPanel #resignGameBtn,
+  #compactActionPanel #saveSgfBtn,
+  #compactActionPanel #trialModeBtn{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    min-height:39px!important;
+    margin:0!important;
+    padding:5px!important;
+    color:#fff!important;
+    font-size:10px!important;
+    font-weight:900!important;
+    border-radius:8px!important;
+  }
+
+  #compactActionPanel #resignGameBtn{
+    background:#7b1e27!important;
+    border-color:#df6c75!important;
+    color:#fff!important;
+  }
+
+  #compactActionPanel #moveConfirmToggleWrap{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+  }
+
+  #compactActionPanel #moveConfirmToggleBtn{
+    width:100%!important;
+    min-height:34px!important;
+    font-size:10px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -8681,17 +8883,42 @@ $("topbar")?.addEventListener("click",()=>{
 
   const landscapeOrder=["undoGameBtn","trialModeBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"];
   const portraitOrder=["undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn","trialModeBtn"];
-  const layoutQuery=window.matchMedia("(orientation:landscape) and (min-width:901px)");
+  const layoutQuery=window.matchMedia("(orientation:landscape) and (min-width:700px)");
   function placeGameActions(){
-    if(layoutQuery.matches){
-      landscapeOrder.forEach(id=>{const button=$(id);if(button)panel.insertBefore(button,fullscreen);});
-    }else{
-      const anchor=$("firstChoiceBtn");
-      portraitOrder.forEach(id=>{
+    const vw=window.innerWidth||0, vh=window.innerHeight||0;
+    const tabletLandscape = vw>=700 && vh>=500 && vw>vh;
+
+    if(tabletLandscape){
+      landscapeOrder.forEach(id=>{
         const button=$(id);
-        if(button) anchor ? row.insertBefore(button,anchor) : row.appendChild(button);
+        if(button) panel.insertBefore(button,fullscreen);
       });
+      const confirmWrap=$("moveConfirmToggleWrap");
+      if(confirmWrap) panel.appendChild(confirmWrap);
+      return;
     }
+
+    /* 手機交由 Beta 3.3.10d 的固定操作區管理，不再塞回舊 gameActionRow */
+    if(vw<700){
+      const mobileHost=document.getElementById("mobileActionHost3310b");
+      const mobileOrder=["undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"];
+      if(mobileHost){
+        mobileOrder.forEach(id=>{
+          const button=$(id);
+          if(button) mobileHost.appendChild(button);
+        });
+        const confirmWrap=$("moveConfirmToggleWrap");
+        if(confirmWrap) mobileHost.appendChild(confirmWrap);
+      }
+      return;
+    }
+
+    /* iPad 直式 */
+    const anchor=$("firstChoiceBtn");
+    portraitOrder.forEach(id=>{
+      const button=$(id);
+      if(button) anchor ? row.insertBefore(button,anchor) : row.appendChild(button);
+    });
   }
   placeGameActions();
   layoutQuery.addEventListener?.("change",placeGameActions);
@@ -9443,7 +9670,7 @@ function resizeBoard(force=false){
   const vh=Math.max(320, window.innerHeight || document.documentElement.clientHeight || 320);
 
   /* 平板橫式：用視窗可用高度直接決定棋盤，不再讀取被舊版壓縮的 wrap 高度 */
-  const tabletLandscape = vw >= 900 && vh >= 600 && vw > vh;
+  const tabletLandscape = vw >= 700 && vh >= 500 && vw > vh;
   let css;
 
   if(tabletLandscape){
@@ -12437,6 +12664,105 @@ document.addEventListener("click",(ev)=>{
   },{passive:true});
 
   window.joygoOpenPlatform3310c=openPlatformMobile;
+})();
+</script>
+
+
+<script id="joygoBeta3310dActionManager">
+(()=>{
+  function isTabletLandscape(){
+    const vw=window.innerWidth||0, vh=window.innerHeight||0;
+    return vw>=700 && vh>=500 && vw>vh;
+  }
+
+  function ensureResignBinding(){
+    const btn=document.getElementById("resignGameBtn");
+    if(!btn)return;
+
+    btn.textContent="投降";
+    btn.style.setProperty("color","#fff","important");
+    btn.style.setProperty("visibility","visible","important");
+    btn.style.setProperty("opacity","1","important");
+
+    /* 直接覆寫 click，確保 DOM 搬移後仍呼叫現行投降流程 */
+    btn.onclick=(e)=>{
+      e?.preventDefault?.();
+      e?.stopPropagation?.();
+      try{
+        if(state?.onlineMode){
+          return onlineResign();
+        }
+        return humanGameResign();
+      }catch(err){
+        console.error("JoyGo resign error",err);
+        try{toast("投降功能暫時無法執行，請再試一次");}catch(_){}
+      }
+    };
+  }
+
+  function placeActions3310d(){
+    const vw=window.innerWidth||0;
+    const ids=["undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"];
+
+    if(isTabletLandscape()){
+      const panel=document.getElementById("compactActionPanel");
+      const fullscreen=document.getElementById("compactFullscreenBtn");
+      if(panel){
+        ids.forEach(id=>{
+          const b=document.getElementById(id);
+          if(b) fullscreen ? panel.insertBefore(b,fullscreen) : panel.appendChild(b);
+        });
+        const trial=document.getElementById("trialModeBtn");
+        if(trial) fullscreen ? panel.insertBefore(trial,fullscreen) : panel.appendChild(trial);
+
+        const confirmWrap=document.getElementById("moveConfirmToggleWrap");
+        if(confirmWrap) panel.appendChild(confirmWrap);
+      }
+      return;
+    }
+
+    if(vw<700){
+      const host=document.getElementById("mobileActionHost3310b");
+      if(host){
+        ids.forEach(id=>{
+          const b=document.getElementById(id);
+          if(b) host.appendChild(b);
+        });
+        const confirmWrap=document.getElementById("moveConfirmToggleWrap");
+        if(confirmWrap) host.appendChild(confirmWrap);
+      }
+    }
+  }
+
+  function run(){
+    placeActions3310d();
+    ensureResignBinding();
+    try{resizeBoard(true)}catch(_){}
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(run,120),{once:true});
+  }else{
+    setTimeout(run,120);
+  }
+
+  let t=0;
+  const schedule=()=>{
+    clearTimeout(t);
+    t=setTimeout(run,150);
+  };
+  window.addEventListener("resize",schedule,{passive:true});
+  window.addEventListener("orientationchange",()=>setTimeout(run,260),{passive:true});
+  window.addEventListener("pageshow",()=>setTimeout(run,120),{passive:true});
+
+  /* 舊程式可能在同步 UI 後搬按鍵，觀察後重新奪回正確位置 */
+  const obs=new MutationObserver(()=>schedule());
+  setTimeout(()=>{
+    const app=document.querySelector(".app");
+    if(app)obs.observe(app,{childList:true,subtree:true});
+  },500);
+
+  window.joygoActions3310d=run;
 })();
 </script>
 
