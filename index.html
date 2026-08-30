@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10o">
+<meta name="joygo-mobile-ui-version" content="3.3.10p">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -13143,62 +13143,94 @@ document.addEventListener("click",(ev)=>{
 </script>
 
 
-<script id="joygoBeta3310oIPadPortraitMoreManager">
+
+<script id="joygoBeta3310pSingleMoreHandler">
 (()=>{
   const $=id=>document.getElementById(id);
+
   function isIPadPortrait(){
-    const w=innerWidth||0,h=innerHeight||0;
+    const w=innerWidth||0, h=innerHeight||0;
     return Math.min(w,h)>=700 && w<=1100 && h>w;
   }
+
   function prepare(){
     if(!isIPadPortrait()) return;
-    const rail=$("jgMRightRail"), more=$("jgMMore"), moreBtn=$("jgMMoreBtn");
-    if(!rail||!more||!moreBtn) return;
+
+    const rail=$("jgMRightRail");
+    const more=$("jgMMore");
+    let btn=$("jgMMoreBtn");
+    if(!rail || !more || !btn) return;
+
     if(more.parentElement!==rail) rail.appendChild(more);
 
-    const head=more.firstElementChild;
-    if(head&&!head.classList.contains("jg-m-head")) head.classList.add("jg-m-head");
+    // Replace with a clean clone: removes all old m/n/o click listeners.
+    if(!btn.dataset.pClean){
+      const fresh=btn.cloneNode(true);
+      fresh.dataset.pClean="1";
+      fresh.textContent=more.classList.contains("open") ? "收合" : "更多";
+      btn.replaceWith(fresh);
+      btn=fresh;
+    }
 
-    if(!moreBtn.dataset.oBound){
-      moreBtn.dataset.oBound="1";
-      moreBtn.addEventListener("click",e=>{
-        e.preventDefault(); e.stopPropagation();
+    if(!btn.dataset.pBound){
+      btn.dataset.pBound="1";
+      btn.addEventListener("click",e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
         const willOpen=!more.classList.contains("open");
         more.classList.toggle("open",willOpen);
-        moreBtn.textContent=willOpen?"收合":"更多";
-        if(willOpen) requestAnimationFrame(()=>{try{more.scrollIntoView({block:"nearest",behavior:"smooth"})}catch(_){}})
+        btn.textContent=willOpen ? "收合" : "更多";
+
+        if(willOpen){
+          requestAnimationFrame(()=>{
+            try{ more.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
+          });
+        }
       },true);
     }
 
-    if(!more.dataset.oBound){
-      more.dataset.oBound="1";
-      more.addEventListener("click",e=>{
-        const target=e.target.closest("button,[role='button']");
-        if(!target||target.id==="jgMMoreClose") return;
-        setTimeout(()=>{
-          more.classList.remove("open");
-          moreBtn.textContent="更多";
-        },120);
-      },false);
+    // Clean old close button behavior too.
+    const oldClose=$("jgMMoreClose");
+    if(oldClose && !oldClose.dataset.pClean){
+      const freshClose=oldClose.cloneNode(true);
+      freshClose.dataset.pClean="1";
+      oldClose.replaceWith(freshClose);
+      freshClose.addEventListener("click",e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        more.classList.remove("open");
+        btn.textContent="更多";
+      },true);
     }
 
-    const oldClose=$("jgMMoreClose");
-    if(oldClose&&!oldClose.dataset.oBound){
-      oldClose.dataset.oBound="1";
-      oldClose.addEventListener("click",e=>{
-        e.preventDefault(); e.stopPropagation();
-        more.classList.remove("open");
-        moreBtn.textContent="更多";
+    // Secondary actions auto-collapse.
+    if(!more.dataset.pBound){
+      more.dataset.pBound="1";
+      more.addEventListener("click",e=>{
+        const target=e.target.closest("button,[role='button']");
+        if(!target || target.id==="jgMMoreClose") return;
+        setTimeout(()=>{
+          more.classList.remove("open");
+          btn.textContent="更多";
+        },120);
       },true);
     }
   }
 
   const apply=()=>prepare();
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>setTimeout(apply,150),{once:true});
-  else setTimeout(apply,150);
-  addEventListener("resize",()=>setTimeout(apply,220),{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(apply,360),{passive:true});
-  addEventListener("pageshow",()=>setTimeout(apply,150),{passive:true});
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(apply,220),{once:true});
+  }else{
+    setTimeout(apply,220);
+  }
+
+  addEventListener("resize",()=>setTimeout(apply,260),{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(apply,420),{passive:true});
+  addEventListener("pageshow",()=>setTimeout(apply,220),{passive:true});
 })();
 </script>
 
