@@ -12653,5 +12653,102 @@ body.jg-y-main-collapsed.joygo-platform-open3310g #topbar{
   [500,1200,2400].forEach(t=>setTimeout(repair,t));
 })();
 </script>
+
+<style id="joygoBeta3310zPlatformCollapseCSS">
+/* Beta 3.3.10z：平台功能加入固定收合鍵，iPad 直/橫式皆可見 */
+#jgZPlatformClose{
+  display:none;
+  position:fixed;
+  z-index:98950;
+  min-height:44px;
+  padding:9px 16px;
+  border:1px solid #9b7634;
+  border-radius:12px;
+  background:#234e5f;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-weight:900;
+  font-size:15px;
+  box-shadow:0 8px 22px #0008;
+  touch-action:manipulation;
+}
+body.joygo-platform-open3310g #jgZPlatformClose{
+  display:block!important;
+}
+@media(min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  #jgZPlatformClose{
+    right:12px;
+    top:calc(env(safe-area-inset-top) + 58px);
+  }
+}
+@media(min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  #jgZPlatformClose{
+    left:8px;
+    top:calc(env(safe-area-inset-top) + 102px);
+  }
+}
+@media(max-width:699px){
+  #jgZPlatformClose{
+    left:8px;
+    top:calc(env(safe-area-inset-top) + 78px);
+  }
+}
+</style>
+<script id="joygoBeta3310zPlatformCollapseJS">
+(()=>{
+  const $=id=>document.getElementById(id);
+
+  function closePlatform(){
+    document.body.classList.remove('joygo-platform-open3310g');
+    const top=$('topbar');
+    if(top) top.style.setProperty('display','none','important');
+  }
+
+  function togglePlatformZ(){
+    const opening=!document.body.classList.contains('joygo-platform-open3310g');
+    if(opening){
+      document.body.classList.remove('jg-y-main-collapsed');
+      document.body.classList.add('joygo-platform-open3310g');
+      const top=$('topbar');
+      if(top) top.style.setProperty('display','grid','important');
+    }else closePlatform();
+  }
+
+  function bind(){
+    let close=$('jgZPlatformClose');
+    if(!close){
+      close=document.createElement('button');
+      close.id='jgZPlatformClose';
+      close.type='button';
+      close.textContent='－ 收合平台';
+      close.setAttribute('aria-label','收合平台功能');
+      document.body.appendChild(close);
+    }
+    if(!close.dataset.jgzBound){
+      close.dataset.jgzBound='1';
+      const h=e=>{e.preventDefault();e.stopImmediatePropagation();closePlatform();};
+      close.addEventListener('click',h,true);
+      close.addEventListener('touchend',h,{capture:true,passive:false});
+    }
+
+    const p=$('jgXPlatform');
+    if(p && !p.dataset.jgzBound){
+      p.dataset.jgzBound='1';
+      const h=e=>{e.preventDefault();e.stopImmediatePropagation();togglePlatformZ();};
+      p.addEventListener('click',h,true);
+      p.addEventListener('touchend',h,{capture:true,passive:false});
+    }
+  }
+
+  function repair(){bind();}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',repair,{once:true});
+  else repair();
+  addEventListener('pageshow',repair,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(repair,500),{passive:true});
+  addEventListener('resize',()=>setTimeout(repair,200),{passive:true});
+  [500,1200,2400].forEach(t=>setTimeout(repair,t));
+})();
+</script>
+
 </body>
 </html>
