@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10q">
+<meta name="joygo-mobile-ui-version" content="3.3.10r">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5799,6 +5799,174 @@ body.jg-k-tablet-landscape #jgPlatK{
 }
 @media (min-width:700px) and (max-width:1400px){
   #jgQPlatform{display:block!important}
+}
+</style>
+
+
+<style id="joygoBeta3310rIndependentSidePanelCSS">
+/* Beta 3.3.10r｜iPad 橫式獨立右側對局面板 */
+
+/* 先關掉 q 版橫式容器，避免互相打架 */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  #jgQSide,
+  #jgQQuick,
+  #jgQMore{
+    display:none!important;
+  }
+
+  body:not(.guidance-embed-mode) .app{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 248px!important;
+    gap:10px!important;
+    padding:52px 8px 8px!important;
+    align-items:start!important;
+  }
+
+  body:not(.guidance-embed-mode) .board-wrap{
+    width:100%!important;
+    max-width:calc(100vw - 278px)!important;
+    min-width:0!important;
+    margin:0!important;
+    justify-self:start!important;
+  }
+
+  #jgRSide{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:8px!important;
+    width:248px!important;
+    min-width:248px!important;
+    position:sticky!important;
+    top:52px!important;
+    z-index:120!important;
+    align-self:start!important;
+  }
+
+  #jgRClock{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+    padding:8px!important;
+    border:1px solid #8f6d2d!important;
+    border-radius:14px!important;
+    background:#071719f7!important;
+  }
+
+  .jg-r-clock-side{
+    min-height:82px!important;
+    border:1px solid #275f4f!important;
+    border-radius:12px!important;
+    padding:8px 10px!important;
+    background:#0a1d1ef2!important;
+  }
+
+  .jg-r-clock-side.active{
+    border-color:#4acb8a!important;
+    box-shadow:0 0 0 1px #4acb8a66 inset!important;
+  }
+
+  .jg-r-name{
+    font-size:14px!important;
+    opacity:.9!important;
+    margin-bottom:2px!important;
+  }
+
+  .jg-r-time{
+    font-size:30px!important;
+    line-height:1.05!important;
+    font-weight:900!important;
+    color:#fff!important;
+    letter-spacing:.3px!important;
+  }
+
+  .jg-r-byo{
+    font-size:11px!important;
+    opacity:.72!important;
+    margin-top:4px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  #jgRQuick{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    padding:8px!important;
+    border:1px solid #8f6d2d!important;
+    border-radius:14px!important;
+    background:#0a1515f7!important;
+  }
+
+  #jgRQuick button,
+  #jgRMore button{
+    min-height:46px!important;
+    border-radius:10px!important;
+    font-size:14px!important;
+    font-weight:900!important;
+    color:#fff!important;
+    border:1px solid #805f29!important;
+  }
+
+  #jgRPass{background:#332118!important}
+  #jgRResign{background:#982c38!important}
+  #jgRUndo{background:#332118!important}
+  #jgRMoreBtn{background:#275f72!important}
+
+  #jgRMore{
+    display:none!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    max-height:50vh!important;
+    overflow:auto!important;
+    padding:8px!important;
+    border:1px solid #8f6d2d!important;
+    border-radius:14px!important;
+    background:#071719f8!important;
+  }
+  #jgRMore.open{display:grid!important}
+
+  #jgRMoreTitle{
+    grid-column:1/-1!important;
+    display:flex!important;
+    justify-content:space-between!important;
+    align-items:center!important;
+    color:#f5d57e!important;
+    font-weight:900!important;
+    padding:2px 2px 4px!important;
+  }
+
+  #jgRPlatform{
+    position:fixed!important;
+    right:12px!important;
+    top:max(8px,env(safe-area-inset-top))!important;
+    z-index:99991!important;
+    border:1px solid #a17a30!important;
+    border-radius:999px!important;
+    background:#21150d!important;
+    color:#f7d77b!important;
+    font-weight:900!important;
+    padding:7px 13px!important;
+  }
+
+  /* 橫式隱藏原棋鐘與舊快速列，只保留獨立面板 */
+  #gameClockPanel,
+  #jgMRightRail,
+  #jgMQuick,
+  #jgMMore,
+  #joygoRightRail3310L,
+  #joygoQuick3310L,
+  #joygoQuick3310k,
+  #joygoQuick3310i,
+  #joygoClockDockK,
+  #joygoClockDock3310g{
+    display:none!important;
+  }
+}
+
+/* iPad 直式沿用 q 的概念，但不要受橫式 r 面板影響 */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  #jgRSide{display:none!important}
 }
 </style>
 
@@ -13283,177 +13451,304 @@ document.addEventListener("click",(ev)=>{
 
 
 
-<script id="joygoBeta3310qIPadSplitManager">
+
+<script id="joygoBeta3310rIndependentSidePanelManager">
 (()=>{
   const $=id=>document.getElementById(id);
   let timer=0;
+  let observer=null;
 
-  function mode(){
-    const w=innerWidth||0,h=innerHeight||0,s=Math.min(w,h);
-    if(s<700) return "phone";
-    if(w>h && w<=1400) return "ipad-land";
-    if(h>w && w<=1100) return "ipad-port";
-    return "other";
+  function isIPadLandscape(){
+    const w=innerWidth||0,h=innerHeight||0;
+    return Math.min(w,h)>=700 && w>h && w<=1400;
+  }
+  function isIPadPortrait(){
+    const w=innerWidth||0,h=innerHeight||0;
+    return Math.min(w,h)>=700 && h>w && w<=1100;
   }
 
-  function findFirst(ids){ for(const id of ids){ const el=$(id); if(el) return el; } return null; }
-  function fire(el){ if(!el) return false; try{ el.disabled=false; el.click(); return true; }catch(_){ return false; } }
+  function findFirst(ids){
+    for(const id of ids){
+      const el=$(id);
+      if(el) return el;
+    }
+    return null;
+  }
+
+  function safeClick(ids, fallbacks=[]){
+    const el=findFirst(ids);
+    if(el){
+      try{
+        el.disabled=false;
+        el.click();
+        return true;
+      }catch(_){}
+    }
+    for(const name of fallbacks){
+      try{
+        const fn=window[name];
+        if(typeof fn==="function"){
+          fn();
+          return true;
+        }
+      }catch(_){}
+    }
+    return false;
+  }
 
   function doPass(){
-    const el=findFirst(["passGameBtn","passBtn","btnPass","onlinePassBtn","humanPassBtn"]);
-    if(el) return fire(el);
-    try{
-      if(state?.onlineMode && typeof onlinePass==="function"){onlinePass();return true}
-      if(typeof passMove==="function"){passMove();return true}
-      if(typeof humanGamePass==="function"){humanGamePass();return true}
-    }catch(_){}
-    return false;
-  }
-  function doUndo(){
-    const el=findFirst(["undoGameBtn","undoBtn","btnUndo","humanUndoBtn","takebackBtn","requestUndoBtn"]);
-    if(el) return fire(el);
-    try{
-      if(typeof humanGameUndo==="function"){humanGameUndo();return true}
-      if(typeof undoMove==="function"){undoMove();return true}
-      if(typeof undo==="function"){undo();return true}
-    }catch(_){}
-    return false;
-  }
-  function doResign(){
-    const el=findFirst(["resignGameBtn","resignBtn","btnResign","humanResignBtn","onlineResignBtn"]);
-    if(el) return fire(el);
-    try{
-      if(state?.onlineMode && typeof onlineResign==="function"){onlineResign();return true}
-      if(typeof humanGameResign==="function"){humanGameResign();return true}
-      if(typeof resignGame==="function"){resignGame();return true}
-    }catch(_){}
-    return false;
-  }
-  function doHumanAI(){
-    const el=findFirst(["humanGameBtn","humanVsAiBtn","btnHumanGame","aiGameBtn","newHumanGameBtn","startHumanGameBtn"]);
-    if(el) return fire(el);
-    try{
-      if(typeof openHumanGame==="function"){openHumanGame();return true}
-      if(typeof startHumanGame==="function"){startHumanGame();return true}
-      if(typeof openHumanVsAI==="function"){openHumanVsAI();return true}
-    }catch(_){}
-    return false;
+    return safeClick(
+      ["passGameBtn","passBtn","btnPass","onlinePassBtn","humanPassBtn"],
+      ["onlinePass","passMove","humanGamePass"]
+    );
   }
 
-  function ensure(){
+  function doUndo(){
+    return safeClick(
+      ["undoGameBtn","undoBtn","btnUndo","humanUndoBtn","takebackBtn","requestUndoBtn"],
+      ["humanGameUndo","undoMove","undo"]
+    );
+  }
+
+  function doResign(){
+    return safeClick(
+      ["resignGameBtn","resignBtn","btnResign","humanResignBtn","onlineResignBtn"],
+      ["onlineResign","humanGameResign","resignGame"]
+    );
+  }
+
+  function doHumanAI(){
+    return safeClick(
+      ["humanGameBtn","humanVsAiBtn","btnHumanGame","aiGameBtn","newHumanGameBtn","startHumanGameBtn"],
+      ["openHumanGame","startHumanGame","openHumanVsAI"]
+    );
+  }
+
+  function createSide(){
+    if($("jgRSide")) return $("jgRSide");
     const app=document.querySelector(".app");
     if(!app) return null;
 
-    let side=$("jgQSide");
-    if(!side){ side=document.createElement("aside"); side.id="jgQSide"; app.appendChild(side); }
+    const side=document.createElement("aside");
+    side.id="jgRSide";
+    side.innerHTML=`
+      <section id="jgRClock">
+        <div id="jgRBlack" class="jg-r-clock-side">
+          <div class="jg-r-name">⚫ 黑方</div>
+          <div id="jgRBlackTime" class="jg-r-time">30:00</div>
+          <div id="jgRBlackByo" class="jg-r-byo">讀秒 30秒 × 3</div>
+        </div>
+        <div id="jgRWhite" class="jg-r-clock-side">
+          <div class="jg-r-name">⚪ 白方</div>
+          <div id="jgRWhiteTime" class="jg-r-time">30:00</div>
+          <div id="jgRWhiteByo" class="jg-r-byo">讀秒 30秒 × 3</div>
+        </div>
+      </section>
 
-    let port=$("jgQPortrait");
-    if(!port){ port=document.createElement("section"); port.id="jgQPortrait"; app.appendChild(port); }
+      <section id="jgRQuick">
+        <button id="jgRPass" type="button">Pass</button>
+        <button id="jgRResign" type="button">投降</button>
+        <button id="jgRUndo" type="button">悔棋</button>
+        <button id="jgRMoreBtn" type="button">更多</button>
+      </section>
 
-    let quick=$("jgQQuick");
-    if(!quick){
-      quick=document.createElement("section");
-      quick.id="jgQQuick";
-      quick.innerHTML='<button id="jgQPass" type="button">Pass</button><button id="jgQResign" type="button">投降</button><button id="jgQUndo" type="button">悔棋</button><button id="jgQMoreBtn" type="button">更多</button>';
-    }
+      <section id="jgRMore">
+        <div id="jgRMoreTitle">
+          <span>更多對局功能</span>
+          <button id="jgRClose" type="button">收合</button>
+        </div>
+        <button id="jgRHumanAI" type="button">人機對弈</button>
+        <button id="jgRCoord" type="button">座標</button>
+        <button id="jgRScore" type="button">正式數地</button>
+        <button id="jgRCalc" type="button">計算勝負</button>
+        <button id="jgRSave" type="button">存檔 SGF</button>
+      </section>
+    `;
+    app.appendChild(side);
 
-    let more=$("jgQMore");
-    if(!more){
-      more=document.createElement("section");
-      more.id="jgQMore";
-      more.innerHTML='<div class="jg-q-head"><span>更多功能</span><button id="jgQClose" type="button">收合</button></div><button id="jgQHumanAI" type="button">人機對弈</button>';
-      ["coordToggleBtn","scoreGameBtn","calculateResultBtn","saveSgfBtn"].forEach(id=>{ const el=$(id); if(el) more.appendChild(el); });
-      const mc=$("moveConfirmToggleWrap"); if(mc) more.appendChild(mc);
-    }
+    const platform=document.createElement("button");
+    platform.id="jgRPlatform";
+    platform.type="button";
+    platform.textContent="平台";
+    document.body.appendChild(platform);
 
-    let platform=$("jgQPlatform");
-    if(!platform){
-      platform=document.createElement("button");
-      platform.id="jgQPlatform"; platform.type="button"; platform.textContent="平台";
-      document.body.appendChild(platform);
-    }
-    return {side,port,quick,more,platform};
+    bindEvents();
+    return side;
   }
 
-  function bind(){
-    const pack=ensure(); if(!pack) return;
-    let {more,platform}=pack;
-    for(const id of ["jgQPass","jgQResign","jgQUndo","jgQMoreBtn"]){
-      const old=$(id); if(old && !old.dataset.qClean){ const fresh=old.cloneNode(true); fresh.dataset.qClean="1"; old.replaceWith(fresh); }
-    }
-
-    const pass=$("jgQPass"),resign=$("jgQResign"),undo=$("jgQUndo"),mb=$("jgQMoreBtn");
-
-    if(pass&&!pass.dataset.qBound){ pass.dataset.qBound="1"; pass.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();doPass()},true); }
-    if(resign&&!resign.dataset.qBound){ resign.dataset.qBound="1"; resign.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();doResign()},true); }
-    if(undo&&!undo.dataset.qBound){ undo.dataset.qBound="1"; undo.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();doUndo()},true); }
-    if(mb&&!mb.dataset.qBound){
-      mb.dataset.qBound="1";
-      mb.addEventListener("click",e=>{
-        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-        const open=!more.classList.contains("open");
-        more.classList.toggle("open",open);
-        mb.textContent=open?"收合":"更多";
+  function bindEvents(){
+    const bind=(id,fn)=>{
+      const el=$(id);
+      if(!el || el.dataset.rBound) return;
+      el.dataset.rBound="1";
+      el.addEventListener("click",e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        fn();
       },true);
+    };
+
+    bind("jgRPass",doPass);
+    bind("jgRResign",doResign);
+    bind("jgRUndo",doUndo);
+
+    bind("jgRMoreBtn",()=>{
+      const more=$("jgRMore"),btn=$("jgRMoreBtn");
+      const open=!more.classList.contains("open");
+      more.classList.toggle("open",open);
+      btn.textContent=open?"收合":"更多";
+    });
+
+    bind("jgRClose",()=>{
+      $("jgRMore")?.classList.remove("open");
+      if($("jgRMoreBtn")) $("jgRMoreBtn").textContent="更多";
+    });
+
+    bind("jgRHumanAI",()=>{
+      doHumanAI();
+      $("jgRMore")?.classList.remove("open");
+      if($("jgRMoreBtn")) $("jgRMoreBtn").textContent="更多";
+    });
+
+    bind("jgRCoord",()=>{
+      safeClick(["coordToggleBtn","coordinatesToggleBtn","btnCoordinates"],["toggleCoordinates"]);
+    });
+    bind("jgRScore",()=>{
+      safeClick(["scoreGameBtn","officialScoreBtn","btnScore"],["startScoring","officialScoring"]);
+    });
+    bind("jgRCalc",()=>{
+      safeClick(["calculateResultBtn","calcResultBtn","btnCalculate"],["calculateResult"]);
+    });
+    bind("jgRSave",()=>{
+      safeClick(["saveSgfBtn","saveSGFBtn","btnSaveSgf"],["saveSGF","downloadSGF"]);
+    });
+
+    bind("jgRPlatform",()=>{
+      const drawer=$("jgPlatK")||$("jgPlat3310i")||$("jgPlatL");
+      if(drawer){ drawer.classList.toggle("open"); return; }
+
+      const old=$("joygoReturnPlatform3310g")||$("joygoMobileReturn339a");
+      if(old){ old.click(); return; }
+
+      try{ location.href=location.pathname; }catch(_){}
+    });
+  }
+
+  function textOf(selectors, fallback=""){
+    for(const sel of selectors){
+      const el=document.querySelector(sel);
+      if(el && el.textContent.trim()) return el.textContent.trim();
+    }
+    return fallback;
+  }
+
+  function syncClock(){
+    if(!isIPadLandscape()) return;
+    createSide();
+
+    // 優先讀原棋鐘中「時間」元素，找不到才用全文推定
+    const bt=textOf([
+      "#blackClockTime",".black-clock .clock-time","#blackClock .clock-time",
+      "[data-color='black'] .clock-time",".clock-side.black .clock-time"
+    ],"");
+    const wt=textOf([
+      "#whiteClockTime",".white-clock .clock-time","#whiteClock .clock-time",
+      "[data-color='white'] .clock-time",".clock-side.white .clock-time"
+    ],"");
+
+    if(bt) $("jgRBlackTime").textContent=bt;
+    if(wt) $("jgRWhiteTime").textContent=wt;
+
+    const bbyo=textOf([
+      "#blackClockByo",".black-clock .clock-sub","#blackClock .clock-sub",
+      "[data-color='black'] .clock-sub",".clock-side.black .clock-sub"
+    ],"");
+    const wbyo=textOf([
+      "#whiteClockByo",".white-clock .clock-sub","#whiteClock .clock-sub",
+      "[data-color='white'] .clock-sub",".clock-side.white .clock-sub"
+    ],"");
+
+    if(bbyo) $("jgRBlackByo").textContent=bbyo;
+    if(wbyo) $("jgRWhiteByo").textContent=wbyo;
+
+    // active 狀態：若原棋鐘有 active class，鏡射過來
+    const blackActive=!!document.querySelector(
+      "#gameClockPanel .black.active,.black-clock.active,#blackClock.active,[data-color='black'].active"
+    );
+    const whiteActive=!!document.querySelector(
+      "#gameClockPanel .white.active,.white-clock.active,#whiteClock.active,[data-color='white'].active"
+    );
+    $("jgRBlack")?.classList.toggle("active",blackActive);
+    $("jgRWhite")?.classList.toggle("active",whiteActive);
+  }
+
+  function setupObserver(){
+    if(observer) return;
+    observer=new MutationObserver(()=>syncClock());
+    observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["class"]});
+  }
+
+  function restorePortrait(){
+    if(!isIPadPortrait()) return;
+    const app=document.querySelector(".app");
+    if(!app) return;
+
+    let port=$("jgQPortrait");
+    if(!port){
+      port=document.createElement("section");
+      port.id="jgQPortrait";
+      app.appendChild(port);
     }
 
-    const close=$("jgQClose");
-    if(close&&!close.dataset.qBound){ close.dataset.qBound="1"; close.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();more.classList.remove("open");mb.textContent="更多"},true); }
+    const clock=$("gameClockPanel");
+    const quick=$("jgQQuick");
+    const more=$("jgQMore");
 
-    const human=$("jgQHumanAI");
-    if(human&&!human.dataset.qBound){ human.dataset.qBound="1"; human.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();doHumanAI();more.classList.remove("open");mb.textContent="更多"},true); }
+    if(clock && clock.parentElement!==port) port.appendChild(clock);
+    if(quick && quick.parentElement!==port) port.appendChild(quick);
+    if(more && more.parentElement!==port) port.appendChild(more);
 
-    if(!platform.dataset.qBound){
-      platform.dataset.qBound="1";
-      platform.addEventListener("click",e=>{
-        e.preventDefault();e.stopImmediatePropagation();
-        const drawer=$("jgPlatK")||$("jgPlat3310i")||$("jgPlatL");
-        if(drawer){drawer.classList.toggle("open");return}
-        const old=$("joygoReturnPlatform3310g")||$("joygoMobileReturn339a");
-        if(old){old.click();return}
-        try{location.href=location.pathname}catch(_){}
-      },true);
-    }
+    const r=$("jgRSide"); if(r) r.style.display="none";
+    const rp=$("jgRPlatform"); if(rp) rp.style.display="none";
   }
 
   function layout(){
-    const m=mode();
-    if(m!=="ipad-land" && m!=="ipad-port") return;
-    const pack=ensure(),clock=$("gameClockPanel");
-    if(!pack||!clock) return;
-    const {side,port,quick,more}=pack;
-
-    if(m==="ipad-land"){
-      side.style.display="";
-      port.style.display="none";
-      if(clock.parentElement!==side) side.appendChild(clock);
-      if(quick.parentElement!==side) side.appendChild(quick);
-      if(more.parentElement!==side) side.appendChild(more);
-    }else{
-      port.style.display="";
-      side.style.display="none";
-      if(clock.parentElement!==port) port.appendChild(clock);
-      if(quick.parentElement!==port) port.appendChild(quick);
-      if(more.parentElement!==port) port.appendChild(more);
+    if(isIPadLandscape()){
+      createSide();
+      const side=$("jgRSide");
+      const platform=$("jgRPlatform");
+      if(side) side.style.display="";
+      if(platform) platform.style.display="";
+      syncClock();
+      setupObserver();
+    }else if(isIPadPortrait()){
+      restorePortrait();
     }
-
-    bind();
 
     try{
       if(typeof resizeBoard==="function") resizeBoard(false);
-      const s=state?.currentSnapshot || (typeof activateSnapshot==="function"?activateSnapshot(state.index):null);
+      const s=window.state?.currentSnapshot || (typeof activateSnapshot==="function" && window.state ? activateSnapshot(state.index):null);
       if(s && typeof drawBoard==="function") drawBoard(s);
       if(typeof syncUI==="function") syncUI();
     }catch(_){}
   }
 
-  function schedule(ms=180){ clearTimeout(timer); timer=setTimeout(layout,ms); }
+  function schedule(ms=180){
+    clearTimeout(timer);
+    timer=setTimeout(layout,ms);
+  }
 
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>schedule(180),{once:true});
-  else schedule(180);
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>schedule(220),{once:true});
+  }else{
+    schedule(220);
+  }
+
+  setInterval(syncClock,500);
   addEventListener("resize",()=>schedule(260),{passive:true});
-  addEventListener("orientationchange",()=>schedule(460),{passive:true});
-  addEventListener("pageshow",()=>schedule(200),{passive:true});
+  addEventListener("orientationchange",()=>schedule(500),{passive:true});
+  addEventListener("pageshow",()=>schedule(220),{passive:true});
 })();
 </script>
 
