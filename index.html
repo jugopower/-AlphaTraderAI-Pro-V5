@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10L">
+<meta name="joygo-mobile-ui-version" content="3.3.10m">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5441,38 +5441,96 @@ body.jg-k-tablet-landscape #jgPlatK{
 </style>
 
 
-<style id="joygoBeta3310LIPadLandscapeFix">
+
+<style id="joygoBeta3310mCoreReconnectCSS">
+/* =========================================================
+   Beta 3.3.10m｜操作核心重接版
+   - iPad橫式固定右側欄
+   - 新按鍵代理「原始按鈕」事件，不猜函式
+   - 不改手機/iPad直式主要外觀
+   ========================================================= */
+
+#jgMRightRail{
+  display:none;
+}
+
+#jgMPlatform{
+  position:fixed;
+  right:10px;
+  top:max(8px,env(safe-area-inset-top));
+  z-index:99990;
+  border:1px solid #a17a30;
+  border-radius:999px;
+  background:#21150d;
+  color:#f7d77b;
+  font-weight:900;
+  padding:7px 13px;
+}
+
+#jgMMore{
+  display:none;
+  position:fixed;
+  z-index:99999;
+  background:#071718f8;
+  border:1px solid #9b772f;
+  border-radius:16px;
+  box-shadow:0 18px 50px #000a;
+  padding:10px;
+  gap:7px;
+  overflow:auto;
+}
+#jgMMore.open{display:grid!important}
+
+#jgMQuick{
+  display:grid;
+  gap:7px;
+}
+#jgMQuick button{
+  min-height:44px;
+  border-radius:10px;
+  font-weight:900;
+  color:#fff!important;
+}
+#jgMPass{background:#332118!important}
+#jgMResign{background:#9a2c38!important}
+#jgMUndo{background:#332118!important}
+#jgMMoreBtn{background:#275f72!important}
+
+/* iPad 橫式：真正固定左棋盤、右控制 */
 @media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
-  body:not(.guidance-embed-mode) .app,
-  body.jg-k-tablet-landscape .app{
+  body:not(.guidance-embed-mode) .app{
     display:grid!important;
-    grid-template-columns:minmax(0,1fr) 248px!important;
-    grid-template-areas:"board side"!important;
-    gap:10px!important;
-    padding:50px 8px 8px!important;
+    grid-template-columns:minmax(0,1fr) 250px!important;
+    grid-template-areas:"board rail"!important;
+    column-gap:10px!important;
+    padding:52px 8px 8px!important;
     align-items:start!important;
   }
-  .board-wrap{
+
+  body:not(.guidance-embed-mode) .board-wrap{
     grid-area:board!important;
-    min-width:0!important;
     width:100%!important;
-    max-width:calc(100vw - 274px)!important;
+    max-width:calc(100vw - 280px)!important;
+    min-width:0!important;
     justify-self:start!important;
     align-self:start!important;
+    margin:0!important;
   }
-  #joygoRightRail3310L{
-    grid-area:side!important;
+
+  #jgMRightRail{
+    grid-area:rail!important;
     display:flex!important;
     flex-direction:column!important;
     gap:8px!important;
-    width:248px!important;
-    min-width:248px!important;
+    width:250px!important;
+    min-width:250px!important;
     position:sticky!important;
-    top:50px!important;
+    top:52px!important;
     align-self:start!important;
-    z-index:40!important;
+    z-index:60!important;
   }
-  #joygoRightRail3310L #gameClockPanel{
+
+  #jgMRightRail #gameClockPanel{
     display:grid!important;
     grid-template-columns:1fr!important;
     gap:6px!important;
@@ -5480,77 +5538,95 @@ body.jg-k-tablet-landscape #jgPlatK{
     margin:0!important;
     padding:7px!important;
     position:static!important;
+    inset:auto!important;
     transform:none!important;
     opacity:1!important;
     visibility:visible!important;
   }
-  #joygoRightRail3310L #gameClockPanel .clock-side{
+
+  #jgMRightRail #gameClockPanel .clock-side{
     min-height:72px!important;
     padding:6px 8px!important;
   }
-  #joygoRightRail3310L #gameClockPanel .clock-time{
+
+  #jgMRightRail #gameClockPanel .clock-time{
     font-size:27px!important;
     line-height:1.05!important;
   }
-  #joygoRightRail3310L #joygoQuick3310L{
-    display:grid!important;
+
+  #jgMQuick{
     grid-template-columns:1fr 1fr!important;
-    gap:7px!important;
     width:100%!important;
     padding:8px!important;
-    margin:0!important;
     border:1px solid #8f6d2d!important;
     border-radius:14px!important;
     background:#081719f2!important;
   }
-  #joygoRightRail3310L #joygoQuick3310L button{
-    min-height:46px!important;
-    border-radius:10px!important;
-    color:#fff!important;
-    font-weight:900!important;
-    font-size:14px!important;
-  }
-  #jqPassL{background:#332118!important}
-  #jqResignL{background:#982c38!important}
-  #jqUndoL{background:#332118!important}
-  #jqMoreLBtn{background:#275f72!important}
-  #jgPlatformL{
-    display:block!important;
-    position:fixed!important;
+
+  #jgMMore{
     right:12px!important;
-    top:max(10px,env(safe-area-inset-top))!important;
-    z-index:99050!important;
-    border:1px solid #a17a30!important;
-    border-radius:999px!important;
-    background:#21150d!important;
-    color:#f7d77b!important;
-    font-weight:900!important;
-    padding:7px 13px!important;
+    bottom:12px!important;
+    width:330px!important;
+    max-height:62vh!important;
+    grid-template-columns:1fr 1fr!important;
   }
+
+  /* 強制關閉舊右側控制，避免互相覆蓋 */
+  #joygoRightRail3310L,
+  #joygoQuick3310L,
   #joygoQuick3310k,
   #joygoQuick3310i,
   #joygoClockDockK,
   #joygoClockDock3310g{
     display:none!important;
   }
-  #jgMoreL{
-    display:none;
-    position:fixed!important;
-    right:12px!important;
-    bottom:12px!important;
-    width:330px!important;
-    max-height:62vh!important;
-    overflow:auto!important;
-    z-index:99060!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:7px!important;
-    padding:10px!important;
-    border:1px solid #9b772f!important;
-    border-radius:16px!important;
-    background:#071718f8!important;
-    box-shadow:0 18px 50px #000a!important;
+}
+
+/* 手機只補一個穩定主操作列，不動棋盤 */
+@media (max-width:699px){
+  #jgMRightRail{
+    display:block!important;
+    width:100%!important;
+    margin-top:6px!important;
   }
-  #jgMoreL.open{display:grid!important}
+  #jgMRightRail #gameClockPanel{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:5px!important;
+    width:100%!important;
+    margin:0!important;
+    padding:5px!important;
+    position:static!important;
+    transform:none!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  #jgMRightRail #gameClockPanel .clock-time{
+    font-size:clamp(24px,6.8vw,28px)!important;
+  }
+  #jgMQuick{
+    grid-template-columns:repeat(4,1fr)!important;
+    width:100%!important;
+    padding:6px!important;
+  }
+  #jgMQuick button{
+    min-height:40px!important;
+    font-size:13px!important;
+  }
+  #jgMMore{
+    left:8px!important;
+    right:8px!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+    max-height:55vh!important;
+    grid-template-columns:1fr 1fr!important;
+  }
+
+  #joygoQuick3310k,
+  #joygoQuick3310i,
+  #joygoClockDockK,
+  #joygoClockDock3310g{
+    display:none!important;
+  }
 }
 </style>
 
@@ -12722,44 +12798,131 @@ document.addEventListener("click",(ev)=>{
 </script>
 
 
-<script id="joygoBeta3310LIPadLandscapeManager">
+
+<script id="joygoBeta3310mCoreReconnectManager">
 (()=>{
-  const $=id=>document.getElementById(id);
-  let timer=0;
+  const $ = id => document.getElementById(id);
+  let timer = 0;
 
   function isIPadLandscape(){
-    const w=innerWidth||0,h=innerHeight||0;
-    const short=Math.min(w,h);
-    return short>=700 && w<=1400 && w>h;
+    const w = innerWidth || 0, h = innerHeight || 0;
+    return Math.min(w,h) >= 700 && w <= 1400 && w > h;
+  }
+  function isPhone(){
+    return Math.min(innerWidth||0, innerHeight||0) < 700;
   }
 
-  function callPass(){
-    try{
-      if(state?.onlineMode && typeof onlinePass==="function") return onlinePass();
-      if(typeof passMove==="function") return passMove();
-      if(typeof humanGamePass==="function") return humanGamePass();
-      $("passGameBtn")?.click();
-    }catch(e){console.error("3.3.10L pass",e)}
+  function visible(el){
+    if(!el) return false;
+    const s = getComputedStyle(el);
+    return s.display !== "none" && s.visibility !== "hidden" && s.pointerEvents !== "none";
   }
-  function callUndo(){
-    try{
-      if(typeof humanGameUndo==="function") return humanGameUndo();
-      if(typeof undoMove==="function") return undoMove();
-      if(typeof undo==="function") return undo();
-      $("undoGameBtn")?.click();
-    }catch(e){console.error("3.3.10L undo",e)}
+
+  function findFirst(ids){
+    for(const id of ids){
+      const el = $(id);
+      if(el) return el;
+    }
+    return null;
   }
-  function callResign(){
+
+  function fireOriginal(el){
+    if(!el) return false;
     try{
-      if(state?.onlineMode && typeof onlineResign==="function") return onlineResign();
-      if(typeof humanGameResign==="function") return humanGameResign();
-      if(typeof resignGame==="function") return resignGame();
-      $("resignGameBtn")?.click();
-    }catch(e){console.error("3.3.10L resign",e)}
+      el.disabled = false;
+      ["pointerdown","mousedown","touchstart","pointerup","mouseup","touchend","click"].forEach(type=>{
+        try{
+          let ev;
+          if(type.startsWith("touch")){
+            ev = new Event(type,{bubbles:true,cancelable:true});
+          }else if(type.startsWith("pointer")){
+            ev = new PointerEvent(type,{bubbles:true,cancelable:true,pointerType:"touch",isPrimary:true});
+          }else{
+            ev = new MouseEvent(type,{bubbles:true,cancelable:true,view:window});
+          }
+          el.dispatchEvent(ev);
+        }catch(_){}
+      });
+      if(typeof el.onclick === "function"){
+        try{ el.onclick.call(el, new MouseEvent("click",{bubbles:true,cancelable:true,view:window})); }catch(_){}
+      }
+      return true;
+    }catch(e){
+      console.error("3.3.10m fireOriginal",e);
+      return false;
+    }
+  }
+
+  function originalPass(){
+    return findFirst([
+      "passGameBtn","passBtn","btnPass","onlinePassBtn","humanPassBtn"
+    ]);
+  }
+
+  function originalUndo(){
+    return findFirst([
+      "undoGameBtn","undoBtn","btnUndo","humanUndoBtn","takebackBtn","requestUndoBtn"
+    ]);
+  }
+
+  function originalResign(){
+    return findFirst([
+      "resignGameBtn","resignBtn","btnResign","humanResignBtn","onlineResignBtn"
+    ]);
+  }
+
+  function originalHumanAI(){
+    return findFirst([
+      "humanGameBtn","humanVsAiBtn","btnHumanGame","aiGameBtn","newHumanGameBtn","startHumanGameBtn"
+    ]);
+  }
+
+  function doPass(){
+    const el = originalPass();
+    if(el) return fireOriginal(el);
+    try{
+      if(state?.onlineMode && typeof onlinePass==="function"){ onlinePass(); return true; }
+      if(typeof passMove==="function"){ passMove(); return true; }
+      if(typeof humanGamePass==="function"){ humanGamePass(); return true; }
+    }catch(e){console.error("3.3.10m pass",e)}
+    return false;
+  }
+
+  function doUndo(){
+    const el = originalUndo();
+    if(el) return fireOriginal(el);
+    try{
+      if(typeof humanGameUndo==="function"){ humanGameUndo(); return true; }
+      if(typeof undoMove==="function"){ undoMove(); return true; }
+      if(typeof undo==="function"){ undo(); return true; }
+    }catch(e){console.error("3.3.10m undo",e)}
+    return false;
+  }
+
+  function doResign(){
+    const el = originalResign();
+    if(el) return fireOriginal(el);
+    try{
+      if(state?.onlineMode && typeof onlineResign==="function"){ onlineResign(); return true; }
+      if(typeof humanGameResign==="function"){ humanGameResign(); return true; }
+      if(typeof resignGame==="function"){ resignGame(); return true; }
+    }catch(e){console.error("3.3.10m resign",e)}
+    return false;
+  }
+
+  function doHumanAI(){
+    const el = originalHumanAI();
+    if(el) return fireOriginal(el);
+    try{
+      if(typeof openHumanGame==="function"){ openHumanGame(); return true; }
+      if(typeof startHumanGame==="function"){ startHumanGame(); return true; }
+      if(typeof openHumanVsAI==="function"){ openHumanVsAI(); return true; }
+    }catch(e){console.error("3.3.10m human-ai",e)}
+    return false;
   }
 
   function bindOnce(el,key,fn){
-    if(!el||el.dataset[key])return;
+    if(!el || el.dataset[key]) return;
     el.dataset[key]="1";
     el.addEventListener("click",e=>{
       e.preventDefault();
@@ -12768,92 +12931,123 @@ document.addEventListener("click",(ev)=>{
     },false);
   }
 
-  function ensure(){
-    if(!isIPadLandscape()) return;
-    const app=document.querySelector(".app");
-    const clock=$("gameClockPanel");
-    if(!app||!clock) return;
+  function ensureCore(){
+    const app = document.querySelector(".app");
+    const clock = $("gameClockPanel");
+    if(!app || !clock) return;
 
-    let rail=$("joygoRightRail3310L");
+    let rail = $("jgMRightRail");
     if(!rail){
-      rail=document.createElement("aside");
-      rail.id="joygoRightRail3310L";
+      rail = document.createElement("aside");
+      rail.id = "jgMRightRail";
       app.appendChild(rail);
     }
-    if(clock.parentElement!==rail) rail.appendChild(clock);
+    if(clock.parentElement !== rail){
+      rail.appendChild(clock);
+    }
 
-    let quick=$("joygoQuick3310L");
+    let quick = $("jgMQuick");
     if(!quick){
-      quick=document.createElement("section");
-      quick.id="joygoQuick3310L";
-      quick.innerHTML=`
-        <button id="jqPassL" type="button">Pass</button>
-        <button id="jqResignL" type="button">投降</button>
-        <button id="jqUndoL" type="button">悔棋</button>
-        <button id="jqMoreLBtn" type="button">更多</button>`;
+      quick = document.createElement("section");
+      quick.id = "jgMQuick";
+      quick.innerHTML = `
+        <button id="jgMPass" type="button">Pass</button>
+        <button id="jgMResign" type="button">投降</button>
+        <button id="jgMUndo" type="button">悔棋</button>
+        <button id="jgMMoreBtn" type="button">更多</button>
+      `;
       rail.appendChild(quick);
-    } else if(quick.parentElement!==rail){
+    }else if(quick.parentElement !== rail){
       rail.appendChild(quick);
     }
 
-    let p=$("jgPlatformL");
-    if(!p){
-      p=document.createElement("button");
-      p.id="jgPlatformL";
-      p.type="button";
-      p.textContent="平台";
-      document.body.appendChild(p);
+    let platform = $("jgMPlatform");
+    if(!platform){
+      platform = document.createElement("button");
+      platform.id = "jgMPlatform";
+      platform.type = "button";
+      platform.textContent = "平台";
+      document.body.appendChild(platform);
     }
 
-    let more=$("jgMoreL");
+    let more = $("jgMMore");
     if(!more){
-      more=document.createElement("section");
-      more.id="jgMoreL";
-      more.innerHTML=`<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;color:#f5d57e;font-weight:900">
-        <span>更多功能</span><button id="jgMoreLClose" type="button" style="border-radius:999px;background:#2a1912;color:#fff;padding:6px 10px">收合</button>
-      </div>`;
+      more = document.createElement("section");
+      more.id = "jgMMore";
+      more.innerHTML = `
+        <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;color:#f5d57e;font-weight:900">
+          <span>更多功能</span>
+          <button id="jgMMoreClose" type="button" style="border-radius:999px;background:#2a1912;color:#fff;padding:6px 10px">收合</button>
+        </div>
+        <button id="jgMHumanAI" type="button">人機對弈</button>
+      `;
       document.body.appendChild(more);
+
       ["coordToggleBtn","scoreGameBtn","calculateResultBtn","saveSgfBtn"].forEach(id=>{
-        const el=$(id); if(el) more.appendChild(el);
+        const el = $(id);
+        if(el) more.appendChild(el);
       });
-      const mc=$("moveConfirmToggleWrap");
+      const mc = $("moveConfirmToggleWrap");
       if(mc) more.appendChild(mc);
     }
 
-    bindOnce($("jqPassL"),"L",callPass);
-    bindOnce($("jqResignL"),"L",callResign);
-    bindOnce($("jqUndoL"),"L",callUndo);
-    bindOnce($("jqMoreLBtn"),"L",()=>more.classList.toggle("open"));
-    bindOnce($("jgMoreLClose"),"L",()=>more.classList.remove("open"));
-    bindOnce(p,"L",()=>{
-      const drawer=$("jgPlatK")||$("jgPlat3310i");
-      if(drawer) drawer.classList.toggle("open");
-      else {
-        const old=$("joygoReturnPlatform3310g")||$("joygoMobileReturn339a");
-        if(old) old.click();
+    bindOnce($("jgMPass"),"m",()=>{
+      if(!doPass()) try{toast("Pass 功能未連接")}catch(_){}
+    });
+    bindOnce($("jgMResign"),"m",()=>{
+      if(!doResign()) try{toast("投降功能未連接")}catch(_){}
+    });
+    bindOnce($("jgMUndo"),"m",()=>{
+      if(!doUndo()) try{toast("悔棋功能未連接")}catch(_){}
+    });
+    bindOnce($("jgMMoreBtn"),"m",()=>more.classList.toggle("open"));
+    bindOnce($("jgMMoreClose"),"m",()=>more.classList.remove("open"));
+    bindOnce($("jgMHumanAI"),"m",()=>{
+      if(!doHumanAI()) try{toast("人機對弈功能未連接")}catch(_){}
+    });
+
+    bindOnce(platform,"m",()=>{
+      const drawer = $("jgPlatK") || $("jgPlat3310i") || $("jgPlatL");
+      if(drawer){
+        drawer.classList.toggle("open");
+        return;
       }
+      const old = $("joygoReturnPlatform3310g") || $("joygoMobileReturn339a");
+      if(old) return fireOriginal(old);
+      try{ location.href = location.pathname; }catch(_){}
     });
   }
 
   function redraw(){
     try{
       if(typeof resizeBoard==="function") resizeBoard(false);
-      const s=state?.currentSnapshot || (typeof activateSnapshot==="function" ? activateSnapshot(state.index):null);
+      const s = state?.currentSnapshot || (typeof activateSnapshot==="function" ? activateSnapshot(state.index) : null);
       if(s && typeof drawBoard==="function") drawBoard(s);
       if(typeof syncUI==="function") syncUI();
-    }catch(e){console.error("3.3.10L redraw",e)}
+    }catch(e){console.error("3.3.10m redraw",e)}
   }
 
-  function apply(){ensure();redraw()}
-  function schedule(ms=180){clearTimeout(timer);timer=setTimeout(apply,ms)}
+  function apply(){
+    ensureCore();
+    redraw();
+  }
 
-  if(document.readyState==="loading")
+  function schedule(ms=180){
+    clearTimeout(timer);
+    timer=setTimeout(apply,ms);
+  }
+
+  if(document.readyState==="loading"){
     document.addEventListener("DOMContentLoaded",()=>schedule(120),{once:true});
-  else schedule(120);
+  }else{
+    schedule(120);
+  }
 
   addEventListener("resize",()=>schedule(220),{passive:true});
-  addEventListener("orientationchange",()=>schedule(360),{passive:true});
+  addEventListener("orientationchange",()=>schedule(380),{passive:true});
   addEventListener("pageshow",()=>schedule(140),{passive:true});
+
+  window.joygo3310m = { doPass, doUndo, doResign, doHumanAI, apply };
 })();
 </script>
 
