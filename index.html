@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10m">
+<meta name="joygo-mobile-ui-version" content="3.3.10n">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5627,6 +5627,23 @@ body.jg-k-tablet-landscape #jgPlatK{
   #joygoClockDock3310g{
     display:none!important;
   }
+}
+</style>
+
+
+<style id="joygoBeta3310nSmartCollapseCSS">
+@media (max-width:699px){
+  #jgMRightRail{display:block!important;width:100%!important;margin:6px 0 10px!important;position:static!important}
+  #jgMQuick{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:6px!important;width:100%!important;padding:6px!important;margin:0!important;border:1px solid #8f6d2d!important;border-radius:12px!important;background:#081719f2!important}
+  #jgMQuick button{min-height:42px!important;padding:6px 4px!important;font-size:13px!important;font-weight:900!important;border-radius:9px!important}
+  #jgMMore{display:none!important;position:static!important;left:auto!important;right:auto!important;bottom:auto!important;width:100%!important;max-height:none!important;overflow:visible!important;transform:none!important;margin:6px 0 0!important;padding:7px!important;grid-template-columns:1fr 1fr!important;gap:6px!important;border-radius:12px!important;box-shadow:none!important}
+  #jgMMore.open{display:grid!important}
+  #jgMMore .jg-m-head{display:none!important}
+  #jgMMore button,#jgMMore select,#jgMMore label{min-height:40px!important}
+  #jgMRightRail #gameClockPanel{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;width:100%!important;margin:0!important;padding:5px!important;position:static!important;transform:none!important;opacity:1!important;visibility:visible!important}
+  #jgMRightRail #gameClockPanel .clock-side{min-height:62px!important;padding:4px 5px!important}
+  #jgMRightRail #gameClockPanel .clock-time{font-size:clamp(23px,6.3vw,27px)!important;line-height:1.02!important}
+  #joygoQuick3310k,#joygoQuick3310i,#joygoClockDockK,#joygoClockDock3310g,#joygoRightRail3310L,#joygoQuick3310L{display:none!important}
 }
 </style>
 
@@ -13048,6 +13065,63 @@ document.addEventListener("click",(ev)=>{
   addEventListener("pageshow",()=>schedule(140),{passive:true});
 
   window.joygo3310m = { doPass, doUndo, doResign, doHumanAI, apply };
+})();
+</script>
+
+
+<script id="joygoBeta3310nSmartCollapseManager">
+(()=>{
+  const $=id=>document.getElementById(id);
+  function isPhone(){return Math.min(innerWidth||0,innerHeight||0)<700}
+  function prepare(){
+    if(!isPhone()) return;
+    const rail=$("jgMRightRail"), more=$("jgMMore"), moreBtn=$("jgMMoreBtn");
+    if(!rail||!more||!moreBtn) return;
+    if(more.parentElement!==rail) rail.appendChild(more);
+
+    const head=more.firstElementChild;
+    if(head&&!head.classList.contains("jg-m-head")) head.classList.add("jg-m-head");
+
+    if(!moreBtn.dataset.nBound){
+      moreBtn.dataset.nBound="1";
+      moreBtn.addEventListener("click",e=>{
+        e.preventDefault(); e.stopPropagation();
+        const willOpen=!more.classList.contains("open");
+        more.classList.toggle("open",willOpen);
+        moreBtn.textContent=willOpen?"收合":"更多";
+        if(willOpen) requestAnimationFrame(()=>{try{more.scrollIntoView({block:"nearest",behavior:"smooth"})}catch(_){}})
+      },true);
+    }
+
+    if(!more.dataset.nBound){
+      more.dataset.nBound="1";
+      more.addEventListener("click",e=>{
+        const target=e.target.closest("button,[role='button']");
+        if(!target||target.id==="jgMMoreClose") return;
+        setTimeout(()=>{
+          more.classList.remove("open");
+          moreBtn.textContent="更多";
+        },120);
+      },false);
+    }
+
+    const oldClose=$("jgMMoreClose");
+    if(oldClose&&!oldClose.dataset.nBound){
+      oldClose.dataset.nBound="1";
+      oldClose.addEventListener("click",e=>{
+        e.preventDefault(); e.stopPropagation();
+        more.classList.remove("open");
+        moreBtn.textContent="更多";
+      },true);
+    }
+  }
+
+  const apply=()=>prepare();
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>setTimeout(apply,140),{once:true});
+  else setTimeout(apply,140);
+  addEventListener("resize",()=>setTimeout(apply,220),{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(apply,360),{passive:true});
+  addEventListener("pageshow",()=>setTimeout(apply,140),{passive:true});
 })();
 </script>
 
