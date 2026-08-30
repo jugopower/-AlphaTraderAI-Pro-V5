@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10v">
+<meta name="joygo-mobile-ui-version" content="3.3.10w">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5665,12 +5665,111 @@ body.jg-k-tablet-landscape #jgPlatK{
 </style>
 
 
-<style id="joygoBeta3310vSingleControlCSS">
-#joygoQuick3310i,#joygoQuick3310k,#joygoQuick3310L,#jgMQuick,#jgMPlatform,#jgMMore,#jgMoreK,#jgPlatK,#jgPlat3310i,#jgPlatformK,#jgPlatform3310i,#joygoActionDock3310g,#joygoClockDockK,#joygoClockDock3310g,#joygoRightRail3310L{display:none!important}
-#gameActionRow button,#moveTools button,.controls button{color:#fff!important;-webkit-text-fill-color:#fff!important;border:1px solid #83622d!important;background:#142124!important;font-weight:800!important}
-#passGameBtn,#undoGameBtn{background:#35231b!important}#resignGameBtn{background:#9b2838!important}#scoreGameBtn{background:#2e72aa!important}#calculateResultBtn{background:#6240ad!important}#saveSgfBtn{background:#15552e!important}
-@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){body:not(.guidance-embed-mode) .app{display:grid!important;grid-template-columns:minmax(0,1fr) 248px!important;grid-template-rows:auto 1fr!important;grid-template-areas:"board clock" "board player"!important;gap:8px!important;align-items:start!important;padding:0 6px!important}body:not(.guidance-embed-mode) .board-wrap{grid-area:board!important;width:100%!important;max-width:none!important;justify-self:stretch!important;overflow:hidden!important}body:not(.guidance-embed-mode) #rightTools{grid-area:clock!important;display:block!important;position:static!important;width:248px!important;min-width:248px!important;max-width:248px!important;padding:0!important;margin:0!important;overflow:visible!important}body:not(.guidance-embed-mode) #gameClockPanel{display:grid!important;grid-template-columns:1fr!important;gap:7px!important;width:100%!important;padding:7px!important;position:static!important;transform:none!important;inset:auto!important;box-sizing:border-box!important}#gameClockPanel .clock-side{min-height:76px!important;padding:8px!important}#gameClockPanel .clock-time{font-size:27px!important}#gameClockPanel .clock-byo{font-size:9px!important}#redrawBtn,#aiHintPanel{display:none!important}body:not(.guidance-embed-mode) .player{grid-area:player!important;display:block!important;width:248px!important;min-width:248px!important;max-width:248px!important;margin:0!important;padding:0!important;position:static!important;transform:none!important}.player .move-tools,.player .controls{display:none!important}#gameActionRow{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;width:100%!important;padding:7px!important;border:1px solid #83622d!important;border-radius:14px!important;background:#081719f2!important;box-sizing:border-box!important}#gameActionRow button{min-height:48px!important;border-radius:10px!important;font-size:14px!important}#mobileAiToggle339,#trialModeBtn,#firstChoiceBtn,#secondChoiceBtn,#badMoveBtn,#positionJudgeBtn,#hintToggleBtn{display:none!important}}
-@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){body:not(.guidance-embed-mode) .app{display:block!important;padding:0 7px!important}body:not(.guidance-embed-mode) .board-wrap{width:100%!important;max-width:100%!important;margin:0 auto!important;overflow:hidden!important}body:not(.guidance-embed-mode) #rightTools{display:block!important;position:static!important;width:100%!important;max-width:100%!important;margin:7px auto 0!important;padding:0!important}#gameClockPanel{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;width:100%!important;padding:7px!important;position:static!important;transform:none!important;inset:auto!important}#gameClockPanel .clock-side{min-height:78px!important;padding:7px!important}#gameClockPanel .clock-time{font-size:31px!important}#redrawBtn,#aiHintPanel{display:none!important}body:not(.guidance-embed-mode) .player{display:block!important;width:100%!important;max-width:100%!important;margin:7px auto 12px!important;padding:0!important;position:static!important}.player .move-tools,.player .controls{display:none!important}#gameActionRow{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:7px!important;padding:7px!important;border:1px solid #83622d!important;border-radius:14px!important;background:#081719f2!important}#gameActionRow button{min-height:48px!important;border-radius:10px!important;font-size:15px!important}#mobileAiToggle339,#trialModeBtn,#firstChoiceBtn,#secondChoiceBtn,#badMoveBtn,#positionJudgeBtn,#hintToggleBtn{display:none!important}}
+<style id="joygoBeta3310wPureRepairCSS">
+/* =========================================================
+   Beta 3.3.10w｜純修復版
+   重要原則：
+   1. 不改 .app
+   2. 不改 .board-wrap
+   3. 不改 #board
+   4. 不搬棋鐘
+   5. 不搬任何原始按鍵
+   6. 不新增第二組 Pass／投降／悔棋
+   ========================================================= */
+
+/* iPad：隱藏歷代額外建立的「重複快捷列」 */
+@media (min-width:700px) and (max-width:1400px){
+  #joygoQuick3310i,
+  #jgMQuick,
+  #jgMPlatform,
+  #jgUBar,
+  #jgUMore,
+  #jgUPlatform,
+  #joygoQuick3310k,
+  #joygoQuick3310L{
+    display:none!important;
+  }
+
+  /* 原本對局 Dock 一律深色、白字，不改位置 */
+  #joygoActionDock3310g,
+  #joygoActionDock3310g button,
+  #gameActionRow,
+  #gameActionRow button{
+    color:#fff!important;
+    -webkit-text-fill-color:#fff!important;
+  }
+
+  #joygoActionDock3310g{
+    background:#0c1719f2!important;
+    border:1px solid #87672d!important;
+    border-radius:14px!important;
+  }
+
+  #joygoActionDock3310g button,
+  #gameActionRow button{
+    border-color:#7c5d2d!important;
+    font-weight:900!important;
+  }
+
+  #passGameBtn,
+  #undoGameBtn{background:#35231b!important;color:#fff!important;}
+
+  #resignGameBtn{background:#9b2838!important;color:#fff!important;}
+
+  #scoreGameBtn{background:#2e72aa!important;color:#fff!important;}
+
+  #calculateResultBtn{background:#6542b0!important;color:#fff!important;}
+
+  #saveSgfBtn{background:#15552e!important;color:#fff!important;}
+
+  /* 「更多」與「平台」維持深色，不蓋棋盤 */
+  #joygoMoreToggle3310,
+  #jgPlatform3310i,
+  #joygoReturnPlatform3310g{
+    background:#16333c!important;
+    color:#fff!important;
+    -webkit-text-fill-color:#fff!important;
+    border-color:#7d6939!important;
+  }
+
+  /* 平台功能面板：若開啟，以右側小面板呈現，不修改棋盤本體 */
+  body.joygo-platform-open3310g #topbar{
+    background:#081719f8!important;
+    border-color:#8a692e!important;
+  }
+
+  body.joygo-platform-open3310g #topbar button,
+  body.joygo-platform-open3310g #topbar .tool{
+    background:#122126!important;
+    color:#fff!important;
+    -webkit-text-fill-color:#fff!important;
+  }
+}
+
+/* iPad 直式：更多功能採正常文流顯示，不使用懸浮重疊 */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  #joygoMoreShell3310{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    z-index:20!important;
+  }
+}
+
+/* iPad 橫式：不碰棋盤，只限制「更多功能」面板本身的最大寬度 */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  body.joygo-platform-open3310g #topbar{
+    max-width:320px!important;
+    width:320px!important;
+    right:10px!important;
+    left:auto!important;
+    top:auto!important;
+    bottom:10px!important;
+    max-height:74vh!important;
+    overflow:auto!important;
+    grid-template-columns:1fr 1fr!important;
+  }
+}
 </style>
 
 </head>
@@ -13244,7 +13343,55 @@ document.addEventListener("click",(ev)=>{
 </script>
 
 
-<script id="joygoBeta3310vSingleControlManager">(()=>{const $=id=>document.getElementById(id);const duplicateIds=['joygoQuick3310i','joygoQuick3310k','joygoQuick3310L','jgMQuick','jgMPlatform','jgMoreK','jgPlatK','jgPlat3310i','jgPlatformK','jgPlatform3310i','joygoActionDock3310g','joygoClockDockK','joygoClockDock3310g','joygoRightRail3310L'];function restoreOriginals(){const app=document.querySelector('.app'),right=$('rightTools'),clock=$('gameClockPanel'),action=$('gameActionRow');if(!app||!right||!clock||!action)return;if(clock.parentElement!==right)right.insertBefore(clock,right.firstChild);['undoGameBtn','scoreGameBtn','passGameBtn','resignGameBtn','calculateResultBtn','saveSgfBtn','mobileAiToggle339','trialModeBtn','firstChoiceBtn','secondChoiceBtn','badMoveBtn','positionJudgeBtn','hintToggleBtn'].forEach(id=>{const el=$(id);if(el&&el.parentElement!==action)action.appendChild(el)});const moveTools=$('moveTools'),coord=$('coordToggleBtn');if(moveTools&&coord&&coord.parentElement!==moveTools)moveTools.appendChild(coord);duplicateIds.forEach(id=>{const el=$(id);if(el)el.style.setProperty('display','none','important')});try{if(typeof resizeBoard==='function')resizeBoard(false);if(typeof syncUI==='function')syncUI()}catch(e){}}let timer=0;function schedule(ms=520){clearTimeout(timer);timer=setTimeout(()=>{restoreOriginals();setTimeout(restoreOriginals,420)},ms)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>schedule(650),{once:true});else schedule(650);addEventListener('pageshow',()=>schedule(500),{passive:true});addEventListener('resize',()=>schedule(650),{passive:true});addEventListener('orientationchange',()=>schedule(900),{passive:true});[900,1400,2200,3200].forEach(t=>setTimeout(restoreOriginals,t));})();</script>
+<script id="joygoBeta3310wPureRepairManager">
+(()=>{
+  const duplicateIds = [
+    "joygoQuick3310i","jgMQuick","jgMPlatform",
+    "jgUBar","jgUMore","jgUPlatform",
+    "joygoQuick3310k","joygoQuick3310L"
+  ];
+
+  function hideDuplicateControls(){
+    duplicateIds.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.style.setProperty("display","none","important");
+    });
+  }
+
+  function repairOnly(){
+    hideDuplicateControls();
+
+    /* 只恢復按鍵可點狀態，不搬動任何元素 */
+    [
+      "passGameBtn","resignGameBtn","undoGameBtn",
+      "scoreGameBtn","calculateResultBtn","saveSgfBtn",
+      "joygoMoreToggle3310","jgPlatform3310i"
+    ].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){
+        el.disabled=false;
+        el.style.pointerEvents="auto";
+      }
+    });
+  }
+
+  function schedule(){
+    repairOnly();
+    setTimeout(repairOnly,250);
+    setTimeout(repairOnly,700);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",schedule,{once:true});
+  }else{
+    schedule();
+  }
+
+  addEventListener("pageshow",schedule,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(schedule,500),{passive:true});
+  addEventListener("resize",()=>setTimeout(schedule,250),{passive:true});
+})();
+</script>
 
 </body>
 </html>
