@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10s">
+<meta name="joygo-mobile-ui-version" content="3.3.10t">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5931,6 +5931,190 @@ body.jg-k-tablet-landscape #jgPlatK{
   #joygoQuick3310k,#joygoQuick3310i,
   #joygoClockDockK,#joygoClockDock3310g {
     display:none!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3310tIPadPolishCSS">
+/* Beta 3.3.10t｜iPad 深色功能區＋禁止壓棋盤 */
+
+/* ===== 所有 iPad 對局功能鍵：深色系＋白字 ===== */
+@media (min-width:700px) and (max-width:1400px) {
+  #jgSQuick button,
+  #jgSMore button,
+  #jgSPlatformHost button,
+  #jgSPlatformHost a,
+  #jgSPlatformHost .btn,
+  #jgSPlatformHost [role="button"] {
+    color:#fff!important;
+    -webkit-text-fill-color:#fff!important;
+    background:#142124!important;
+    border:1px solid #8a682c!important;
+    box-shadow:none!important;
+  }
+
+  #jgSPass { background:#39261d!important; }
+  #jgSResign { background:#9b2636!important; }
+  #jgSUndo { background:#39261d!important; }
+  #jgSMoreBtn { background:#2a6678!important; }
+
+  #jgSHuman,
+  #jgSCoord,
+  #jgSScore,
+  #jgSCalc,
+  #jgSSave,
+  #jgSClose {
+    background:#142124!important;
+    color:#fff!important;
+    -webkit-text-fill-color:#fff!important;
+  }
+
+  #jgSHuman:hover,#jgSCoord:hover,#jgSScore:hover,
+  #jgSCalc:hover,#jgSSave:hover,#jgSClose:hover {
+    background:#1d3034!important;
+  }
+
+  /* 禁止 Safari/舊 CSS 把功能鍵變白底黑字 */
+  #jgSMore button:disabled,
+  #jgSPlatformHost button:disabled {
+    opacity:.48!important;
+    background:#1a2628!important;
+    color:#d6d6d6!important;
+    -webkit-text-fill-color:#d6d6d6!important;
+  }
+
+  /* 平台功能改成正常佔位，不准 fixed/absolute 蓋棋盤 */
+  #jgSPlatformHost {
+    display:none;
+    position:static!important;
+    inset:auto!important;
+    right:auto!important;
+    left:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin:0!important;
+    z-index:auto!important;
+    overflow:visible!important;
+  }
+  #jgSPlatformHost.open {
+    display:block!important;
+  }
+
+  #jgSPlatformHost > * {
+    position:static!important;
+    inset:auto!important;
+    right:auto!important;
+    left:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+
+  /* 平台功能卡內所有按鍵統一深色 */
+  #jgSPlatformHost button,
+  #jgSPlatformHost a,
+  #jgSPlatformHost .nav-btn,
+  #jgSPlatformHost .tool-btn,
+  #jgSPlatformHost .menu-btn {
+    background:#102023!important;
+    color:#fff!important;
+    -webkit-text-fill-color:#fff!important;
+    border:1px solid #7d602c!important;
+    border-radius:10px!important;
+  }
+}
+
+/* ===== iPad 橫式：棋盤與右側功能永遠分欄，不互相覆蓋 ===== */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape) {
+  body:not(.guidance-embed-mode) .app {
+    grid-template-columns:minmax(0,1fr) 268px!important;
+    gap:10px!important;
+  }
+
+  body:not(.guidance-embed-mode) .board-wrap {
+    max-width:calc(100vw - 300px)!important;
+    overflow:hidden!important;
+  }
+
+  #jgSControls {
+    width:268px!important;
+    min-width:268px!important;
+    max-width:268px!important;
+    position:sticky!important;
+    top:46px!important;
+    align-self:start!important;
+  }
+
+  #jgSPlatformHost {
+    width:100%!important;
+  }
+
+  /* 9/13/19 共用：禁止任何平台面板回到浮動位置 */
+  #jgPlatK,
+  #jgPlat3310i,
+  #jgPlatL,
+  #joygoPlatformPanel,
+  #platformPanel,
+  #platformMenu {
+    position:static!important;
+    inset:auto!important;
+    right:auto!important;
+    left:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+}
+
+/* ===== iPad 直式：棋盤、棋鐘、四鍵、更多、平台依序往下排 ===== */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait) {
+  body:not(.guidance-embed-mode) .board-wrap {
+    width:100%!important;
+    max-width:100%!important;
+    margin:0 auto!important;
+    overflow:hidden!important;
+  }
+
+  #jgSControls {
+    width:100%!important;
+    max-width:100%!important;
+    position:static!important;
+    margin:8px 0 14px!important;
+  }
+
+  #jgSMore,
+  #jgSPlatformHost {
+    width:100%!important;
+    max-width:100%!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+  }
+
+  #jgPlatK,
+  #jgPlat3310i,
+  #jgPlatL,
+  #joygoPlatformPanel,
+  #platformPanel,
+  #platformMenu {
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
   }
 }
 </style>
@@ -13747,6 +13931,122 @@ document.addEventListener("click",(ev)=>{
   addEventListener("resize",()=>schedule(260),{passive:true});
   addEventListener("orientationchange",()=>schedule(520),{passive:true});
   addEventListener("pageshow",()=>schedule(220),{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3310tPlatformDockManager">
+(()=>{
+  const $=id=>document.getElementById(id);
+
+  function isIPad(){
+    const w=innerWidth||0,h=innerHeight||0;
+    return Math.min(w,h)>=700 && Math.max(w,h)<=1400;
+  }
+
+  function getDrawer(){
+    return $("jgPlatK") ||
+           $("jgPlat3310i") ||
+           $("jgPlatL") ||
+           $("joygoPlatformPanel") ||
+           $("platformPanel") ||
+           $("platformMenu");
+  }
+
+  function ensureHost(){
+    if(!isIPad()) return null;
+    const controls=$("jgSControls");
+    if(!controls) return null;
+
+    let host=$("jgSPlatformHost");
+    if(!host){
+      host=document.createElement("section");
+      host.id="jgSPlatformHost";
+      controls.appendChild(host);
+    }
+    return host;
+  }
+
+  function dockDrawer(){
+    if(!isIPad()) return;
+    const host=ensureHost();
+    const drawer=getDrawer();
+    if(!host || !drawer) return;
+
+    if(drawer.parentElement!==host){
+      host.appendChild(drawer);
+    }
+
+    const opened =
+      drawer.classList.contains("open") ||
+      getComputedStyle(drawer).display!=="none";
+
+    host.classList.toggle("open", opened);
+
+    drawer.style.position="static";
+    drawer.style.inset="auto";
+    drawer.style.right="auto";
+    drawer.style.left="auto";
+    drawer.style.top="auto";
+    drawer.style.bottom="auto";
+    drawer.style.transform="none";
+    drawer.style.width="100%";
+    drawer.style.maxWidth="100%";
+    drawer.style.margin="0";
+  }
+
+  function bindPlatformButton(){
+    // 找平台按鈕，iPad 上直接切換 dock 內的平台功能
+    const candidates=[
+      "jgRPlatform","jgQPlatform","joygoReturnPlatform3310g",
+      "joygoMobileReturn339a","platformBtn","btnPlatform"
+    ];
+    let btn=null;
+    for(const id of candidates){
+      const el=$(id);
+      if(el){ btn=el; break; }
+    }
+    if(!btn){
+      btn=[...document.querySelectorAll("button,a")].find(el=>{
+        const t=(el.textContent||"").trim();
+        return t==="平台" || t==="返回平台";
+      });
+    }
+    if(!btn || btn.dataset.tDockBound) return;
+    btn.dataset.tDockBound="1";
+
+    btn.addEventListener("click",()=>{
+      setTimeout(()=>{
+        const host=ensureHost();
+        const drawer=getDrawer();
+        if(!host || !drawer) return;
+
+        const willOpen = !host.classList.contains("open");
+        host.classList.toggle("open",willOpen);
+        drawer.classList.toggle("open",willOpen);
+        drawer.style.display=willOpen ? "grid" : "none";
+        dockDrawer();
+      },0);
+    },true);
+  }
+
+  function tidy(){
+    if(!isIPad()) return;
+    ensureHost();
+    dockDrawer();
+    bindPlatformButton();
+  }
+
+  const obs=new MutationObserver(()=>tidy());
+  obs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["class","style"]});
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",tidy,{once:true});
+  }else tidy();
+
+  addEventListener("resize",()=>setTimeout(tidy,180),{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(tidy,420),{passive:true});
+  setTimeout(tidy,500);
 })();
 </script>
 
