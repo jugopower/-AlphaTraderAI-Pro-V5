@@ -5137,7 +5137,7 @@ body{
 
 <style id="joygoBeta3310xEssentialControlsCSS">
 /* ==========================================================
-   Beta 3.3.10x｜下棋必備功能恢復版
+   Beta 3.3.10y｜更多功能收合修正版
    原則：不搬原始按鍵，以「代理按鍵」呼叫原按鍵 click()
    避免 DOM 搬移造成事件失效。
    ========================================================== */
@@ -5312,7 +5312,7 @@ body{
 
 
 <style id="joygoBeta3310xClockMoreHotfixCSS">
-/* Beta 3.3.10x Hotfix：恢復棋鐘 + 修復更多功能；不改棋盤尺寸 */
+/* Beta 3.3.10y：保留棋鐘 + 修復更多功能可收合；不改棋盤尺寸 */
 #jgXClockDock{
   box-sizing:border-box;
   z-index:98480;
@@ -12549,5 +12549,109 @@ document.addEventListener("click",(ev)=>{
 })();
 </script>
 
+
+<style id="joygoBeta3310yCollapseFixCSS">
+/* Beta 3.3.10y：更多功能真正可收合，直/橫式一致 */
+body.jg-y-main-collapsed #topbar,
+body.jg-y-main-collapsed #jgXMorePanel{
+  display:none!important;
+}
+/* 收合時不要保留任何遮盤的浮動平台面板 */
+body.jg-y-main-collapsed.joygo-platform-open3310g #topbar{
+  display:none!important;
+}
+</style>
+<script id="joygoBeta3310yCollapseFixJS">
+(()=>{
+  const $=id=>document.getElementById(id);
+
+  function syncLegacy(open){
+    const legacy=$("joygoMoreToggle3310");
+    if(legacy){
+      legacy.setAttribute("aria-expanded",open?"true":"false");
+      legacy.textContent=open?"－ 收合功能":"＋ 更多功能";
+    }
+  }
+
+  function setMore(open){
+    const panel=$("jgXMorePanel");
+    if(panel) panel.classList.toggle("open",!!open);
+    syncLegacy(!!open);
+  }
+
+  function closeAll(){
+    setMore(false);
+    document.body.classList.add("jg-y-main-collapsed");
+    document.body.classList.remove("joygo-platform-open3310g");
+    const top=$("topbar");
+    if(top) top.style.setProperty("display","none","important");
+  }
+
+  function openMain(){
+    document.body.classList.remove("jg-y-main-collapsed");
+    setMore(true);
+  }
+
+  function bind(){
+    const more=$("jgXMore");
+    if(more && !more.dataset.jgyBound){
+      more.dataset.jgyBound="1";
+      more.addEventListener("click",e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const isOpen=$("jgXMorePanel")?.classList.contains("open");
+        if(isOpen) closeAll(); else openMain();
+      },true);
+      more.addEventListener("touchend",e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const isOpen=$("jgXMorePanel")?.classList.contains("open");
+        if(isOpen) closeAll(); else openMain();
+      },{capture:true,passive:false});
+    }
+
+    const close=$("jgXMoreClose");
+    if(close && !close.dataset.jgyBound){
+      close.dataset.jgyBound="1";
+      close.addEventListener("click",e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        closeAll();
+      },true);
+      close.addEventListener("touchend",e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        closeAll();
+      },{capture:true,passive:false});
+    }
+
+    const legacy=$("joygoMoreToggle3310");
+    if(legacy && !legacy.dataset.jgyBound){
+      legacy.dataset.jgyBound="1";
+      const h=e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const isOpen=$("jgXMorePanel")?.classList.contains("open");
+        if(isOpen) closeAll(); else openMain();
+      };
+      legacy.addEventListener("click",h,true);
+      legacy.addEventListener("touchend",h,{capture:true,passive:false});
+    }
+  }
+
+  function repair(){
+    bind();
+    const panel=$("jgXMorePanel");
+    if(panel && !panel.classList.contains("open")) syncLegacy(false);
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",repair,{once:true});
+  else repair();
+  addEventListener("pageshow",repair,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(repair,500),{passive:true});
+  addEventListener("resize",()=>setTimeout(repair,200),{passive:true});
+  [500,1200,2400].forEach(t=>setTimeout(repair,t));
+})();
+</script>
 </body>
 </html>
