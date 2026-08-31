@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11i">
+<meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5414,6 +5414,195 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
   body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     right:14px!important;
     top:calc(env(safe-area-inset-top,0px) + 14px)!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3311jForceDrawer">
+/* ==========================================================
+   Beta 3.3.11j｜平台抽屜強制接管版
+   只修平台功能右上角重疊/裁切
+   ========================================================== */
+
+/* 打開平台功能時，強制 topbar 成為完整右側抽屜 */
+body.landscape-platform-menu .topbar,
+body.jg-mobile-platform-menu .topbar{
+  display:grid!important;
+  position:fixed!important;
+  top:12px!important;
+  right:12px!important;
+  bottom:12px!important;
+  left:auto!important;
+
+  width:350px!important;
+  min-width:350px!important;
+  max-width:350px!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+
+  margin:0!important;
+  padding:56px 10px 12px!important;
+
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:minmax(68px,auto)!important;
+  grid-template-rows:none!important;
+  gap:8px!important;
+  align-content:start!important;
+  align-items:stretch!important;
+
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+
+  transform:none!important;
+  translate:none!important;
+  scale:none!important;
+  clip:auto!important;
+  clip-path:none!important;
+
+  background:linear-gradient(180deg,#1a120e 0%,#0a0908 100%)!important;
+  border:1px solid #8b6837!important;
+  border-radius:18px!important;
+  box-shadow:0 20px 60px rgba(0,0,0,.62)!important;
+  z-index:90000!important;
+}
+
+/* 清除舊 topbar 子元素定位，避免只露出最後幾顆 */
+body.landscape-platform-menu .topbar > *,
+body.jg-mobile-platform-menu .topbar > *{
+  position:static!important;
+  float:none!important;
+  inset:auto!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+
+  margin:0!important;
+  transform:none!important;
+  translate:none!important;
+  scale:none!important;
+}
+
+/* 功能鍵統一兩欄 */
+body.landscape-platform-menu .topbar .tool,
+body.jg-mobile-platform-menu .topbar .tool{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+
+  width:100%!important;
+  min-width:0!important;
+  min-height:68px!important;
+
+  padding:8px 6px!important;
+  margin:0!important;
+
+  border-radius:12px!important;
+  border:1px solid #6e5530!important;
+  background:#151312!important;
+  box-shadow:none!important;
+
+  overflow:visible!important;
+}
+
+/* 收合鈕獨立固定，不參與 grid */
+body.landscape-platform-menu #landscapePlatformCloseBtn,
+body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
+  display:flex!important;
+  position:fixed!important;
+  top:22px!important;
+  right:22px!important;
+  bottom:auto!important;
+  left:auto!important;
+
+  width:100px!important;
+  min-width:100px!important;
+  max-width:100px!important;
+  height:34px!important;
+  min-height:34px!important;
+  max-height:34px!important;
+
+  margin:0!important;
+  padding:0 14px!important;
+
+  align-items:center!important;
+  justify-content:center!important;
+
+  border-radius:17px!important;
+  background:#3a2516!important;
+  border:1px solid #a97a3c!important;
+  color:#fff1d0!important;
+  font-weight:900!important;
+
+  transform:none!important;
+  z-index:90010!important;
+}
+
+/* 大 iPad 橫式：抽屜固定 350px */
+@media (min-width:901px) and (orientation:landscape){
+  body.landscape-platform-menu .topbar,
+  body.jg-mobile-platform-menu .topbar{
+    width:350px!important;
+    min-width:350px!important;
+    max-width:350px!important;
+  }
+
+  /* 打開抽屜不動棋盤 */
+  body.landscape-platform-menu .app,
+  body.jg-mobile-platform-menu .app,
+  body.landscape-platform-menu .board-wrap,
+  body.jg-mobile-platform-menu .board-wrap{
+    transform:none!important;
+  }
+}
+
+/* iPad 直式：完整側欄，不再縮成小框 */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  body.landscape-platform-menu .topbar,
+  body.jg-mobile-platform-menu .topbar{
+    width:360px!important;
+    min-width:360px!important;
+    max-width:360px!important;
+    right:8px!important;
+    top:8px!important;
+    bottom:8px!important;
+  }
+
+  body.landscape-platform-menu #landscapePlatformCloseBtn,
+  body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
+    right:18px!important;
+    top:18px!important;
+  }
+}
+
+/* 手機 */
+@media (max-width:699px){
+  body.landscape-platform-menu .topbar,
+  body.jg-mobile-platform-menu .topbar{
+    width:min(340px,92vw)!important;
+    min-width:0!important;
+    max-width:min(340px,92vw)!important;
+    right:5px!important;
+    top:5px!important;
+    bottom:5px!important;
+    padding:54px 7px 8px!important;
+    gap:6px!important;
+  }
+
+  body.landscape-platform-menu #landscapePlatformCloseBtn,
+  body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
+    right:14px!important;
+    top:14px!important;
   }
 }
 </style>
@@ -12679,6 +12868,40 @@ document.addEventListener("click",(ev)=>{
 
   addEventListener("pageshow",normalize,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(normalize,250),{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3311jForceDrawerJS">
+(()=>{
+  function normalizeDrawer(){
+    const topbar = document.getElementById("topbar");
+    if(topbar){
+      topbar.style.removeProperty("height");
+      topbar.style.removeProperty("max-height");
+      topbar.style.removeProperty("transform");
+      topbar.style.removeProperty("clip");
+      topbar.style.removeProperty("overflow");
+    }
+
+    const openBtn = document.getElementById("landscapeBackPlatformBtn");
+    if(openBtn) openBtn.textContent = "☰ 平台功能";
+
+    const mobileBtn = document.getElementById("joygoMobileReturn339a");
+    if(mobileBtn) mobileBtn.textContent = "☰ 平台功能";
+
+    const closeBtn = document.getElementById("landscapePlatformCloseBtn");
+    if(closeBtn) closeBtn.textContent = "✕ 收合";
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", normalizeDrawer, {once:true});
+  }else{
+    normalizeDrawer();
+  }
+
+  addEventListener("pageshow", normalizeDrawer, {passive:true});
+  addEventListener("orientationchange", ()=>setTimeout(normalizeDrawer, 250), {passive:true});
 })();
 </script>
 
