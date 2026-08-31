@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11g">
+<meta name="joygo-stable-reset-version" content="3.3.11h">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5183,6 +5183,98 @@ html[data-joygo-guidance="1"] #gameActionRow{
 @media (orientation:portrait), (max-width:699px){
   .player{
     overflow:visible!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3311hPlatformDrawer">
+body.landscape-platform-menu .topbar,
+body.jg-mobile-platform-menu .topbar{
+  display:grid!important;
+  position:fixed!important;
+  top:calc(env(safe-area-inset-top,0px) + 12px)!important;
+  right:12px!important;
+  left:auto!important;
+  bottom:12px!important;
+  width:min(360px,32vw)!important;
+  max-height:none!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-content:start!important;
+  gap:8px!important;
+  padding:56px 10px 12px!important;
+  background:linear-gradient(180deg,#1b120d 0%,#0b0a09 100%)!important;
+  border:1px solid #8c6934!important;
+  border-radius:18px!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.58)!important;
+  z-index:70000!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+}
+body.landscape-platform-menu .topbar .tool,
+body.jg-mobile-platform-menu .topbar .tool{
+  min-width:0!important;
+  min-height:72px!important;
+  padding:8px 6px!important;
+  border-radius:12px!important;
+  background:#151312!important;
+  border:1px solid #70562f!important;
+  box-shadow:none!important;
+}
+body.landscape-platform-menu #landscapePlatformCloseBtn,
+body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
+  display:block!important;
+  position:fixed!important;
+  top:calc(env(safe-area-inset-top,0px) + 22px)!important;
+  right:22px!important;
+  left:auto!important;
+  min-width:96px!important;
+  height:34px!important;
+  padding:0 14px!important;
+  border-radius:17px!important;
+  z-index:70005!important;
+  background:#3a2415!important;
+  border:1px solid #a97b39!important;
+  color:#fff1cf!important;
+  font-weight:900!important;
+}
+#landscapeBackPlatformBtn,
+#joygoMobileReturn339a{
+  border-radius:12px!important;
+  font-weight:900!important;
+}
+@media (min-width:901px) and (orientation:landscape){
+  body.landscape-platform-menu .app{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    transform:none!important;
+  }
+  body.landscape-platform-menu .board-wrap{
+    width:auto!important;
+    max-width:none!important;
+    transform:none!important;
+  }
+  body.landscape-platform-menu .topbar{
+    width:360px!important;
+  }
+}
+@media (max-width:900px), (orientation:portrait){
+  body.landscape-platform-menu .topbar,
+  body.jg-mobile-platform-menu .topbar{
+    width:min(340px,88vw)!important;
+    right:8px!important;
+    top:calc(env(safe-area-inset-top,0px) + 8px)!important;
+    bottom:8px!important;
+    padding:54px 8px 10px!important;
+    gap:6px!important;
+  }
+  body.landscape-platform-menu #landscapePlatformCloseBtn,
+  body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
+    right:18px!important;
+    top:calc(env(safe-area-inset-top,0px) + 18px)!important;
   }
 }
 </style>
@@ -12406,6 +12498,25 @@ document.addEventListener("click",(ev)=>{
     reset();
     setTimeout(buildRecordToggle,300);
   },{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3311hPlatformDrawerJS">
+(()=>{
+  function tidy(){
+    const openBtn=document.getElementById("landscapeBackPlatformBtn");
+    if(openBtn) openBtn.textContent="☰ 平台功能";
+    const mobileBtn=document.getElementById("joygoMobileReturn339a");
+    if(mobileBtn) mobileBtn.textContent="☰ 平台功能";
+    const closeBtn=document.getElementById("landscapePlatformCloseBtn");
+    if(closeBtn) closeBtn.textContent="✕ 收合";
+  }
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",tidy,{once:true});
+  }else tidy();
+  addEventListener("pageshow",tidy,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(tidy,250),{passive:true});
 })();
 </script>
 
