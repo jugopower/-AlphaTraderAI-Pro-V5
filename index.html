@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11">
+<meta name="joygo-stable-reset-version" content="3.3.11a">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -31,7 +31,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.11-stable-reset">
+<meta name="joygo-mobile-ui-version" content="3.3.11a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -4095,6 +4095,236 @@ html[data-joygo-guidance="1"] #gameActionRow{
   min-height:48px!important;
   border-radius:14px!important;
   font-weight:900!important;
+}
+</style>
+
+
+<style id="joygoBeta3311aRWD">
+/* ==========================================================
+   Beta 3.3.11a｜穩定版微調
+   只處理 iPad/手機版面與必要操作區，不改會員/管理/比賽/KataGo核心。
+   ========================================================== */
+
+:root{
+  --jg-control-bg:#0b1719;
+  --jg-control-border:#6f5730;
+  --jg-control-text:#fff;
+}
+
+/* 通用：避免控制區和棋盤互相重疊 */
+#gameClockPanel,
+#joygoActionDock3310g,
+#rightTools,
+#topbar{
+  box-sizing:border-box!important;
+}
+
+/* iPad 橫式：棋盤左、棋鐘＋必要控制右 */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  body{overflow-x:hidden!important;}
+  .app{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 248px!important;
+    gap:8px!important;
+    align-items:start!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .board-wrap{
+    grid-column:1!important;
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  #gameClockPanel{
+    grid-column:2!important;
+    position:sticky!important;
+    top:8px!important;
+    width:100%!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    padding:6px!important;
+    background:var(--jg-control-bg)!important;
+    border:1px solid var(--jg-control-border)!important;
+    border-radius:12px!important;
+    z-index:50!important;
+  }
+  #gameClockPanel .clock-side{
+    min-height:76px!important;
+    padding:7px 8px!important;
+  }
+  #gameClockPanel .clock-time{
+    font-size:28px!important;
+    line-height:1!important;
+  }
+  #gameClockPanel .clock-byo{
+    font-size:9px!important;
+  }
+
+  /* 必備功能列：右側棋鐘下方 */
+  #joygoActionDock3310g{
+    grid-column:2!important;
+    position:sticky!important;
+    top:178px!important;
+    width:100%!important;
+    margin:8px 0 0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    background:var(--jg-control-bg)!important;
+    border:1px solid var(--jg-control-border)!important;
+    border-radius:12px!important;
+    padding:7px!important;
+    z-index:49!important;
+  }
+  #joygoActionDock3310g button{
+    min-height:42px!important;
+    font-size:14px!important;
+    color:var(--jg-control-text)!important;
+  }
+
+  /* 更多/右側工具：保持在右欄內，不浮到棋盤上 */
+  #rightTools{
+    grid-column:2!important;
+    position:static!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin-top:8px!important;
+    transform:none!important;
+  }
+
+  /* 平台/管理工具保持原功能，但限制在右側，不跨棋盤 */
+  #topbar{
+    position:fixed!important;
+    right:8px!important;
+    top:8px!important;
+    width:248px!important;
+    max-height:calc(100vh - 16px)!important;
+    overflow:auto!important;
+    z-index:80!important;
+  }
+}
+
+/* iPad 直式：棋盤下方立刻接棋鐘與必備按鍵 */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  .app{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .board-wrap{
+    width:100%!important;
+    max-width:100%!important;
+    margin-bottom:4px!important;
+  }
+  #gameClockPanel{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 24px)!important;
+    margin:4px auto 0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    padding:6px!important;
+    background:var(--jg-control-bg)!important;
+    border:1px solid var(--jg-control-border)!important;
+    border-radius:12px!important;
+  }
+  #gameClockPanel .clock-side{
+    min-height:78px!important;
+    padding:7px 8px!important;
+  }
+  #gameClockPanel .clock-time{
+    font-size:29px!important;
+    line-height:1!important;
+  }
+  #joygoActionDock3310g{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 24px)!important;
+    margin:6px auto 0!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,1fr)!important;
+    gap:6px!important;
+    padding:6px!important;
+    background:var(--jg-control-bg)!important;
+    border:1px solid var(--jg-control-border)!important;
+    border-radius:12px!important;
+  }
+  #joygoActionDock3310g button{
+    min-height:42px!important;
+    font-size:14px!important;
+  }
+  #rightTools{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 24px)!important;
+    margin:6px auto 0!important;
+    transform:none!important;
+  }
+}
+
+/* 手機：棋鐘左右並排、控制列緊湊 */
+@media (max-width:699px){
+  #gameClockPanel{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 10px)!important;
+    margin:4px auto 0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:4px!important;
+    padding:4px!important;
+    background:var(--jg-control-bg)!important;
+    border:1px solid var(--jg-control-border)!important;
+    border-radius:10px!important;
+  }
+  #gameClockPanel .clock-side{
+    min-height:62px!important;
+    padding:5px 6px!important;
+  }
+  #gameClockPanel .clock-time{
+    font-size:23px!important;
+    line-height:1!important;
+  }
+  #gameClockPanel .clock-byo{
+    font-size:8px!important;
+  }
+
+  #joygoActionDock3310g{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 10px)!important;
+    margin:4px auto 0!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,1fr)!important;
+    gap:4px!important;
+    padding:4px!important;
+    background:var(--jg-control-bg)!important;
+    border:1px solid var(--jg-control-border)!important;
+    border-radius:10px!important;
+  }
+  #joygoActionDock3310g button{
+    min-height:38px!important;
+    font-size:13px!important;
+  }
+
+  #rightTools{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 10px)!important;
+    margin:4px auto 0!important;
+    transform:none!important;
+  }
+}
+
+/* 座標按鈕與必要操作不使用白色底 */
+#joygoActionDock3310g button,
+#rightTools button,
+#gameClockPanel button{
+  color:#fff!important;
 }
 </style>
 
@@ -10995,6 +11225,33 @@ document.addEventListener("click",(ev)=>{
       }
     }
   }catch(_){}
+})();
+</script>
+
+
+<script id="joygoBeta3311aRepair">
+(()=>{
+  function repair(){
+    const clock=document.getElementById("gameClockPanel");
+    if(clock){
+      clock.hidden=false;
+      clock.style.removeProperty("display");
+      clock.style.visibility="visible";
+      clock.style.opacity="1";
+    }
+    const dock=document.getElementById("joygoActionDock3310g");
+    if(dock){
+      dock.hidden=false;
+      dock.style.visibility="visible";
+      dock.style.opacity="1";
+    }
+  }
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",repair,{once:true});
+  }else repair();
+  addEventListener("pageshow",repair,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(repair,350),{passive:true});
+  addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
 })();
 </script>
 
