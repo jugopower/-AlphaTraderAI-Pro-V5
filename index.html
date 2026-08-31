@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11e">
+<meta name="joygo-stable-reset-version" content="3.3.11f">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -4967,6 +4967,119 @@ html[data-joygo-guidance="1"] #gameActionRow{
 }
 
 /* iPad 直式 / 手機：展開後自然往下，不浮在棋盤上 */
+@media (orientation:portrait), (max-width:699px){
+  .player{
+    overflow:visible!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3311fGameUiSlim">
+/* ==========================================================
+   Beta 3.3.11f｜對局介面精簡版
+   1. 落子確認移出棋盤
+   2. 主操作區再精簡
+   3. 更多對局預設收合
+   ========================================================== */
+
+/* 落子確認：不允許浮在棋盤上 */
+#confirmMoveToggle,
+#moveConfirmToggle,
+#landingConfirmToggle,
+#joygoConfirmMoveToggle{
+  position:static!important;
+  inset:auto!important;
+  right:auto!important;
+  left:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  float:none!important;
+  z-index:auto!important;
+  margin:6px 0 0!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+
+/* 主操作區：只保留最常用按鍵 */
+.player #gameActionRow{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+  margin-bottom:6px!important;
+}
+
+.player #gameActionRow > button{
+  min-height:40px!important;
+}
+
+/* 次要按鍵預設收起，避免右欄太長 */
+.player #gameActionRow > button#saveSgfBtn,
+.player #gameActionRow > button#fullscreenBtn,
+.player #gameActionRow > button#fullscreenBtn2{
+  display:none!important;
+}
+
+.player.jg-more-open #gameActionRow > button#saveSgfBtn,
+.player.jg-more-open #gameActionRow > button#fullscreenBtn,
+.player.jg-more-open #gameActionRow > button#fullscreenBtn2{
+  display:block!important;
+}
+
+/* 更多對局展開時才顯示落子確認 */
+.player #confirmMoveToggle,
+.player #moveConfirmToggle,
+.player #landingConfirmToggle,
+.player #joygoConfirmMoveToggle{
+  display:none!important;
+}
+
+.player.jg-more-open #confirmMoveToggle,
+.player.jg-more-open #moveConfirmToggle,
+.player.jg-more-open #landingConfirmToggle,
+.player.jg-more-open #joygoConfirmMoveToggle{
+  display:block!important;
+}
+
+/* 進階棋譜控制維持預設收合 */
+.player #moveTools,
+.player .controls,
+.player #trialModeBar{
+  display:none!important;
+}
+
+.player.jg-more-open #moveTools,
+.player.jg-more-open .controls,
+.player.jg-more-open #trialModeBar{
+  display:flex!important;
+}
+
+/* 更多對局按鈕固定簡潔 */
+#jgMoreGameToggle{
+  width:100%!important;
+  min-height:40px!important;
+  margin-top:6px!important;
+  border-radius:10px!important;
+  font-weight:900!important;
+}
+
+/* 棋鐘附註縮小一級，時間維持最大 */
+#gameClockPanel .clock-byo{
+  font-size:7.5px!important;
+  opacity:.78!important;
+}
+
+/* 橫式右欄：展開時只在右欄滾動 */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  .player{
+    max-height:calc(100vh - 248px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+}
+
+/* 直式/手機：自然往下延伸 */
 @media (orientation:portrait), (max-width:699px){
   .player{
     overflow:visible!important;
@@ -12063,6 +12176,69 @@ document.addEventListener("click",(ev)=>{
     if(p) p.classList.remove("jg-more-open");
     setTimeout(buildMoreToggle,300);
   },{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3311fGameUiSlimJS">
+(()=>{
+  function findConfirmBtn(){
+    return document.getElementById("confirmMoveToggle")
+      || document.getElementById("moveConfirmToggle")
+      || document.getElementById("landingConfirmToggle")
+      || document.getElementById("joygoConfirmMoveToggle");
+  }
+
+  function relocateConfirm(){
+    const player=document.querySelector(".player");
+    const btn=findConfirmBtn();
+    if(!player || !btn) return;
+
+    /* 搬到右側對局區，放在更多對局按鈕後面 */
+    const more=document.getElementById("jgMoreGameToggle");
+    if(more && more.parentNode===player){
+      more.insertAdjacentElement("afterend",btn);
+    }else if(btn.parentNode!==player){
+      player.appendChild(btn);
+    }
+
+    btn.style.removeProperty("position");
+    btn.style.removeProperty("right");
+    btn.style.removeProperty("bottom");
+    btn.style.removeProperty("top");
+    btn.style.removeProperty("left");
+    btn.style.removeProperty("transform");
+  }
+
+  function resetMore(){
+    const player=document.querySelector(".player");
+    const btn=document.getElementById("jgMoreGameToggle");
+    if(player) player.classList.remove("jg-more-open");
+    if(btn){
+      btn.textContent="更多對局 ▾";
+      btn.setAttribute("aria-expanded","false");
+    }
+  }
+
+  function boot(){
+    relocateConfirm();
+    resetMore();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",()=>setTimeout(boot,80),{passive:true});
+  addEventListener("orientationchange",()=>{
+    setTimeout(()=>{
+      relocateConfirm();
+      resetMore();
+    },350);
+  },{passive:true});
+
+  /* 部分棋局模式會晚建立落子確認按鈕，補抓一次 */
+  [400,900,1600].forEach(ms=>setTimeout(relocateConfirm,ms));
 })();
 </script>
 
