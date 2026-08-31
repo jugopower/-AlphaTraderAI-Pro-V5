@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11f">
+<meta name="joygo-stable-reset-version" content="3.3.11g">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5080,6 +5080,106 @@ html[data-joygo-guidance="1"] #gameActionRow{
 }
 
 /* 直式/手機：自然往下延伸 */
+@media (orientation:portrait), (max-width:699px){
+  .player{
+    overflow:visible!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3311gRightSlim">
+/* ==========================================================
+   Beta 3.3.11g｜右側功能精簡版
+   1. 主要操作常駐鍵再減少
+   2. 棋譜控制整區改成一鍵收合
+   3. 不改棋盤、棋鐘、平台功能核心
+   ========================================================== */
+
+/* 右側第一區改名：主要操作 */
+.player::before{
+  content:"主要操作";
+  display:block!important;
+  margin:0 0 7px!important;
+  color:#efc766!important;
+  font-size:13px!important;
+  font-weight:900!important;
+}
+
+/* 主操作常駐只留悔棋、試下、Pass、投降、正式數地、更多 */
+.player #gameActionRow{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+  margin-bottom:6px!important;
+}
+
+/* 次要功能預設隱藏 */
+.player #calculateResultBtn,
+.player #saveSgfBtn,
+.player #fullscreenBtn,
+.player #fullscreenBtn2{
+  display:none!important;
+}
+
+/* 更多對局展開後才出現次要功能 */
+.player.jg-more-open #calculateResultBtn,
+.player.jg-more-open #saveSgfBtn,
+.player.jg-more-open #fullscreenBtn,
+.player.jg-more-open #fullscreenBtn2{
+  display:block!important;
+}
+
+/* 棋譜控制整區預設收合 */
+.player #moveTools,
+.player .controls,
+.player #trialModeBar{
+  display:none!important;
+}
+
+.player.jg-record-open #moveTools,
+.player.jg-record-open .controls,
+.player.jg-record-open #trialModeBar{
+  display:flex!important;
+}
+
+/* 棋譜控制按鈕 */
+#jgRecordToggle{
+  width:100%!important;
+  min-height:38px!important;
+  margin-top:6px!important;
+  border:1px solid #7b6033!important;
+  border-radius:10px!important;
+  background:#14252a!important;
+  color:#f5d58c!important;
+  font-size:13px!important;
+  font-weight:900!important;
+}
+
+/* 更多對局按鈕 */
+#jgMoreGameToggle{
+  width:100%!important;
+  min-height:38px!important;
+  margin-top:6px!important;
+}
+
+/* 棋譜區展開後維持緊湊 */
+.player.jg-record-open #moveTools,
+.player.jg-record-open .controls{
+  flex-wrap:wrap!important;
+  gap:4px!important;
+}
+
+/* 橫式右欄內捲動，不蓋棋盤 */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  .player{
+    max-height:calc(100vh - 248px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+}
+
+/* 直式/手機自然往下延伸 */
 @media (orientation:portrait), (max-width:699px){
   .player{
     overflow:visible!important;
@@ -12239,6 +12339,73 @@ document.addEventListener("click",(ev)=>{
 
   /* 部分棋局模式會晚建立落子確認按鈕，補抓一次 */
   [400,900,1600].forEach(ms=>setTimeout(relocateConfirm,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3311gRightSlimJS">
+(()=>{
+  function buildRecordToggle(){
+    const player=document.querySelector(".player");
+    if(!player) return;
+
+    let btn=document.getElementById("jgRecordToggle");
+    if(!btn){
+      btn=document.createElement("button");
+      btn.id="jgRecordToggle";
+      btn.type="button";
+      btn.textContent="棋譜控制 ▾";
+      btn.setAttribute("aria-expanded","false");
+
+      const more=document.getElementById("jgMoreGameToggle");
+      if(more && more.parentNode===player){
+        more.insertAdjacentElement("afterend",btn);
+      }else{
+        player.appendChild(btn);
+      }
+    }
+
+    if(btn.dataset.wired!=="1"){
+      btn.dataset.wired="1";
+      const toggle=()=>{
+        const open=player.classList.toggle("jg-record-open");
+        btn.textContent=open ? "收合棋譜 ▴" : "棋譜控制 ▾";
+        btn.setAttribute("aria-expanded",open ? "true" : "false");
+      };
+      btn.addEventListener("click",toggle);
+      btn.addEventListener("touchend",e=>{
+        e.preventDefault();
+        toggle();
+      },{passive:false});
+    }
+  }
+
+  function reset(){
+    const player=document.querySelector(".player");
+    if(player){
+      player.classList.remove("jg-record-open");
+    }
+    const btn=document.getElementById("jgRecordToggle");
+    if(btn){
+      btn.textContent="棋譜控制 ▾";
+      btn.setAttribute("aria-expanded","false");
+    }
+  }
+
+  function boot(){
+    buildRecordToggle();
+    reset();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>{
+    reset();
+    setTimeout(buildRecordToggle,300);
+  },{passive:true});
 })();
 </script>
 
