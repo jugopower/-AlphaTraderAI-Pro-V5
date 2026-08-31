@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10z">
+<meta name="joygo-mobile-ui-version" content="3.3.10zb">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5779,6 +5779,197 @@ body:not(.jg-za-platform-open) #topbar{display:none!important;}
     grid-template-columns:repeat(2,1fr)!important;
   }
 }
+</style>
+
+
+<style id="joygoBeta3310zbLayoutCSS">
+/* Beta 3.3.10zb — iPad clean play layout
+   Goal: board and controls are adjacent, never separated by blank space; landscape uses a compact right rail. */
+
+/* Remove old floating/duplicate shells that caused overlap. */
+#joygoMoreShell3310,
+#rightTools,
+body > #jgXControlBar,
+body > #jgXMorePanel{display:none!important;}
+
+/* The game app should size to content, not reserve a full extra viewport. */
+@media (min-width:700px){
+  html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;}
+  .app{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    display:block!important;
+    padding:0!important;
+    margin:0!important;
+  }
+  .app>.left,.app>.right,.app>.player{display:none!important;}
+  .board-wrap{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:0!important;
+    max-height:none!important;
+    height:auto!important;
+    overflow:hidden!important;
+    contain:layout paint!important;
+  }
+}
+
+/* Portrait iPad: board, then clock+essential controls immediately underneath. */
+@media (min-width:700px) and (orientation:portrait){
+  .app{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+  .board-wrap{
+    width:calc(100vw - 28px)!important;
+    max-width:calc(100vw - 28px)!important;
+    aspect-ratio:1/1!important;
+    margin:0 auto!important;
+  }
+  #board{
+    width:100%!important;
+    height:100%!important;
+    max-width:100%!important;
+    max-height:100%!important;
+  }
+  #jgStableDock{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100vw - 28px)!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:8px auto 14px!important;
+    padding:8px!important;
+    border:1px solid #7a5d2c!important;
+    border-radius:14px!important;
+    background:#061719!important;
+    box-shadow:0 10px 24px #0006!important;
+  }
+  #jgStableDock #gameClockPanel{
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:6px!important;
+  }
+  #jgStableDock #gameClockPanel .clock-side{min-height:72px!important;padding:8px 12px!important;}
+  #jgStableDock #gameClockPanel .clock-time{font-size:30px!important;}
+  #jgStableDock #jgXControlBar{
+    grid-template-columns:repeat(6,1fr)!important;
+    gap:6px!important;
+    padding-top:7px!important;
+  }
+  #jgStableDock #jgXControlBar button{min-height:46px!important;font-size:15px!important;}
+  #jgStableDock #jgXMorePanel.open{
+    display:grid!important;
+    position:static!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding-top:8px!important;
+    grid-template-columns:repeat(3,1fr)!important;
+  }
+}
+
+/* Landscape iPad: board on left, one compact right rail; no floating panels over board. */
+@media (min-width:700px) and (orientation:landscape){
+  body{padding-right:324px!important;}
+  .app{
+    width:calc(100vw - 324px)!important;
+    max-width:calc(100vw - 324px)!important;
+    margin:0!important;
+  }
+  .board-wrap{
+    width:min(calc(100vw - 340px),calc(100dvh - 190px))!important;
+    height:min(calc(100vw - 340px),calc(100dvh - 190px))!important;
+    max-width:none!important;
+    max-height:none!important;
+    aspect-ratio:1/1!important;
+    margin:0 auto!important;
+  }
+  #board{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;}
+  #jgStableDock{
+    position:fixed!important;
+    right:12px!important;
+    top:178px!important;
+    bottom:auto!important;
+    left:auto!important;
+    width:300px!important;
+    max-width:300px!important;
+    max-height:calc(100dvh - 190px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    margin:0!important;
+    padding:8px!important;
+    border:1px solid #7a5d2c!important;
+    border-radius:14px!important;
+    background:#061719!important;
+    box-shadow:0 10px 28px #0008!important;
+    z-index:9000!important;
+  }
+  #jgStableDock #gameClockPanel{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    padding:6px!important;
+  }
+  #jgStableDock #gameClockPanel .clock-side{min-height:70px!important;padding:7px 8px!important;}
+  #jgStableDock #gameClockPanel .clock-time{font-size:26px!important;white-space:nowrap!important;}
+  #jgStableDock #gameClockPanel .clock-byo{font-size:8px!important;white-space:nowrap!important;}
+  #jgStableDock #jgXControlBar{
+    grid-template-columns:repeat(3,1fr)!important;
+    gap:6px!important;
+    padding-top:7px!important;
+  }
+  #jgStableDock #jgXControlBar button{min-height:44px!important;font-size:14px!important;}
+  #jgStableDock #jgXMorePanel.open{
+    display:grid!important;
+    position:static!important;
+    inset:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    margin:0!important;
+    padding-top:8px!important;
+  }
+  #topbar{
+    right:324px!important;
+    left:auto!important;
+    top:178px!important;
+    width:min(610px,calc(100vw - 650px))!important;
+    max-height:calc(100dvh - 190px)!important;
+  }
+}
+
+/* Move-confirm status belongs to the control rail instead of floating over the board. */
+@media (min-width:700px){
+  #moveConfirmToggleWrap{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:flex!important;
+    justify-content:flex-end!important;
+    width:100%!important;
+    margin:6px 0 0!important;
+    z-index:auto!important;
+    pointer-events:auto!important;
+  }
+  #moveConfirmToggleBtn{
+    position:static!important;
+    transform:none!important;
+    margin:0!important;
+    min-height:38px!important;
+    font-size:13px!important;
+  }
+}
+
+/* Platform menu remains a separate overlay; close button always visible. */
+body.jg-za-platform-open #topbar{display:grid!important;z-index:99000!important;}
 </style>
 
 </head>
@@ -13057,6 +13248,34 @@ document.addEventListener("click",(ev)=>{
   },{passive:true});
   addEventListener("resize",()=>setTimeout(buildDock,180),{passive:true});
   [200,700,1500,2600].forEach(ms=>setTimeout(buildDock,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3310zbDockRepairJS">
+(()=>{
+  const $=id=>document.getElementById(id);
+  function placeConfirm(){
+    const dock=$("jgStableDock"), wrap=$("moveConfirmToggleWrap");
+    if(dock&&wrap&&wrap.parentNode!==dock) dock.appendChild(wrap);
+  }
+  function closeTransientOnRotate(){
+    const more=$("jgXMorePanel"); if(more) more.classList.remove("open");
+    document.body.classList.remove("jg-za-platform-open");
+    const b=$("jgXPlatform"); if(b) b.textContent="平台";
+  }
+  function repair(){
+    placeConfirm();
+    const dock=$("jgStableDock");
+    if(dock){
+      dock.style.removeProperty("left");
+      dock.style.removeProperty("transform");
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",repair,{once:true}); else repair();
+  addEventListener("pageshow",()=>setTimeout(repair,80),{passive:true});
+  addEventListener("orientationchange",()=>{closeTransientOnRotate();setTimeout(repair,450);setTimeout(repair,900);},{passive:true});
+  addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
 })();
 </script>
 
