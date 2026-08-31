@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11a">
+<meta name="joygo-stable-reset-version" content="3.3.11b">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -4325,6 +4325,165 @@ html[data-joygo-guidance="1"] #gameActionRow{
 #rightTools button,
 #gameClockPanel button{
   color:#fff!important;
+}
+</style>
+
+
+<style id="joygoBeta3311bFix">
+/* ==========================================================
+   Beta 3.3.11b
+   1. 手機黑白棋鐘強制左右並排
+   2. 「返回平台」改成「平台功能」，不再跳回入口
+   3. 平台功能選單固定在右側控制區，不跑到左上角
+   ========================================================== */
+
+/* 入口退出鈕容易誤按，對局畫面先隱藏 */
+#joygoBetaExit{
+  display:none!important;
+}
+
+/* 棋鐘：聲音圖示不佔 grid 欄位 */
+#gameClockPanel{
+  position:relative!important;
+}
+#gameClockPanel #blackClockBox{
+  grid-column:1!important;
+  grid-row:1!important;
+}
+#gameClockPanel #whiteClockBox{
+  grid-column:2!important;
+  grid-row:1!important;
+}
+#gameClockPanel #clockSoundIcon{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  z-index:3!important;
+  pointer-events:none!important;
+  margin:0!important;
+}
+
+/* 手機直式：黑白棋鐘真正左右並排 */
+@media (max-width:700px), (orientation:portrait) and (max-width:900px){
+  #gameClockPanel{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:auto!important;
+    align-items:stretch!important;
+    gap:5px!important;
+    width:calc(100% - 10px)!important;
+  }
+  #gameClockPanel .clock-side{
+    width:100%!important;
+    min-width:0!important;
+    min-height:72px!important;
+    display:grid!important;
+    grid-template-columns:auto 1fr!important;
+    grid-template-areas:
+      "stone name"
+      "stone time"
+      "byo byo"!important;
+    align-items:center!important;
+    padding:6px 8px!important;
+  }
+  #gameClockPanel .clock-stone{grid-area:stone!important;}
+  #gameClockPanel .clock-name{
+    grid-area:name!important;
+    font-size:12px!important;
+    line-height:1.1!important;
+  }
+  #gameClockPanel .clock-time{
+    grid-area:time!important;
+    font-size:27px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  #gameClockPanel .clock-byo{
+    grid-area:byo!important;
+    font-size:9px!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #gameClockPanel #clockSoundIcon{
+    font-size:16px!important;
+  }
+}
+
+/* 橫式：平台功能改成右側抽屜，不再出現在左上角 */
+@media (orientation:landscape) and (min-width:901px){
+  #landscapeBackPlatformBtn{
+    display:block!important;
+  }
+
+  body.landscape-platform-menu .topbar{
+    display:grid!important;
+    position:fixed!important;
+    z-index:70000!important;
+    top:58px!important;
+    right:12px!important;
+    left:auto!important;
+    width:330px!important;
+    max-height:calc(100vh - 78px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:8px!important;
+    border:1px solid #8f642e!important;
+    border-radius:16px!important;
+    background:linear-gradient(180deg,#21150e,#100b08)!important;
+    box-shadow:0 12px 30px #000c!important;
+  }
+
+  body.landscape-platform-menu .topbar .tool{
+    min-width:0!important;
+    min-height:58px!important;
+  }
+
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    display:block!important;
+    position:fixed!important;
+    z-index:70001!important;
+    top:66px!important;
+    right:20px!important;
+    min-width:92px!important;
+    height:34px!important;
+  }
+
+  body.landscape-platform-menu::before{
+    display:none!important;
+  }
+}
+
+/* 手機/直式平台功能：右側/上方抽屜，不遮整個棋盤 */
+@media (orientation:portrait), (max-width:900px){
+  body.landscape-platform-menu .topbar,
+  body.jg-mobile-platform-menu .topbar{
+    display:grid!important;
+    position:fixed!important;
+    z-index:70000!important;
+    top:max(54px,env(safe-area-inset-top))!important;
+    right:8px!important;
+    left:auto!important;
+    width:min(330px,92vw)!important;
+    max-height:62vh!important;
+    overflow:auto!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:8px!important;
+    border:1px solid #8f642e!important;
+    border-radius:14px!important;
+    background:linear-gradient(180deg,#21150e,#100b08)!important;
+    box-shadow:0 12px 30px #000c!important;
+  }
+}
+
+/* 手機左上按鈕改成「平台功能」，不再回入口 */
+#joygoMobileReturn339a{
+  white-space:nowrap!important;
 }
 </style>
 
@@ -11252,6 +11411,87 @@ document.addEventListener("click",(ev)=>{
   addEventListener("pageshow",repair,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(repair,350),{passive:true});
   addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3311bPlatformFix">
+(()=>{
+  const $=id=>document.getElementById(id);
+
+  function openPlatformMenu(){
+    document.body.classList.add("landscape-platform-menu");
+    document.body.classList.add("jg-mobile-platform-menu");
+    const c=$("landscapePlatformCloseBtn");
+    c?.focus?.();
+  }
+
+  function closePlatformMenu(){
+    document.body.classList.remove("landscape-platform-menu");
+    document.body.classList.remove("jg-mobile-platform-menu");
+  }
+
+  function wire(){
+    const back=$("landscapeBackPlatformBtn");
+    if(back){
+      back.textContent="☰ 平台功能";
+      if(back.dataset.jg3311b!=="1"){
+        const nb=back.cloneNode(true);
+        back.replaceWith(nb);
+        nb.dataset.jg3311b="1";
+        nb.addEventListener("click",openPlatformMenu);
+      }
+    }
+
+    const mobile=$("joygoMobileReturn339a");
+    if(mobile){
+      mobile.textContent="☰ 平台功能";
+      mobile.setAttribute("aria-label","平台功能");
+      if(mobile.dataset.jg3311b!=="1"){
+        const nb=mobile.cloneNode(true);
+        mobile.replaceWith(nb);
+        nb.dataset.jg3311b="1";
+        nb.addEventListener("click",e=>{
+          e.preventDefault();
+          e.stopPropagation();
+          openPlatformMenu();
+        });
+      }
+    }
+
+    const close=$("landscapePlatformCloseBtn");
+    if(close){
+      close.textContent="✕ 收合";
+      if(close.dataset.jg3311b!=="1"){
+        const nb=close.cloneNode(true);
+        close.replaceWith(nb);
+        nb.dataset.jg3311b="1";
+        nb.addEventListener("click",closePlatformMenu);
+      }
+    }
+
+    /* 管理/會員等平台功能按下後自動收合 */
+    const top=$("topbar");
+    if(top && top.dataset.jg3311b!=="1"){
+      top.dataset.jg3311b="1";
+      top.addEventListener("click",e=>{
+        if(e.target.closest(".tool")) setTimeout(closePlatformMenu,120);
+      });
+    }
+
+    const exit=$("joygoBetaExit");
+    if(exit) exit.hidden=true;
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",wire,{once:true});
+  }else wire();
+
+  addEventListener("pageshow",wire,{passive:true});
+  addEventListener("orientationchange",()=>{
+    closePlatformMenu();
+    setTimeout(wire,350);
+  },{passive:true});
 })();
 </script>
 
