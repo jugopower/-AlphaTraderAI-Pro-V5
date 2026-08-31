@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11b">
+<meta name="joygo-stable-reset-version" content="3.3.11d">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -4484,6 +4484,391 @@ html[data-joygo-guidance="1"] #gameActionRow{
 /* 手機左上按鈕改成「平台功能」，不再回入口 */
 #joygoMobileReturn339a{
   white-space:nowrap!important;
+}
+</style>
+
+
+<style id="joygoBeta3311cLandscapePolish">
+/* ==========================================================
+   Beta 3.3.11c
+   只修兩件事：
+   1. iPad 橫式棋鐘被切斷
+   2. 橫式平台功能「收合」按鈕遮住功能鍵
+   ========================================================== */
+
+@media (orientation:landscape) and (min-width:901px){
+
+  /* 右側棋鐘給更多寬度，避免白方時間被切掉 */
+  #gameClockPanel{
+    width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    padding:8px 6px!important;
+  }
+
+  #gameClockPanel .clock-side{
+    min-width:0!important;
+    padding:7px 6px!important;
+  }
+
+  #gameClockPanel .clock-time{
+    font-size:26px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    letter-spacing:-0.5px!important;
+  }
+
+  #gameClockPanel .clock-name{
+    font-size:12px!important;
+    white-space:nowrap!important;
+  }
+
+  #gameClockPanel .clock-byo{
+    font-size:8px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  /* 平台功能抽屜頂端留出空間給收合鈕 */
+  body.landscape-platform-menu .topbar{
+    padding-top:54px!important;
+  }
+
+  /* 收合鈕移到抽屜右上角，不再壓到第一排功能鍵 */
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    top:66px!important;
+    right:20px!important;
+    left:auto!important;
+    min-width:94px!important;
+    height:34px!important;
+    padding:0 14px!important;
+    border-radius:18px!important;
+    z-index:70005!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3311dInterfaceCleanup">
+/* ==========================================================
+   Beta 3.3.11d｜介面整理版
+   只做：
+   1. 橫式右側控制區分層
+   2. 「更多對局」與「平台功能」分家
+   3. 直式控制區縮短
+   不改棋盤、會員、管理、比賽、Supabase、KataGo 核心
+   ========================================================== */
+
+/* ---------- 共通視覺 ---------- */
+#rightTools,
+.player{
+  box-sizing:border-box!important;
+}
+
+#rightTools{
+  background:#071719f7!important;
+  border:1px solid #72582f!important;
+  border-radius:14px!important;
+  box-shadow:0 10px 28px #0007!important;
+}
+
+.player{
+  background:#071719f7!important;
+  border:1px solid #72582f!important;
+  border-radius:14px!important;
+  box-shadow:0 10px 28px #0007!important;
+}
+
+/* 平台按鈕明確命名 */
+#landscapeBackPlatformBtn,
+#joygoMobileReturn339a{
+  font-weight:900!important;
+}
+
+/* ---------- iPad 橫式：棋盤左；右側三層 ---------- */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+
+  .app{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 276px!important;
+    grid-template-rows:auto auto 1fr!important;
+    gap:8px 10px!important;
+    align-items:start!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+
+  .board-wrap{
+    grid-column:1!important;
+    grid-row:1 / span 3!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  /* 第一層：棋鐘 */
+  #rightTools{
+    grid-column:2!important;
+    grid-row:1!important;
+    position:static!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:8px!important;
+    transform:none!important;
+    overflow:visible!important;
+  }
+
+  #gameClockPanel{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:5px!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:5px!important;
+    overflow:visible!important;
+  }
+
+  #gameClockPanel .clock-side{
+    min-width:0!important;
+    min-height:72px!important;
+    padding:6px!important;
+  }
+
+  #gameClockPanel .clock-time{
+    font-size:25px!important;
+    line-height:1!important;
+    letter-spacing:-.7px!important;
+    white-space:nowrap!important;
+  }
+
+  #gameClockPanel .clock-name{
+    font-size:11px!important;
+    white-space:nowrap!important;
+  }
+
+  #gameClockPanel .clock-byo{
+    font-size:8px!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  /* 不讓重繪/AI推薦把右欄撐亂 */
+  #rightTools > #redrawBtn,
+  #rightTools > #aiHintPanel{
+    display:none!important;
+  }
+
+  /* 第二、三層：平台入口 + 對局功能 */
+  .player{
+    grid-column:2!important;
+    grid-row:2!important;
+    position:static!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(100vh - 260px)!important;
+    margin:0!important;
+    padding:8px!important;
+    overflow:auto!important;
+    display:block!important;
+  }
+
+  .player::before{
+    content:"對局功能";
+    display:block!important;
+    margin:0 0 7px!important;
+    color:#efc766!important;
+    font-size:13px!important;
+    font-weight:900!important;
+    letter-spacing:.5px!important;
+  }
+
+  /* 棋譜前後控制與指定手數保持可用，但縮成輔助區 */
+  .player #moveTools{
+    gap:4px!important;
+    margin-bottom:5px!important;
+  }
+
+  .player .controls{
+    gap:4px!important;
+    margin-bottom:6px!important;
+  }
+
+  /* 主要對局按鍵兩欄，清楚不擁擠 */
+  .player #gameActionRow{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    margin:0!important;
+  }
+
+  .player #gameActionRow > button{
+    min-height:40px!important;
+    padding:6px 5px!important;
+    font-size:13px!important;
+    border-radius:9px!important;
+  }
+
+  /* AI細項預設保持原邏輯，不強迫展開 */
+  #trialModeBar{
+    margin-top:6px!important;
+  }
+
+  /* 平台功能入口固定在右欄，不與對局按鍵混在一起 */
+  #landscapeBackPlatformBtn{
+    position:static!important;
+    width:100%!important;
+    min-height:40px!important;
+    margin:0 0 8px!important;
+    display:block!important;
+    border-radius:10px!important;
+    background:#2b1a10!important;
+    border:1px solid #9a6d32!important;
+    color:#fff1ce!important;
+  }
+
+  /* 平台抽屜仍是獨立功能區 */
+  body.landscape-platform-menu .topbar{
+    right:294px!important;
+    width:320px!important;
+    padding-top:48px!important;
+  }
+
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    right:306px!important;
+    top:66px!important;
+  }
+}
+
+/* ---------- iPad 直式：棋盤後立即接緊湊控制區 ---------- */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+
+  .board-wrap{
+    margin-bottom:2px!important;
+  }
+
+  #rightTools{
+    width:calc(100% - 20px)!important;
+    margin:3px auto 0!important;
+    padding:5px!important;
+  }
+
+  #gameClockPanel{
+    min-height:0!important;
+    padding:4px!important;
+    gap:5px!important;
+  }
+
+  #gameClockPanel .clock-side{
+    min-height:64px!important;
+    padding:5px 7px!important;
+  }
+
+  #gameClockPanel .clock-time{
+    font-size:26px!important;
+  }
+
+  #gameClockPanel .clock-byo{
+    font-size:8px!important;
+  }
+
+  #rightTools > #redrawBtn,
+  #rightTools > #aiHintPanel{
+    display:none!important;
+  }
+
+  .player{
+    width:calc(100% - 20px)!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:4px auto 10px!important;
+    padding:5px!important;
+    overflow:visible!important;
+  }
+
+  .player #moveTools{
+    min-height:0!important;
+    gap:4px!important;
+    margin-bottom:4px!important;
+  }
+
+  .player .controls{
+    min-height:0!important;
+    gap:4px!important;
+    margin-bottom:4px!important;
+  }
+
+  .player #gameActionRow{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:4px!important;
+  }
+
+  .player #gameActionRow > button{
+    min-height:36px!important;
+    padding:4px!important;
+    font-size:12px!important;
+    border-radius:8px!important;
+  }
+}
+
+/* ---------- 手機：維持左右棋鐘，控制區更短 ---------- */
+@media (max-width:699px){
+
+  #rightTools{
+    width:calc(100% - 8px)!important;
+    margin:3px auto 0!important;
+    padding:4px!important;
+  }
+
+  #gameClockPanel{
+    gap:3px!important;
+    padding:3px!important;
+  }
+
+  #gameClockPanel .clock-side{
+    min-height:58px!important;
+    padding:4px 5px!important;
+  }
+
+  #gameClockPanel .clock-time{
+    font-size:22px!important;
+  }
+
+  #gameClockPanel .clock-byo{
+    font-size:7.5px!important;
+  }
+
+  #rightTools > #redrawBtn,
+  #rightTools > #aiHintPanel{
+    display:none!important;
+  }
+
+  .player{
+    width:calc(100% - 8px)!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:3px auto 8px!important;
+    padding:4px!important;
+  }
+
+  .player #gameActionRow{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:3px!important;
+  }
+
+  .player #gameActionRow > button{
+    min-height:34px!important;
+    padding:3px!important;
+    font-size:11.5px!important;
+  }
 }
 </style>
 
@@ -11492,6 +11877,33 @@ document.addEventListener("click",(ev)=>{
     closePlatformMenu();
     setTimeout(wire,350);
   },{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3311dLabels">
+(()=>{
+  function tidyLabels(){
+    const p=document.getElementById("landscapeBackPlatformBtn");
+    if(p) p.textContent="☰ 平台功能";
+
+    const m=document.getElementById("joygoMobileReturn339a");
+    if(m) m.textContent="☰ 平台功能";
+
+    /* 對局功能維持原按鍵，不改事件，只整理名稱 */
+    const ai=document.getElementById("mobileAiToggle339");
+    if(ai && /AI 教學工具/.test(ai.textContent||"")){
+      ai.textContent="更多對局 ▾";
+      ai.setAttribute("aria-label","更多對局功能");
+    }
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",tidyLabels,{once:true});
+  }else tidyLabels();
+
+  addEventListener("pageshow",tidyLabels,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(tidyLabels,300),{passive:true});
 })();
 </script>
 
