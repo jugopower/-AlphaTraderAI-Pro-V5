@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10y">
+<meta name="joygo-mobile-ui-version" content="3.3.10z">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -5391,6 +5391,172 @@ body{
     left:50%!important;
     right:auto!important;
     transform:translateX(-50%)!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3310zClockPlayFix">
+/* ==========================================================
+   Beta 3.3.10z｜棋鐘＋可下棋修正版
+   目標：棋鐘永遠可見、平台預設收合、功能不壓棋盤。
+   ========================================================== */
+
+/* 舊的「更多功能」白色按鈕與重複入口先隱藏 */
+#joygoMoreShell3310{display:none!important;}
+
+/* 平台功能預設收合；只由「平台」按鈕切換 */
+#topbar{
+  display:none!important;
+  position:fixed!important;
+  z-index:98700!important;
+  background:#071719fa!important;
+  border:1px solid #8b6a2f!important;
+  border-radius:16px!important;
+  box-shadow:0 18px 55px #000b!important;
+  padding:8px!important;
+}
+body.jg-z-platform-open #topbar{
+  display:grid!important;
+}
+
+/* 棋鐘強制顯示 */
+#gameClockPanel{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  z-index:98650!important;
+  box-sizing:border-box!important;
+  background:#071719f8!important;
+  border:1px solid #84682f!important;
+  border-radius:14px!important;
+  box-shadow:0 12px 34px #0009!important;
+}
+#gameClockPanel .clock-time{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+#gameClockPanel .clock-name,
+#gameClockPanel .clock-byo{
+  color:#dfe7e8!important;
+  -webkit-text-fill-color:#dfe7e8!important;
+}
+
+/* iPad 橫式：右側棋鐘 + 必備鍵，棋盤保留左邊 */
+@media(min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  body:not(.guidance-embed-mode) .app{
+    grid-template-columns:minmax(0,1fr) 255px!important;
+    column-gap:8px!important;
+  }
+  .board-wrap{
+    min-width:0!important;
+    width:auto!important;
+  }
+  #gameClockPanel{
+    position:fixed!important;
+    top:calc(env(safe-area-inset-top,0px) + 230px)!important;
+    right:8px!important;
+    width:247px!important;
+    height:auto!important;
+    margin:0!important;
+    padding:8px!important;
+    grid-template-columns:1fr!important;
+    gap:6px!important;
+    transform:none!important;
+  }
+  #gameClockPanel .clock-side{
+    min-height:78px!important;
+    padding:8px 10px!important;
+  }
+  #gameClockPanel .clock-time{
+    font-size:30px!important;
+    line-height:1!important;
+  }
+
+  #jgXControlBar{
+    position:fixed!important;
+    top:calc(env(safe-area-inset-top,0px) + 455px)!important;
+    right:8px!important;
+    width:247px!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    z-index:98680!important;
+  }
+
+  #topbar{
+    right:265px!important;
+    top:calc(env(safe-area-inset-top,0px) + 230px)!important;
+    width:min(610px,calc(100vw - 540px))!important;
+    max-height:68vh!important;
+    overflow:auto!important;
+    grid-template-columns:repeat(3,1fr)!important;
+  }
+}
+
+/* iPad 直式：棋鐘放棋盤下方，左右各一；按鍵再下一排 */
+@media(min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  #gameClockPanel{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:calc(100% - 24px)!important;
+    margin:8px auto 0!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:8px!important;
+  }
+  #gameClockPanel .clock-side{
+    min-height:86px!important;
+  }
+  #gameClockPanel .clock-time{
+    font-size:31px!important;
+  }
+  #jgXControlBar{
+    width:calc(100% - 24px)!important;
+    margin:8px auto 12px!important;
+    grid-template-columns:repeat(3,1fr)!important;
+  }
+  #topbar{
+    left:12px!important;
+    right:12px!important;
+    top:160px!important;
+    width:auto!important;
+    max-height:60vh!important;
+    overflow:auto!important;
+    grid-template-columns:repeat(3,1fr)!important;
+  }
+}
+
+/* 手機：棋鐘左右各一，緊湊；按鍵固定可見 */
+@media(max-width:699px){
+  #gameClockPanel{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:calc(100% - 10px)!important;
+    margin:5px auto 0!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:4px!important;
+    padding:5px!important;
+  }
+  #gameClockPanel .clock-side{
+    min-height:68px!important;
+    padding:5px 7px!important;
+  }
+  #gameClockPanel .clock-time{
+    font-size:26px!important;
+  }
+  #gameClockPanel .clock-byo{
+    font-size:9px!important;
+  }
+  #topbar{
+    left:5px!important;
+    right:5px!important;
+    top:130px!important;
+    width:auto!important;
+    max-height:65vh!important;
+    overflow:auto!important;
+    grid-template-columns:repeat(2,1fr)!important;
   }
 }
 </style>
@@ -12490,6 +12656,89 @@ document.addEventListener("click",(ev)=>{
   addEventListener("resize",()=>setTimeout(repair,250),{passive:true});
 
   [500,1200,2400].forEach(t=>setTimeout(repair,t));
+})();
+</script>
+
+
+<script id="joygoBeta3310zClockPlayManager">
+(()=>{
+  const $=id=>document.getElementById(id);
+
+  function closePlatform(){
+    document.body.classList.remove("jg-z-platform-open");
+    const t=$("topbar");
+    if(t) t.style.removeProperty("display");
+    const p=$("jgXPlatform");
+    if(p) p.textContent="平台";
+  }
+
+  function togglePlatform(){
+    document.body.classList.toggle("jg-z-platform-open");
+    const p=$("jgXPlatform");
+    if(p) p.textContent=document.body.classList.contains("jg-z-platform-open")?"收合平台":"平台";
+  }
+
+  function repairClock(){
+    const c=$("gameClockPanel");
+    if(!c) return;
+    c.hidden=false;
+    c.style.setProperty("display","grid","important");
+    c.style.setProperty("visibility","visible","important");
+    c.style.setProperty("opacity","1","important");
+  }
+
+  function repairPlayButtons(){
+    ["passGameBtn","resignGameBtn","undoGameBtn","coordToggleBtn",
+     "scoreGameBtn","calculateResultBtn","saveSgfBtn"].forEach(id=>{
+      const el=$(id);
+      if(el){
+        el.disabled=false;
+        el.style.pointerEvents="auto";
+      }
+    });
+  }
+
+  function wirePlatform(){
+    const b=$("jgXPlatform");
+    if(!b || b.dataset.zwired==="1") return;
+    b.dataset.zwired="1";
+
+    /* 移除舊 x 版平台按鈕的 click 行為，改用 clone 避免事件疊加 */
+    const clone=b.cloneNode(true);
+    b.replaceWith(clone);
+    clone.textContent="平台";
+    clone.addEventListener("click",togglePlatform);
+    clone.addEventListener("touchend",e=>{
+      e.preventDefault();
+      togglePlatform();
+    },{passive:false});
+  }
+
+  function ensure(){
+    repairClock();
+    repairPlayButtons();
+    wirePlatform();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",()=>{
+      closePlatform();
+      ensure();
+    },{once:true});
+  }else{
+    closePlatform();
+    ensure();
+  }
+
+  addEventListener("pageshow",()=>{closePlatform();ensure();},{passive:true});
+  addEventListener("orientationchange",()=>{
+    closePlatform();
+    setTimeout(ensure,500);
+    setTimeout(ensure,1000);
+  },{passive:true});
+  addEventListener("resize",()=>setTimeout(ensure,220),{passive:true});
+
+  [300,900,1800].forEach(ms=>setTimeout(ensure,ms));
 })();
 </script>
 
