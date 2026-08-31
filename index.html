@@ -30,7 +30,7 @@
 <meta name="joygo-move-confirm-version" content="3.3.5b">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
-<meta name="joygo-mobile-ui-version" content="3.3.10x-hotfix1">
+<meta name="joygo-mobile-ui-version" content="3.3.10aa-responsive-unified">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -12747,6 +12747,302 @@ body.joygo-platform-open3310g #jgZPlatformClose{
   addEventListener('orientationchange',()=>setTimeout(repair,500),{passive:true});
   addEventListener('resize',()=>setTimeout(repair,200),{passive:true});
   [500,1200,2400].forEach(t=>setTimeout(repair,t));
+})();
+</script>
+
+
+<!-- ==========================================================
+     Beta 3.3.10aa｜手機 + iPad 統一對局版面
+     目的：棋盤優先、棋鐘不重疊、六個必要鍵固定、更多/平台可收合
+     ========================================================== -->
+<style id="joygoBeta3310aaUnifiedResponsiveCSS">
+/* 最後覆蓋層：只處理對局 RWD，不改棋局邏輯 */
+@media (max-width:699px){
+  html,body{overflow-x:hidden!important;overflow-y:auto!important;height:auto!important;min-height:100%!important}
+  body{padding-bottom:calc(10px + env(safe-area-inset-bottom))!important}
+
+  /* 手機不要沿用舊的多列 grid 高度，避免棋盤下方出現大片空白 */
+  body:not(.guidance-embed-mode) .app{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    padding:52px 4px 0!important;
+    margin:0!important;
+  }
+  .left,#rightTools,.player,#joygoMoreShell3310{display:none!important}
+  #topbar{display:none!important}
+
+  .board-wrap{
+    display:flex!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    padding:0!important;
+    margin:0 auto!important;
+    border-radius:12px!important;
+    overflow:hidden!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+  }
+  #board{
+    display:block!important;
+    width:min(98vw,calc(100dvh - 285px))!important;
+    height:auto!important;
+    max-width:98vw!important;
+    max-height:none!important;
+    aspect-ratio:1/1!important;
+    margin:0 auto!important;
+  }
+
+  /* 棋鐘：黑左白右，各自獨立，禁止文字互壓 */
+  #jgXClockDock{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 8px)!important;
+    margin:6px auto 0!important;
+    padding:0!important;
+    display:block!important;
+  }
+  #jgXClockDock #gameClockPanel{
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:5px!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:5px!important;
+    overflow:hidden!important;
+  }
+  #jgXClockDock .clock-side{
+    min-width:0!important;
+    min-height:70px!important;
+    display:grid!important;
+    grid-template-columns:22px minmax(0,1fr)!important;
+    grid-template-areas:"stone name" "stone time" "byo byo"!important;
+    column-gap:6px!important;
+    row-gap:1px!important;
+    align-items:center!important;
+    padding:5px 6px!important;
+    overflow:hidden!important;
+  }
+  #jgXClockDock .clock-stone{grid-area:stone!important;width:20px!important;height:20px!important;margin:0!important}
+  #jgXClockDock .clock-name{grid-area:name!important;font-size:11px!important;line-height:1!important;white-space:nowrap!important}
+  #jgXClockDock .clock-time{grid-area:time!important;font-size:clamp(24px,7.5vw,31px)!important;line-height:1!important;letter-spacing:0!important;white-space:nowrap!important;overflow:visible!important}
+  #jgXClockDock .clock-byo{grid-area:byo!important;font-size:8px!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important}
+  #jgXClockDock #clockSoundIcon{display:none!important}
+
+  /* 必備功能固定 2 x 3；手機永遠可操作 */
+  #jgXControlBar{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 8px)!important;
+    margin:6px auto 8px!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:6px!important;
+  }
+  #jgXControlBar button{
+    width:100%!important;
+    min-width:0!important;
+    min-height:44px!important;
+    height:44px!important;
+    font-size:15px!important;
+    padding:4px 6px!important;
+  }
+  #jgXCoord,#jgXPlatform{grid-column:auto!important}
+
+  /* 更多功能採底部面板，不推動棋盤、不與人機設定疊在一起 */
+  #jgXMorePanel{
+    position:fixed!important;
+    left:6px!important;right:6px!important;
+    top:auto!important;
+    bottom:calc(6px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-height:min(62dvh,520px)!important;
+    transform:none!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    overflow-y:auto!important;
+    padding:9px!important;
+  }
+  #jgXMorePanel button{min-width:0!important;min-height:46px!important;font-size:15px!important}
+  #jgXMorePanel .jg-x-head{position:sticky!important;top:0!important;background:#071719fa!important;padding-bottom:4px!important;z-index:2!important}
+
+  /* 平台功能：手機用全寬浮層，不和更多功能同時顯示 */
+  body.joygo-platform-open3310g #topbar{
+    display:grid!important;
+    position:fixed!important;
+    z-index:98880!important;
+    left:6px!important;right:6px!important;top:calc(66px + env(safe-area-inset-top))!important;bottom:auto!important;
+    width:auto!important;
+    max-height:70dvh!important;
+    overflow-y:auto!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:8px!important;
+    background:#071719f8!important;
+    border:1px solid #8b6a2f!important;
+    border-radius:14px!important;
+  }
+  body.joygo-platform-open3310g #topbar > *{min-width:0!important;min-height:50px!important}
+  #jgZPlatformClose{top:calc(14px + env(safe-area-inset-top))!important;left:8px!important;right:auto!important}
+
+  /* 對局彈窗使用手機可視高度，不讓更多面板壓在上面 */
+  .modal-backdrop{padding:8px!important;z-index:99050!important}
+  .modal{width:100%!important;max-width:100%!important;max-height:calc(100dvh - 16px)!important;border-radius:14px!important;padding:13px!important}
+  .grid2{grid-template-columns:1fr 1fr!important;gap:8px!important}
+}
+
+/* 小手機額外保護：仍以可下棋為優先 */
+@media (max-width:420px) and (orientation:portrait){
+  body:not(.guidance-embed-mode) .app{padding-top:48px!important}
+  #board{width:98vw!important;max-width:98vw!important}
+  #jgXClockDock .clock-time{font-size:clamp(22px,7.2vw,29px)!important}
+  #jgXClockDock .clock-byo{font-size:7.5px!important}
+}
+
+/* iPad 直式：棋盤最大化，但保留完整棋鐘與 6 個必要鍵 */
+@media (min-width:700px) and (max-width:1199px) and (orientation:portrait){
+  html,body{overflow-x:hidden!important;overflow-y:auto!important}
+  body:not(.guidance-embed-mode) .app{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    padding:58px 8px 0!important;
+  }
+  .left,#rightTools,.player,#joygoMoreShell3310{display:none!important}
+  #topbar{display:none!important}
+  .board-wrap{
+    display:flex!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+    padding:0!important;margin:0 auto!important;align-items:flex-start!important;justify-content:center!important;overflow:hidden!important;
+  }
+  #board{
+    width:min(94vw,calc(100dvh - 290px))!important;
+    max-width:94vw!important;max-height:none!important;height:auto!important;aspect-ratio:1/1!important;margin:0 auto!important;
+  }
+  #jgXClockDock{
+    position:relative!important;inset:auto!important;width:min(94vw,900px)!important;margin:7px auto 0!important;display:block!important;
+  }
+  #jgXClockDock #gameClockPanel{grid-template-columns:1fr 1fr!important;gap:8px!important;padding:7px!important}
+  #jgXClockDock #clockSoundIcon{display:none!important}
+  #jgXClockDock .clock-side{min-height:78px!important;min-width:0!important}
+  #jgXClockDock .clock-time{font-size:32px!important;white-space:nowrap!important}
+  #jgXControlBar{
+    position:relative!important;inset:auto!important;width:min(94vw,900px)!important;margin:7px auto 12px!important;
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;padding:7px!important;
+  }
+  #jgXControlBar button{min-width:0!important;min-height:46px!important;font-size:14px!important}
+  #jgXMorePanel{
+    position:fixed!important;left:50%!important;right:auto!important;bottom:12px!important;top:auto!important;
+    transform:translateX(-50%)!important;width:min(720px,calc(100vw - 24px))!important;max-height:60dvh!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  body.joygo-platform-open3310g #topbar{
+    display:grid!important;position:fixed!important;left:50%!important;right:auto!important;top:80px!important;bottom:auto!important;
+    transform:translateX(-50%)!important;width:min(760px,calc(100vw - 28px))!important;max-height:72dvh!important;overflow-y:auto!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;padding:9px!important;z-index:98880!important;
+  }
+}
+
+/* iPad 橫式：左棋盤、右棋鐘 + 2欄必要鍵。控制區永不壓棋盤 */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  html,body{overflow:hidden!important}
+  body:not(.guidance-embed-mode) .app{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 252px!important;
+    grid-template-rows:1fr!important;
+    width:100vw!important;height:100dvh!important;min-height:0!important;
+    padding:58px 8px 8px!important;gap:8px!important;
+  }
+  .left,#rightTools,.player,#joygoMoreShell3310{display:none!important}
+  #topbar{display:none!important}
+  .board-wrap{
+    grid-column:1!important;grid-row:1!important;
+    width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
+    padding:0!important;margin:0!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;
+  }
+  #board{
+    width:min(calc(100dvh - 72px),calc(100vw - 278px))!important;
+    height:auto!important;max-width:100%!important;max-height:100%!important;aspect-ratio:1/1!important;
+  }
+  #jgXClockDock{
+    position:fixed!important;right:8px!important;top:58px!important;width:252px!important;margin:0!important;z-index:98480!important;
+  }
+  #jgXClockDock #gameClockPanel{
+    display:grid!important;grid-template-columns:1fr!important;gap:6px!important;padding:7px!important;width:100%!important;
+  }
+  #jgXClockDock #clockSoundIcon{display:none!important}
+  #jgXClockDock .clock-side{min-height:78px!important;min-width:0!important}
+  #jgXClockDock .clock-time{font-size:27px!important;white-space:nowrap!important}
+  #jgXControlBar{
+    position:fixed!important;right:8px!important;top:238px!important;width:252px!important;margin:0!important;
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;padding:7px!important;z-index:98500!important;
+  }
+  #jgXControlBar button{min-width:0!important;min-height:43px!important;font-size:13px!important}
+  #jgXMorePanel{
+    position:fixed!important;right:268px!important;left:auto!important;bottom:8px!important;top:auto!important;
+    transform:none!important;width:340px!important;max-height:64dvh!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  body.joygo-platform-open3310g #topbar{
+    display:grid!important;position:fixed!important;right:268px!important;left:auto!important;top:58px!important;bottom:auto!important;
+    width:min(500px,calc(100vw - 290px))!important;max-height:76dvh!important;overflow-y:auto!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;padding:8px!important;z-index:98880!important;
+  }
+  #jgZPlatformClose{right:274px!important;left:auto!important;top:10px!important}
+}
+</style>
+<script id="joygoBeta3310aaUnifiedResponsiveJS">
+(()=>{
+  const $=id=>document.getElementById(id);
+  function closeMore(){
+    const p=$('jgXMorePanel'); if(p) p.classList.remove('open');
+    const legacy=$('joygoMoreToggle3310');
+    if(legacy){legacy.setAttribute('aria-expanded','false');legacy.textContent='＋ 更多功能';}
+  }
+  function closePlatform(){
+    document.body.classList.remove('joygo-platform-open3310g');
+    const top=$('topbar'); if(top) top.style.setProperty('display','none','important');
+  }
+  function closeFloatingPanels(except){
+    if(except!=='more') closeMore();
+    if(except!=='platform') closePlatform();
+  }
+  function bind(){
+    const more=$('jgXMore');
+    if(more && !more.dataset.jgaaBound){
+      more.dataset.jgaaBound='1';
+      more.addEventListener('click',()=>{ if(!$('jgXMorePanel')?.classList.contains('open')) closePlatform(); },true);
+    }
+    const platform=$('jgXPlatform');
+    if(platform && !platform.dataset.jgaaBound){
+      platform.dataset.jgaaBound='1';
+      platform.addEventListener('click',()=>closeMore(),true);
+    }
+    /* 開啟任何 modal 前，先收合更多/平台，防止手機面板疊在設定視窗上 */
+    document.querySelectorAll('button').forEach(b=>{
+      if(b.dataset.jgaaModalBound) return;
+      const t=(b.textContent||'').trim();
+      if(/人機對弈|正式數地|計算勝負|AI|設定/.test(t)){
+        b.dataset.jgaaModalBound='1';
+        b.addEventListener('click',()=>closeFloatingPanels(),true);
+      }
+    });
+  }
+  function refreshBoard(){
+    bind();
+    setTimeout(()=>{
+      try{window.dispatchEvent(new Event('resize'));}catch(_){ }
+      ['resizeBoard','renderBoard','drawBoard','updateBoard'].forEach(n=>{try{if(typeof window[n]==='function')window[n]();}catch(_){}});
+    },100);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refreshBoard,{once:true}); else refreshBoard();
+  addEventListener('pageshow',refreshBoard,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(refreshBoard,450),{passive:true});
+  let rt; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(refreshBoard,180)},{passive:true});
+  [500,1300,2600].forEach(t=>setTimeout(refreshBoard,t));
 })();
 </script>
 
