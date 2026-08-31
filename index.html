@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11d">
+<meta name="joygo-stable-reset-version" content="3.3.11e">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -4868,6 +4868,108 @@ html[data-joygo-guidance="1"] #gameActionRow{
     min-height:34px!important;
     padding:3px!important;
     font-size:11.5px!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3311eRightPanelCollapse">
+/* ==========================================================
+   Beta 3.3.11e｜右側收合版
+   只整理右側「對局功能」：
+   - 第一層保留主要操作
+   - 第二層進階功能預設收合
+   - 不改棋盤、不改棋鐘、不改平台功能
+   ========================================================== */
+
+/* 右側對局區標題更清楚 */
+.player::before{
+  content:"對局操作";
+  display:block!important;
+  margin:0 0 7px!important;
+  color:#efc766!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  letter-spacing:.5px!important;
+}
+
+/* 主要按鍵維持可見 */
+.player #gameActionRow{
+  margin-bottom:6px!important;
+}
+
+/* 進階對局功能預設收合 */
+.player #moveTools,
+.player .controls,
+.player #trialModeBar{
+  display:none!important;
+}
+
+/* 展開狀態 */
+.player.jg-more-open #moveTools,
+.player.jg-more-open .controls,
+.player.jg-more-open #trialModeBar{
+  display:flex!important;
+}
+
+/* 有些區塊本身是 grid，展開時修正 */
+.player.jg-more-open #moveTools{
+  flex-wrap:wrap!important;
+  gap:4px!important;
+}
+.player.jg-more-open .controls{
+  flex-wrap:wrap!important;
+  gap:4px!important;
+}
+
+/* 新增「更多對局」按鈕 */
+#jgMoreGameToggle{
+  width:100%!important;
+  min-height:40px!important;
+  margin-top:6px!important;
+  border:1px solid #8a6631!important;
+  border-radius:10px!important;
+  background:#21343a!important;
+  color:#fff!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  letter-spacing:.3px!important;
+  box-shadow:none!important;
+}
+
+/* 展開後按鈕更明顯 */
+.player.jg-more-open #jgMoreGameToggle{
+  background:#3a2a18!important;
+  color:#f5d58c!important;
+}
+
+/* 落子確認不要再單獨浮出去 */
+.player #confirmMoveToggle,
+.player #moveConfirmToggle,
+#confirmMoveToggle,
+#moveConfirmToggle{
+  position:static!important;
+  float:none!important;
+  margin:6px 0 0!important;
+  max-width:100%!important;
+}
+
+/* iPad 橫式：進階功能展開仍限制在右欄，必要時捲動 */
+@media (min-width:700px) and (max-width:1400px) and (orientation:landscape){
+  .player{
+    max-height:calc(100vh - 250px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+  .player.jg-more-open{
+    padding-bottom:10px!important;
+  }
+}
+
+/* iPad 直式 / 手機：展開後自然往下，不浮在棋盤上 */
+@media (orientation:portrait), (max-width:699px){
+  .player{
+    overflow:visible!important;
   }
 }
 </style>
@@ -11904,6 +12006,63 @@ document.addEventListener("click",(ev)=>{
 
   addEventListener("pageshow",tidyLabels,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(tidyLabels,300),{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3311eRightPanelCollapseJS">
+(()=>{
+  function buildMoreToggle(){
+    const player=document.querySelector(".player");
+    if(!player) return;
+
+    let btn=document.getElementById("jgMoreGameToggle");
+    if(!btn){
+      btn=document.createElement("button");
+      btn.id="jgMoreGameToggle";
+      btn.type="button";
+      btn.textContent="更多對局 ▾";
+      btn.setAttribute("aria-expanded","false");
+
+      const actionRow=document.getElementById("gameActionRow");
+      if(actionRow && actionRow.parentNode===player){
+        actionRow.insertAdjacentElement("afterend",btn);
+      }else{
+        player.appendChild(btn);
+      }
+    }
+
+    if(btn.dataset.wired!=="1"){
+      btn.dataset.wired="1";
+      const toggle=()=>{
+        const open=player.classList.toggle("jg-more-open");
+        btn.textContent=open ? "收合對局 ▴" : "更多對局 ▾";
+        btn.setAttribute("aria-expanded",open ? "true" : "false");
+      };
+      btn.addEventListener("click",toggle);
+      btn.addEventListener("touchend",e=>{
+        e.preventDefault();
+        toggle();
+      },{passive:false});
+    }
+  }
+
+  function boot(){
+    const player=document.querySelector(".player");
+    if(player) player.classList.remove("jg-more-open");
+    buildMoreToggle();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>{
+    const p=document.querySelector(".player");
+    if(p) p.classList.remove("jg-more-open");
+    setTimeout(buildMoreToggle,300);
+  },{passive:true});
 })();
 </script>
 
