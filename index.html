@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13h">
+<meta name="joygo-classic-commentary-version" content="3.3.13i">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5022,6 +5022,79 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     overflow:hidden!important;
     min-height:0!important;
     min-width:0!important;
+  }
+}
+</style>
+
+
+<style id="joygoLandscapeVisibleViewport313i">
+/* ============================================================
+   Beta 3.3.13i｜iPad Safari 真正可視高度修正
+   - 使用 visualViewport 實測可見高度
+   - 棋盤完整顯示 1～19 路
+   - 右側停用按鈕不再白底
+   ============================================================ */
+
+:root{
+  --jg-vv-height:100dvh;
+  --jg-app-visible-top:0px;
+}
+
+@media (orientation:landscape) and (min-width:901px){
+
+  html:not([data-joygo-guidance="1"]) .app{
+    height:calc(var(--jg-vv-height) - var(--jg-app-visible-top) - 6px)!important;
+    max-height:calc(var(--jg-vv-height) - var(--jg-app-visible-top) - 6px)!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    grid-template-rows:minmax(0,1fr) 54px!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .board-wrap{
+    min-height:0!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+  }
+
+  /* JS 直接寫入 px，避免舊版寬高規則干擾 */
+  html:not([data-joygo-guidance="1"]) #board{
+    max-width:none!important;
+    max-height:none!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:auto!important;
+  }
+
+  /* 底部播放控制列固定保留，不掉出畫面 */
+  html:not([data-joygo-guidance="1"]) .player{
+    height:54px!important;
+    min-height:54px!important;
+    max-height:54px!important;
+    overflow:hidden!important;
+  }
+
+  /* 右欄永遠只在真正可見高度內捲動 */
+  html:not([data-joygo-guidance="1"]) #rightTools{
+    max-height:calc(var(--jg-vv-height) - var(--jg-app-visible-top) - 6px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding-bottom:12px!important;
+  }
+
+  /* 停用按鈕：不要變白 */
+  html:not([data-joygo-guidance="1"]) #compactActionPanel button:disabled,
+  html:not([data-joygo-guidance="1"]) #compactActionPanel button[disabled]{
+    background:#24201c!important;
+    color:#8f887f!important;
+    -webkit-text-fill-color:#8f887f!important;
+    border-color:#51473d!important;
+    opacity:.72!important;
+    box-shadow:none!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #compactActionPanel button:disabled span,
+  html:not([data-joygo-guidance="1"]) #compactActionPanel button[disabled] span{
+    color:#8f887f!important;
   }
 }
 </style>
@@ -13168,6 +13241,140 @@ document.addEventListener("click",(ev)=>{
   [400,900,1600].forEach(function(ms){
     setTimeout(boot313h,ms);
   });
+})();
+</script>
+
+
+<script id="joygoLandscapeVisibleViewport313iJS">
+(function(){
+  let timer=0;
+
+  function isLandscape313i(){
+    return !!(
+      window.matchMedia &&
+      window.matchMedia("(orientation: landscape)").matches &&
+      window.innerWidth>=901 &&
+      document.documentElement.getAttribute("data-joygo-guidance")!=="1"
+    );
+  }
+
+  function getViewport313i(){
+    const vv=window.visualViewport;
+    if(vv){
+      return {
+        height:Math.floor(vv.height),
+        width:Math.floor(vv.width),
+        offsetTop:Math.floor(vv.offsetTop||0),
+        offsetLeft:Math.floor(vv.offsetLeft||0)
+      };
+    }
+    return {
+      height:Math.floor(document.documentElement.clientHeight||window.innerHeight),
+      width:Math.floor(document.documentElement.clientWidth||window.innerWidth),
+      offsetTop:0,
+      offsetLeft:0
+    };
+  }
+
+  function layout313i(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      if(!isLandscape313i()) return;
+
+      try{
+        const vv=getViewport313i();
+        const root=document.documentElement;
+        const app=document.querySelector(".app");
+        const wrap=document.querySelector(".board-wrap");
+        const board=document.getElementById("board");
+        const right=document.getElementById("rightTools");
+        const player=document.querySelector(".player");
+
+        if(!app || !wrap || !board || !right) return;
+
+        const appRect=app.getBoundingClientRect();
+        const wrapRect=wrap.getBoundingClientRect();
+        const rightRect=right.getBoundingClientRect();
+
+        /* 元素 top 是 viewport 座標，visualViewport.offsetTop 可修正 Safari UI */
+        const appTop=Math.max(0,Math.ceil(appRect.top - vv.offsetTop));
+        const wrapTop=Math.max(0,Math.ceil(wrapRect.top - vv.offsetTop));
+        const rightTop=Math.max(0,Math.ceil(rightRect.top - vv.offsetTop));
+
+        root.style.setProperty("--jg-vv-height",vv.height+"px");
+        root.style.setProperty("--jg-app-visible-top",appTop+"px");
+
+        /* 底部播放控制列 + 安全留白。
+           另外再多留 22px，避免 Safari 底部/圓角裁切。 */
+        let playerH=54;
+        if(player){
+          const ph=Math.ceil(player.getBoundingClientRect().height||0);
+          if(ph>=40 && ph<=90) playerH=ph;
+        }
+        const safetyBottom=24;
+
+        const visibleBoardH=Math.max(
+          260,
+          Math.floor(vv.height - wrapTop - playerH - safetyBottom)
+        );
+
+        const visibleBoardW=Math.max(
+          260,
+          Math.floor(wrapRect.width - 12)
+        );
+
+        /* 再縮 8px 安全值，確保 1 路和下方座標完整出現 */
+        const size=Math.max(
+          260,
+          Math.min(visibleBoardH,visibleBoardW) - 8
+        );
+
+        board.style.setProperty("width",size+"px","important");
+        board.style.setProperty("height",size+"px","important");
+
+        wrap.style.setProperty("height",(size+6)+"px","important");
+        wrap.style.setProperty("max-height",(size+6)+"px","important");
+
+        const rightH=Math.max(
+          280,
+          Math.floor(vv.height - rightTop - 8)
+        );
+        right.style.setProperty("height",rightH+"px","important");
+        right.style.setProperty("max-height",rightH+"px","important");
+
+        requestAnimationFrame(function(){
+          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+            try{
+              if(typeof window[name]==="function") window[name]();
+            }catch(_){}
+          });
+        });
+      }catch(err){
+        console.warn("Beta 3.3.13i layout",err);
+      }
+    },140);
+  }
+
+  function boot313i(){
+    layout313i();
+    setTimeout(layout313i,260);
+    setTimeout(layout313i,650);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot313i,{once:true});
+  }else{
+    boot313i();
+  }
+
+  window.addEventListener("orientationchange",boot313i,{passive:true});
+  window.addEventListener("resize",layout313i,{passive:true});
+  window.addEventListener("pageshow",boot313i,{passive:true});
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize",layout313i,{passive:true});
+    window.visualViewport.addEventListener("scroll",layout313i,{passive:true});
+  }
 })();
 </script>
 
