@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13">
+<meta name="joygo-classic-commentary-version" content="3.3.13a">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -13559,6 +13559,78 @@ document.addEventListener("click",(ev)=>{
     <div id="classicCommentaryList" class="classic-commentary-list"></div>
   </div>
 </div>
+
+
+<script id="joygoClassicCommentary313aFix">
+/* Beta 3.3.13a：逐手解說視窗事件晚綁定修正
+   修正：X / 點背景關閉 / 儲存解說 / 清空欄位 / 手數切換。 */
+(function(){
+  function bindClassicCommentary313a(){
+    const modal=document.getElementById("classicCommentaryModal");
+    if(!modal)return;
+
+    const closeBtn=modal.querySelector('[data-close="classicCommentaryModal"]');
+    if(closeBtn){
+      closeBtn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if(typeof closeModal==="function") closeModal("classicCommentaryModal");
+        else modal.classList.remove("open");
+      };
+    }
+
+    // 點視窗外的暗色背景也可關閉
+    modal.onclick=function(e){
+      if(e.target===modal){
+        if(typeof closeModal==="function") closeModal("classicCommentaryModal");
+        else modal.classList.remove("open");
+      }
+    };
+
+    const saveBtn=document.getElementById("classicCommentSaveBtn");
+    if(saveBtn && typeof classicSaveCommentary==="function"){
+      saveBtn.onclick=function(e){
+        e.preventDefault();
+        classicSaveCommentary();
+      };
+    }
+
+    const clearBtn=document.getElementById("classicCommentClearBtn");
+    if(clearBtn && typeof classicCommentaryClearForm==="function"){
+      clearBtn.onclick=function(e){
+        e.preventDefault();
+        classicCommentaryClearForm();
+      };
+    }
+
+    const moveInput=document.getElementById("classicCommentMoveInput");
+    if(moveInput){
+      moveInput.onchange=function(){
+        const move=Math.max(0,Math.round(Number(moveInput.value||0)));
+        const item=Array.isArray(window.classicCommentaryCache)
+          ? window.classicCommentaryCache.find(x=>Number(x.move_number)===move)
+          : (typeof classicCommentaryCache!=="undefined"
+              ? classicCommentaryCache.find(x=>Number(x.move_number)===move)
+              : null);
+        if(item && typeof classicCommentaryFillForm==="function"){
+          classicCommentaryFillForm(item);
+        }else{
+          const t=document.getElementById("classicCommentTextInput");
+          const h=document.getElementById("classicCommentHighlightInput");
+          if(t)t.value="";
+          if(h)h.checked=false;
+        }
+      };
+    }
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",bindClassicCommentary313a,{once:true});
+  }else{
+    bindClassicCommentary313a();
+  }
+})();
+</script>
 
 </body>
 </html>
