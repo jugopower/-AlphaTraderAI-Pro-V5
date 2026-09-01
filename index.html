@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13b">
+<meta name="joygo-classic-commentary-version" content="3.3.13c">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5793,6 +5793,45 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 }
 </style>
 
+
+<style id="joygoClassicSpeed313cStyle">
+/* Beta 3.3.13c｜名局播放速度控制 */
+.classic-speed-control{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:8px 0 12px;
+  padding:9px 10px;
+  border:1px solid #6c4b2c;
+  border-radius:11px;
+  background:#0d0907;
+}
+.classic-speed-control strong{
+  color:#f0c75f;
+  font-size:12px;
+}
+.classic-speed-control select{
+  min-height:36px;
+  padding:6px 9px;
+  border-radius:9px;
+  min-width:150px;
+}
+.classic-speed-control .classic-speed-note{
+  color:#bda98a;
+  font-size:11px;
+}
+@media(max-width:650px){
+  .classic-speed-control{
+    display:grid;
+    grid-template-columns:auto 1fr;
+  }
+  .classic-speed-control .classic-speed-note{
+    grid-column:1/-1;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -6428,6 +6467,18 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     <span class="classic-now-label">目前棋局</span>
     <strong id="classicNowTitle">尚未選擇</strong>
     <span id="classicNowMeta">可選擇「載入」或「一鍵播放」</span>
+  </div>
+
+  <div class="classic-speed-control">
+    <strong>▶ 播放速度</strong>
+    <select id="classicPlaybackSpeed">
+      <option value="2200">超慢｜2.2 秒／手</option>
+      <option value="1600">慢速｜1.6 秒／手</option>
+      <option value="1100" selected>標準｜1.1 秒／手</option>
+      <option value="700">快速｜0.7 秒／手</option>
+      <option value="400">很快｜0.4 秒／手</option>
+    </select>
+    <span class="classic-speed-note">有逐手解說時建議使用「慢速」或「超慢」。</span>
   </div>
 
   <div class="classic-cloud-tabs" role="tablist" aria-label="名局館分頁">
