@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13i">
+<meta name="joygo-classic-commentary-version" content="3.3.13j">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5027,75 +5027,52 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 </style>
 
 
-<style id="joygoLandscapeVisibleViewport313i">
-/* ============================================================
-   Beta 3.3.13i｜iPad Safari 真正可視高度修正
-   - 使用 visualViewport 實測可見高度
-   - 棋盤完整顯示 1～19 路
-   - 右側停用按鈕不再白底
-   ============================================================ */
 
-:root{
-  --jg-vv-height:100dvh;
-  --jg-app-visible-top:0px;
+
+
+<style id="joygoFinalLayout313j">
+@media (orientation:portrait), (max-width:900px){
+  html,body{overflow-y:auto!important;overflow-x:hidden!important;height:auto!important;min-height:100dvh!important}
+  .app{height:auto!important;min-height:100dvh!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:68px auto auto!important;gap:6px!important;padding:6px!important;overflow:visible!important}
+  .topbar{grid-column:1!important;grid-row:1!important;height:68px!important;min-height:68px!important}
+  .left,.right,.info-collapse{display:none!important}
+  .board-wrap{grid-column:1!important;grid-row:2!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;padding:3px!important;overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  #board{display:block!important;width:min(92vw,72dvh)!important;height:auto!important;max-width:100%!important;max-height:none!important;aspect-ratio:1/1!important;object-fit:contain!important;margin:0 auto!important;touch-action:none!important}
+  .player{grid-column:1!important;grid-row:3!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:auto auto auto auto!important;gap:6px!important;padding:6px!important;overflow:visible!important}
+  .move-tools{display:grid!important;grid-template-columns:minmax(112px,.8fr) 58px minmax(150px,1.2fr)!important;gap:5px!important}
+  .controls{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:5px!important}
+  #gameActionRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;min-height:0!important;height:auto!important}
+  #gameActionRow > button{display:flex!important;min-height:40px!important;height:40px!important;align-items:center!important;justify-content:center!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #6c4b2c!important;opacity:1!important}
+  #gameActionRow > button:disabled,#gameActionRow > button[disabled]{background:#1b1714!important;color:#b9afa3!important;-webkit-text-fill-color:#b9afa3!important;border-color:#4d4238!important;opacity:.72!important}
+  .range-row{display:grid!important;grid-template-columns:1fr auto!important;min-height:28px!important;height:28px!important}
 }
-
 @media (orientation:landscape) and (min-width:901px){
-
-  html:not([data-joygo-guidance="1"]) .app{
-    height:calc(var(--jg-vv-height) - var(--jg-app-visible-top) - 6px)!important;
-    max-height:calc(var(--jg-vv-height) - var(--jg-app-visible-top) - 6px)!important;
-    min-height:0!important;
-    overflow:hidden!important;
-    grid-template-rows:minmax(0,1fr) 54px!important;
-  }
-
-  html:not([data-joygo-guidance="1"]) .board-wrap{
-    min-height:0!important;
-    max-height:100%!important;
-    overflow:hidden!important;
-  }
-
-  /* JS 直接寫入 px，避免舊版寬高規則干擾 */
-  html:not([data-joygo-guidance="1"]) #board{
-    max-width:none!important;
-    max-height:none!important;
-    min-width:0!important;
-    min-height:0!important;
-    margin:auto!important;
-  }
-
-  /* 底部播放控制列固定保留，不掉出畫面 */
-  html:not([data-joygo-guidance="1"]) .player{
-    height:54px!important;
-    min-height:54px!important;
-    max-height:54px!important;
-    overflow:hidden!important;
-  }
-
-  /* 右欄永遠只在真正可見高度內捲動 */
-  html:not([data-joygo-guidance="1"]) #rightTools{
-    max-height:calc(var(--jg-vv-height) - var(--jg-app-visible-top) - 6px)!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    padding-bottom:12px!important;
-  }
-
-  /* 停用按鈕：不要變白 */
-  html:not([data-joygo-guidance="1"]) #compactActionPanel button:disabled,
-  html:not([data-joygo-guidance="1"]) #compactActionPanel button[disabled]{
-    background:#24201c!important;
-    color:#8f887f!important;
-    -webkit-text-fill-color:#8f887f!important;
-    border-color:#51473d!important;
-    opacity:.72!important;
-    box-shadow:none!important;
-  }
-
-  html:not([data-joygo-guidance="1"]) #compactActionPanel button:disabled span,
-  html:not([data-joygo-guidance="1"]) #compactActionPanel button[disabled] span{
-    color:#8f887f!important;
-  }
+  html,body{overflow:hidden!important;width:100%!important;height:100dvh!important}
+  .app{height:100dvh!important;max-height:100dvh!important;min-height:0!important;display:grid!important;grid-template-columns:0 minmax(0,1fr) 238px!important;grid-template-rows:minmax(0,1fr) 48px!important;gap:4px!important;padding:4px!important;overflow:hidden!important}
+  .left{display:none!important}
+  .board-wrap{grid-column:2!important;grid-row:1!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;padding:2px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  #board{width:min(calc(100dvh - 62px),calc(100vw - 258px))!important;height:min(calc(100dvh - 62px),calc(100vw - 258px))!important;min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;aspect-ratio:1/1!important;object-fit:contain!important;margin:auto!important;flex:0 0 auto!important}
+  .right{display:flex!important;grid-column:3!important;grid-row:1 / span 2!important;width:238px!important;min-width:238px!important;max-width:238px!important;height:100%!important;min-height:0!important;max-height:100%!important;overflow-y:auto!important;overflow-x:hidden!important;padding:6px!important;gap:6px!important;flex-direction:column!important;justify-content:flex-start!important}
+  .right .game-clock-panel{display:flex!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;min-width:0!important;max-width:100%!important;padding:6px!important;gap:5px!important;flex-direction:column!important;flex:0 0 auto!important}
+  .right .clock-side{min-height:68px!important;padding:5px 6px!important;grid-template-columns:23px 1fr!important}
+  .right .clock-time{font-size:22px!important}.right .clock-stone{width:22px!important;height:22px!important}.right .clock-name{font-size:11px!important}.right .clock-byo{font-size:8px!important}
+  #rightTools > .tool{display:none!important}
+  #compactActionPanel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;gap:6px!important;padding:6px!important;margin:0!important;flex:0 0 auto!important}
+  #landscapeBackPlatformBtn{display:flex!important;grid-column:1/-1!important;width:100%!important;min-height:42px!important;height:42px!important;align-items:center!important;justify-content:center!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #7a5a35!important;opacity:1!important}
+  #compactActionPanel .compact-action-title{display:block!important;grid-column:1/-1!important;color:#d6c2a3!important}
+  #compactActionPanel button{display:flex!important;width:100%!important;min-width:0!important;min-height:39px!important;height:39px!important;align-items:center!important;justify-content:center!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #6c4b2c!important;opacity:1!important;box-shadow:none!important}
+  #compactActionPanel button:disabled,#compactActionPanel button[disabled]{background:#1b1714!important;color:#b9afa3!important;-webkit-text-fill-color:#b9afa3!important;border-color:#4d4238!important;opacity:.72!important}
+  .player{display:grid!important;grid-column:2!important;grid-row:2!important;width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:4px 5px!important;overflow:hidden!important;grid-template-columns:minmax(260px,1fr) minmax(300px,1.25fr)!important;grid-template-rows:40px!important;align-items:center!important}
+  .player #gameActionRow{display:none!important}
+  .move-tools{display:grid!important;grid-column:1!important;grid-row:1!important;grid-template-columns:105px 54px minmax(120px,1fr) 82px!important;gap:4px!important}
+  .controls{display:grid!important;grid-column:2!important;grid-row:1!important;grid-template-columns:repeat(5,1fr)!important;height:36px!important;min-height:36px!important;gap:4px!important}
+  .controls button{height:34px!important;min-height:34px!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #6c4b2c!important}
+  .range-row{display:none!important}
+}
+@media (orientation:landscape) and (min-width:901px) and (max-width:1180px){
+  .app{grid-template-columns:0 minmax(0,1fr) 220px!important}
+  .right{width:220px!important;min-width:220px!important;max-width:220px!important}
+  #board{width:min(calc(100dvh - 62px),calc(100vw - 240px))!important;height:min(calc(100dvh - 62px),calc(100vw - 240px))!important}
 }
 </style>
 
@@ -13245,136 +13222,24 @@ document.addEventListener("click",(ev)=>{
 </script>
 
 
-<script id="joygoLandscapeVisibleViewport313iJS">
+
+
+
+<script id="joygoFinalLayout313jJS">
 (function(){
   let timer=0;
-
-  function isLandscape313i(){
-    return !!(
-      window.matchMedia &&
-      window.matchMedia("(orientation: landscape)").matches &&
-      window.innerWidth>=901 &&
-      document.documentElement.getAttribute("data-joygo-guidance")!=="1"
-    );
-  }
-
-  function getViewport313i(){
-    const vv=window.visualViewport;
-    if(vv){
-      return {
-        height:Math.floor(vv.height),
-        width:Math.floor(vv.width),
-        offsetTop:Math.floor(vv.offsetTop||0),
-        offsetLeft:Math.floor(vv.offsetLeft||0)
-      };
-    }
-    return {
-      height:Math.floor(document.documentElement.clientHeight||window.innerHeight),
-      width:Math.floor(document.documentElement.clientWidth||window.innerWidth),
-      offsetTop:0,
-      offsetLeft:0
-    };
-  }
-
-  function layout313i(){
+  function refresh313j(){
     clearTimeout(timer);
     timer=setTimeout(function(){
-      if(!isLandscape313i()) return;
-
-      try{
-        const vv=getViewport313i();
-        const root=document.documentElement;
-        const app=document.querySelector(".app");
-        const wrap=document.querySelector(".board-wrap");
-        const board=document.getElementById("board");
-        const right=document.getElementById("rightTools");
-        const player=document.querySelector(".player");
-
-        if(!app || !wrap || !board || !right) return;
-
-        const appRect=app.getBoundingClientRect();
-        const wrapRect=wrap.getBoundingClientRect();
-        const rightRect=right.getBoundingClientRect();
-
-        /* 元素 top 是 viewport 座標，visualViewport.offsetTop 可修正 Safari UI */
-        const appTop=Math.max(0,Math.ceil(appRect.top - vv.offsetTop));
-        const wrapTop=Math.max(0,Math.ceil(wrapRect.top - vv.offsetTop));
-        const rightTop=Math.max(0,Math.ceil(rightRect.top - vv.offsetTop));
-
-        root.style.setProperty("--jg-vv-height",vv.height+"px");
-        root.style.setProperty("--jg-app-visible-top",appTop+"px");
-
-        /* 底部播放控制列 + 安全留白。
-           另外再多留 22px，避免 Safari 底部/圓角裁切。 */
-        let playerH=54;
-        if(player){
-          const ph=Math.ceil(player.getBoundingClientRect().height||0);
-          if(ph>=40 && ph<=90) playerH=ph;
-        }
-        const safetyBottom=24;
-
-        const visibleBoardH=Math.max(
-          260,
-          Math.floor(vv.height - wrapTop - playerH - safetyBottom)
-        );
-
-        const visibleBoardW=Math.max(
-          260,
-          Math.floor(wrapRect.width - 12)
-        );
-
-        /* 再縮 8px 安全值，確保 1 路和下方座標完整出現 */
-        const size=Math.max(
-          260,
-          Math.min(visibleBoardH,visibleBoardW) - 8
-        );
-
-        board.style.setProperty("width",size+"px","important");
-        board.style.setProperty("height",size+"px","important");
-
-        wrap.style.setProperty("height",(size+6)+"px","important");
-        wrap.style.setProperty("max-height",(size+6)+"px","important");
-
-        const rightH=Math.max(
-          280,
-          Math.floor(vv.height - rightTop - 8)
-        );
-        right.style.setProperty("height",rightH+"px","important");
-        right.style.setProperty("max-height",rightH+"px","important");
-
-        requestAnimationFrame(function(){
-          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
-            try{
-              if(typeof window[name]==="function") window[name]();
-            }catch(_){}
-          });
-        });
-      }catch(err){
-        console.warn("Beta 3.3.13i layout",err);
-      }
-    },140);
+      ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+        try{if(typeof window[name]==="function") window[name]();}catch(_){}
+      });
+    },220);
   }
-
-  function boot313i(){
-    layout313i();
-    setTimeout(layout313i,260);
-    setTimeout(layout313i,650);
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot313i,{once:true});
-  }else{
-    boot313i();
-  }
-
-  window.addEventListener("orientationchange",boot313i,{passive:true});
-  window.addEventListener("resize",layout313i,{passive:true});
-  window.addEventListener("pageshow",boot313i,{passive:true});
-
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize",layout313i,{passive:true});
-    window.visualViewport.addEventListener("scroll",layout313i,{passive:true});
-  }
+  window.addEventListener("orientationchange",function(){setTimeout(refresh313j,180);setTimeout(refresh313j,520);},{passive:true});
+  window.addEventListener("resize",refresh313j,{passive:true});
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",refresh313j,{once:true});
+  else refresh313j();
 })();
 </script>
 
