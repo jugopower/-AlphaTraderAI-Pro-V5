@@ -25,6 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
+<meta name="joygo-classic-commentary-version" content="3.3.13">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -34,7 +35,7 @@
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 
-<meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
+<meta name="app-version" content="20260901-JoyGo-Beta-3.3.13">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
 <title>Joy Go Platform V1.0 Beta｜Joy Go Platform｜朱老師圍棋 AI 教學平台</title>
 <style>
@@ -5676,6 +5677,122 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 }
 </style>
 
+
+<style id="joygoClassicCommentary313Style">
+/* Beta 3.3.13｜名局逐手解說 */
+#classicCommentaryBar{
+  display:none;
+  position:relative;
+  z-index:7;
+  width:100%;
+  padding:9px 12px;
+  border-top:1px solid #6c4b2c;
+  border-bottom:1px solid #6c4b2c;
+  background:linear-gradient(180deg,#20150e,#120c08);
+  color:#fff4d8;
+  box-sizing:border-box;
+}
+#classicCommentaryBar.show{display:grid}
+.classic-commentary-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:5px;
+}
+.classic-commentary-move{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:72px;
+  padding:4px 8px;
+  border:1px solid #9b733a;
+  border-radius:999px;
+  color:#ffd970;
+  background:#291b10;
+  font-size:12px;
+  font-weight:900;
+}
+.classic-commentary-highlight{
+  display:none;
+  padding:3px 7px;
+  border-radius:999px;
+  background:#6d3d16;
+  color:#ffe0a0;
+  font-size:11px;
+  font-weight:900;
+}
+.classic-commentary-highlight.show{display:inline-flex}
+#classicCommentaryText{
+  font-size:14px;
+  line-height:1.65;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.classic-commentary-empty{
+  color:#ad9b80;
+  font-size:12px;
+}
+.classic-commentary-editor{
+  max-width:720px!important;
+}
+.classic-commentary-grid{
+  display:grid;
+  grid-template-columns:130px 1fr;
+  gap:10px;
+  align-items:end;
+}
+.classic-commentary-grid textarea{
+  min-height:150px;
+  resize:vertical;
+}
+.classic-commentary-list{
+  display:grid;
+  gap:7px;
+  max-height:34vh;
+  overflow:auto;
+  margin-top:12px;
+}
+.classic-commentary-row{
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr) auto;
+  gap:8px;
+  align-items:start;
+  padding:9px;
+  border:1px solid #4f3824;
+  border-radius:11px;
+  background:#0c0806;
+}
+.classic-commentary-row strong{color:#ffd970}
+.classic-commentary-row p{
+  margin:0;
+  color:#e8d8bd;
+  white-space:pre-wrap;
+  line-height:1.5;
+  font-size:13px;
+}
+.classic-commentary-row-actions{
+  display:flex;
+  gap:5px;
+}
+.classic-commentary-row-actions button{
+  padding:6px 8px;
+  min-height:32px;
+  font-size:12px;
+}
+.classic-comment-btn{
+  border:1px solid #7f63bf!important;
+  background:#251a3c!important;
+  color:#e9dcff!important;
+}
+@media(max-width:700px){
+  #classicCommentaryBar{padding:7px 9px}
+  #classicCommentaryText{font-size:13px}
+  .classic-commentary-grid{grid-template-columns:1fr}
+  .classic-commentary-row{grid-template-columns:70px 1fr}
+  .classic-commentary-row-actions{grid-column:1/-1;justify-content:flex-end}
+}
+</style>
+
 </head>
 <body>
 
@@ -5790,6 +5907,15 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 <div id="memberChip" class="member-chip">
   <span id="memberChipText">👤 尚未登入</span>
   <button id="memberChipBtn" type="button">會員</button>
+</div>
+
+
+<div id="classicCommentaryBar" aria-live="polite">
+  <div class="classic-commentary-head">
+    <span id="classicCommentaryMove" class="classic-commentary-move">第 0 手</span>
+    <span id="classicCommentaryHighlight" class="classic-commentary-highlight">★ 重點手</span>
+  </div>
+  <div id="classicCommentaryText" class="classic-commentary-empty">本手暫無解說。</div>
 </div>
 
 <div class="app">
@@ -6291,10 +6417,10 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 3.3.12｜公開名局館</h2>
+  <h2>🏛️ Beta 3.3.13｜公開名局館・逐手解說</h2>
   <p class="classic-library-note">
     「🌐 公開名局」由 Supabase 雲端提供，所有已登入會員都可載入與播放；
-    「👤 我的棋譜」保留本機 IndexedDB＋瀏覽器備援。只有管理員可以將自己的棋譜發布到公開名局館或取消公開。
+    「👤 我的棋譜」保留本機 IndexedDB＋瀏覽器備援。只有管理員可以發布棋譜與編輯逐手解說；一般會員只能觀看。
   </p>
 
 
@@ -8018,6 +8144,200 @@ function classicAutoFillFromSgf(text){
   if($("classicTitleInput"))$("classicTitleInput").value=gn||[pb,pw].filter(Boolean).join(" vs ");
 }
 
+
+let classicCurrentGame=null;
+let classicCommentaryCache=[];
+let classicCommentaryEditingGame=null;
+
+function classicCommentarySetEditorStatus(message,type=""){
+  const el=$("classicCommentaryEditorStatus");
+  if(!el)return;
+  el.className="classic-cloud-status"+(type?(" "+type):"");
+  el.textContent=message;
+}
+
+async function classicLoadCommentaries(game,showStatus=false){
+  classicCommentaryCache=[];
+  if(!game?.cloudId || !memberSupabase || !memberSession?.user){
+    classicUpdateCommentaryForMove();
+    return [];
+  }
+  try{
+    const {data,error}=await memberSupabase
+      .from("public_classic_game_comments")
+      .select("id,game_id,move_number,comment_text,is_highlight,created_at,updated_at")
+      .eq("game_id",game.cloudId)
+      .order("move_number",{ascending:true});
+    if(error)throw error;
+    classicCommentaryCache=data||[];
+    if(showStatus)classicCommentarySetEditorStatus(`✅ 已載入 ${classicCommentaryCache.length} 則解說。`,"ok");
+    classicUpdateCommentaryForMove();
+    return classicCommentaryCache;
+  }catch(err){
+    console.error("逐手解說讀取失敗：",err);
+    if(showStatus)classicCommentarySetEditorStatus("❌ 解說讀取失敗："+(err?.message||String(err)),"bad");
+    classicUpdateCommentaryForMove();
+    return [];
+  }
+}
+
+function classicUpdateCommentaryForMove(){
+  const bar=$("classicCommentaryBar");
+  if(!bar)return;
+
+  if(!classicCurrentGame || classicCurrentGame.source!=="public-cloud"){
+    bar.classList.remove("show");
+    return;
+  }
+
+  bar.classList.add("show");
+  const move=Math.max(0,Number(state?.index||0));
+  const item=classicCommentaryCache.find(x=>Number(x.move_number)===move);
+
+  if($("classicCommentaryMove")){
+    $("classicCommentaryMove").textContent=move===0?"第 0 手／開局":`第 ${move} 手`;
+  }
+  if($("classicCommentaryHighlight")){
+    $("classicCommentaryHighlight").classList.toggle("show",!!item?.is_highlight);
+  }
+  const body=$("classicCommentaryText");
+  if(body){
+    if(item?.comment_text){
+      body.className="";
+      body.textContent=item.comment_text;
+    }else{
+      body.className="classic-commentary-empty";
+      body.textContent="本手暫無解說。";
+    }
+  }
+}
+
+function classicCommentaryClearForm(){
+  if($("classicCommentMoveInput"))$("classicCommentMoveInput").value=String(state?.index||0);
+  if($("classicCommentTextInput"))$("classicCommentTextInput").value="";
+  if($("classicCommentHighlightInput"))$("classicCommentHighlightInput").checked=false;
+}
+
+function classicCommentaryFillForm(item){
+  if(!item)return;
+  if($("classicCommentMoveInput"))$("classicCommentMoveInput").value=String(item.move_number??0);
+  if($("classicCommentTextInput"))$("classicCommentTextInput").value=item.comment_text||"";
+  if($("classicCommentHighlightInput"))$("classicCommentHighlightInput").checked=!!item.is_highlight;
+}
+
+function classicRenderCommentaryEditorList(){
+  const box=$("classicCommentaryList");
+  if(!box)return;
+  box.innerHTML="";
+  if(!classicCommentaryCache.length){
+    box.innerHTML='<div class="classic-db-empty">這盤棋目前還沒有逐手解說。</div>';
+    return;
+  }
+  classicCommentaryCache.forEach(item=>{
+    const row=document.createElement("div");
+    row.className="classic-commentary-row";
+
+    const mv=document.createElement("strong");
+    mv.textContent=Number(item.move_number)===0?"第0手":`第${item.move_number}手`;
+
+    const p=document.createElement("p");
+    p.textContent=(item.is_highlight?"★ ":"")+item.comment_text;
+
+    const actions=document.createElement("div");
+    actions.className="classic-commentary-row-actions";
+
+    const edit=document.createElement("button");
+    edit.className="secondary";
+    edit.textContent="編輯";
+    edit.onclick=()=>classicCommentaryFillForm(item);
+
+    const del=document.createElement("button");
+    del.className="danger";
+    del.textContent="刪除";
+    del.onclick=async()=>{
+      if(!classicIsAdmin())return;
+      if(!confirm(`確定刪除第 ${item.move_number} 手解說？`))return;
+      try{
+        const {error}=await memberSupabase
+          .from("public_classic_game_comments")
+          .delete()
+          .eq("id",item.id);
+        if(error)throw error;
+        await classicLoadCommentaries(classicCommentaryEditingGame,true);
+        classicRenderCommentaryEditorList();
+        if(classicCurrentGame?.cloudId===classicCommentaryEditingGame?.cloudId)classicUpdateCommentaryForMove();
+        toast("已刪除解說");
+      }catch(err){
+        toast("刪除解說失敗："+(err?.message||String(err)));
+      }
+    };
+
+    actions.append(edit,del);
+    row.append(mv,p,actions);
+    box.appendChild(row);
+  });
+}
+
+async function classicOpenCommentaryEditor(game){
+  if(!classicIsAdmin()){
+    toast("只有管理員可以編輯解說");
+    return;
+  }
+  if(!game?.cloudId){
+    toast("請先將棋譜發布到公開名局館");
+    return;
+  }
+  classicCommentaryEditingGame=game;
+  if($("classicCommentaryGameTitle")){
+    $("classicCommentaryGameTitle").textContent=`${game.title||"未命名名局"}｜${game.black||"黑方"} vs ${game.white||"白方"}`;
+  }
+  classicCommentaryClearForm();
+  openModal("classicCommentaryModal");
+  await classicLoadCommentaries(game,true);
+  classicRenderCommentaryEditorList();
+}
+
+async function classicSaveCommentary(){
+  const game=classicCommentaryEditingGame;
+  if(!classicIsAdmin() || !game?.cloudId){
+    toast("目前無法儲存解說");
+    return;
+  }
+  const move=Math.max(0,Math.round(Number($("classicCommentMoveInput")?.value||0)));
+  const comment=String($("classicCommentTextInput")?.value||"").trim();
+  const highlight=!!$("classicCommentHighlightInput")?.checked;
+
+  if(!comment){
+    toast("請先輸入解說內容");
+    return;
+  }
+
+  try{
+    const payload={
+      game_id:game.cloudId,
+      move_number:move,
+      comment_text:comment,
+      is_highlight:highlight,
+      created_by:memberSession.user.id
+    };
+
+    const {error}=await memberSupabase
+      .from("public_classic_game_comments")
+      .upsert(payload,{onConflict:"game_id,move_number"});
+    if(error)throw error;
+
+    await classicLoadCommentaries(game,true);
+    classicRenderCommentaryEditorList();
+    classicCommentaryFillForm(classicCommentaryCache.find(x=>Number(x.move_number)===move));
+    if(classicCurrentGame?.cloudId===game.cloudId)classicUpdateCommentaryForMove();
+    toast(`✅ 已儲存第 ${move} 手解說`);
+  }catch(err){
+    console.error(err);
+    toast("儲存解說失敗："+(err?.message||String(err)));
+  }
+}
+
+
 let classicCurrentGameId="";
 function classicSetNowPlaying(game){
   classicCurrentGameId=String(game?.id||game?.title||"");
@@ -8092,6 +8412,12 @@ function classicGameCard(game){
   }
 
   if(game.source==="public-cloud" && classicIsAdmin()){
+    const commentBtn=document.createElement("button");
+    commentBtn.className="secondary classic-comment-btn";
+    commentBtn.textContent="📝 解說";
+    commentBtn.onclick=()=>classicOpenCommentaryEditor(game);
+    actions.append(commentBtn);
+
     const unpublishBtn=document.createElement("button");
     unpublishBtn.className="secondary classic-unpublish-btn";
     unpublishBtn.textContent="取消公開";
@@ -8153,11 +8479,19 @@ async function openClassicGameLibrary(){
 }
 function loadClassicGame(game,autoPlay=false){
   classicStopPlayback();
+  classicCurrentGame=game||null;
+  classicCommentaryCache=[];
 
   const ok=loadSGFText(game.sgf,(game.title||"名局")+".sgf");
   if(!ok)return;
 
   classicSetNowPlaying(game);
+
+  if(game?.source==="public-cloud" && game?.cloudId){
+    classicLoadCommentaries(game,false);
+  }else{
+    classicUpdateCommentaryForMove();
+  }
 
   showFamousGameInfo({
     title:game.title||fgSgfProp(game.sgf,"GN")||"",
@@ -8375,6 +8709,19 @@ if($("classicRefreshCloudBtn"))$("classicRefreshCloudBtn").onclick=async()=>{
   renderClassicGameLibrary();
   toast("公開名局已重新整理");
 };
+
+if($("classicCommentSaveBtn"))$("classicCommentSaveBtn").onclick=classicSaveCommentary;
+if($("classicCommentClearBtn"))$("classicCommentClearBtn").onclick=classicCommentaryClearForm;
+if($("classicCommentMoveInput"))$("classicCommentMoveInput").addEventListener("change",()=>{
+  const move=Math.max(0,Math.round(Number($("classicCommentMoveInput").value||0)));
+  const item=classicCommentaryCache.find(x=>Number(x.move_number)===move);
+  if(item)classicCommentaryFillForm(item);
+  else{
+    if($("classicCommentTextInput"))$("classicCommentTextInput").value="";
+    if($("classicCommentHighlightInput"))$("classicCommentHighlightInput").checked=false;
+  }
+});
+
 if($("classicAddOfficialBtn"))$("classicAddOfficialBtn").onclick=classicOpenImportModal;
 if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{closeModal("classicGameModal");$("sgfFile")?.click()};
 if($("classicBackupBtn"))$("classicBackupBtn").onclick=classicBackupAll;
@@ -10704,6 +11051,7 @@ function syncUI(){
   const hp=state.hintPoints||[];
   [1,2,3].forEach((n,i)=>{const el=$("aiHintLine"+n);if(el){const pt=hp[i];el.textContent=`${["①","②","③"][i]} ${pt&&!pt.pass?coordLabel(pt.x,pt.y):"—"}`;}});
   if($("aiHintStatus"))$("aiHintStatus").textContent=!state.hintEnabled?"提示關閉":state.hintLoading?"分析中…":(hp.length?"KataGo 即時推薦":"等待推薦");
+  try{classicUpdateCommentaryForMove()}catch(_){}
 }
 function goTo(n){
   const target=Math.max(0,Math.min(state.moves.length,n));
@@ -13177,6 +13525,40 @@ document.addEventListener("click",(ev)=>{
   addEventListener("orientationchange", ()=>setTimeout(normalizeDrawer, 250), {passive:true});
 })();
 </script>
+
+
+<div id="classicCommentaryModal" class="modal-backdrop">
+  <div class="modal classic-commentary-editor">
+    <button class="close" data-close="classicCommentaryModal">✕</button>
+    <h2>📝 名局逐手解說</h2>
+    <p class="classic-library-note">
+      管理員可為公開名局的指定手數加入解說。第 0 手可作為整盤／開局說明；播放到該手時會自動顯示。
+    </p>
+
+    <div id="classicCommentaryGameTitle" class="classic-now-playing" style="display:block">尚未選擇棋譜</div>
+
+    <div class="classic-commentary-grid">
+      <label>手數
+        <input id="classicCommentMoveInput" type="number" min="0" step="1" value="0">
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;padding-bottom:8px">
+        <input id="classicCommentHighlightInput" type="checkbox" style="width:auto">
+        ★ 標記為重點手
+      </label>
+      <label style="grid-column:1/-1">解說內容
+        <textarea id="classicCommentTextInput" placeholder="例如：第 35 手黑棋肩衝，目的是限制白棋中央發展。"></textarea>
+      </label>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button id="classicCommentSaveBtn" class="action" type="button">儲存解說</button>
+      <button id="classicCommentClearBtn" class="secondary" type="button">清空欄位</button>
+    </div>
+
+    <div id="classicCommentaryEditorStatus" class="classic-cloud-status" style="margin-top:10px">尚未載入解說。</div>
+    <div id="classicCommentaryList" class="classic-commentary-list"></div>
+  </div>
+</div>
 
 </body>
 </html>
