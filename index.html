@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13j">
+<meta name="joygo-classic-commentary-version" content="3.3.13k">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5073,6 +5073,60 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
   .app{grid-template-columns:0 minmax(0,1fr) 220px!important}
   .right{width:220px!important;min-width:220px!important;max-width:220px!important}
   #board{width:min(calc(100dvh - 62px),calc(100vw - 240px))!important;height:min(calc(100dvh - 62px),calc(100vw - 240px))!important}
+}
+</style>
+
+
+<style id="joygoLandscapeBoardOnly313k">
+/* Beta 3.3.13k｜只修 iPad 橫式棋盤
+   直式完全不動；右欄排列不動。 */
+
+:root{
+  --jg-k-app-top:0px;
+  --jg-k-vh:100dvh;
+  --jg-k-board:560px;
+}
+
+@media (orientation:landscape) and (min-width:901px){
+
+  /* app 從它目前真正所在位置算到 Safari 可視底部，不再超出畫面 */
+  .app{
+    height:calc(var(--jg-k-vh) - var(--jg-k-app-top) - 6px)!important;
+    min-height:0!important;
+    max-height:calc(var(--jg-k-vh) - var(--jg-k-app-top) - 6px)!important;
+    grid-template-rows:minmax(0,1fr) 48px!important;
+    overflow:hidden!important;
+  }
+
+  .board-wrap{
+    min-height:0!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  #board{
+    width:var(--jg-k-board)!important;
+    height:var(--jg-k-board)!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-width:none!important;
+    max-height:none!important;
+    aspect-ratio:1/1!important;
+    margin:auto!important;
+    flex:0 0 auto!important;
+  }
+
+  /* 右欄沿用 3.3.13j 排列，只限制在同一個真正可視高度 */
+  .right{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
 }
 </style>
 
@@ -13240,6 +13294,98 @@ document.addEventListener("click",(ev)=>{
   window.addEventListener("resize",refresh313j,{passive:true});
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",refresh313j,{once:true});
   else refresh313j();
+})();
+</script>
+
+
+<script id="joygoLandscapeBoardOnly313kJS">
+(function(){
+  let timer=0;
+
+  function isLandscapeK(){
+    return !!(window.matchMedia &&
+      window.matchMedia("(orientation: landscape)").matches &&
+      window.innerWidth>=901);
+  }
+
+  function viewportK(){
+    const vv=window.visualViewport;
+    return {
+      h:Math.floor(vv?.height || document.documentElement.clientHeight || window.innerHeight),
+      w:Math.floor(vv?.width || document.documentElement.clientWidth || window.innerWidth),
+      top:Math.floor(vv?.offsetTop || 0)
+    };
+  }
+
+  function layoutK(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      if(!isLandscapeK()) return;
+
+      try{
+        const root=document.documentElement;
+        const app=document.querySelector(".app");
+        const wrap=document.querySelector(".board-wrap");
+        const board=document.getElementById("board");
+        if(!app || !wrap || !board) return;
+
+        const vv=viewportK();
+        const appRect=app.getBoundingClientRect();
+        const wrapRect=wrap.getBoundingClientRect();
+
+        /* app 實際頂端（已包含上方會員列、棋局資料、解說列） */
+        const appTop=Math.max(0,Math.ceil(appRect.top - vv.top));
+        root.style.setProperty("--jg-k-vh",vv.h+"px");
+        root.style.setProperty("--jg-k-app-top",appTop+"px");
+
+        /* 底部固定有 48px 播放列，再多留 16px 安全邊界 */
+        const visibleH=Math.max(
+          320,
+          Math.floor(vv.h - (wrapRect.top - vv.top) - 48 - 16)
+        );
+
+        const visibleW=Math.max(
+          320,
+          Math.floor(wrapRect.width - 16)
+        );
+
+        /* 再縮 10px，確保最下方第1路與座標完整可見 */
+        const size=Math.max(320,Math.min(visibleH,visibleW)-10);
+
+        root.style.setProperty("--jg-k-board",size+"px");
+
+        requestAnimationFrame(function(){
+          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+            try{
+              if(typeof window[name]==="function") window[name]();
+            }catch(_){}
+          });
+        });
+      }catch(err){
+        console.warn("Beta 3.3.13k landscape layout",err);
+      }
+    },180);
+  }
+
+  function bootK(){
+    layoutK();
+    setTimeout(layoutK,320);
+    setTimeout(layoutK,700);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",bootK,{once:true});
+  }else{
+    bootK();
+  }
+
+  window.addEventListener("orientationchange",bootK,{passive:true});
+  window.addEventListener("resize",layoutK,{passive:true});
+  window.addEventListener("pageshow",bootK,{passive:true});
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize",layoutK,{passive:true});
+  }
 })();
 </script>
 
