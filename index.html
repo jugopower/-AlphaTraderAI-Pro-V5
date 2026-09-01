@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13g">
+<meta name="joygo-classic-commentary-version" content="3.3.13h">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -4933,6 +4933,95 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
   }
   body.landscape-platform-menu #landscapePlatformCloseBtn{
     right:calc(var(--jg-land-right) + 18px)!important;
+  }
+}
+</style>
+
+
+<style id="joygoLandscapeFix313h">
+/* ============================================================
+   Beta 3.3.13h
+   1. 右欄不再重複顯示平台功能
+   2. 棋盤尺寸改由 JS 實測剩餘空間
+   3. 右欄只保留棋鐘 + 平台入口 + 對局操作
+   ============================================================ */
+
+@media (orientation:landscape) and (min-width:901px){
+
+  /* buildTools(rightTools) 產生的整套平台工具全部隱藏。
+     平台工具只允許出現在 topbar 抽屜。 */
+  html:not([data-joygo-guidance="1"]) #rightTools > .tool{
+    display:none!important;
+  }
+
+  /* 對局快捷區一定顯示 */
+  html:not([data-joygo-guidance="1"]) #compactActionPanel{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    gap:6px!important;
+    padding:6px!important;
+    margin:0!important;
+    flex:0 0 auto!important;
+    box-sizing:border-box!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn{
+    display:flex!important;
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-height:42px!important;
+    height:42px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #9a7138!important;
+    border-radius:10px!important;
+    background:linear-gradient(180deg,#2b1b11,#17100c)!important;
+    color:#ffe2a0!important;
+    -webkit-text-fill-color:#ffe2a0!important;
+    opacity:1!important;
+    font-weight:900!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #compactActionPanel .compact-action-title{
+    grid-column:1/-1!important;
+    display:block!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #compactActionPanel button:not(#landscapeBackPlatformBtn){
+    display:flex!important;
+    min-width:0!important;
+    width:100%!important;
+    min-height:39px!important;
+    height:39px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:11px!important;
+  }
+
+  /* 右欄只能在自己的高度內捲動 */
+  html:not([data-joygo-guidance="1"]) #rightTools{
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    box-sizing:border-box!important;
+  }
+
+  /* JS 會直接寫入棋盤 px，因此取消舊版 min(...) 尺寸干擾 */
+  html:not([data-joygo-guidance="1"]) #board{
+    min-width:0!important;
+    min-height:0!important;
+    max-width:none!important;
+    max-height:none!important;
+    aspect-ratio:1/1!important;
+    flex:0 0 auto!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .board-wrap{
+    overflow:hidden!important;
+    min-height:0!important;
+    min-width:0!important;
   }
 }
 </style>
@@ -12956,6 +13045,129 @@ document.addEventListener("click",(ev)=>{
       characterData:false
     });
   }
+})();
+</script>
+
+
+<script id="joygoLandscapeFix313hJS">
+(function(){
+  let t=0;
+
+  function jgIsLandscape313h(){
+    return !!(window.matchMedia &&
+      window.matchMedia("(orientation: landscape)").matches &&
+      window.innerWidth>=901 &&
+      document.documentElement.getAttribute("data-joygo-guidance")!=="1");
+  }
+
+  function layout313h(){
+    clearTimeout(t);
+    t=setTimeout(function(){
+      if(!jgIsLandscape313h()) return;
+
+      try{
+        const wrap=document.querySelector(".board-wrap");
+        const board=document.getElementById("board");
+        const right=document.getElementById("rightTools");
+        const player=document.querySelector(".player");
+        if(!wrap || !board || !right) return;
+
+        /* 真正從目前棋盤容器頂端開始量，
+           不再猜上方狀態列 / 棋局資料 / 解說列高度。 */
+        const wrapRect=wrap.getBoundingClientRect();
+        const rightRect=right.getBoundingClientRect();
+
+        /* 底部保留播放控制列。
+           若 player 被隱藏或高度異常，至少留 54px。 */
+        let bottomReserve=54;
+        if(player){
+          const ph=Math.ceil(player.getBoundingClientRect().height||0);
+          if(ph>20 && ph<120) bottomReserve=Math.max(50,ph+6);
+        }
+
+        const usableH=Math.max(
+          260,
+          Math.floor(window.innerHeight - wrapRect.top - bottomReserve - 8)
+        );
+
+        const usableW=Math.max(
+          260,
+          Math.floor(wrapRect.width - 8)
+        );
+
+        const size=Math.max(260,Math.min(usableH,usableW));
+
+        board.style.setProperty("width",size+"px","important");
+        board.style.setProperty("height",size+"px","important");
+
+        /* 棋盤容器只使用真正可見區 */
+        wrap.style.setProperty("height",usableH+"px","important");
+        wrap.style.setProperty("max-height",usableH+"px","important");
+
+        /* 右欄從目前位置到底部，完整可捲 */
+        const rightH=Math.max(
+          280,
+          Math.floor(window.innerHeight - rightRect.top - 6)
+        );
+        right.style.setProperty("height",rightH+"px","important");
+        right.style.setProperty("max-height",rightH+"px","important");
+
+        requestAnimationFrame(function(){
+          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+            try{
+              if(typeof window[name]==="function") window[name]();
+            }catch(_){}
+          });
+        });
+      }catch(err){
+        console.warn("Beta 3.3.13h layout",err);
+      }
+    },180);
+  }
+
+  /* 清掉右側重複平台鍵：CSS 已隱藏，這裡再做語意標記，
+     不刪 DOM，避免破壞既有事件。 */
+  function normalizeRight313h(){
+    const right=document.getElementById("rightTools");
+    if(!right)return;
+    [...right.children].forEach(function(el){
+      if(el.classList && el.classList.contains("tool")){
+        el.setAttribute("aria-hidden","true");
+        el.tabIndex=-1;
+      }
+    });
+
+    const platform=document.getElementById("landscapeBackPlatformBtn");
+    if(platform){
+      platform.textContent="☰ 平台功能";
+      platform.removeAttribute("aria-hidden");
+      platform.tabIndex=0;
+    }
+  }
+
+  function boot313h(){
+    normalizeRight313h();
+    layout313h();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot313h,{once:true});
+  }else{
+    boot313h();
+  }
+
+  window.addEventListener("orientationchange",function(){
+    setTimeout(boot313h,260);
+    setTimeout(boot313h,650);
+  },{passive:true});
+
+  window.addEventListener("resize",layout313h,{passive:true});
+  window.addEventListener("pageshow",boot313h,{passive:true});
+
+  /* 平台/對局按鈕可能被舊程式晚建立，補抓幾次 */
+  [400,900,1600].forEach(function(ms){
+    setTimeout(boot313h,ms);
+  });
 })();
 </script>
 
