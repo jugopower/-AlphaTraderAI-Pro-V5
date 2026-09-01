@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13d">
+<meta name="joygo-classic-commentary-version" content="3.3.13e">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5833,38 +5833,41 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 </style>
 
 
-<style id="joygoLandscapeFullBoard313d">
+<style id="joygoOrientationStable313e">
+/* ============================================================
+   Beta 3.3.13e｜iPad 直橫式旋轉穩定版
+   原則：
+   - 直式完全沿用 3.3.13c
+   - 橫式只校正尺寸，不重排 DOM
+   - 棋盤完整、右欄完整、旋轉不走位
+   ============================================================ */
+
+:root{
+  --joygo-commentary-h:0px;
+  --joygo-landscape-bottom:52px;
+}
+
 @media (orientation:landscape) and (min-width:901px){
   html,body{
     width:100%!important;
     height:100dvh!important;
-    min-height:100dvh!important;
     overflow:hidden!important;
   }
 
-  #classicCommentaryBar{
-    max-height:84px!important;
-    overflow:auto!important;
-    box-sizing:border-box!important;
-  }
-
+  /* 主畫面只使用真正剩餘高度 */
   .app{
-    height:calc(100dvh - 4px)!important;
+    height:calc(100dvh - var(--joygo-commentary-h))!important;
     min-height:0!important;
-    max-height:calc(100dvh - 4px)!important;
-    grid-template-columns:0 minmax(0,1fr) 250px!important;
-    grid-template-rows:minmax(0,1fr) 48px!important;
+    max-height:calc(100dvh - var(--joygo-commentary-h))!important;
+    grid-template-columns:0 minmax(0,1fr) 238px!important;
+    grid-template-rows:minmax(0,1fr) var(--joygo-landscape-bottom)!important;
     gap:4px!important;
     padding:4px!important;
     overflow:hidden!important;
-    align-items:stretch!important;
   }
 
   .left{
     display:none!important;
-    width:0!important;
-    min-width:0!important;
-    max-width:0!important;
   }
 
   .board-wrap{
@@ -5885,24 +5888,30 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
   }
 
   #board{
-    width:min(calc(100dvh - 62px),calc(100vw - 270px))!important;
-    height:min(calc(100dvh - 62px),calc(100vw - 270px))!important;
-    min-width:0!important;
-    min-height:0!important;
+    width:min(
+      calc(100dvh - var(--joygo-commentary-h) - var(--joygo-landscape-bottom) - 14px),
+      calc(100vw - 258px)
+    )!important;
+    height:min(
+      calc(100dvh - var(--joygo-commentary-h) - var(--joygo-landscape-bottom) - 14px),
+      calc(100vw - 258px)
+    )!important;
     max-width:100%!important;
     max-height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
     aspect-ratio:1/1!important;
-    margin:auto!important;
     flex:0 0 auto!important;
+    margin:auto!important;
   }
 
   .right{
     display:flex!important;
     grid-column:3!important;
     grid-row:1 / span 2!important;
-    width:250px!important;
-    min-width:250px!important;
-    max-width:250px!important;
+    width:238px!important;
+    min-width:238px!important;
+    max-width:238px!important;
     height:100%!important;
     max-height:100%!important;
     padding:6px!important;
@@ -5910,11 +5919,11 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     overflow-y:auto!important;
     overflow-x:hidden!important;
     -webkit-overflow-scrolling:touch!important;
-    overscroll-behavior:contain!important;
     justify-content:flex-start!important;
     box-sizing:border-box!important;
   }
 
+  /* 棋鐘壓縮，不擠掉功能鍵 */
   .right .game-clock-panel{
     position:static!important;
     inset:auto!important;
@@ -5925,99 +5934,44 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     padding:6px!important;
     gap:5px!important;
     flex:0 0 auto!important;
-    box-sizing:border-box!important;
   }
-
   .right .clock-side{
-    min-height:72px!important;
-    height:auto!important;
+    min-height:70px!important;
     padding:5px 6px!important;
-    grid-template-columns:24px 1fr!important;
-    column-gap:6px!important;
+    grid-template-columns:23px 1fr!important;
   }
+  .right .clock-stone{width:22px!important;height:22px!important}
+  .right .clock-name{font-size:11px!important}
+  .right .clock-time{font-size:22px!important}
+  .right .clock-byo{font-size:8px!important;margin-top:2px!important}
 
-  .right .clock-stone{
-    width:23px!important;
-    height:23px!important;
-  }
-
-  .right .clock-name{
-    font-size:11px!important;
-  }
-
-  .right .clock-time{
-    font-size:24px!important;
-    line-height:1!important;
-  }
-
-  .right .clock-byo{
-    font-size:8px!important;
-    margin-top:3px!important;
-  }
-
-  .right .tool,
-  .compact-action-panel button{
-    min-height:40px!important;
-    height:40px!important;
-    padding:4px 5px!important;
-    font-size:12px!important;
-    border-radius:9px!important;
-    flex:0 0 auto!important;
-  }
-
+  /* 右側功能鍵只縮高度，不改排列邏輯 */
   .compact-action-panel{
-    display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:5px!important;
     width:100%!important;
+    gap:5px!important;
     padding:6px!important;
     margin:0!important;
-    box-sizing:border-box!important;
     flex:0 0 auto!important;
   }
-
-  .compact-action-panel .compact-action-title{
-    grid-column:1/-1!important;
-    margin:0!important;
-    padding:0 2px 2px!important;
+  .compact-action-panel button{
+    min-height:38px!important;
+    height:38px!important;
     font-size:11px!important;
+    padding:3px 4px!important;
   }
 
-  .compact-action-panel #scoreGameBtn,
-  .compact-action-panel #calculateResultBtn,
-  .compact-action-panel #saveSgfBtn{
-    grid-column:auto!important;
-  }
-
+  /* 底部播放控制保留一列 */
   .player{
     grid-column:2!important;
     grid-row:2!important;
     width:100%!important;
-    height:48px!important;
-    min-height:48px!important;
-    max-height:48px!important;
+    height:var(--joygo-landscape-bottom)!important;
+    min-height:var(--joygo-landscape-bottom)!important;
+    max-height:var(--joygo-landscape-bottom)!important;
     padding:4px 5px!important;
     gap:4px!important;
     overflow:hidden!important;
-    grid-template-columns:minmax(230px,.9fr) minmax(300px,1.3fr)!important;
-    grid-template-rows:40px!important;
     align-items:center!important;
-    box-sizing:border-box!important;
-  }
-
-  .move-tools{
-    grid-column:1!important;
-    grid-row:1!important;
-    display:grid!important;
-    grid-template-columns:100px 52px minmax(120px,1fr) 76px!important;
-    gap:4px!important;
-    margin:0!important;
-    padding:0!important;
-  }
-
-  .move-tools label{
-    font-size:10px!important;
-    gap:2px!important;
   }
 
   .move-tools input,
@@ -6025,25 +5979,18 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
   .move-tools button{
     height:32px!important;
     min-height:32px!important;
-    padding:2px 5px!important;
-    font-size:11px!important;
   }
 
   .controls{
-    grid-column:2!important;
-    grid-row:1!important;
     height:36px!important;
     min-height:36px!important;
-    gap:4px!important;
   }
-
   .controls button{
     height:34px!important;
     min-height:34px!important;
-    padding:2px!important;
-    font-size:16px!important;
   }
 
+  /* 橫式避免原本大型操作列再佔高度 */
   #gameActionRow,
   .range-row{
     display:none!important;
@@ -6052,19 +5999,23 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 
 @media (orientation:landscape) and (min-width:901px) and (max-width:1180px){
   .app{
-    grid-template-columns:0 minmax(0,1fr) 224px!important;
+    grid-template-columns:0 minmax(0,1fr) 220px!important;
   }
   .right{
-    width:224px!important;
-    min-width:224px!important;
-    max-width:224px!important;
+    width:220px!important;
+    min-width:220px!important;
+    max-width:220px!important;
   }
   #board{
-    width:min(calc(100dvh - 62px),calc(100vw - 244px))!important;
-    height:min(calc(100dvh - 62px),calc(100vw - 244px))!important;
+    width:min(
+      calc(100dvh - var(--joygo-commentary-h) - var(--joygo-landscape-bottom) - 14px),
+      calc(100vw - 240px)
+    )!important;
+    height:min(
+      calc(100dvh - var(--joygo-commentary-h) - var(--joygo-landscape-bottom) - 14px),
+      calc(100vw - 240px)
+    )!important;
   }
-  .right .clock-time{font-size:22px!important}
-  .compact-action-panel button{font-size:11px!important}
 }
 </style>
 
@@ -13969,6 +13920,63 @@ document.addEventListener("click",(ev)=>{
     document.addEventListener("DOMContentLoaded",bind,{once:true});
   }else{
     bind();
+  }
+})();
+</script>
+
+
+<script id="joygoOrientationStable313eJS">
+(function(){
+  let timer=0;
+
+  function refreshJoyGoLayout313e(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      try{
+        const root=document.documentElement;
+        const bar=document.getElementById("classicCommentaryBar");
+        let h=0;
+
+        if(
+          bar &&
+          bar.classList.contains("show") &&
+          window.matchMedia("(orientation: landscape)").matches
+        ){
+          h=Math.ceil(bar.getBoundingClientRect().height||0);
+        }
+
+        root.style.setProperty("--joygo-commentary-h",h+"px");
+
+        /* 讓 canvas 重新依現有容器尺寸繪製 */
+        ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+          try{
+            if(typeof window[name]==="function") window[name]();
+          }catch(_){}
+        });
+      }catch(_){}
+    },260);
+  }
+
+  window.addEventListener("orientationchange",refreshJoyGoLayout313e,{passive:true});
+  window.addEventListener("resize",refreshJoyGoLayout313e,{passive:true});
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",refreshJoyGoLayout313e,{once:true});
+  }else{
+    refreshJoyGoLayout313e();
+  }
+
+  /* 解說列顯示／隱藏時再量一次 */
+  const observerTarget=document.documentElement;
+  if("MutationObserver" in window){
+    const mo=new MutationObserver(function(){
+      refreshJoyGoLayout313e();
+    });
+    mo.observe(observerTarget,{
+      subtree:true,
+      attributes:true,
+      attributeFilter:["class"]
+    });
   }
 })();
 </script>
