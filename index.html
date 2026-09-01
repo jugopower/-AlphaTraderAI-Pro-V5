@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13f">
+<meta name="joygo-classic-commentary-version" content="3.3.13g">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -4756,6 +4756,183 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 @media (orientation:landscape) and (min-width:901px) and (max-width:1180px){
   :root{
     --jg-land-right:220px;
+  }
+}
+</style>
+
+
+<style id="joygoLandscapePrecise313g">
+/* ============================================================
+   Beta 3.3.13g｜iPad 橫式精準高度修正
+   只修：
+   1. 棋盤底部被裁
+   2. 右欄功能被裁
+   3. 平台功能按鈕變白
+   4. 平台功能抽屜遮住棋鐘
+   ============================================================ */
+
+:root{
+  --jg-app-top:0px;
+  --jg-land-right:238px;
+  --jg-land-bottom:54px;
+}
+
+/* 橫式主平台：用 JS 實測 app 距離 viewport 頂端的位置 */
+@media (orientation:landscape) and (min-width:901px){
+
+  html:not([data-joygo-guidance="1"]),
+  html:not([data-joygo-guidance="1"]) body{
+    overflow:hidden!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .app{
+    height:calc(100dvh - var(--jg-app-top) - 4px)!important;
+    max-height:calc(100dvh - var(--jg-app-top) - 4px)!important;
+    min-height:0!important;
+    grid-template-columns:0 minmax(0,1fr) var(--jg-land-right)!important;
+    grid-template-rows:minmax(0,1fr) var(--jg-land-bottom)!important;
+    overflow:hidden!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .board-wrap{
+    min-width:0!important;
+    min-height:0!important;
+    height:100%!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #board{
+    width:min(
+      calc(100dvh - var(--jg-app-top) - var(--jg-land-bottom) - 18px),
+      calc(100vw - var(--jg-land-right) - 22px)
+    )!important;
+    height:min(
+      calc(100dvh - var(--jg-app-top) - var(--jg-land-bottom) - 18px),
+      calc(100vw - var(--jg-land-right) - 22px)
+    )!important;
+    max-width:100%!important;
+    max-height:100%!important;
+    aspect-ratio:1/1!important;
+    object-fit:contain!important;
+    margin:auto!important;
+  }
+
+  /* 右側本身獨立捲動，永遠不把內容裁掉 */
+  html:not([data-joygo-guidance="1"]) .right{
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    padding-bottom:12px!important;
+  }
+
+  /* 平台功能按鈕固定深色，不因 focus/active/disabled 變白 */
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-height:42px!important;
+    height:42px!important;
+    margin:0!important;
+    padding:5px 8px!important;
+    border:1px solid #9a7138!important;
+    border-radius:10px!important;
+    background:linear-gradient(180deg,#2b1b11,#17100c)!important;
+    color:#ffe2a0!important;
+    -webkit-text-fill-color:#ffe2a0!important;
+    opacity:1!important;
+    box-shadow:none!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:hover,
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:focus,
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:active,
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:disabled{
+    background:linear-gradient(180deg,#2b1b11,#17100c)!important;
+    color:#ffe2a0!important;
+    -webkit-text-fill-color:#ffe2a0!important;
+    opacity:1!important;
+  }
+
+  /* 平台功能抽屜移到右側欄「左邊」，不再蓋住棋鐘 */
+  body.landscape-platform-menu .topbar{
+    display:grid!important;
+    position:fixed!important;
+    top:calc(var(--jg-app-top) + 8px)!important;
+    right:calc(var(--jg-land-right) + 12px)!important;
+    left:auto!important;
+    bottom:auto!important;
+    width:min(360px,36vw)!important;
+    min-width:320px!important;
+    max-width:360px!important;
+    max-height:calc(100dvh - var(--jg-app-top) - 16px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:minmax(64px,auto)!important;
+    gap:7px!important;
+    padding:52px 9px 10px!important;
+    background:linear-gradient(180deg,#1c130e,#0b0908)!important;
+    border:1px solid #8b6735!important;
+    border-radius:16px!important;
+    box-shadow:0 18px 55px rgba(0,0,0,.62)!important;
+    z-index:90000!important;
+  }
+
+  body.landscape-platform-menu .topbar .tool{
+    display:flex!important;
+    min-width:0!important;
+    width:100%!important;
+    min-height:64px!important;
+    height:auto!important;
+    padding:6px 5px!important;
+    background:#151312!important;
+    color:#fff1cf!important;
+    border:1px solid #6d552f!important;
+    border-radius:11px!important;
+  }
+
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    display:flex!important;
+    position:fixed!important;
+    top:calc(var(--jg-app-top) + 17px)!important;
+    right:calc(var(--jg-land-right) + 22px)!important;
+    width:94px!important;
+    min-width:94px!important;
+    height:32px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:16px!important;
+    background:#3a2516!important;
+    color:#fff1cf!important;
+    border:1px solid #a77739!important;
+    z-index:90010!important;
+  }
+
+  /* 平台抽屜打開時，右側棋鐘/功能欄保持原位，不被 topbar 接管 */
+  body.landscape-platform-menu .right{
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+}
+
+@media (orientation:landscape) and (min-width:901px) and (max-width:1180px){
+  :root{--jg-land-right:220px}
+  body.landscape-platform-menu .topbar{
+    right:calc(var(--jg-land-right) + 8px)!important;
+    width:min(340px,38vw)!important;
+    min-width:300px!important;
+  }
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    right:calc(var(--jg-land-right) + 18px)!important;
   }
 }
 </style>
@@ -12718,6 +12895,66 @@ document.addEventListener("click",(ev)=>{
         characterData:true
       });
     }
+  }
+})();
+</script>
+
+
+<script id="joygoLandscapePrecise313gJS">
+(function(){
+  let timer=0;
+
+  function recalc313g(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      try{
+        const root=document.documentElement;
+        const app=document.querySelector(".app");
+        const isLand=window.matchMedia &&
+          window.matchMedia("(orientation: landscape)").matches &&
+          window.innerWidth>=901;
+
+        if(!isLand || !app){
+          root.style.setProperty("--jg-app-top","0px");
+          return;
+        }
+
+        /* 實際量測主畫面從 viewport 哪裡開始：
+           包含在線資訊、棋局資訊、逐手解說等所有上方區塊。 */
+        const top=Math.max(0,Math.ceil(app.getBoundingClientRect().top));
+        root.style.setProperty("--jg-app-top",top+"px");
+
+        /* 等尺寸固定後重新繪棋盤 */
+        requestAnimationFrame(function(){
+          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+            try{
+              if(typeof window[name]==="function")window[name]();
+            }catch(_){}
+          });
+        });
+      }catch(_){}
+    },180);
+  }
+
+  window.addEventListener("orientationchange",recalc313g,{passive:true});
+  window.addEventListener("resize",recalc313g,{passive:true});
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",recalc313g,{once:true});
+  }else{
+    recalc313g();
+  }
+
+  /* 上方狀態列 / 解說內容有變化時重新量高度 */
+  if("MutationObserver" in window){
+    const mo=new MutationObserver(recalc313g);
+    mo.observe(document.body,{
+      subtree:true,
+      childList:true,
+      attributes:true,
+      attributeFilter:["class","style"],
+      characterData:false
+    });
   }
 })();
 </script>
