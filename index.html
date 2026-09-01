@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.14a">
+<meta name="joygo-classic-commentary-version" content="3.3.13j">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -35,7 +35,7 @@
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 
-<meta name="app-version" content="20260901-JoyGo-Beta-3.3.14a">
+<meta name="app-version" content="20260901-JoyGo-Beta-3.3.13">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
 <title>Joy Go Platform V1.0 Beta｜Joy Go Platform｜朱老師圍棋 AI 教學平台</title>
 <style>
@@ -4450,167 +4450,90 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 </style>
 
 
-<style id="joygoLayout314">
+<style id="joygoOrientationStable313e">
 /* ============================================================
-   Joy Go Platform Beta 3.3.14
-   iPad 直橫式乾淨重整版
-   - 直式一套
-   - 橫式一套
-   - 不再疊加多個舊版 landscape 規則
+   Beta 3.3.13e｜iPad 直橫式旋轉穩定版
+   原則：
+   - 直式完全沿用 3.3.13c
+   - 橫式只校正尺寸，不重排 DOM
+   - 棋盤完整、右欄完整、旋轉不走位
    ============================================================ */
 
 :root{
-  --jg314-right:238px;
-  --jg314-bottom:50px;
-  --jg314-top:0px;
-  --jg314-vh:100dvh;
-  --jg314-board:620px;
+  --joygo-commentary-h:0px;
+  --joygo-landscape-bottom:52px;
 }
 
-/* ---------- 直式 ---------- */
-@media (orientation:portrait), (max-width:900px){
-  html,body{
-    width:100%!important;
-    min-height:100dvh!important;
-    height:auto!important;
-    overflow-x:hidden!important;
-    overflow-y:auto!important;
-  }
 
-  .app{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    grid-template-rows:auto auto auto!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:100dvh!important;
-    max-height:none!important;
-    gap:6px!important;
-    padding:6px!important;
-    overflow:visible!important;
-  }
 
-  .left,
-  .right,
-  .info-collapse{
-    display:none!important;
-  }
 
-  .board-wrap{
-    grid-column:1!important;
-    grid-row:2!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:0!important;
-    max-height:none!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    padding:3px!important;
-    overflow:hidden!important;
-  }
+</style>
 
-  #board{
-    width:min(92vw,72dvh)!important;
-    height:auto!important;
-    aspect-ratio:1/1!important;
-    max-width:100%!important;
-    max-height:none!important;
-    margin:0 auto!important;
-    touch-action:none!important;
-  }
 
-  .player{
-    grid-column:1!important;
-    grid-row:3!important;
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    grid-template-rows:auto auto auto auto!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:0!important;
-    max-height:none!important;
-    gap:6px!important;
-    padding:6px!important;
-    overflow:visible!important;
-  }
+<style id="joygoLandscapeFinal313f">
+/* ============================================================
+   Beta 3.3.13f｜iPad 橫式版面清理版
+   主平台橫式只由此區塊控制。
+   直式與 guidance iframe 不受影響。
+   ============================================================ */
 
-  .move-tools{
-    display:grid!important;
-    grid-template-columns:minmax(112px,.8fr) 58px minmax(150px,1.2fr)!important;
-    gap:5px!important;
-  }
-
-  .controls{
-    display:grid!important;
-    grid-template-columns:repeat(5,1fr)!important;
-    gap:5px!important;
-  }
-
-  #gameActionRow{
-    display:grid!important;
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    gap:6px!important;
-  }
-
-  #gameActionRow > button{
-    min-height:40px!important;
-    height:40px!important;
-    background:#21150f!important;
-    color:#fff4dc!important;
-    -webkit-text-fill-color:#fff4dc!important;
-    border:1px solid #6c4b2c!important;
-    opacity:1!important;
-  }
-
-  #gameActionRow > button:disabled,
-  #gameActionRow > button[disabled]{
-    background:#1b1714!important;
-    color:#b9afa3!important;
-    -webkit-text-fill-color:#b9afa3!important;
-    border-color:#4d4238!important;
-    opacity:.72!important;
-  }
-
-  .range-row{
-    display:grid!important;
-    grid-template-columns:1fr auto!important;
-  }
+:root{
+  --jg-land-right:238px;
+  --jg-land-bottom:54px;
+  --jg-land-top-extra:0px;
 }
 
-/* ---------- 橫式 ---------- */
 @media (orientation:landscape) and (min-width:901px){
-  html,body{
+
+  html:not([data-joygo-guidance="1"]),
+  html:not([data-joygo-guidance="1"]) body{
     width:100%!important;
-    height:100%!important;
-    min-height:0!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
     overflow:hidden!important;
   }
 
-  .app{
-    position:fixed!important;
-    left:0!important;
-    right:0!important;
-    top:var(--jg314-top)!important;
-    height:calc(var(--jg314-vh) - var(--jg314-top))!important;
+  /* 解說列在正常文流頂端，不覆蓋棋盤 */
+  html:not([data-joygo-guidance="1"]) #classicCommentaryBar{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-height:78px!important;
+    overflow:auto!important;
+    box-sizing:border-box!important;
+    flex:0 0 auto!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .app{
+    width:100%!important;
+    height:calc(100dvh - var(--jg-land-top-extra))!important;
     min-height:0!important;
-    max-height:calc(var(--jg314-vh) - var(--jg314-top))!important;
+    max-height:calc(100dvh - var(--jg-land-top-extra))!important;
     display:grid!important;
-    grid-template-columns:minmax(0,1fr) var(--jg314-right)!important;
-    grid-template-rows:minmax(0,1fr) var(--jg314-bottom)!important;
+    grid-template-columns:0 minmax(0,1fr) var(--jg-land-right)!important;
+    grid-template-rows:minmax(0,1fr) var(--jg-land-bottom)!important;
     gap:4px!important;
     padding:4px!important;
+    margin:0!important;
     overflow:hidden!important;
+    align-items:stretch!important;
     box-sizing:border-box!important;
-    background:#0b0908!important;
   }
 
-  .left{
+  html:not([data-joygo-guidance="1"]) .left{
     display:none!important;
+    width:0!important;
+    min-width:0!important;
+    max-width:0!important;
+    padding:0!important;
+    border:0!important;
+    overflow:hidden!important;
   }
 
-  .board-wrap{
-    grid-column:1!important;
+  /* 完整正方形棋盤 */
+  html:not([data-joygo-guidance="1"]) .board-wrap{
+    grid-column:2!important;
     grid-row:1!important;
     width:100%!important;
     height:100%!important;
@@ -4618,50 +4541,63 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     min-height:0!important;
     max-width:100%!important;
     max-height:100%!important;
+    margin:0!important;
+    padding:2px!important;
     display:flex!important;
     align-items:center!important;
     justify-content:center!important;
-    padding:2px!important;
-    margin:0!important;
     overflow:hidden!important;
     box-sizing:border-box!important;
+    position:relative!important;
   }
 
-  #board{
-    width:var(--jg314-board)!important;
-    height:var(--jg314-board)!important;
+  html:not([data-joygo-guidance="1"]) #board{
+    display:block!important;
+    width:min(
+      calc(100dvh - var(--jg-land-top-extra) - var(--jg-land-bottom) - 14px),
+      calc(100vw - var(--jg-land-right) - 18px)
+    )!important;
+    height:min(
+      calc(100dvh - var(--jg-land-top-extra) - var(--jg-land-bottom) - 14px),
+      calc(100vw - var(--jg-land-right) - 18px)
+    )!important;
     min-width:0!important;
     min-height:0!important;
-    max-width:none!important;
-    max-height:none!important;
+    max-width:100%!important;
+    max-height:100%!important;
     aspect-ratio:1/1!important;
     margin:auto!important;
     flex:0 0 auto!important;
     object-fit:contain!important;
   }
 
-  .right{
+  /* 右側：棋鐘 + 功能鍵固定在右欄，不進棋盤 */
+  html:not([data-joygo-guidance="1"]) .right{
     display:flex!important;
-    grid-column:2!important;
+    grid-column:3!important;
     grid-row:1 / span 2!important;
-    width:var(--jg314-right)!important;
-    min-width:var(--jg314-right)!important;
-    max-width:var(--jg314-right)!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:var(--jg-land-right)!important;
+    min-width:var(--jg-land-right)!important;
+    max-width:var(--jg-land-right)!important;
     height:100%!important;
     min-height:0!important;
     max-height:100%!important;
-    flex-direction:column!important;
-    justify-content:flex-start!important;
-    gap:6px!important;
     padding:6px!important;
     margin:0!important;
+    gap:6px!important;
+    flex-direction:column!important;
+    justify-content:flex-start!important;
     overflow-y:auto!important;
     overflow-x:hidden!important;
     -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
     box-sizing:border-box!important;
   }
 
-  .right .game-clock-panel{
+  html:not([data-joygo-guidance="1"]) .right .game-clock-panel{
     display:flex!important;
     position:static!important;
     inset:auto!important;
@@ -4671,111 +4607,126 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     max-width:100%!important;
     height:auto!important;
     padding:6px!important;
+    margin:0!important;
     gap:5px!important;
+    flex:0 0 auto!important;
     flex-direction:column!important;
+    box-sizing:border-box!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .right .clock-side{
+    display:grid!important;
+    grid-template-columns:24px 1fr!important;
+    grid-template-areas:'stone name' 'stone time' 'byo byo'!important;
+    min-height:68px!important;
+    height:auto!important;
+    padding:5px 6px!important;
+    column-gap:6px!important;
+    box-sizing:border-box!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .right .clock-stone{
+    width:22px!important;
+    height:22px!important;
+  }
+  html:not([data-joygo-guidance="1"]) .right .clock-name{
+    font-size:11px!important;
+  }
+  html:not([data-joygo-guidance="1"]) .right .clock-time{
+    font-size:22px!important;
+    line-height:1!important;
+  }
+  html:not([data-joygo-guidance="1"]) .right .clock-byo{
+    font-size:8px!important;
+    margin-top:2px!important;
+  }
+
+  /* 原本右側工具不隱藏；維持一欄完整排列 */
+  html:not([data-joygo-guidance="1"]) .right > .tool{
+    display:flex!important;
+    min-height:42px!important;
+    height:42px!important;
+    padding:4px!important;
+    font-size:11px!important;
     flex:0 0 auto!important;
   }
 
-  .right .clock-side{
-    min-height:66px!important;
-    height:auto!important;
-    padding:5px 6px!important;
-    grid-template-columns:23px 1fr!important;
-  }
-
-  .right .clock-stone{width:22px!important;height:22px!important}
-  .right .clock-name{font-size:11px!important}
-  .right .clock-time{font-size:22px!important}
-  .right .clock-byo{font-size:8px!important}
-
-  /* 右欄隱藏重複平台工具，只保留一個平台入口 */
-  #rightTools > .tool{
-    display:none!important;
-  }
-
-  #compactActionPanel{
+  html:not([data-joygo-guidance="1"]) .compact-action-panel{
     display:grid!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
     width:100%!important;
-    gap:6px!important;
+    gap:5px!important;
     padding:6px!important;
     margin:0!important;
-    box-sizing:border-box!important;
     flex:0 0 auto!important;
+    box-sizing:border-box!important;
   }
 
-  #landscapeBackPlatformBtn{
-    display:flex!important;
+  html:not([data-joygo-guidance="1"]) .compact-action-panel .compact-action-title{
     grid-column:1/-1!important;
-    width:100%!important;
-    min-height:42px!important;
-    height:42px!important;
+    margin:0!important;
+    padding:0 2px 2px!important;
+    font-size:11px!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .compact-action-panel button{
+    display:flex!important;
     align-items:center!important;
     justify-content:center!important;
-    background:#21150f!important;
-    color:#fff4dc!important;
-    -webkit-text-fill-color:#fff4dc!important;
-    border:1px solid #7a5a35!important;
-    opacity:1!important;
-  }
-
-  #compactActionPanel .compact-action-title{
-    display:block!important;
-    grid-column:1/-1!important;
-    color:#d6c2a3!important;
-  }
-
-  #compactActionPanel button{
-    display:flex!important;
-    width:100%!important;
     min-width:0!important;
+    width:100%!important;
     min-height:38px!important;
     height:38px!important;
-    align-items:center!important;
-    justify-content:center!important;
-    background:#21150f!important;
-    color:#fff4dc!important;
-    -webkit-text-fill-color:#fff4dc!important;
-    border:1px solid #6c4b2c!important;
-    opacity:1!important;
+    padding:3px 4px!important;
+    font-size:11px!important;
+    border-radius:9px!important;
   }
 
-  #compactActionPanel button:disabled,
-  #compactActionPanel button[disabled]{
-    background:#1b1714!important;
-    color:#b9afa3!important;
-    -webkit-text-fill-color:#b9afa3!important;
-    border-color:#4d4238!important;
-    opacity:.72!important;
-  }
-
-  .player{
+  /* 底部只留播放／手順控制 */
+  html:not([data-joygo-guidance="1"]) .player{
     display:grid!important;
-    grid-column:1!important;
+    grid-column:2!important;
     grid-row:2!important;
     width:100%!important;
-    height:var(--jg314-bottom)!important;
-    min-height:var(--jg314-bottom)!important;
-    max-height:var(--jg314-bottom)!important;
-    grid-template-columns:minmax(260px,1fr) minmax(300px,1.25fr)!important;
-    grid-template-rows:40px!important;
-    gap:4px!important;
+    height:var(--jg-land-bottom)!important;
+    min-height:var(--jg-land-bottom)!important;
+    max-height:var(--jg-land-bottom)!important;
     padding:4px 5px!important;
+    gap:4px!important;
     margin:0!important;
     overflow:hidden!important;
+    grid-template-columns:minmax(260px,1fr) minmax(300px,1.25fr)!important;
+    grid-template-rows:42px!important;
     align-items:center!important;
     box-sizing:border-box!important;
   }
 
-  .move-tools{
+  html:not([data-joygo-guidance="1"]) .move-tools{
     display:grid!important;
     grid-column:1!important;
     grid-row:1!important;
     grid-template-columns:105px 54px minmax(120px,1fr) 82px!important;
     gap:4px!important;
+    margin:0!important;
+    padding:0!important;
+    align-items:center!important;
   }
 
-  .controls{
+  html:not([data-joygo-guidance="1"]) .move-tools label{
+    font-size:10px!important;
+    gap:2px!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .move-tools input,
+  html:not([data-joygo-guidance="1"]) .move-tools select,
+  html:not([data-joygo-guidance="1"]) .move-tools button{
+    height:32px!important;
+    min-height:32px!important;
+    padding:2px 5px!important;
+    font-size:11px!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .controls{
     display:grid!important;
     grid-column:2!important;
     grid-row:1!important;
@@ -4785,30 +4736,147 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     gap:4px!important;
   }
 
-  .controls button{
+  html:not([data-joygo-guidance="1"]) .controls button{
     height:34px!important;
     min-height:34px!important;
-    background:#21150f!important;
-    color:#fff4dc!important;
-    -webkit-text-fill-color:#fff4dc!important;
-    border:1px solid #6c4b2c!important;
+    padding:2px!important;
+    font-size:16px!important;
   }
 
-  .player #gameActionRow,
-  .range-row{
+  html:not([data-joygo-guidance="1"]) #gameActionRow,
+  html:not([data-joygo-guidance="1"]) .range-row{
     display:none!important;
   }
 
-  /* 平台抽屜固定在棋盤區右上，不壓右側棋鐘 */
-  body.landscape-platform-menu .topbar{
-    position:fixed!important;
-    top:calc(var(--jg314-top) + 8px)!important;
-    right:calc(var(--jg314-right) + 12px)!important;
-    left:auto!important;
-    width:min(360px,36vw)!important;
-    max-height:calc(var(--jg314-vh) - var(--jg314-top) - 16px)!important;
+  html:not([data-joygo-guidance="1"]) .info-collapse{
+    display:none!important;
+  }
+}
+
+@media (orientation:landscape) and (min-width:901px) and (max-width:1180px){
+  :root{
+    --jg-land-right:220px;
+  }
+}
+</style>
+
+
+<style id="joygoLandscapePrecise313g">
+/* ============================================================
+   Beta 3.3.13g｜iPad 橫式精準高度修正
+   只修：
+   1. 棋盤底部被裁
+   2. 右欄功能被裁
+   3. 平台功能按鈕變白
+   4. 平台功能抽屜遮住棋鐘
+   ============================================================ */
+
+:root{
+  --jg-app-top:0px;
+  --jg-land-right:238px;
+  --jg-land-bottom:54px;
+}
+
+/* 橫式主平台：用 JS 實測 app 距離 viewport 頂端的位置 */
+@media (orientation:landscape) and (min-width:901px){
+
+  html:not([data-joygo-guidance="1"]),
+  html:not([data-joygo-guidance="1"]) body{
+    overflow:hidden!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .app{
+    height:calc(100dvh - var(--jg-app-top) - 4px)!important;
+    max-height:calc(100dvh - var(--jg-app-top) - 4px)!important;
+    min-height:0!important;
+    grid-template-columns:0 minmax(0,1fr) var(--jg-land-right)!important;
+    grid-template-rows:minmax(0,1fr) var(--jg-land-bottom)!important;
+    overflow:hidden!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) .board-wrap{
+    min-width:0!important;
+    min-height:0!important;
+    height:100%!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #board{
+    width:min(
+      calc(100dvh - var(--jg-app-top) - var(--jg-land-bottom) - 18px),
+      calc(100vw - var(--jg-land-right) - 22px)
+    )!important;
+    height:min(
+      calc(100dvh - var(--jg-app-top) - var(--jg-land-bottom) - 18px),
+      calc(100vw - var(--jg-land-right) - 22px)
+    )!important;
+    max-width:100%!important;
+    max-height:100%!important;
+    aspect-ratio:1/1!important;
+    object-fit:contain!important;
+    margin:auto!important;
+  }
+
+  /* 右側本身獨立捲動，永遠不把內容裁掉 */
+  html:not([data-joygo-guidance="1"]) .right{
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
     overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    padding-bottom:12px!important;
+  }
+
+  /* 平台功能按鈕固定深色，不因 focus/active/disabled 變白 */
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-height:42px!important;
+    height:42px!important;
+    margin:0!important;
+    padding:5px 8px!important;
+    border:1px solid #9a7138!important;
+    border-radius:10px!important;
+    background:linear-gradient(180deg,#2b1b11,#17100c)!important;
+    color:#ffe2a0!important;
+    -webkit-text-fill-color:#ffe2a0!important;
+    opacity:1!important;
+    box-shadow:none!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:hover,
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:focus,
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:active,
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn:disabled{
+    background:linear-gradient(180deg,#2b1b11,#17100c)!important;
+    color:#ffe2a0!important;
+    -webkit-text-fill-color:#ffe2a0!important;
+    opacity:1!important;
+  }
+
+  /* 平台功能抽屜移到右側欄「左邊」，不再蓋住棋鐘 */
+  body.landscape-platform-menu .topbar{
+    display:grid!important;
+    position:fixed!important;
+    top:calc(var(--jg-app-top) + 8px)!important;
+    right:calc(var(--jg-land-right) + 12px)!important;
+    left:auto!important;
+    bottom:auto!important;
+    width:min(360px,36vw)!important;
+    min-width:320px!important;
+    max-width:360px!important;
+    max-height:calc(100dvh - var(--jg-app-top) - 16px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:minmax(64px,auto)!important;
     gap:7px!important;
     padding:52px 9px 10px!important;
     background:linear-gradient(180deg,#1c130e,#0b0908)!important;
@@ -4817,88 +4885,194 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     box-shadow:0 18px 55px rgba(0,0,0,.62)!important;
     z-index:90000!important;
   }
+
+  body.landscape-platform-menu .topbar .tool{
+    display:flex!important;
+    min-width:0!important;
+    width:100%!important;
+    min-height:64px!important;
+    height:auto!important;
+    padding:6px 5px!important;
+    background:#151312!important;
+    color:#fff1cf!important;
+    border:1px solid #6d552f!important;
+    border-radius:11px!important;
+  }
+
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    display:flex!important;
+    position:fixed!important;
+    top:calc(var(--jg-app-top) + 17px)!important;
+    right:calc(var(--jg-land-right) + 22px)!important;
+    width:94px!important;
+    min-width:94px!important;
+    height:32px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:16px!important;
+    background:#3a2516!important;
+    color:#fff1cf!important;
+    border:1px solid #a77739!important;
+    z-index:90010!important;
+  }
+
+  /* 平台抽屜打開時，右側棋鐘/功能欄保持原位，不被 topbar 接管 */
+  body.landscape-platform-menu .right{
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
 }
 
 @media (orientation:landscape) and (min-width:901px) and (max-width:1180px){
-  :root{--jg314-right:220px}
+  :root{--jg-land-right:220px}
+  body.landscape-platform-menu .topbar{
+    right:calc(var(--jg-land-right) + 8px)!important;
+    width:min(340px,38vw)!important;
+    min-width:300px!important;
+  }
+  body.landscape-platform-menu #landscapePlatformCloseBtn{
+    right:calc(var(--jg-land-right) + 18px)!important;
+  }
 }
 </style>
 
 
-<style id="joygoLayout314a">
-/* Beta 3.3.14a｜橫式裁切根因修正版
-   只修橫式：
-   1. 隱藏底部後加進來的多餘列
-   2. 棋盤依 board-wrap 實際空間計算
-   3. 直式完全不動
-*/
-
-:root{
-  --jg314a-board:560px;
-}
+<style id="joygoLandscapeFix313h">
+/* ============================================================
+   Beta 3.3.13h
+   1. 右欄不再重複顯示平台功能
+   2. 棋盤尺寸改由 JS 實測剩餘空間
+   3. 右欄只保留棋鐘 + 平台入口 + 對局操作
+   ============================================================ */
 
 @media (orientation:landscape) and (min-width:901px){
-  /* 底部播放器只保留 move-tools + controls */
-  .player{
-    grid-template-columns:minmax(260px,1fr) minmax(300px,1.25fr)!important;
-    grid-template-rows:40px!important;
-    height:48px!important;
-    min-height:48px!important;
-    max-height:48px!important;
-    overflow:hidden!important;
-    align-items:center!important;
-    padding:4px 5px!important;
-  }
 
-  .player > #gameActionRow,
-  .player > .range-row,
-  .player > #trialModeBar,
-  .player > #scoringModeBar,
-  .player > #jgMoreGameToggle,
-  .player > #jgRecordToggle,
-  .player > #joygoConfirmMoveToggle,
-  .player > #confirmMoveToggle,
-  .player > #moveConfirmToggle,
-  .player > #landingConfirmToggle{
+  /* buildTools(rightTools) 產生的整套平台工具全部隱藏。
+     平台工具只允許出現在 topbar 抽屜。 */
+  html:not([data-joygo-guidance="1"]) #rightTools > .tool{
     display:none!important;
   }
 
-  /* 確保底部不再長出額外空間 */
-  .player.jg-more-open{
-    height:48px!important;
-    min-height:48px!important;
-    max-height:48px!important;
-    overflow:hidden!important;
+  /* 對局快捷區一定顯示 */
+  html:not([data-joygo-guidance="1"]) #compactActionPanel{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    gap:6px!important;
+    padding:6px!important;
+    margin:0!important;
+    flex:0 0 auto!important;
+    box-sizing:border-box!important;
   }
 
-  .board-wrap{
-    overflow:hidden!important;
-    min-height:0!important;
-    min-width:0!important;
+  html:not([data-joygo-guidance="1"]) #landscapeBackPlatformBtn{
     display:flex!important;
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-height:42px!important;
+    height:42px!important;
     align-items:center!important;
     justify-content:center!important;
+    border:1px solid #9a7138!important;
+    border-radius:10px!important;
+    background:linear-gradient(180deg,#2b1b11,#17100c)!important;
+    color:#ffe2a0!important;
+    -webkit-text-fill-color:#ffe2a0!important;
+    opacity:1!important;
+    font-weight:900!important;
   }
 
-  #board{
-    width:var(--jg314a-board)!important;
-    height:var(--jg314a-board)!important;
-    max-width:none!important;
-    max-height:none!important;
+  html:not([data-joygo-guidance="1"]) #compactActionPanel .compact-action-title{
+    grid-column:1/-1!important;
+    display:block!important;
+  }
+
+  html:not([data-joygo-guidance="1"]) #compactActionPanel button:not(#landscapeBackPlatformBtn){
+    display:flex!important;
+    min-width:0!important;
+    width:100%!important;
+    min-height:39px!important;
+    height:39px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:11px!important;
+  }
+
+  /* 右欄只能在自己的高度內捲動 */
+  html:not([data-joygo-guidance="1"]) #rightTools{
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    box-sizing:border-box!important;
+  }
+
+  /* JS 會直接寫入棋盤 px，因此取消舊版 min(...) 尺寸干擾 */
+  html:not([data-joygo-guidance="1"]) #board{
     min-width:0!important;
     min-height:0!important;
+    max-width:none!important;
+    max-height:none!important;
     aspect-ratio:1/1!important;
-    margin:auto!important;
     flex:0 0 auto!important;
   }
 
-  /* 保險：右欄維持同高捲動 */
-  .right{
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
+  html:not([data-joygo-guidance="1"]) .board-wrap{
+    overflow:hidden!important;
     min-height:0!important;
-    max-height:100%!important;
+    min-width:0!important;
   }
+}
+</style>
+
+
+
+
+
+<style id="joygoFinalLayout313j">
+@media (orientation:portrait), (max-width:900px){
+  html,body{overflow-y:auto!important;overflow-x:hidden!important;height:auto!important;min-height:100dvh!important}
+  .app{height:auto!important;min-height:100dvh!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:68px auto auto!important;gap:6px!important;padding:6px!important;overflow:visible!important}
+  .topbar{grid-column:1!important;grid-row:1!important;height:68px!important;min-height:68px!important}
+  .left,.right,.info-collapse{display:none!important}
+  .board-wrap{grid-column:1!important;grid-row:2!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;padding:3px!important;overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  #board{display:block!important;width:min(92vw,72dvh)!important;height:auto!important;max-width:100%!important;max-height:none!important;aspect-ratio:1/1!important;object-fit:contain!important;margin:0 auto!important;touch-action:none!important}
+  .player{grid-column:1!important;grid-row:3!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:auto auto auto auto!important;gap:6px!important;padding:6px!important;overflow:visible!important}
+  .move-tools{display:grid!important;grid-template-columns:minmax(112px,.8fr) 58px minmax(150px,1.2fr)!important;gap:5px!important}
+  .controls{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:5px!important}
+  #gameActionRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;min-height:0!important;height:auto!important}
+  #gameActionRow > button{display:flex!important;min-height:40px!important;height:40px!important;align-items:center!important;justify-content:center!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #6c4b2c!important;opacity:1!important}
+  #gameActionRow > button:disabled,#gameActionRow > button[disabled]{background:#1b1714!important;color:#b9afa3!important;-webkit-text-fill-color:#b9afa3!important;border-color:#4d4238!important;opacity:.72!important}
+  .range-row{display:grid!important;grid-template-columns:1fr auto!important;min-height:28px!important;height:28px!important}
+}
+@media (orientation:landscape) and (min-width:901px){
+  html,body{overflow:hidden!important;width:100%!important;height:100dvh!important}
+  .app{height:100dvh!important;max-height:100dvh!important;min-height:0!important;display:grid!important;grid-template-columns:0 minmax(0,1fr) 238px!important;grid-template-rows:minmax(0,1fr) 48px!important;gap:4px!important;padding:4px!important;overflow:hidden!important}
+  .left{display:none!important}
+  .board-wrap{grid-column:2!important;grid-row:1!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;padding:2px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  #board{width:min(calc(100dvh - 62px),calc(100vw - 258px))!important;height:min(calc(100dvh - 62px),calc(100vw - 258px))!important;min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;aspect-ratio:1/1!important;object-fit:contain!important;margin:auto!important;flex:0 0 auto!important}
+  .right{display:flex!important;grid-column:3!important;grid-row:1 / span 2!important;width:238px!important;min-width:238px!important;max-width:238px!important;height:100%!important;min-height:0!important;max-height:100%!important;overflow-y:auto!important;overflow-x:hidden!important;padding:6px!important;gap:6px!important;flex-direction:column!important;justify-content:flex-start!important}
+  .right .game-clock-panel{display:flex!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;min-width:0!important;max-width:100%!important;padding:6px!important;gap:5px!important;flex-direction:column!important;flex:0 0 auto!important}
+  .right .clock-side{min-height:68px!important;padding:5px 6px!important;grid-template-columns:23px 1fr!important}
+  .right .clock-time{font-size:22px!important}.right .clock-stone{width:22px!important;height:22px!important}.right .clock-name{font-size:11px!important}.right .clock-byo{font-size:8px!important}
+  #rightTools > .tool{display:none!important}
+  #compactActionPanel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;gap:6px!important;padding:6px!important;margin:0!important;flex:0 0 auto!important}
+  #landscapeBackPlatformBtn{display:flex!important;grid-column:1/-1!important;width:100%!important;min-height:42px!important;height:42px!important;align-items:center!important;justify-content:center!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #7a5a35!important;opacity:1!important}
+  #compactActionPanel .compact-action-title{display:block!important;grid-column:1/-1!important;color:#d6c2a3!important}
+  #compactActionPanel button{display:flex!important;width:100%!important;min-width:0!important;min-height:39px!important;height:39px!important;align-items:center!important;justify-content:center!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #6c4b2c!important;opacity:1!important;box-shadow:none!important}
+  #compactActionPanel button:disabled,#compactActionPanel button[disabled]{background:#1b1714!important;color:#b9afa3!important;-webkit-text-fill-color:#b9afa3!important;border-color:#4d4238!important;opacity:.72!important}
+  .player{display:grid!important;grid-column:2!important;grid-row:2!important;width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:4px 5px!important;overflow:hidden!important;grid-template-columns:minmax(260px,1fr) minmax(300px,1.25fr)!important;grid-template-rows:40px!important;align-items:center!important}
+  .player #gameActionRow{display:none!important}
+  .move-tools{display:grid!important;grid-column:1!important;grid-row:1!important;grid-template-columns:105px 54px minmax(120px,1fr) 82px!important;gap:4px!important}
+  .controls{display:grid!important;grid-column:2!important;grid-row:1!important;grid-template-columns:repeat(5,1fr)!important;height:36px!important;min-height:36px!important;gap:4px!important}
+  .controls button{height:34px!important;min-height:34px!important;background:#21150f!important;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;border:1px solid #6c4b2c!important}
+  .range-row{display:none!important}
+}
+@media (orientation:landscape) and (min-width:901px) and (max-width:1180px){
+  .app{grid-template-columns:0 minmax(0,1fr) 220px!important}
+  .right{width:220px!important;min-width:220px!important;max-width:220px!important}
+  #board{width:min(calc(100dvh - 62px),calc(100vw - 240px))!important;height:min(calc(100dvh - 62px),calc(100vw - 240px))!important}
 }
 </style>
 
@@ -12754,177 +12928,239 @@ document.addEventListener("click",(ev)=>{
 </script>
 
 
-
-
-
-<script id="joygoLayout314JS">
+<script id="joygoClassicLandscape313b">
+/* Beta 3.3.13b
+   iPad / 平板橫式：
+   名局館按「載入」或「一鍵播放」後，自動關閉名局館並回到棋盤。
+   不改棋盤、真人對弈、棋鐘核心。
+*/
 (function(){
-  let timer=0;
-
-  function isLandscape314(){
-    return !!(
-      window.matchMedia &&
+  function isLandscapeTablet(){
+    return window.matchMedia &&
       window.matchMedia("(orientation: landscape)").matches &&
-      window.innerWidth>=901
-    );
+      window.innerWidth >= 700;
   }
 
-  function viewport314(){
-    const vv=window.visualViewport;
-    return {
-      h:Math.floor(vv?.height || document.documentElement.clientHeight || window.innerHeight),
-      w:Math.floor(vv?.width || document.documentElement.clientWidth || window.innerWidth),
-      offsetTop:Math.floor(vv?.offsetTop || 0)
-    };
-  }
-
-  function layout314(){
-    clearTimeout(timer);
-    timer=setTimeout(function(){
-      try{
-        const root=document.documentElement;
-
-        if(!isLandscape314()){
-          root.style.removeProperty("--jg314-top");
-          root.style.removeProperty("--jg314-vh");
-          root.style.removeProperty("--jg314-board");
-
-          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
-            try{
-              if(typeof window[name]==="function") window[name]();
-            }catch(_){}
-          });
-          return;
-        }
-
-        const vv=viewport314();
-        const app=document.querySelector(".app");
-        const wrap=document.querySelector(".board-wrap");
-        if(!app || !wrap) return;
-
-        /* 旋轉後先讓 app 回到自然位置，再量真正 top */
-        app.style.removeProperty("top");
-        app.style.removeProperty("height");
-        app.style.removeProperty("max-height");
-
-        const appTop=Math.max(
-          0,
-          Math.ceil(app.getBoundingClientRect().top - vv.offsetTop)
-        );
-
-        root.style.setProperty("--jg314-top",appTop+"px");
-        root.style.setProperty("--jg314-vh",vv.h+"px");
-
-        /* 實際可用高度 = 可視高度 - app top - 底部播放列 - 安全邊界 */
-        const availableH=Math.max(
-          320,
-          vv.h - appTop - 50 - 18
-        );
-
-        /* 實際可用寬度 = 可視寬度 - 右欄 - padding/gap */
-        const rightW=(window.innerWidth<=1180 ? 220 : 238);
-        const availableW=Math.max(
-          320,
-          vv.w - rightW - 18
-        );
-
-        const size=Math.max(
-          320,
-          Math.floor(Math.min(availableH,availableW))
-        );
-
-        root.style.setProperty("--jg314-board",size+"px");
-
-        requestAnimationFrame(function(){
-          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
-            try{
-              if(typeof window[name]==="function") window[name]();
-            }catch(_){}
-          });
-        });
-      }catch(err){
-        console.warn("Beta 3.3.14 layout",err);
+  function closeClassicLibraryForBoard(){
+    if(!isLandscapeTablet()) return;
+    try{
+      if(typeof closeModal === "function"){
+        closeModal("classicGameModal");
+      }else{
+        const m=document.getElementById("classicGameModal");
+        if(m)m.classList.remove("open");
       }
-    },180);
+    }catch(_){}
+    try{
+      window.scrollTo({top:0,left:0,behavior:"instant"});
+    }catch(_){
+      window.scrollTo(0,0);
+    }
   }
 
-  function boot314(){
-    layout314();
-    setTimeout(layout314,320);
-    setTimeout(layout314,700);
+  function bind(){
+    // 用事件代理，避免名局卡重新 render 後事件失效
+    document.addEventListener("click",function(e){
+      const btn=e.target && e.target.closest
+        ? e.target.closest(".classic-game-actions button")
+        : null;
+      if(!btn)return;
+
+      const label=(btn.textContent||"").trim();
+      if(label==="載入" || label.includes("一鍵播放")){
+        setTimeout(closeClassicLibraryForBoard,80);
+      }
+    },true);
   }
 
   if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot314,{once:true});
+    document.addEventListener("DOMContentLoaded",bind,{once:true});
   }else{
-    boot314();
-  }
-
-  window.addEventListener("orientationchange",boot314,{passive:true});
-  window.addEventListener("resize",layout314,{passive:true});
-  window.addEventListener("pageshow",boot314,{passive:true});
-
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize",layout314,{passive:true});
+    bind();
   }
 })();
 </script>
 
 
-<script id="joygoLayout314aJS">
+
+
+
+<script id="joygoLandscapeFinal313fJS">
 (function(){
   let timer=0;
 
-  function isLandscape314a(){
-    return !!(
-      window.matchMedia &&
-      window.matchMedia("(orientation: landscape)").matches &&
-      window.innerWidth>=901
-    );
-  }
-
-  function fitBoard314a(){
+  function update313f(){
     clearTimeout(timer);
     timer=setTimeout(function(){
       try{
-        if(!isLandscape314a()) return;
-
         const root=document.documentElement;
-        const wrap=document.querySelector(".board-wrap");
-        const board=document.getElementById("board");
-        const player=document.querySelector(".player");
-        if(!wrap || !board) return;
+        const isLand=window.matchMedia &&
+          window.matchMedia("(orientation: landscape)").matches &&
+          window.innerWidth>=901;
 
-        /* 再次保險隱藏動態插入的底部列 */
-        [
-          "jgMoreGameToggle","jgRecordToggle",
-          "trialModeBar","scoringModeBar",
-          "gameActionRow","moveSlider",
-          "joygoConfirmMoveToggle","confirmMoveToggle",
-          "moveConfirmToggle","landingConfirmToggle"
-        ].forEach(id=>{
-          const el=document.getElementById(id);
-          if(el && player && player.contains(el)){
-            el.style.setProperty("display","none","important");
-          }
+        let h=0;
+        const bar=document.getElementById("classicCommentaryBar");
+        if(isLand && bar && bar.classList.contains("show")){
+          h=Math.ceil(bar.getBoundingClientRect().height||0);
+        }
+        root.style.setProperty("--jg-land-top-extra",h+"px");
+
+        ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+          try{
+            if(typeof window[name]==="function") window[name]();
+          }catch(_){}
         });
+      }catch(_){}
+    },220);
+  }
 
-        if(player){
-          player.classList.remove("jg-more-open");
-          player.style.setProperty("height","48px","important");
-          player.style.setProperty("min-height","48px","important");
-          player.style.setProperty("max-height","48px","important");
-          player.style.setProperty("overflow","hidden","important");
+  window.addEventListener("orientationchange",update313f,{passive:true});
+  window.addEventListener("resize",update313f,{passive:true});
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",update313f,{once:true});
+  }else{
+    update313f();
+  }
+
+  if("MutationObserver" in window){
+    const bar=document.getElementById("classicCommentaryBar");
+    if(bar){
+      new MutationObserver(update313f).observe(bar,{
+        attributes:true,
+        attributeFilter:["class"],
+        childList:true,
+        subtree:true,
+        characterData:true
+      });
+    }
+  }
+})();
+</script>
+
+
+<script id="joygoLandscapePrecise313gJS">
+(function(){
+  let timer=0;
+
+  function recalc313g(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      try{
+        const root=document.documentElement;
+        const app=document.querySelector(".app");
+        const isLand=window.matchMedia &&
+          window.matchMedia("(orientation: landscape)").matches &&
+          window.innerWidth>=901;
+
+        if(!isLand || !app){
+          root.style.setProperty("--jg-app-top","0px");
+          return;
         }
 
-        /* 關鍵：直接量 board-wrap 的實際 client 尺寸 */
-        const usableW = Math.max(320, Math.floor(wrap.clientWidth - 8));
-        const usableH = Math.max(320, Math.floor(wrap.clientHeight - 8));
+        /* 實際量測主畫面從 viewport 哪裡開始：
+           包含在線資訊、棋局資訊、逐手解說等所有上方區塊。 */
+        const top=Math.max(0,Math.ceil(app.getBoundingClientRect().top));
+        root.style.setProperty("--jg-app-top",top+"px");
 
-        /* 再留 6px 安全邊界，避免上下左右被吃掉 */
-        const size = Math.max(320, Math.min(usableW, usableH) - 6);
+        /* 等尺寸固定後重新繪棋盤 */
+        requestAnimationFrame(function(){
+          ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+            try{
+              if(typeof window[name]==="function")window[name]();
+            }catch(_){}
+          });
+        });
+      }catch(_){}
+    },180);
+  }
 
-        root.style.setProperty("--jg314a-board", size + "px");
+  window.addEventListener("orientationchange",recalc313g,{passive:true});
+  window.addEventListener("resize",recalc313g,{passive:true});
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",recalc313g,{once:true});
+  }else{
+    recalc313g();
+  }
+
+  /* 上方狀態列 / 解說內容有變化時重新量高度 */
+  if("MutationObserver" in window){
+    const mo=new MutationObserver(recalc313g);
+    mo.observe(document.body,{
+      subtree:true,
+      childList:true,
+      attributes:true,
+      attributeFilter:["class","style"],
+      characterData:false
+    });
+  }
+})();
+</script>
+
+
+<script id="joygoLandscapeFix313hJS">
+(function(){
+  let t=0;
+
+  function jgIsLandscape313h(){
+    return !!(window.matchMedia &&
+      window.matchMedia("(orientation: landscape)").matches &&
+      window.innerWidth>=901 &&
+      document.documentElement.getAttribute("data-joygo-guidance")!=="1");
+  }
+
+  function layout313h(){
+    clearTimeout(t);
+    t=setTimeout(function(){
+      if(!jgIsLandscape313h()) return;
+
+      try{
+        const wrap=document.querySelector(".board-wrap");
+        const board=document.getElementById("board");
+        const right=document.getElementById("rightTools");
+        const player=document.querySelector(".player");
+        if(!wrap || !board || !right) return;
+
+        /* 真正從目前棋盤容器頂端開始量，
+           不再猜上方狀態列 / 棋局資料 / 解說列高度。 */
+        const wrapRect=wrap.getBoundingClientRect();
+        const rightRect=right.getBoundingClientRect();
+
+        /* 底部保留播放控制列。
+           若 player 被隱藏或高度異常，至少留 54px。 */
+        let bottomReserve=54;
+        if(player){
+          const ph=Math.ceil(player.getBoundingClientRect().height||0);
+          if(ph>20 && ph<120) bottomReserve=Math.max(50,ph+6);
+        }
+
+        const usableH=Math.max(
+          260,
+          Math.floor(window.innerHeight - wrapRect.top - bottomReserve - 8)
+        );
+
+        const usableW=Math.max(
+          260,
+          Math.floor(wrapRect.width - 8)
+        );
+
+        const size=Math.max(260,Math.min(usableH,usableW));
+
+        board.style.setProperty("width",size+"px","important");
+        board.style.setProperty("height",size+"px","important");
+
+        /* 棋盤容器只使用真正可見區 */
+        wrap.style.setProperty("height",usableH+"px","important");
+        wrap.style.setProperty("max-height",usableH+"px","important");
+
+        /* 右欄從目前位置到底部，完整可捲 */
+        const rightH=Math.max(
+          280,
+          Math.floor(window.innerHeight - rightRect.top - 6)
+        );
+        right.style.setProperty("height",rightH+"px","important");
+        right.style.setProperty("max-height",rightH+"px","important");
 
         requestAnimationFrame(function(){
           ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
@@ -12934,31 +13170,76 @@ document.addEventListener("click",(ev)=>{
           });
         });
       }catch(err){
-        console.warn("Beta 3.3.14a fit board", err);
+        console.warn("Beta 3.3.13h layout",err);
       }
     },180);
   }
 
-  function boot314a(){
-    fitBoard314a();
-    setTimeout(fitBoard314a, 300);
-    setTimeout(fitBoard314a, 700);
-    setTimeout(fitBoard314a, 1300);
+  /* 清掉右側重複平台鍵：CSS 已隱藏，這裡再做語意標記，
+     不刪 DOM，避免破壞既有事件。 */
+  function normalizeRight313h(){
+    const right=document.getElementById("rightTools");
+    if(!right)return;
+    [...right.children].forEach(function(el){
+      if(el.classList && el.classList.contains("tool")){
+        el.setAttribute("aria-hidden","true");
+        el.tabIndex=-1;
+      }
+    });
+
+    const platform=document.getElementById("landscapeBackPlatformBtn");
+    if(platform){
+      platform.textContent="☰ 平台功能";
+      platform.removeAttribute("aria-hidden");
+      platform.tabIndex=0;
+    }
+  }
+
+  function boot313h(){
+    normalizeRight313h();
+    layout313h();
   }
 
   if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded", boot314a, {once:true});
+    document.addEventListener("DOMContentLoaded",boot313h,{once:true});
   }else{
-    boot314a();
+    boot313h();
   }
 
-  window.addEventListener("orientationchange", boot314a, {passive:true});
-  window.addEventListener("resize", fitBoard314a, {passive:true});
-  window.addEventListener("pageshow", boot314a, {passive:true});
+  window.addEventListener("orientationchange",function(){
+    setTimeout(boot313h,260);
+    setTimeout(boot313h,650);
+  },{passive:true});
 
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize", fitBoard314a, {passive:true});
+  window.addEventListener("resize",layout313h,{passive:true});
+  window.addEventListener("pageshow",boot313h,{passive:true});
+
+  /* 平台/對局按鈕可能被舊程式晚建立，補抓幾次 */
+  [400,900,1600].forEach(function(ms){
+    setTimeout(boot313h,ms);
+  });
+})();
+</script>
+
+
+
+
+
+<script id="joygoFinalLayout313jJS">
+(function(){
+  let timer=0;
+  function refresh313j(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      ["resizeBoard","renderBoard","drawBoard","updateBoard"].forEach(function(name){
+        try{if(typeof window[name]==="function") window[name]();}catch(_){}
+      });
+    },220);
   }
+  window.addEventListener("orientationchange",function(){setTimeout(refresh313j,180);setTimeout(refresh313j,520);},{passive:true});
+  window.addEventListener("resize",refresh313j,{passive:true});
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",refresh313j,{once:true});
+  else refresh313j();
 })();
 </script>
 
