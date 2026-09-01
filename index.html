@@ -24,6 +24,7 @@
 ">
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
+<meta name="joygo-public-classic-version" content="3.3.12">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -2855,6 +2856,74 @@ body.spectator-viewing #statusText{font-weight:800}
   .app{grid-template-columns:minmax(118px,10.5vw) minmax(0,1fr) 260px!important}
   body.info-collapsed .app{grid-template-columns:0 minmax(0,1fr) 260px!important}
   .right{min-width:260px!important;max-width:260px!important}
+}
+</style>
+
+
+<style id="joygoPublicClassic312Style">
+/* Joy Go Platform Beta 3.3.12｜公開名局館 */
+.classic-cloud-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin:10px 0 12px;
+}
+.classic-cloud-tab{
+  min-height:42px;
+  border:1px solid #6c4b2c;
+  border-radius:11px;
+  background:#17100c;
+  color:#ead9bb;
+  font-weight:900;
+}
+.classic-cloud-tab.active{
+  background:linear-gradient(135deg,#ffd970,#e4aa2d);
+  color:#241407;
+  border-color:#f0ca68;
+}
+.classic-cloud-status{
+  margin:0 0 10px;
+  padding:8px 10px;
+  border:1px solid #5f452b;
+  border-radius:10px;
+  background:#0c0806;
+  color:#cbb99a;
+  font-size:12px;
+  line-height:1.5;
+}
+.classic-cloud-status.ok{border-color:#4f8e5e;color:#bfe8c9}
+.classic-cloud-status.bad{border-color:#9f4e45;color:#f0b4ae}
+.classic-db-badge.public{
+  border-color:#4f8e5e;
+  color:#c9f2d1;
+  background:#102016;
+}
+.classic-db-badge.local{
+  border-color:#8f713e;
+  color:#e4c98d;
+}
+.classic-publish-btn{
+  border:1px solid #4f8e5e!important;
+  background:#15301d!important;
+  color:#d8f4dd!important;
+}
+.classic-unpublish-btn{
+  border:1px solid #9b6841!important;
+  background:#2a1b12!important;
+  color:#ffd8a3!important;
+}
+.classic-cloud-toolbar{
+  display:flex;
+  justify-content:flex-end;
+  margin:-2px 0 8px;
+}
+.classic-cloud-toolbar button{
+  padding:7px 10px;
+  min-height:34px;
+  font-size:12px;
+}
+@media(max-width:650px){
+  .classic-cloud-tabs{grid-template-columns:1fr 1fr}
 }
 </style>
 
@@ -6222,10 +6291,10 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.7b｜名局雙重保存修正版</h2>
+  <h2>🏛️ Beta 3.3.12｜公開名局館</h2>
   <p class="classic-library-note">
-    本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
-    內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
+    「🌐 公開名局」由 Supabase 雲端提供，所有已登入會員都可載入與播放；
+    「👤 我的棋譜」保留本機 IndexedDB＋瀏覽器備援。只有管理員可以將自己的棋譜發布到公開名局館或取消公開。
   </p>
 
 
@@ -6235,8 +6304,17 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
     <span id="classicNowMeta">可選擇「載入」或「一鍵播放」</span>
   </div>
 
-  <div class="classic-db-actions">
-    <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
+  <div class="classic-cloud-tabs" role="tablist" aria-label="名局館分頁">
+    <button type="button" id="classicPublicTab" class="classic-cloud-tab active">🌐 公開名局</button>
+    <button type="button" id="classicMineTab" class="classic-cloud-tab">👤 我的棋譜</button>
+  </div>
+  <div id="classicCloudStatus" class="classic-cloud-status">正在準備公開名局館…</div>
+  <div id="classicCloudToolbar" class="classic-cloud-toolbar">
+    <button type="button" class="secondary" id="classicRefreshCloudBtn">↻ 重新整理公開名局</button>
+  </div>
+
+  <div class="classic-db-actions" id="classicLocalDbActions">
+    <button class="action" id="classicAddOfficialBtn">＋ 加入我的棋譜 SGF</button>
     <button class="secondary" id="classicImportSgfBtn">📂 單次開啟 SGF</button>
     <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
 <button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
@@ -6270,13 +6348,13 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
 
   <div id="classicGameCount" class="classic-db-count"></div>
 <div class="classic-db-note" style="margin:6px 0 10px;color:#c9b28c;font-size:12px">
-正式 SGF 採 IndexedDB＋瀏覽器備援雙重保存；儲存後立即驗證。私密瀏覽結束仍可能被系統清除，重要棋譜請使用「備份名局」。
+「我的棋譜」採 IndexedDB＋瀏覽器備援雙重保存；管理員可再按「發布」同步到 Supabase 公開名局館。
 </div>
   <div id="classicGameList" class="classic-game-list"></div>
 
   <div class="classic-library-tip">
     「一鍵播放」會自動從第 1 手開始播放；「載入」則停在第 0 手，方便先看棋局資料。載入後仍可使用第一手、上一手、播放／暫停、下一手、最後一手、指定手數與棋號顯示。
-    您自己加入的正式名局會保存在這台裝置的瀏覽器資料中。
+    「我的棋譜」保存在這台裝置；「公開名局」保存在 Supabase，您的 iPad／電腦不必持續開機。
   </div>
 </div></div>
 
@@ -7768,7 +7846,159 @@ async function classicMigrateLegacyLocalStorage(){
     return old.length;
   }catch(e){console.warn("legacy migration:",e);return 0;}
 }
-function classicAllGames(){return classicGameCache.slice();}
+let classicPublicGamesCache=[];
+let classicLibraryView="public";
+
+function classicIsAdmin(){
+  return !!(memberSession?.user && memberAccess?.role==="admin");
+}
+
+function classicAllGames(){
+  return classicLibraryView==="public"
+    ? classicPublicGamesCache.slice()
+    : classicGameCache.slice();
+}
+
+function classicCloudSetStatus(message,type=""){
+  const el=$("classicCloudStatus");
+  if(!el)return;
+  el.className="classic-cloud-status"+(type?(" "+type):"");
+  el.textContent=message;
+}
+
+async function classicLoadPublicGames(){
+  if(!memberSupabase || !memberSession?.user){
+    classicPublicGamesCache=[];
+    classicCloudSetStatus("請先登入會員後查看公開名局。","bad");
+    return [];
+  }
+  classicCloudSetStatus("正在從 Supabase 讀取公開名局…");
+  try{
+    const {data,error}=await memberSupabase
+      .from("public_classic_games")
+      .select("id,title,black_player,white_player,event_name,played_date,result_text,category,note,sgf_text,is_published,sort_order,created_at")
+      .eq("is_published",true)
+      .order("sort_order",{ascending:false})
+      .order("created_at",{ascending:false});
+    if(error)throw error;
+
+    classicPublicGamesCache=(data||[]).map(g=>({
+      id:"cloud-"+g.id,
+      cloudId:g.id,
+      source:"public-cloud",
+      title:g.title||"未命名名局",
+      black:g.black_player||"",
+      white:g.white_player||"",
+      event:g.event_name||"",
+      date:g.played_date||"",
+      result:g.result_text||"",
+      category:g.category||"名人名局",
+      note:g.note||"",
+      sgf:g.sgf_text||"",
+      savedAt:g.created_at||""
+    })).filter(g=>g.sgf);
+
+    classicCloudSetStatus(
+      classicPublicGamesCache.length
+        ? `✅ 已載入 ${classicPublicGamesCache.length} 盤公開名局。`
+        : "目前尚未發布公開名局。管理員可到「我的棋譜」按「發布」。",
+      "ok"
+    );
+    return classicPublicGamesCache;
+  }catch(err){
+    console.error("公開名局讀取失敗：",err);
+    classicPublicGamesCache=[];
+    classicCloudSetStatus("❌ 公開名局讀取失敗："+(err?.message||String(err)),"bad");
+    return [];
+  }
+}
+
+async function classicPublishGame(game){
+  if(!classicIsAdmin()){
+    toast("只有管理員可以發布公開名局");
+    return;
+  }
+  if(!game?.sgf){
+    toast("這盤棋譜沒有 SGF 內容");
+    return;
+  }
+
+  // 避免同一盤 SGF 重複發布
+  try{
+    const {data:dup,error:dupErr}=await memberSupabase
+      .from("public_classic_games")
+      .select("id,title")
+      .eq("sgf_text",game.sgf)
+      .limit(1);
+    if(dupErr)throw dupErr;
+    if(Array.isArray(dup) && dup.length){
+      toast("這盤棋譜已存在公開名局館");
+      return;
+    }
+  }catch(err){
+    console.warn("公開名局重複檢查：",err);
+  }
+
+  const name=game.title||`${game.black||"黑方"} vs ${game.white||"白方"}`;
+  if(!confirm(`確定發布「${name}」到公開名局館？\n發布後所有已登入會員都能看到並播放。`))return;
+
+  try{
+    const payload={
+      title:game.title||"未命名名局",
+      black_player:game.black||"",
+      white_player:game.white||"",
+      event_name:game.event||"",
+      played_date:game.date||"",
+      result_text:game.result||"",
+      category:game.category||"名人名局",
+      note:game.note||"",
+      sgf_text:game.sgf,
+      is_published:true,
+      created_by:memberSession.user.id
+    };
+    const {error}=await memberSupabase.from("public_classic_games").insert(payload);
+    if(error)throw error;
+    await classicLoadPublicGames();
+    toast("✅ 已發布："+name);
+    renderClassicGameLibrary();
+  }catch(err){
+    console.error(err);
+    toast("發布失敗："+(err?.message||String(err)));
+  }
+}
+
+async function classicUnpublishGame(game){
+  if(!classicIsAdmin() || !game?.cloudId){
+    toast("只有管理員可以取消公開");
+    return;
+  }
+  const name=game.title||"這盤棋譜";
+  if(!confirm(`確定取消公開「${name}」？\n不會刪除您的本機原始棋譜。`))return;
+  try{
+    const {error}=await memberSupabase
+      .from("public_classic_games")
+      .update({is_published:false})
+      .eq("id",game.cloudId);
+    if(error)throw error;
+    await classicLoadPublicGames();
+    renderClassicGameLibrary();
+    toast("已取消公開："+name);
+  }catch(err){
+    console.error(err);
+    toast("取消公開失敗："+(err?.message||String(err)));
+  }
+}
+
+function classicSetLibraryView(view){
+  classicLibraryView=view==="mine"?"mine":"public";
+  $("classicPublicTab")?.classList.toggle("active",classicLibraryView==="public");
+  $("classicMineTab")?.classList.toggle("active",classicLibraryView==="mine");
+  if($("classicLocalDbActions"))$("classicLocalDbActions").style.display=classicLibraryView==="mine"?"flex":"none";
+  if($("classicCloudToolbar"))$("classicCloudToolbar").style.display=classicLibraryView==="public"?"flex":"none";
+  if($("classicCloudStatus"))$("classicCloudStatus").style.display=classicLibraryView==="public"?"block":"none";
+  renderClassicGameLibrary();
+}
+
 function classicSgfProp(text,key){
   const m=String(text||"").match(new RegExp(key+"\\[((?:\\\\.|[^\\]])*)\\]","i"));
   return m?m[1].replace(/\\\]/g,"]").replace(/\\\\/g,"\\").trim():"";
@@ -7817,8 +8047,13 @@ function classicGameCard(game){
 
   const badges=document.createElement("div");badges.style.marginTop="6px";
   const sourceBadge=document.createElement("span");
-  sourceBadge.className="classic-db-badge official";
-  sourceBadge.textContent="已保存";
+  if(game.source==="public-cloud"){
+    sourceBadge.className="classic-db-badge public";
+    sourceBadge.textContent="🌐 公開";
+  }else{
+    sourceBadge.className="classic-db-badge local";
+    sourceBadge.textContent="👤 我的棋譜";
+  }
   const cat=document.createElement("span");cat.className="classic-db-badge";cat.textContent=game.category||"其他";
   badges.append(sourceBadge,cat);
 
@@ -7840,13 +8075,30 @@ function classicGameCard(game){
   playBtn.onclick=()=>loadClassicGame(game,true);
 
   actions.append(loadBtn,playBtn);
+
   if(game.source==="official"){
+    if(classicIsAdmin()){
+      const publishBtn=document.createElement("button");
+      publishBtn.className="secondary classic-publish-btn";
+      publishBtn.textContent="🌐 發布";
+      publishBtn.onclick=()=>classicPublishGame(game);
+      actions.append(publishBtn);
+    }
     const deleteBtn=document.createElement("button");
     deleteBtn.className="danger";
     deleteBtn.textContent="刪除";
     deleteBtn.onclick=()=>classicDeleteOne(game);
     actions.append(deleteBtn);
   }
+
+  if(game.source==="public-cloud" && classicIsAdmin()){
+    const unpublishBtn=document.createElement("button");
+    unpublishBtn.className="secondary classic-unpublish-btn";
+    unpublishBtn.textContent="取消公開";
+    unpublishBtn.onclick=()=>classicUnpublishGame(game);
+    actions.append(unpublishBtn);
+  }
+
   card.append(info,actions);
   return card;
 }
@@ -7869,11 +8121,17 @@ function renderClassicGameLibrary(){
 
   box.innerHTML="";
   if($("classicGameCount")){
-    const officialCount=classicLoadUserGames().length;
-    $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜已保存正式棋譜 ${officialCount} 盤`;
+    if(classicLibraryView==="public"){
+      $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜雲端公開 ${classicPublicGamesCache.length} 盤`;
+    }else{
+      $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜我的棋譜 ${classicGameCache.length} 盤`;
+    }
   }
+
   if(!games.length){
-    box.innerHTML='<div class="classic-db-empty">目前沒有棋譜。請按「加入正式名局」匯入 SGF；儲存後下次開啟仍會保留。</div>';
+    box.innerHTML=classicLibraryView==="public"
+      ? '<div class="classic-db-empty">目前尚無公開名局。管理員可切到「我的棋譜」，選擇棋譜後按「🌐 發布」。</div>'
+      : '<div class="classic-db-empty">目前沒有我的棋譜。請按「＋ 加入我的棋譜 SGF」匯入；儲存後下次開啟仍會保留。</div>';
     return;
   }
   games.forEach(g=>box.appendChild(classicGameCard(g)));
@@ -7883,8 +8141,11 @@ async function openClassicGameLibrary(){
     classicCurrentGameId=sessionStorage.getItem("joygo-classic-current")||classicCurrentGameId||"";
     await classicMigrateLegacyLocalStorage();
     await classicRefreshCache();
-    renderClassicGameLibrary();
+    classicLibraryView="public";
     openModal("classicGameModal");
+    classicSetLibraryView("public");
+    await classicLoadPublicGames();
+    renderClassicGameLibrary();
   }catch(err){
     console.error(err);
     toast("名局資料庫讀取失敗："+(err?.message||String(err)));
@@ -8028,8 +8289,9 @@ async function classicSaveOfficial(){
     const verified=classicGameCache.some(g=>g.id===game.id && g.sgf===game.sgf);
     if(!verified)throw new Error("寫入後驗證失敗");
     closeModal("classicImportModal");
+    classicSetLibraryView("mine");
     renderClassicGameLibrary();
-    toast("✅ 已雙重保存並驗證："+game.title);
+    toast("✅ 已保存到「我的棋譜」："+game.title);
   }catch(err){
     console.error(err);
     if($("classicImportMessage")){
@@ -8102,6 +8364,17 @@ async function classicRestoreBackup(file){
   if($(id))$(id).addEventListener("input",renderClassicGameLibrary);
 });
 if($("classicCategoryFilter"))$("classicCategoryFilter").addEventListener("change",renderClassicGameLibrary);
+if($("classicPublicTab"))$("classicPublicTab").onclick=async()=>{
+  classicSetLibraryView("public");
+  await classicLoadPublicGames();
+  renderClassicGameLibrary();
+};
+if($("classicMineTab"))$("classicMineTab").onclick=()=>classicSetLibraryView("mine");
+if($("classicRefreshCloudBtn"))$("classicRefreshCloudBtn").onclick=async()=>{
+  await classicLoadPublicGames();
+  renderClassicGameLibrary();
+  toast("公開名局已重新整理");
+};
 if($("classicAddOfficialBtn"))$("classicAddOfficialBtn").onclick=classicOpenImportModal;
 if($("classicImportSgfBtn"))$("classicImportSgfBtn").onclick=()=>{closeModal("classicGameModal");$("sgfFile")?.click()};
 if($("classicBackupBtn"))$("classicBackupBtn").onclick=classicBackupAll;
