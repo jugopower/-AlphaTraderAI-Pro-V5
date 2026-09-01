@@ -25,7 +25,7 @@
 <meta name="joygo-security-version" content="2.9.0">
 <meta name="joygo-stable-reset-version" content="3.3.11j">
 <meta name="joygo-public-classic-version" content="3.3.12">
-<meta name="joygo-classic-commentary-version" content="3.3.13a">
+<meta name="joygo-classic-commentary-version" content="3.3.13b">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -13628,6 +13628,60 @@ document.addEventListener("click",(ev)=>{
     document.addEventListener("DOMContentLoaded",bindClassicCommentary313a,{once:true});
   }else{
     bindClassicCommentary313a();
+  }
+})();
+</script>
+
+
+<script id="joygoClassicLandscape313b">
+/* Beta 3.3.13b
+   iPad / 平板橫式：
+   名局館按「載入」或「一鍵播放」後，自動關閉名局館並回到棋盤。
+   不改棋盤、真人對弈、棋鐘核心。
+*/
+(function(){
+  function isLandscapeTablet(){
+    return window.matchMedia &&
+      window.matchMedia("(orientation: landscape)").matches &&
+      window.innerWidth >= 700;
+  }
+
+  function closeClassicLibraryForBoard(){
+    if(!isLandscapeTablet()) return;
+    try{
+      if(typeof closeModal === "function"){
+        closeModal("classicGameModal");
+      }else{
+        const m=document.getElementById("classicGameModal");
+        if(m)m.classList.remove("open");
+      }
+    }catch(_){}
+    try{
+      window.scrollTo({top:0,left:0,behavior:"instant"});
+    }catch(_){
+      window.scrollTo(0,0);
+    }
+  }
+
+  function bind(){
+    // 用事件代理，避免名局卡重新 render 後事件失效
+    document.addEventListener("click",function(e){
+      const btn=e.target && e.target.closest
+        ? e.target.closest(".classic-game-actions button")
+        : null;
+      if(!btn)return;
+
+      const label=(btn.textContent||"").trim();
+      if(label==="載入" || label.includes("一鍵播放")){
+        setTimeout(closeClassicLibraryForBoard,80);
+      }
+    },true);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",bind,{once:true});
+  }else{
+    bind();
   }
 })();
 </script>
