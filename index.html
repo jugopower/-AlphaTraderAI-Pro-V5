@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12i">
+<meta name="joygo-stable-reset-version" content="3.3.12j">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6322,6 +6322,61 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
 
   #jgSmartCommentaryText{
     display:block!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312jLandscapeScrollCSS">
+/* ==========================================================
+   Beta 3.3.12j｜橫式右欄完整捲動版
+   只修 iPad 橫式右側欄被截斷、播放設定看不到
+   不改棋盤尺寸、不改直式、不改棋鐘核心
+   ========================================================== */
+
+@media (min-width:700px) and (orientation:landscape){
+  .player{
+    box-sizing:border-box!important;
+    height:calc(100dvh - 18px)!important;
+    max-height:calc(100dvh - 18px)!important;
+    min-height:0!important;
+
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+
+    padding-bottom:calc(34px + env(safe-area-inset-bottom))!important;
+    scroll-padding-bottom:calc(54px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* 解說、播放設定不可被壓扁或裁切 */
+  #jgSmartCommentary{
+    flex:0 0 auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  #jgPlaybackSettings{
+    display:block;
+    flex:0 0 auto!important;
+    margin-bottom:8px!important;
+  }
+
+  #jgPlaybackSettings[open]{
+    display:block!important;
+  }
+
+  #jgPlaybackSettingsInner{
+    padding-bottom:10px!important;
+  }
+
+  /* 右欄最後一個區塊加安全留白 */
+  .player::after{
+    content:"";
+    display:block;
+    height:calc(44px + env(safe-area-inset-bottom));
+    flex:0 0 auto;
   }
 }
 </style>
@@ -15265,6 +15320,80 @@ function patch(){
       forceRefresh();
     }
   },400);
+})();
+</script>
+
+
+<script id="joygoBeta3312jLandscapeScrollJS">
+(()=>{
+  function repairRightPanel(){
+    if(!matchMedia("(min-width:700px) and (orientation:landscape)").matches)return;
+
+    const player=document.querySelector(".player");
+    const comment=document.getElementById("jgSmartCommentary");
+    const settings=document.getElementById("jgPlaybackSettings");
+    if(!player)return;
+
+    player.style.setProperty("height","calc(100dvh - 18px)","important");
+    player.style.setProperty("max-height","calc(100dvh - 18px)","important");
+    player.style.setProperty("overflow-y","auto","important");
+    player.style.setProperty("overflow-x","hidden","important");
+    player.style.setProperty("-webkit-overflow-scrolling","touch","important");
+    player.style.setProperty("padding-bottom","calc(34px + env(safe-area-inset-bottom))","important");
+
+    /* 若解說框存在，確保它在右欄且完整展開 */
+    if(comment && comment.parentNode!==player){
+      const controls=player.querySelector(".controls");
+      if(controls) controls.insertAdjacentElement("afterend",comment);
+      else player.appendChild(comment);
+    }
+
+    if(comment){
+      comment.style.setProperty("max-height","none","important");
+      comment.style.setProperty("overflow","visible","important");
+    }
+
+    if(settings){
+      settings.style.removeProperty("max-height");
+      settings.style.removeProperty("overflow");
+    }
+  }
+
+  function ensureSettingsVisibleAfterOpen(){
+    const settings=document.getElementById("jgPlaybackSettings");
+    if(!settings || settings.dataset.jg3312j==="1")return;
+    settings.dataset.jg3312j="1";
+
+    settings.addEventListener("toggle",()=>{
+      if(!settings.open)return;
+      setTimeout(()=>{
+        repairRightPanel();
+        try{
+          settings.scrollIntoView({behavior:"smooth",block:"nearest"});
+        }catch{
+          settings.scrollIntoView(false);
+        }
+      },80);
+    });
+  }
+
+  function boot(){
+    repairRightPanel();
+    ensureSettingsVisibleAfterOpen();
+
+    [250,600,1100,1700].forEach(ms=>setTimeout(()=>{
+      repairRightPanel();
+      ensureSettingsVisibleAfterOpen();
+    },ms));
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
+  addEventListener("resize",()=>setTimeout(repairRightPanel,180),{passive:true});
 })();
 </script>
 
