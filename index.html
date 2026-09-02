@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12f">
+<meta name="joygo-stable-reset-version" content="3.3.12g">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6179,6 +6179,46 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
   #jgPlaybackSettings > summary{
     min-height:30px!important;
     font-size:10.5px!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312gFixCSS">
+/* ==========================================================
+   Beta 3.3.12g
+   1. 手機/iPad直式：逐手解說固定在棋盤下方、棋鐘上方
+   2. 管理區返回平台：回已通行主平台，不再停在通行碼入口
+   3. 不改棋盤尺寸 / 棋鐘尺寸 / 橫式棋盤 RWD
+   ========================================================== */
+
+@media (orientation:portrait){
+  /* 強制解說框在正常文件流中，不允許舊規則把它放到最底部 */
+  #jgSmartCommentary{
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    inset:auto!important;
+    transform:none!important;
+    width:calc(100% - 16px)!important;
+    max-width:none!important;
+    margin:6px auto 4px!important;
+    z-index:200!important;
+  }
+}
+
+/* 手機縮短解說框，但保持可讀 */
+@media (max-width:699px){
+  #jgSmartCommentary{
+    width:calc(100% - 10px)!important;
+    margin:4px auto!important;
+    padding:7px 8px!important;
+  }
+  #jgSmartCommentaryText{
+    font-size:12px!important;
+    line-height:1.45!important;
   }
 }
 </style>
@@ -14626,6 +14666,154 @@ function patch(){
   addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
   addEventListener("resize",()=>setTimeout(boot,150),{passive:true});
   [300,800,1500].forEach(ms=>setTimeout(boot,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312gFixJS">
+(()=>{
+  const ADMIN_RETURN_KEY="joygo_admin_return_until_3312g";
+  const BETA_SESSION_KEY="joygo_beta_v1_session";
+  const BETA_ACCESS_KEY="joygo_beta_v1_access_until";
+
+  /* ----------------------------------------------------------
+     A. 手機／iPad直式：解說框永遠置於 board-wrap 後、
+        rightTools(棋鐘) 前。舊版延遲 relocation 也不能拉走。
+     ---------------------------------------------------------- */
+  let movingCommentary=false;
+
+  function placePortraitCommentary(){
+    if(movingCommentary)return;
+    if(!matchMedia("(orientation:portrait)").matches)return;
+
+    const box=document.getElementById("jgSmartCommentary");
+    const board=document.querySelector(".board-wrap");
+    const right=document.getElementById("rightTools");
+    if(!box||!board||!board.parentNode)return;
+
+    const parent=board.parentNode;
+
+    movingCommentary=true;
+    try{
+      /* 最理想：board → commentary → rightTools(棋鐘) */
+      if(right && right.parentNode===parent){
+        if(box.parentNode!==parent || box.previousElementSibling!==board || box.nextElementSibling!==right){
+          parent.insertBefore(box,right);
+        }
+      }else{
+        if(box.parentNode!==parent || box.previousElementSibling!==board){
+          board.insertAdjacentElement("afterend",box);
+        }
+      }
+
+      box.style.setProperty("position","relative","important");
+      box.style.setProperty("inset","auto","important");
+      box.style.setProperty("transform","none","important");
+    }finally{
+      movingCommentary=false;
+    }
+  }
+
+  function installCommentaryGuard(){
+    const app=document.querySelector(".app");
+    if(!app || app.dataset.jg3312gObserver==="1")return;
+    app.dataset.jg3312gObserver="1";
+
+    const observer=new MutationObserver(()=>{
+      if(matchMedia("(orientation:portrait)").matches){
+        requestAnimationFrame(placePortraitCommentary);
+      }
+    });
+    observer.observe(app,{childList:true});
+  }
+
+  /* ----------------------------------------------------------
+     B. 進管理區之前記錄「回平台」通行狀態。
+        即使 admin-center.html 的返回鍵指向 ./，
+        回來也自動開啟平台，不停在通行碼入口。
+     ---------------------------------------------------------- */
+  function markAdminDeparture(){
+    try{
+      const until=Date.now()+4*60*60*1000; // 4 小時回平台保護
+      localStorage.setItem(ADMIN_RETURN_KEY,String(until));
+      sessionStorage.setItem(BETA_SESSION_KEY,"1");
+      localStorage.setItem(BETA_ACCESS_KEY,String(Date.now()+12*60*60*1000));
+    }catch{}
+  }
+
+  function installAdminDepartureHook(){
+    if(document.documentElement.dataset.jg3312gAdminHook==="1")return;
+    document.documentElement.dataset.jg3312gAdminHook="1";
+
+    document.addEventListener("click",(ev)=>{
+      const b=ev.target?.closest?.('[id^="adminCenterBtn_"]');
+      if(!b)return;
+      markAdminDeparture();
+    },true);
+  }
+
+  function restorePlatformAfterAdmin(){
+    let until=0;
+    try{until=Number(localStorage.getItem(ADMIN_RETURN_KEY)||0)}catch{}
+    if(!until || until<Date.now()){
+      try{localStorage.removeItem(ADMIN_RETURN_KEY)}catch{}
+      return;
+    }
+
+    try{
+      sessionStorage.setItem(BETA_SESSION_KEY,"1");
+      localStorage.setItem(BETA_ACCESS_KEY,String(Date.now()+12*60*60*1000));
+    }catch{}
+
+    const gate=document.getElementById("joygoBetaGate");
+    if(!gate || gate.hidden){
+      try{localStorage.removeItem(ADMIN_RETURN_KEY)}catch{}
+      return;
+    }
+
+    /* 使用原本入口的合法 open 流程，避免直接改內部狀態 */
+    const input=document.getElementById("joygoBetaCode");
+    const enter=document.getElementById("joygoBetaEnter");
+    if(input && enter){
+      input.value="JOYGO10";
+      enter.click();
+      try{localStorage.removeItem(ADMIN_RETURN_KEY)}catch{}
+    }
+  }
+
+  function boot(){
+    installCommentaryGuard();
+    installAdminDepartureHook();
+
+    placePortraitCommentary();
+    restorePlatformAfterAdmin();
+
+    /* 舊版有 300/800/1500/1600ms 延遲搬位，
+       本版最後再校正幾次，確保手機解說不被拉回底部。 */
+    [250,650,1050,1750,2400].forEach(ms=>
+      setTimeout(placePortraitCommentary,ms)
+    );
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else{
+    boot();
+  }
+
+  addEventListener("pageshow",()=>{
+    boot();
+    setTimeout(placePortraitCommentary,300);
+  },{passive:true});
+
+  addEventListener("orientationchange",()=>{
+    setTimeout(placePortraitCommentary,350);
+    setTimeout(placePortraitCommentary,900);
+  },{passive:true});
+
+  addEventListener("resize",()=>{
+    setTimeout(placePortraitCommentary,160);
+  },{passive:true});
 })();
 </script>
 
