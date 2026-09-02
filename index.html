@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12a">
+<meta name="joygo-stable-reset-version" content="3.3.12b">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6017,6 +6017,41 @@ body.jg-classic-admin #jgClassicCommentEditorWrap{
     max-height:36vh;
     overflow-y:auto;
   }
+}
+</style>
+
+
+<style id="joygoBeta3312bSmartCommentaryCSS">
+#jgClassicCommentaryPanel{display:none!important}
+#jgSmartCommentary{display:none;box-sizing:border-box;border:1px solid #8a6633;border-radius:12px;background:linear-gradient(180deg,#18130f,#0b0a09);color:#f1e3c5;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:9px 10px;z-index:64000}
+#jgSmartCommentary.show{display:block}
+#jgSmartCommentaryHeader{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+#jgSmartCommentaryTitle{color:#f2cb6a;font-size:12px;font-weight:900}
+#jgSmartCommentaryText{font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+#jgSmartEditBtn{display:none;min-height:32px!important;padding:4px 9px!important;border-radius:9px!important;background:#27373c!important;border:1px solid #77633b!important;color:#fff!important;font-size:11px!important;font-weight:800!important}
+body.jg-classic-admin #jgSmartEditBtn{display:inline-flex;align-items:center;justify-content:center}
+#jgSmartCommentEditor{display:none;margin-top:7px;padding-top:7px;border-top:1px solid #443b2c}
+#jgSmartCommentEditor.open{display:block}
+#jgSmartCommentTextarea{box-sizing:border-box;width:100%;min-height:76px;resize:vertical;border-radius:9px;border:1px solid #67533a;background:#0a1011;color:#fff;padding:8px;font-size:12px}
+.jg-smart-edit-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px}
+.jg-smart-edit-actions button{min-height:34px!important;font-size:11px!important}
+#jgSmartSaveBtn{background:#1f603d!important;color:#fff!important}
+#jgSmartDeleteBtn{background:#64292c!important;color:#fff!important}
+#jgSmartDoneBtn{background:#2a2722!important;color:#f3db9d!important}
+#jgPlaybackSettings{margin-top:6px;border:1px solid #5b4c31;border-radius:9px;background:#0c0b0a}
+#jgPlaybackSettings>summary{cursor:pointer;list-style:none;min-height:34px;display:flex;align-items:center;padding:0 9px;color:#d9c08a;font-size:11px;font-weight:800}
+#jgPlaybackSettings>summary::-webkit-details-marker{display:none}
+#jgPlaybackSettingsInner{padding:0 8px 8px}
+#jgSmartSpeed{width:100%;min-height:34px;border-radius:8px;background:#0b1719;color:#fff;border:1px solid #5b563c;padding:5px 7px}
+@media (min-width:700px) and (orientation:landscape){
+  #jgSmartCommentary{position:fixed;right:10px;bottom:10px;width:270px;max-height:42vh;overflow-y:auto}
+  body.scoring-mode #jgSmartCommentary,body.trial-mode #jgSmartCommentary{bottom:calc(48vh + 20px);max-height:30vh}
+}
+@media (min-width:700px) and (orientation:portrait){
+  #jgSmartCommentary{position:relative;width:calc(100% - 24px);margin:6px auto 0}
+}
+@media (max-width:699px){
+  #jgSmartCommentary{position:relative;width:calc(100% - 10px);margin:5px auto 0;padding:8px}
 }
 </style>
 
@@ -14000,6 +14035,148 @@ document.addEventListener("click",(ev)=>{
 
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(boot,280),{passive:true});
+  [400,900,1600].forEach(ms=>setTimeout(boot,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312bSmartCommentaryJS">
+(()=>{
+  let onlineGame=null, cmap={};
+  const admin=()=>{try{return memberAccess?.role==="admin"}catch{return false}};
+  const moveNo=()=>{try{return Number(state?.index||0)}catch{return 0}};
+  const sgfComment=n=>{try{return n>0?String(state?.moves?.[n-1]?.comment||"").trim():""}catch{return ""}};
+
+  function ensureBox(){
+    let box=document.getElementById("jgSmartCommentary");
+    if(box)return box;
+    box=document.createElement("section");
+    box.id="jgSmartCommentary";
+    box.setAttribute("aria-live","polite");
+    box.innerHTML=`
+      <div id="jgSmartCommentaryHeader">
+        <div id="jgSmartCommentaryTitle">朱老師解說</div>
+        <button type="button" id="jgSmartEditBtn">✏️ 編輯</button>
+      </div>
+      <div id="jgSmartCommentaryText"></div>
+      <div id="jgSmartCommentEditor">
+        <textarea id="jgSmartCommentTextarea" placeholder="輸入這一手的朱老師解說…"></textarea>
+        <div class="jg-smart-edit-actions">
+          <button type="button" id="jgSmartSaveBtn">儲存</button>
+          <button type="button" id="jgSmartDeleteBtn">刪除文字</button>
+          <button type="button" id="jgSmartDoneBtn">完成收合</button>
+        </div>
+      </div>
+      <details id="jgPlaybackSettings">
+        <summary>⚙️ 播放設定</summary>
+        <div id="jgPlaybackSettingsInner">
+          <select id="jgSmartSpeed">
+            <option value="300">快速｜0.3 秒／手</option>
+            <option value="700">正常｜0.7 秒／手</option>
+            <option value="1200">慢速｜1.2 秒／手</option>
+            <option value="2000">解說｜2 秒／手</option>
+            <option value="3000">教學｜3 秒／手</option>
+          </select>
+        </div>
+      </details>`;
+    document.body.appendChild(box);
+
+    document.getElementById("jgSmartEditBtn")?.addEventListener("click",()=>{
+      document.getElementById("jgSmartCommentEditor")?.classList.add("open");
+      const ta=document.getElementById("jgSmartCommentTextarea");
+      if(ta) ta.value=String(cmap[String(moveNo())]||"");
+    });
+    document.getElementById("jgSmartDoneBtn")?.addEventListener("click",()=>document.getElementById("jgSmartCommentEditor")?.classList.remove("open"));
+    document.getElementById("jgSmartSaveBtn")?.addEventListener("click",saveComment);
+    document.getElementById("jgSmartDeleteBtn")?.addEventListener("click",deleteComment);
+
+    const speed=document.getElementById("jgSmartSpeed");
+    if(speed){
+      speed.value=String(window.jgClassicPlaybackMs||700);
+      speed.addEventListener("change",()=>{
+        window.jgClassicPlaybackMs=Number(speed.value)||700;
+        toast("播放速度已設定");
+      });
+    }
+    return box;
+  }
+
+  function textNow(){
+    const n=moveNo();
+    return String(cmap[String(n)]||"").trim() || sgfComment(n);
+  }
+
+  function render(){
+    const box=ensureBox(), n=moveNo(), txt=textNow();
+    document.body.classList.toggle("jg-classic-admin",admin());
+    document.getElementById("jgSmartCommentEditor")?.classList.remove("open");
+    if(!txt){box.classList.remove("show");return}
+    document.getElementById("jgSmartCommentaryTitle").textContent=`第 ${n} 手｜朱老師解說`;
+    document.getElementById("jgSmartCommentaryText").textContent=txt;
+    box.classList.add("show");
+  }
+
+  async function saveComment(){
+    if(!admin()){toast("只有主管理員可以修改逐手解說");return}
+    if(!onlineGame?.onlineId){toast("請先載入線上名局");return}
+    const n=moveNo(), ta=document.getElementById("jgSmartCommentTextarea");
+    const txt=String(ta?.value||"").trim();
+    if(n<1||!txt){toast("請移到要解說的手數並輸入文字");return}
+    cmap={...cmap,[String(n)]:txt};
+    try{
+      const {error}=await memberSupabase.from("joygo_classic_games").update({commentary:cmap,updated_at:new Date().toISOString()}).eq("id",onlineGame.onlineId);
+      if(error)throw error;
+      onlineGame.commentary={...cmap}; render(); toast(`✅ 第 ${n} 手解說已儲存`);
+    }catch(e){toast("儲存解說失敗："+(e?.message||String(e)))}
+  }
+
+  async function deleteComment(){
+    if(!admin()||!onlineGame?.onlineId)return;
+    const n=moveNo(), next={...cmap}; delete next[String(n)];
+    try{
+      const {error}=await memberSupabase.from("joygo_classic_games").update({commentary:next,updated_at:new Date().toISOString()}).eq("id",onlineGame.onlineId);
+      if(error)throw error;
+      cmap=next; onlineGame.commentary={...next}; render(); toast(`第 ${n} 手解說文字已刪除`);
+    }catch(e){toast("刪除解說失敗："+(e?.message||String(e)))}
+  }
+
+  async function hydrate(game){
+    onlineGame=game||null; cmap=(game?.commentary&&typeof game.commentary==="object")?{...game.commentary}:{};
+    if(game?.onlineId&&memberSupabase){
+      try{
+        const {data,error}=await memberSupabase.from("joygo_classic_games").select("commentary").eq("id",game.onlineId).single();
+        if(!error&&data)cmap=(data.commentary&&typeof data.commentary==="object")?{...data.commentary}:{};
+      }catch{}
+    }
+    setTimeout(render,80);
+  }
+
+  function patch(){
+    if(typeof loadOnlineClassicGame==="function"&&!window.__jg3312bOnline){
+      window.__jg3312bOnline=true;
+      const old=loadOnlineClassicGame;
+      loadOnlineClassicGame=function(game,autoPlay=false){hydrate(game);const r=old.apply(this,arguments);setTimeout(render,120);return r}
+    }
+    if(typeof goTo==="function"&&!window.__jg3312bGoTo){
+      window.__jg3312bGoTo=true;
+      const old=goTo;
+      goTo=function(n){const r=old.apply(this,arguments);if(document.body.classList.contains("jg-classic-playback"))setTimeout(render,0);return r}
+    }
+  }
+
+  function relocate(){
+    const box=ensureBox();
+    if(matchMedia("(orientation:portrait)").matches){
+      const right=document.getElementById("rightTools"), board=document.querySelector(".board-wrap");
+      if(right?.parentNode) right.insertAdjacentElement("afterend",box);
+      else if(board) board.insertAdjacentElement("afterend",box);
+    }else if(box.parentNode!==document.body) document.body.appendChild(box);
+  }
+
+  function boot(){ensureBox();patch();relocate();render()}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(()=>{relocate();render()},300),{passive:true});
   [400,900,1600].forEach(ms=>setTimeout(boot,ms));
 })();
 </script>
