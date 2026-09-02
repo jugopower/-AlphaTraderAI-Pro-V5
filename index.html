@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12j">
+<meta name="joygo-stable-reset-version" content="3.3.12k">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6377,6 +6377,78 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
     display:block;
     height:calc(44px + env(safe-area-inset-bottom));
     flex:0 0 auto;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312kSpeedButtonsCSS">
+/* ==========================================================
+   Beta 3.3.12k｜播放速度按鈕版
+   只修播放速度控制
+   - 不再使用 select 下拉選單
+   - 不再依賴 details 開合
+   - iPad Safari 橫式可直接點選
+   - 不改棋盤、棋鐘、解說位置
+   ========================================================== */
+
+/* 隱藏舊 select / details 速度控制 */
+#jgPlaybackSettings{
+  display:none!important;
+}
+
+/* 新速度按鈕區 */
+#jgSpeedButtonPanel{
+  box-sizing:border-box;
+  width:100%;
+  margin-top:8px;
+  padding:8px;
+  border:1px solid #5b4c31;
+  border-radius:10px;
+  background:#0c0b0a;
+}
+
+#jgSpeedButtonTitle{
+  color:#d9c08a;
+  font-size:11px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+#jgSpeedButtons{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:5px;
+}
+
+#jgSpeedButtons button{
+  min-width:0!important;
+  min-height:34px!important;
+  padding:4px 3px!important;
+  border-radius:8px!important;
+  border:1px solid #66583b!important;
+  background:#17120f!important;
+  color:#fff!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  touch-action:manipulation;
+}
+
+#jgSpeedButtons button.active{
+  background:#e0ad35!important;
+  color:#15110a!important;
+  border-color:#f2cf73!important;
+}
+
+@media(max-width:699px){
+  #jgSpeedButtons{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+@media(min-width:700px) and (orientation:landscape){
+  #jgSpeedButtonPanel{
+    margin-bottom:8px;
   }
 }
 </style>
@@ -15394,6 +15466,119 @@ function patch(){
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
   addEventListener("resize",()=>setTimeout(repairRightPanel,180),{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3312kSpeedButtonsJS">
+(()=>{
+  const speeds=[
+    {ms:300,label:"0.3秒"},
+    {ms:700,label:"0.7秒"},
+    {ms:1200,label:"1.2秒"},
+    {ms:2000,label:"2秒"},
+    {ms:3000,label:"3秒"}
+  ];
+
+  function currentMs(){
+    const n=Number(window.jgClassicPlaybackMs||700);
+    return speeds.some(s=>s.ms===n)?n:700;
+  }
+
+  function restartTimer(ms){
+    window.jgClassicPlaybackMs=ms;
+
+    try{
+      if(state?.playing){
+        clearInterval(state.timer);
+        state.timer=setInterval(()=>{
+          if(state.index>=state.moves.length){
+            state.playing=false;
+            const play=document.getElementById("playBtn");
+            if(play)play.textContent="▶";
+            clearInterval(state.timer);
+            try{resumeClockAfterReplay()}catch{}
+            return;
+          }
+          goTo(state.index+1);
+        },ms);
+      }
+    }catch(e){
+      console.warn("speed restart:",e);
+    }
+  }
+
+  function refreshActive(){
+    const ms=currentMs();
+    document.querySelectorAll("#jgSpeedButtons button").forEach(btn=>{
+      btn.classList.toggle("active",Number(btn.dataset.ms)===ms);
+    });
+  }
+
+  function ensurePanel(){
+    let panel=document.getElementById("jgSpeedButtonPanel");
+    if(panel)return panel;
+
+    const commentary=document.getElementById("jgSmartCommentary");
+    if(!commentary)return null;
+
+    panel=document.createElement("section");
+    panel.id="jgSpeedButtonPanel";
+    panel.innerHTML=`
+      <div id="jgSpeedButtonTitle">⏱ 播放速度</div>
+      <div id="jgSpeedButtons"></div>
+    `;
+
+    const holder=panel.querySelector("#jgSpeedButtons");
+
+    speeds.forEach(item=>{
+      const btn=document.createElement("button");
+      btn.type="button";
+      btn.dataset.ms=String(item.ms);
+      btn.textContent=item.label;
+
+      btn.addEventListener("click",(ev)=>{
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        restartTimer(item.ms);
+        refreshActive();
+
+        try{toast(`播放速度：${item.label}／手`)}catch{}
+      });
+
+      holder.appendChild(btn);
+    });
+
+    commentary.appendChild(panel);
+    refreshActive();
+    return panel;
+  }
+
+  function removeOldSpeedUI(){
+    const old=document.getElementById("jgPlaybackSettings");
+    if(old)old.style.setProperty("display","none","important");
+
+    const oldSelect=document.getElementById("jgSmartSpeed");
+    if(oldSelect){
+      oldSelect.disabled=true;
+      oldSelect.style.display="none";
+    }
+  }
+
+  function boot(){
+    removeOldSpeedUI();
+    ensurePanel();
+    refreshActive();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,280),{passive:true});
+  [300,700,1300].forEach(ms=>setTimeout(boot,ms));
 })();
 </script>
 
