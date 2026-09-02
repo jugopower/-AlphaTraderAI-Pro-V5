@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12e">
+<meta name="joygo-stable-reset-version" content="3.3.12f">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6121,6 +6121,65 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
 }
 #jgSmartCommentary.jg-has-comment #jgPlaybackSettings{
   display:block;
+}
+</style>
+
+
+<style id="joygoBeta3312fMobileCommentPositionCSS">
+/* ==========================================================
+   Beta 3.3.12f｜手機解說位置修正版
+   只調整 iPad直式/手機解說框位置
+   不改棋盤尺寸、不改棋鐘、不改橫式右側解說
+   ========================================================== */
+
+/* 直式與手機：解說固定在棋盤下方、棋鐘上方 */
+@media (orientation:portrait){
+  #jgSmartCommentary{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 16px)!important;
+    max-width:none!important;
+    margin:6px auto 4px!important;
+    z-index:120!important;
+  }
+}
+
+/* 手機再縮短高度，避免佔太多畫面 */
+@media (max-width:699px){
+  #jgSmartCommentary{
+    width:calc(100% - 10px)!important;
+    margin:4px auto 3px!important;
+    padding:7px 8px!important;
+    border-radius:10px!important;
+  }
+
+  #jgSmartCommentaryHeader{
+    margin-bottom:3px!important;
+  }
+
+  #jgSmartCommentaryTitle{
+    font-size:11px!important;
+  }
+
+  #jgSmartCommentaryText{
+    font-size:11px!important;
+    line-height:1.4!important;
+  }
+
+  #jgSmartEditBtn{
+    min-height:30px!important;
+    padding:3px 8px!important;
+    font-size:10.5px!important;
+  }
+
+  #jgPlaybackSettings{
+    margin-top:4px!important;
+  }
+
+  #jgPlaybackSettings > summary{
+    min-height:30px!important;
+    font-size:10.5px!important;
+  }
 }
 </style>
 
@@ -14516,6 +14575,57 @@ function patch(){
       repairCommentDisplay();
     }
   },350);
+})();
+</script>
+
+
+<script id="joygoBeta3312fMobileCommentPositionJS">
+(()=>{
+  function placeCommentary(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return;
+
+    const portrait=matchMedia("(orientation:portrait)").matches;
+    if(!portrait){
+      /* 橫式沿用既有右側 fixed 位置 */
+      if(box.parentNode!==document.body) document.body.appendChild(box);
+      return;
+    }
+
+    const boardWrap=document.querySelector(".board-wrap");
+    const rightTools=document.getElementById("rightTools");
+    const clock=document.getElementById("gameClockPanel");
+
+    /* 優先放在棋盤後、棋鐘前 */
+    if(boardWrap && boardWrap.parentNode){
+      if(clock && clock.parentNode===boardWrap.parentNode){
+        boardWrap.insertAdjacentElement("afterend",box);
+        if(box.nextElementSibling!==clock){
+          clock.parentNode.insertBefore(box,clock);
+        }
+      }else if(rightTools && rightTools.parentNode===boardWrap.parentNode){
+        boardWrap.insertAdjacentElement("afterend",box);
+        if(box.nextElementSibling!==rightTools){
+          rightTools.parentNode.insertBefore(box,rightTools);
+        }
+      }else{
+        boardWrap.insertAdjacentElement("afterend",box);
+      }
+    }
+  }
+
+  function boot(){
+    placeCommentary();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
+  addEventListener("resize",()=>setTimeout(boot,150),{passive:true});
+  [300,800,1500].forEach(ms=>setTimeout(boot,ms));
 })();
 </script>
 
