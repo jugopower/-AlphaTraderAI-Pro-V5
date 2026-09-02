@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12d">
+<meta name="joygo-stable-reset-version" content="3.3.12e">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6107,6 +6107,20 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
 #jgSmartCommentary.jg-saved-flash{
   outline:2px solid #4d9b67;
   outline-offset:2px;
+}
+</style>
+
+
+<style id="joygoBeta3312eCommentDisplayFixCSS">
+/* Beta 3.3.12e｜解說文字顯示修正 */
+#jgSmartCommentary.jg-has-comment{
+  display:block!important;
+}
+#jgSmartCommentary.jg-has-comment #jgSmartCommentaryText{
+  display:block!important;
+}
+#jgSmartCommentary.jg-has-comment #jgPlaybackSettings{
+  display:block;
 }
 </style>
 
@@ -14098,6 +14112,8 @@ document.addEventListener("click",(ev)=>{
 <script id="joygoBeta3312bSmartCommentaryJS">
 (()=>{
   let onlineGame=null, cmap={};
+  window.jgSmartCommentaryMap=()=>cmap;
+  window.jgSmartCurrentGame=()=>onlineGame;
   const admin=()=>{try{return memberAccess?.role==="admin"}catch{return false}};
   const moveNo=()=>{try{return Number(state?.index||0)}catch{return 0}};
   const sgfComment=n=>{try{return n>0?String(state?.moves?.[n-1]?.comment||"").trim():""}catch{return ""}};
@@ -14309,9 +14325,10 @@ function patch(){
   function getOnlineText(){
     const n=currentMove();
     try{
-      if(typeof cmap!=="undefined"){
-        return String(cmap?.[String(n)]||cmap?.[n]||"").trim();
-      }
+      const map=(typeof window.jgSmartCommentaryMap==="function")
+        ? window.jgSmartCommentaryMap()
+        : {};
+      return String(map?.[String(n)]||map?.[n]||"").trim();
     }catch{}
     return "";
   }
@@ -14429,6 +14446,76 @@ function patch(){
     document.addEventListener("DOMContentLoaded",wireFeedback,{once:true});
   }else wireFeedback();
   addEventListener("pageshow",wireFeedback,{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3312eCommentDisplayFixJS">
+(()=>{
+  function repairCommentDisplay(){
+    const box=document.getElementById("jgSmartCommentary");
+    const text=document.getElementById("jgSmartCommentaryText");
+    const title=document.getElementById("jgSmartCommentaryTitle");
+    const btn=document.getElementById("jgSmartEditBtn");
+    if(!box||!text)return;
+
+    let n=0;
+    try{n=Number(state?.index||0)}catch{}
+
+    let mapText="";
+    try{
+      const map=(typeof window.jgSmartCommentaryMap==="function")
+        ? window.jgSmartCommentaryMap()
+        : {};
+      mapText=String(map?.[String(n)]||map?.[n]||"").trim();
+    }catch{}
+
+    let sgfText="";
+    try{
+      if(n>0)sgfText=String(state?.moves?.[n-1]?.comment||"").trim();
+    }catch{}
+
+    const actual=mapText||sgfText;
+
+    if(actual){
+      text.textContent=actual;
+      box.classList.remove("jg-empty-admin");
+      box.classList.add("jg-has-comment","show");
+      if(title)title.textContent=`第 ${n} 手｜朱老師解說`;
+      if(btn)btn.textContent="✏️ 編輯";
+    }else{
+      box.classList.remove("jg-has-comment");
+    }
+  }
+
+  function installNavigationRefresh(){
+    ["firstBtn","prevBtn","nextBtn","lastBtn","playBtn"].forEach(id=>{
+      const b=document.getElementById(id);
+      if(!b||b.dataset.jg3312e==="1")return;
+      b.dataset.jg3312e="1";
+      b.addEventListener("click",()=>setTimeout(repairCommentDisplay,40));
+    });
+  }
+
+  function boot(){
+    installNavigationRefresh();
+    repairCommentDisplay();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,250),{passive:true});
+  [300,700,1200,1800].forEach(ms=>setTimeout(boot,ms));
+
+  /* 播放中每手也同步刷新顯示 */
+  setInterval(()=>{
+    if(document.body.classList.contains("jg-classic-playback")){
+      repairCommentDisplay();
+    }
+  },350);
 })();
 </script>
 
