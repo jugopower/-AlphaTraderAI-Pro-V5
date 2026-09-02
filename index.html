@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11l">
+<meta name="joygo-stable-reset-version" content="3.3.12-online-classic-v1">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5778,6 +5778,136 @@ body.jg-classic-playback .player .controls button{
 @media (orientation:portrait){
   body.jg-classic-playback .player{
     overflow:visible!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312OnlineClassicCSS">
+/* ==========================================================
+   Beta 3.3.12｜Joy Go 線上名局館 V1
+   不改棋盤尺寸，只增加線上名局館 UI
+   ========================================================== */
+
+.online-classic-panel{
+  margin:12px 0 14px;
+  padding:12px;
+  border:1px solid #8a6630;
+  border-radius:14px;
+  background:linear-gradient(180deg,#17100c,#0b0908);
+}
+.online-classic-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:9px;
+}
+.online-classic-title{
+  font-weight:900;
+  color:#f2cb6b;
+  font-size:16px;
+}
+.online-classic-sub{
+  color:#c5b28d;
+  font-size:11px;
+  margin-top:2px;
+}
+.online-classic-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.online-classic-actions button{
+  min-height:36px!important;
+  padding:6px 10px!important;
+}
+#onlineClassicList{
+  display:grid;
+  gap:8px;
+}
+.online-classic-card{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border:1px solid #5d482a;
+  border-radius:12px;
+  background:#0c0a09;
+}
+.online-classic-card-title{
+  color:#f5d67e;
+  font-size:14px;
+  font-weight:900;
+}
+.online-classic-card-meta{
+  color:#c5b89f;
+  font-size:11px;
+  margin-top:3px;
+}
+.online-classic-card-note{
+  color:#ddd1ba;
+  font-size:11px;
+  line-height:1.45;
+  margin-top:5px;
+}
+.online-classic-card-actions{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.online-classic-card-actions button{
+  min-height:36px!important;
+  padding:6px 9px!important;
+}
+.online-classic-badge{
+  display:inline-block;
+  margin-top:5px;
+  padding:2px 7px;
+  border-radius:999px;
+  border:1px solid #527f4b;
+  color:#aee09f;
+  font-size:10px;
+}
+.online-classic-status{
+  color:#c8b797;
+  font-size:11px;
+  padding:6px 0;
+}
+.online-classic-publish{
+  background:#1f5d38!important;
+  border-color:#43895f!important;
+  color:#fff!important;
+}
+
+/* 播放中的朱老師解說：放在右側/棋盤下方，不蓋棋盤 */
+#onlineClassicExplanation{
+  display:none;
+  box-sizing:border-box;
+  margin:6px 0 0;
+  padding:9px 10px;
+  border:1px solid #80602f;
+  border-radius:10px;
+  background:#17110d;
+  color:#f0dfbb;
+  font-size:12px;
+  line-height:1.45;
+}
+#onlineClassicExplanation.show{display:block}
+#onlineClassicExplanation strong{
+  display:block;
+  color:#f2ca67;
+  margin-bottom:3px;
+}
+
+@media(max-width:699px){
+  .online-classic-card{
+    grid-template-columns:1fr;
+  }
+  .online-classic-card-actions{
+    justify-content:flex-start;
   }
 }
 </style>
@@ -13160,6 +13290,335 @@ document.addEventListener("click",(ev)=>{
   addEventListener("pageshow",repair,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(repair,300),{passive:true});
   [300,900,1600].forEach(ms=>setTimeout(repair,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312OnlineClassicJS">
+(()=>{
+  const $jg=id=>document.getElementById(id);
+  const ONLINE_TABLE="joygo_classic_games";
+  let onlineClassicCache=[];
+
+  function canPublishOnlineClassic(){
+    return memberAccess?.role==="admin";
+  }
+
+  function ensureOnlineClassicUI(){
+    const modal=$jg("classicGameModal")?.querySelector(".modal");
+    if(!modal || $jg("onlineClassicPanel")) return;
+
+    const panel=document.createElement("section");
+    panel.id="onlineClassicPanel";
+    panel.className="online-classic-panel";
+    panel.innerHTML=`
+      <div class="online-classic-head">
+        <div>
+          <div class="online-classic-title">🌐 Joy Go 線上名局館</div>
+          <div class="online-classic-sub">發布一次，棋友即可在任何裝置直接觀看與播放。</div>
+        </div>
+        <div class="online-classic-actions">
+          <button type="button" class="secondary" id="onlineClassicRefreshBtn">重新整理</button>
+        </div>
+      </div>
+      <div id="onlineClassicStatus" class="online-classic-status">讀取中…</div>
+      <div id="onlineClassicList"></div>
+    `;
+
+    const now=$jg("classicNowPlaying");
+    if(now) now.insertAdjacentElement("afterend",panel);
+    else modal.insertBefore(panel,modal.children[2]||null);
+
+    $jg("onlineClassicRefreshBtn")?.addEventListener("click",fetchOnlineClassicGames);
+
+    const player=document.querySelector(".player");
+    if(player && !$jg("onlineClassicExplanation")){
+      const box=document.createElement("div");
+      box.id="onlineClassicExplanation";
+      player.appendChild(box);
+    }
+  }
+
+  async function ensureSupabase(){
+    if(memberSupabase) return true;
+    try{
+      return await memberInitClient(false);
+    }catch{
+      return false;
+    }
+  }
+
+  function onlineClassicToGame(row){
+    return {
+      id:"online-"+row.id,
+      onlineId:row.id,
+      source:"online",
+      title:row.title||"未命名名局",
+      black:row.black_player||"",
+      white:row.white_player||"",
+      event:row.event_name||"",
+      date:row.game_date||"",
+      result:row.result||"",
+      category:row.category||"其他",
+      note:row.note||"",
+      sgf:row.sgf_text||"",
+      savedAt:row.updated_at||row.created_at||""
+    };
+  }
+
+  function renderOnlineClassicGames(){
+    ensureOnlineClassicUI();
+    const list=$jg("onlineClassicList");
+    const status=$jg("onlineClassicStatus");
+    if(!list)return;
+
+    list.innerHTML="";
+    if(!onlineClassicCache.length){
+      if(status)status.textContent="目前尚未發布線上名局。";
+      return;
+    }
+    if(status)status.textContent=`線上已發布 ${onlineClassicCache.length} 盤名局`;
+
+    onlineClassicCache.forEach(row=>{
+      const game=onlineClassicToGame(row);
+      const card=document.createElement("div");
+      card.className="online-classic-card";
+
+      const info=document.createElement("div");
+      const title=document.createElement("div");
+      title.className="online-classic-card-title";
+      title.textContent=game.title;
+      const meta=document.createElement("div");
+      meta.className="online-classic-card-meta";
+      meta.textContent=`${game.black||"黑方"} vs ${game.white||"白方"}｜${game.event||"未填賽事"}｜${game.date||"未填日期"}${game.result?`｜${game.result}`:""}`;
+      const badge=document.createElement("span");
+      badge.className="online-classic-badge";
+      badge.textContent=game.category||"其他";
+      info.append(title,meta,badge);
+      if(game.note){
+        const note=document.createElement("div");
+        note.className="online-classic-card-note";
+        note.textContent="朱老師解說："+game.note;
+        info.appendChild(note);
+      }
+
+      const actions=document.createElement("div");
+      actions.className="online-classic-card-actions";
+
+      const view=document.createElement("button");
+      view.className="secondary";
+      view.textContent="觀看";
+      view.onclick=()=>loadOnlineClassicGame(game,false);
+
+      const play=document.createElement("button");
+      play.className="action";
+      play.textContent="▶ 一鍵播放";
+      play.onclick=()=>loadOnlineClassicGame(game,true);
+
+      const share=document.createElement("button");
+      share.className="secondary";
+      share.textContent="分享";
+      share.onclick=()=>copyOnlineClassicLink(row.id);
+
+      actions.append(view,play,share);
+
+      if(canPublishOnlineClassic()){
+        const del=document.createElement("button");
+        del.className="danger";
+        del.textContent="下架";
+        del.onclick=()=>unpublishOnlineClassic(row);
+        actions.appendChild(del);
+      }
+
+      card.append(info,actions);
+      list.appendChild(card);
+    });
+  }
+
+  async function fetchOnlineClassicGames(){
+    ensureOnlineClassicUI();
+    const status=$jg("onlineClassicStatus");
+    if(status)status.textContent="正在讀取線上名局…";
+
+    if(!(await ensureSupabase())){
+      if(status)status.textContent="尚未連接 Supabase，無法讀取線上名局。";
+      return [];
+    }
+
+    try{
+      const {data,error}=await memberSupabase
+        .from(ONLINE_TABLE)
+        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,sgf_text,is_published,created_at,updated_at")
+        .eq("is_published",true)
+        .order("published_at",{ascending:false});
+      if(error)throw error;
+      onlineClassicCache=Array.isArray(data)?data:[];
+      renderOnlineClassicGames();
+      return onlineClassicCache;
+    }catch(err){
+      console.error(err);
+      if(status)status.textContent="線上名局讀取失敗："+(err?.message||String(err));
+      return [];
+    }
+  }
+
+  function showOnlineExplanation(game){
+    const box=$jg("onlineClassicExplanation");
+    if(!box)return;
+    if(game?.note){
+      box.innerHTML="";
+      const strong=document.createElement("strong");
+      strong.textContent="朱老師解說";
+      const text=document.createElement("div");
+      text.textContent=game.note;
+      box.append(strong,text);
+      box.classList.add("show");
+    }else{
+      box.classList.remove("show");
+      box.innerHTML="";
+    }
+  }
+
+  function loadOnlineClassicGame(game,autoPlay=false){
+    showOnlineExplanation(game);
+    loadClassicGame(game,autoPlay);
+  }
+
+  async function publishOnlineClassic(game){
+    if(!canPublishOnlineClassic()){
+      toast("只有主管理員可以發布線上名局");
+      return;
+    }
+    if(!(await ensureSupabase()))return;
+    if(!game?.sgf){
+      toast("這盤棋沒有 SGF，無法發布");
+      return;
+    }
+
+    try{
+      const payload={
+        title:game.title||"未命名名局",
+        black_player:game.black||"",
+        white_player:game.white||"",
+        event_name:game.event||"",
+        game_date:game.date||null,
+        result:game.result||"",
+        category:game.category||"其他",
+        note:game.note||"",
+        sgf_text:game.sgf,
+        is_published:true,
+        published_by:memberSession?.user?.id||null,
+        published_at:new Date().toISOString(),
+        updated_at:new Date().toISOString()
+      };
+      const {error}=await memberSupabase.from(ONLINE_TABLE).insert(payload);
+      if(error)throw error;
+      toast("🌐 已發布線上名局："+payload.title);
+      await fetchOnlineClassicGames();
+    }catch(err){
+      console.error(err);
+      toast("發布失敗："+(err?.message||String(err)));
+    }
+  }
+
+  async function unpublishOnlineClassic(row){
+    if(!canPublishOnlineClassic())return;
+    if(!confirm(`確定下架「${row.title||"這盤名局"}」？`))return;
+    try{
+      const {error}=await memberSupabase.from(ONLINE_TABLE)
+        .update({is_published:false,updated_at:new Date().toISOString()})
+        .eq("id",row.id);
+      if(error)throw error;
+      toast("已下架："+(row.title||"名局"));
+      await fetchOnlineClassicGames();
+    }catch(err){
+      toast("下架失敗："+(err?.message||String(err)));
+    }
+  }
+
+  async function copyOnlineClassicLink(id){
+    const u=new URL(location.href);
+    u.searchParams.set("classic",id);
+    try{
+      await navigator.clipboard.writeText(u.toString());
+      toast("✅ 已複製觀看連結");
+    }catch{
+      prompt("複製這個觀看連結：",u.toString());
+    }
+  }
+
+  async function openDeepLinkedClassic(){
+    const id=new URL(location.href).searchParams.get("classic");
+    if(!id)return;
+    if(!(await ensureSupabase()))return;
+    try{
+      const {data,error}=await memberSupabase.from(ONLINE_TABLE)
+        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,sgf_text,is_published,created_at,updated_at")
+        .eq("id",id).eq("is_published",true).single();
+      if(error)throw error;
+      const game=onlineClassicToGame(data);
+      loadOnlineClassicGame(game,false);
+      toast("🌐 已開啟線上名局："+game.title);
+    }catch(err){
+      console.error(err);
+      toast("找不到這盤線上名局");
+    }
+  }
+
+  /* 在本機名局卡片加「發布線上」 */
+  function installClassicCardPublisher(){
+    if(window.__jgOnlineClassicCardPatched)return;
+    if(typeof classicGameCard!=="function")return;
+    window.__jgOnlineClassicCardPatched=true;
+
+    const original=classicGameCard;
+    classicGameCard=function(game){
+      const card=original(game);
+      if(game?.source==="official" && canPublishOnlineClassic()){
+        const actions=card.querySelector(".classic-game-actions");
+        if(actions){
+          const pub=document.createElement("button");
+          pub.className="secondary online-classic-publish";
+          pub.textContent="🌐 發布線上";
+          pub.onclick=()=>publishOnlineClassic(game);
+          actions.insertBefore(pub,actions.firstChild);
+        }
+      }
+      return card;
+    };
+  }
+
+  /* 打開名局館時，同步讀線上名局 */
+  function installOpenHook(){
+    if(window.__jgOnlineClassicOpenPatched)return;
+    if(typeof openClassicGameLibrary!=="function")return;
+    window.__jgOnlineClassicOpenPatched=true;
+    const original=openClassicGameLibrary;
+    openClassicGameLibrary=async function(){
+      ensureOnlineClassicUI();
+      installClassicCardPublisher();
+      const result=await original.apply(this,arguments);
+      fetchOnlineClassicGames();
+      return result;
+    };
+  }
+
+  function boot(){
+    ensureOnlineClassicUI();
+    installClassicCardPublisher();
+    installOpenHook();
+    setTimeout(openDeepLinkedClassic,700);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",()=>{
+    ensureOnlineClassicUI();
+    installClassicCardPublisher();
+    installOpenHook();
+  },{passive:true});
 })();
 </script>
 
