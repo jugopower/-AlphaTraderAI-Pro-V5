@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12h">
+<meta name="joygo-stable-reset-version" content="3.3.12i">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6282,6 +6282,47 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
 #jgSmartSpeed{
   min-height:36px!important;
   font-size:12px!important;
+}
+</style>
+
+
+<style id="joygoBeta3312iLandscapeCommentaryCSS">
+/* ==========================================================
+   Beta 3.3.12i｜iPad 橫式解說固定版
+   只修橫式解說顯示，不動直式/棋盤/棋鐘
+   ========================================================== */
+
+@media (min-width:700px) and (orientation:landscape){
+  /* 右側 player 可捲動，避免解說被裁掉 */
+  .player{
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    max-height:calc(100vh - 24px)!important;
+    padding-bottom:12px!important;
+  }
+
+  /* 解說框固定放在右側欄內，正常文件流，不用 fixed */
+  #jgSmartCommentary{
+    position:relative!important;
+    inset:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:8px 0 0!important;
+    transform:none!important;
+    z-index:300!important;
+  }
+
+  #jgSmartCommentary.show{
+    display:block!important;
+  }
+
+  #jgSmartCommentaryText{
+    display:block!important;
+  }
 }
 </style>
 
@@ -15117,6 +15158,111 @@ function patch(){
     if(document.body.classList.contains("jg-classic-playback")){
       refreshCommentary();
       placeCommentary();
+    }
+  },400);
+})();
+</script>
+
+
+<script id="joygoBeta3312iLandscapeCommentaryJS">
+(()=>{
+  let moving=false;
+
+  function placeLandscapeCommentary(){
+    if(moving)return;
+    if(!matchMedia("(min-width:700px) and (orientation:landscape)").matches)return;
+
+    const box=document.getElementById("jgSmartCommentary");
+    const player=document.querySelector(".player");
+    if(!box||!player)return;
+
+    moving=true;
+    try{
+      /* 優先放在播放控制區後面，若找不到就放 player 最後 */
+      const controls=player.querySelector(".controls");
+      if(controls){
+        controls.insertAdjacentElement("afterend",box);
+      }else if(box.parentNode!==player){
+        player.appendChild(box);
+      }
+
+      box.style.setProperty("position","relative","important");
+      box.style.setProperty("inset","auto","important");
+      box.style.setProperty("transform","none","important");
+      box.style.setProperty("width","100%","important");
+
+      player.style.setProperty("overflow-y","auto","important");
+      player.style.setProperty("overflow-x","hidden","important");
+      player.style.setProperty("max-height","calc(100vh - 24px)","important");
+    }finally{
+      moving=false;
+    }
+  }
+
+  function forceRefresh(){
+    try{
+      const n=Number(state?.index||0);
+      const box=document.getElementById("jgSmartCommentary");
+      const title=document.getElementById("jgSmartCommentaryTitle");
+      const text=document.getElementById("jgSmartCommentaryText");
+      const edit=document.getElementById("jgSmartEditBtn");
+      if(!box||!title||!text)return;
+
+      let map={};
+      try{
+        if(typeof window.jgSmartCommentaryMap==="function"){
+          map=window.jgSmartCommentaryMap()||{};
+        }
+      }catch{}
+
+      let txt=String(map[String(n)]||map[n]||"").trim();
+      if(!txt && n>0){
+        try{txt=String(state?.moves?.[n-1]?.comment||"").trim()}catch{}
+      }
+
+      let isAdmin=false;
+      try{isAdmin=memberAccess?.role==="admin"}catch{}
+
+      if(txt){
+        box.classList.remove("jg-empty-admin");
+        box.classList.add("jg-has-comment","show");
+        title.textContent=`第 ${n} 手｜朱老師解說`;
+        text.textContent=txt;
+        if(edit)edit.textContent="✏️ 編輯";
+      }else if(isAdmin && n>0){
+        box.classList.remove("jg-has-comment");
+        box.classList.add("jg-empty-admin","show");
+        title.textContent=`第 ${n} 手｜尚未解說`;
+        text.textContent="";
+        if(edit)edit.textContent="＋ 新增解說";
+      }
+    }catch(e){
+      console.warn("3312i commentary refresh:",e);
+    }
+  }
+
+  function boot(){
+    placeLandscapeCommentary();
+    forceRefresh();
+    [250,600,1000,1600].forEach(ms=>setTimeout(()=>{
+      placeLandscapeCommentary();
+      forceRefresh();
+    },ms));
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
+  addEventListener("resize",()=>setTimeout(placeLandscapeCommentary,180),{passive:true});
+
+  setInterval(()=>{
+    if(document.body.classList.contains("jg-classic-playback") &&
+       matchMedia("(min-width:700px) and (orientation:landscape)").matches){
+      placeLandscapeCommentary();
+      forceRefresh();
     }
   },400);
 })();
