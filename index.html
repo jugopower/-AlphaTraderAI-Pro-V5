@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12k">
+<meta name="joygo-stable-reset-version" content="3.3.12l">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6450,6 +6450,50 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
   #jgSpeedButtonPanel{
     margin-bottom:8px;
   }
+}
+</style>
+
+
+<style id="joygoBeta3312lDeleteLayoutFixCSS">
+/* ==========================================================
+   Beta 3.3.12l｜刪除解說版面修正版
+   只修：
+   - 刪除文字後，不留下大空白
+   - 解說區縮回「尚未解說＋新增解說」
+   - 保持目前手數與畫面位置
+   - 不改棋盤、棋鐘、直橫式、播放速度
+   ========================================================== */
+
+#jgSmartCommentary.jg-empty-admin{
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentEditor{
+  display:none!important;
+}
+
+#jgSmartCommentary.jg-empty-admin #jgSpeedButtonPanel{
+  display:none!important;
+}
+
+/* 防止更多對局區塊被舊高度撐大 */
+#moreGamePanel,
+.more-game-panel,
+#moreGameSection{
+  min-height:0!important;
+  height:auto!important;
+}
+
+/* 刪除後的精簡列 */
+#jgSmartCommentary.jg-empty-admin{
+  padding:8px 10px!important;
+}
+
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryHeader{
+  margin:0!important;
 }
 </style>
 
@@ -15579,6 +15623,108 @@ function patch(){
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(boot,280),{passive:true});
   [300,700,1300].forEach(ms=>setTimeout(boot,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312lDeleteLayoutFixJS">
+(()=>{
+  function currentMove(){
+    try{return Number(state?.index||0)}catch{return 0}
+  }
+
+  function isAdmin(){
+    try{return memberAccess?.role==="admin"}catch{return false}
+  }
+
+  function compactAfterDelete(){
+    const box=document.getElementById("jgSmartCommentary");
+    const title=document.getElementById("jgSmartCommentaryTitle");
+    const text=document.getElementById("jgSmartCommentaryText");
+    const edit=document.getElementById("jgSmartEditBtn");
+    const editor=document.getElementById("jgSmartCommentEditor");
+    const speed=document.getElementById("jgSpeedButtonPanel");
+    if(!box)return;
+
+    const n=currentMove();
+
+    if(isAdmin() && n>0){
+      box.classList.remove("jg-has-comment");
+      box.classList.add("jg-empty-admin","show");
+      if(title) title.textContent=`第 ${n} 手｜尚未解說`;
+      if(text) text.textContent="";
+      if(edit) edit.textContent="＋ 新增解說";
+      editor?.classList.remove("open");
+      if(editor) editor.style.display="none";
+      if(speed) speed.style.display="none";
+    }else{
+      box.classList.remove("show","jg-has-comment","jg-empty-admin");
+    }
+
+    /* 清除可能由舊版留下的高度 */
+    ["moreGamePanel","moreGameSection"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){
+        el.style.removeProperty("height");
+        el.style.removeProperty("min-height");
+        el.style.removeProperty("max-height");
+      }
+    });
+    document.querySelectorAll(".more-game-panel").forEach(el=>{
+      el.style.removeProperty("height");
+      el.style.removeProperty("min-height");
+      el.style.removeProperty("max-height");
+    });
+  }
+
+  function wireDelete(){
+    const btn=document.getElementById("jgSmartDeleteBtn");
+    if(!btn || btn.dataset.jg3312l==="1")return;
+    btn.dataset.jg3312l="1";
+
+    btn.addEventListener("click",()=>{
+      const y=window.scrollY;
+      const n=currentMove();
+
+      /* 等原本刪除資料完成後，強制收合版面 */
+      setTimeout(()=>{
+        compactAfterDelete();
+
+        /* 保持使用者原來畫面位置，不跳頁 */
+        requestAnimationFrame(()=>{
+          window.scrollTo({top:y,behavior:"auto"});
+        });
+
+        try{toast(`第 ${n} 手解說已刪除`)}catch{}
+      },220);
+    });
+  }
+
+  function wireSave(){
+    const btn=document.getElementById("jgSmartSaveBtn");
+    if(!btn || btn.dataset.jg3312l==="1")return;
+    btn.dataset.jg3312l="1";
+
+    btn.addEventListener("click",()=>{
+      setTimeout(()=>{
+        const speed=document.getElementById("jgSpeedButtonPanel");
+        if(speed) speed.style.removeProperty("display");
+      },300);
+    });
+  }
+
+  function boot(){
+    wireDelete();
+    wireSave();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
+  [300,800,1400].forEach(ms=>setTimeout(boot,ms));
 })();
 </script>
 
