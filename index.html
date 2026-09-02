@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.11k">
+<meta name="joygo-stable-reset-version" content="3.3.11l">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5723,6 +5723,61 @@ body.jg-mobile-platform-menu #landscapePlatformCloseBtn{
   body.scoring-mode #scoringModeBar,
   body.trial-mode #trialModeBar{
     max-height:none;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3311lClassicPlaybackRestore">
+/* ==========================================================
+   Beta 3.3.11l｜名局館播放控制恢復版
+   只修名局館載入棋譜後播放控制被收合隱藏
+   ========================================================== */
+
+/* 名局館棋譜載入後，棋譜播放控制必須直接可見 */
+body.jg-classic-playback .player #moveTools,
+body.jg-classic-playback .player .controls{
+  display:flex!important;
+}
+
+/* 名局館模式不需要再按「棋譜控制」才能播放 */
+body.jg-classic-playback #jgRecordToggle{
+  display:none!important;
+}
+
+/* 播放工具整理成緊湊區塊 */
+body.jg-classic-playback .player #moveTools{
+  flex-wrap:wrap!important;
+  gap:5px!important;
+  margin-top:6px!important;
+}
+
+body.jg-classic-playback .player .controls{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:5px!important;
+  margin-top:6px!important;
+}
+
+body.jg-classic-playback .player .controls button{
+  min-width:0!important;
+  min-height:38px!important;
+  font-size:18px!important;
+  padding:4px!important;
+}
+
+/* 橫式：控制留在右欄，可捲動，不遮棋盤 */
+@media (min-width:700px) and (orientation:landscape){
+  body.jg-classic-playback .player{
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+}
+
+/* 直式：播放控制自然排在棋鐘下方 */
+@media (orientation:portrait){
+  body.jg-classic-playback .player{
+    overflow:visible!important;
   }
 }
 </style>
@@ -13065,6 +13120,45 @@ document.addEventListener("click",(ev)=>{
   addEventListener("orientationchange",()=>setTimeout(repair,300),{passive:true});
   addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
 
+  [300,900,1600].forEach(ms=>setTimeout(repair,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3311lClassicPlaybackRestoreJS">
+(()=>{
+  function syncClassicPlaybackMode(){
+    const bar=document.getElementById("famousGameInfoBar");
+    const active=!!(bar && bar.classList.contains("show"));
+    document.body.classList.toggle("jg-classic-playback",active);
+
+    if(active){
+      const player=document.querySelector(".player");
+      if(player) player.classList.add("jg-record-open");
+    }
+  }
+
+  function installObserver(){
+    const bar=document.getElementById("famousGameInfoBar");
+    if(!bar || bar.dataset.jg3311l==="1") return;
+    bar.dataset.jg3311l="1";
+
+    const obs=new MutationObserver(syncClassicPlaybackMode);
+    obs.observe(bar,{attributes:true,attributeFilter:["class","style"]});
+    syncClassicPlaybackMode();
+  }
+
+  function repair(){
+    installObserver();
+    syncClassicPlaybackMode();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",repair,{once:true});
+  }else repair();
+
+  addEventListener("pageshow",repair,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(repair,300),{passive:true});
   [300,900,1600].forEach(ms=>setTimeout(repair,ms));
 })();
 </script>
