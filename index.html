@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12c">
+<meta name="joygo-stable-reset-version" content="3.3.12d">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6098,6 +6098,15 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
 /* 編輯器展開時，播放設定仍可用 */
 #jgSmartCommentary #jgSmartCommentEditor.open ~ #jgPlaybackSettings{
   display:block!important;
+}
+</style>
+
+
+<style id="joygoBeta3312dSaveFixCSS">
+/* Beta 3.3.12d：儲存成功後保持解說框清楚可見 */
+#jgSmartCommentary.jg-saved-flash{
+  outline:2px solid #4d9b67;
+  outline-offset:2px;
 }
 </style>
 
@@ -14164,26 +14173,72 @@ document.addEventListener("click",(ev)=>{
 
   async function saveComment(){
     if(!admin()){toast("只有主管理員可以修改逐手解說");return}
-    if(!onlineGame?.onlineId){toast("請先載入線上名局");return}
+    if(!onlineGame){toast("請先從名局館載入一盤棋");return}
     const n=moveNo(), ta=document.getElementById("jgSmartCommentTextarea");
     const txt=String(ta?.value||"").trim();
     if(n<1||!txt){toast("請移到要解說的手數並輸入文字");return}
     cmap={...cmap,[String(n)]:txt};
     try{
-      const {error}=await memberSupabase.from("joygo_classic_games").update({commentary:cmap,updated_at:new Date().toISOString()}).eq("id",onlineGame.onlineId);
-      if(error)throw error;
-      onlineGame.commentary={...cmap}; render(); toast(`✅ 第 ${n} 手解說已儲存`);
-    }catch(e){toast("儲存解說失敗："+(e?.message||String(e)))}
+      onlineGame.commentary={...cmap};
+      onlineGame.savedAt=new Date().toISOString();
+
+      if(onlineGame.onlineId){
+        if(!memberSupabase)throw new Error("尚未連接 Supabase");
+        const {error}=await memberSupabase
+          .from("joygo_classic_games")
+          .update({commentary:cmap,updated_at:new Date().toISOString()})
+          .eq("id",onlineGame.onlineId);
+        if(error)throw error;
+      }else{
+        /* 本機名局：存回 IndexedDB＋localStorage mirror */
+        if(!onlineGame.id)throw new Error("這盤棋缺少名局 ID");
+        await classicDbPut(onlineGame);
+
+        const idx=classicGameCache.findIndex(g=>String(g.id)===String(onlineGame.id));
+        if(idx>=0)classicGameCache[idx]={...onlineGame};
+        else classicGameCache.unshift({...onlineGame});
+
+        classicWriteMirror(classicGameCache);
+      }
+
+      render();
+      toast(`✅ 第 ${n} 手解說已儲存`);
+    }catch(e){
+      console.error("save commentary:",e);
+      toast("儲存解說失敗："+(e?.message||String(e)));
+    }
   }
 
   async function deleteComment(){
-    if(!admin()||!onlineGame?.onlineId)return;
+    if(!admin()||!onlineGame)return;
     const n=moveNo(), next={...cmap}; delete next[String(n)];
     try{
-      const {error}=await memberSupabase.from("joygo_classic_games").update({commentary:next,updated_at:new Date().toISOString()}).eq("id",onlineGame.onlineId);
-      if(error)throw error;
-      cmap=next; onlineGame.commentary={...next}; render(); toast(`第 ${n} 手解說文字已刪除`);
-    }catch(e){toast("刪除解說失敗："+(e?.message||String(e)))}
+      cmap=next;
+      onlineGame.commentary={...next};
+      onlineGame.savedAt=new Date().toISOString();
+
+      if(onlineGame.onlineId){
+        if(!memberSupabase)throw new Error("尚未連接 Supabase");
+        const {error}=await memberSupabase
+          .from("joygo_classic_games")
+          .update({commentary:next,updated_at:new Date().toISOString()})
+          .eq("id",onlineGame.onlineId);
+        if(error)throw error;
+      }else{
+        if(!onlineGame.id)throw new Error("這盤棋缺少名局 ID");
+        await classicDbPut(onlineGame);
+
+        const idx=classicGameCache.findIndex(g=>String(g.id)===String(onlineGame.id));
+        if(idx>=0)classicGameCache[idx]={...onlineGame};
+        classicWriteMirror(classicGameCache);
+      }
+
+      render();
+      toast(`第 ${n} 手解說文字已刪除`);
+    }catch(e){
+      console.error("delete commentary:",e);
+      toast("刪除解說失敗："+(e?.message||String(e)));
+    }
   }
 
   async function hydrate(game){
@@ -14197,7 +14252,24 @@ document.addEventListener("click",(ev)=>{
     setTimeout(render,80);
   }
 
-  function patch(){
+  
+  window.jgSmartCommentaryHydrate = hydrate;
+
+  function patchAnyClassicLoader(){
+    if(window.__jg3312dClassicLoadPatched)return;
+    if(typeof loadClassicGame!=="function")return;
+    window.__jg3312dClassicLoadPatched=true;
+
+    const originalLoadClassicGame=loadClassicGame;
+    loadClassicGame=function(game,autoPlay=false){
+      try{hydrate(game)}catch(e){console.warn("commentary hydrate:",e)}
+      const result=originalLoadClassicGame.apply(this,arguments);
+      setTimeout(render,120);
+      return result;
+    };
+  }
+
+function patch(){
     if(typeof loadOnlineClassicGame==="function"&&!window.__jg3312bOnline){
       window.__jg3312bOnline=true;
       const old=loadOnlineClassicGame;
@@ -14219,7 +14291,7 @@ document.addEventListener("click",(ev)=>{
     }else if(box.parentNode!==document.body) document.body.appendChild(box);
   }
 
-  function boot(){ensureBox();patch();relocate();render()}
+  function boot(){ensureBox();patch();patchAnyClassicLoader();relocate();render()}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(()=>{relocate();render()},300),{passive:true});
@@ -14334,6 +14406,29 @@ document.addEventListener("click",(ev)=>{
   addEventListener("pageshow",repair,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(repair,250),{passive:true});
   [300,800,1500].forEach(ms=>setTimeout(repair,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312dSaveFeedbackJS">
+(()=>{
+  function wireFeedback(){
+    const save=document.getElementById("jgSmartSaveBtn");
+    if(!save || save.dataset.jg3312d==="1")return;
+    save.dataset.jg3312d="1";
+    save.addEventListener("click",()=>{
+      setTimeout(()=>{
+        const box=document.getElementById("jgSmartCommentary");
+        if(!box || !box.classList.contains("show"))return;
+        box.classList.add("jg-saved-flash");
+        setTimeout(()=>box.classList.remove("jg-saved-flash"),700);
+      },500);
+    });
+  }
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",wireFeedback,{once:true});
+  }else wireFeedback();
+  addEventListener("pageshow",wireFeedback,{passive:true});
 })();
 </script>
 
