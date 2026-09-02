@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12b">
+<meta name="joygo-stable-reset-version" content="3.3.12c">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6052,6 +6052,52 @@ body.jg-classic-admin #jgSmartEditBtn{display:inline-flex;align-items:center;jus
 }
 @media (max-width:699px){
   #jgSmartCommentary{position:relative;width:calc(100% - 10px);margin:5px auto 0;padding:8px}
+}
+</style>
+
+
+<style id="joygoBeta3312cCommentEntryCSS">
+/* ==========================================================
+   Beta 3.3.12c｜新增解說入口修正版
+   只修：沒有解說時，主管理員仍可新增第一段解說
+   不改棋盤、棋鐘、直橫式版面
+   ========================================================== */
+
+/* 管理員：即使本手沒有解說，也顯示精簡入口 */
+body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
+  display:block!important;
+}
+
+/* 沒解說時只顯示標題＋新增解說，避免大空框 */
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryText,
+#jgSmartCommentary.jg-empty-admin #jgPlaybackSettings{
+  display:none!important;
+}
+
+#jgSmartCommentary.jg-empty-admin #jgSmartEditBtn{
+  display:inline-flex!important;
+}
+
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryHeader{
+  margin-bottom:0!important;
+}
+
+/* 有解說時恢復正常 */
+#jgSmartCommentary:not(.jg-empty-admin) #jgSmartCommentaryText{
+  display:block;
+}
+
+/* 新增狀態按鈕文字更清楚 */
+#jgSmartCommentary.jg-empty-admin #jgSmartEditBtn{
+  background:#1f5f3d!important;
+  border-color:#43875f!important;
+  color:#fff!important;
+  min-width:96px!important;
+}
+
+/* 編輯器展開時，播放設定仍可用 */
+#jgSmartCommentary #jgSmartCommentEditor.open ~ #jgPlaybackSettings{
+  display:block!important;
 }
 </style>
 
@@ -14178,6 +14224,116 @@ document.addEventListener("click",(ev)=>{
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(()=>{relocate();render()},300),{passive:true});
   [400,900,1600].forEach(ms=>setTimeout(boot,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312cCommentEntryJS">
+(()=>{
+  function currentMove(){
+    try{return Number(state?.index||0)}catch{return 0}
+  }
+
+  function getOnlineText(){
+    const n=currentMove();
+    try{
+      if(typeof cmap!=="undefined"){
+        return String(cmap?.[String(n)]||cmap?.[n]||"").trim();
+      }
+    }catch{}
+    return "";
+  }
+
+  function getSgfText(){
+    const n=currentMove();
+    try{
+      if(n<=0)return "";
+      return String(state?.moves?.[n-1]?.comment||"").trim();
+    }catch{return ""}
+  }
+
+  function hasCurrentComment(){
+    return !!(getOnlineText() || getSgfText());
+  }
+
+  function patchEntry(){
+    const box=document.getElementById("jgSmartCommentary");
+    const btn=document.getElementById("jgSmartEditBtn");
+    const title=document.getElementById("jgSmartCommentaryTitle");
+    if(!box || !btn || !title)return;
+
+    let isAdmin=false;
+    try{isAdmin=memberAccess?.role==="admin"}catch{}
+
+    const n=currentMove();
+    const has=hasCurrentComment();
+
+    if(isAdmin && n>0 && !has){
+      box.classList.add("jg-empty-admin");
+      box.classList.add("show");
+      title.textContent=`第 ${n} 手｜尚未解說`;
+      btn.textContent="＋ 新增解說";
+      btn.setAttribute("aria-label",`新增第 ${n} 手解說`);
+    }else{
+      box.classList.remove("jg-empty-admin");
+      if(has){
+        btn.textContent="✏️ 編輯";
+        btn.setAttribute("aria-label",`編輯第 ${n} 手解說`);
+      }else if(n<=0){
+        box.classList.remove("show");
+      }
+    }
+  }
+
+  function wireAddButton(){
+    const btn=document.getElementById("jgSmartEditBtn");
+    if(!btn || btn.dataset.jg3312c==="1")return;
+    btn.dataset.jg3312c="1";
+
+    btn.addEventListener("click",()=>{
+      const ta=document.getElementById("jgSmartCommentTextarea");
+      const n=currentMove();
+      if(ta && !hasCurrentComment()){
+        ta.value="";
+        ta.placeholder=`輸入第 ${n} 手的朱老師解說…`;
+      }
+    },{capture:true});
+  }
+
+  function repair(){
+    wireAddButton();
+    patchEntry();
+  }
+
+  /* 包裝 renderSmartComment：原本沒解說會隱藏，之後補回管理員新增入口 */
+  if(typeof renderSmartComment==="function" && !window.__jg3312cRenderPatched){
+    window.__jg3312cRenderPatched=true;
+    const old=renderSmartComment;
+    renderSmartComment=function(){
+      const r=old.apply(this,arguments);
+      setTimeout(repair,0);
+      return r;
+    };
+  }
+
+  /* 包裝 goTo：每換一手更新新增/編輯狀態 */
+  if(typeof goTo==="function" && !window.__jg3312cGoToPatched){
+    window.__jg3312cGoToPatched=true;
+    const oldGo=goTo;
+    goTo=function(n){
+      const r=oldGo.apply(this,arguments);
+      setTimeout(repair,0);
+      return r;
+    };
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",repair,{once:true});
+  }else repair();
+
+  addEventListener("pageshow",repair,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(repair,250),{passive:true});
+  [300,800,1500].forEach(ms=>setTimeout(repair,ms));
 })();
 </script>
 
