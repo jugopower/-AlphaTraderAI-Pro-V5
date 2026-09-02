@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12g">
+<meta name="joygo-stable-reset-version" content="3.3.12h">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6220,6 +6220,68 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
     font-size:12px!important;
     line-height:1.45!important;
   }
+}
+</style>
+
+
+<style id="joygoBeta3312hFourFixCSS">
+/* ==========================================================
+   Beta 3.3.12h｜四項修正版
+   1. 管理區返回平台
+   2. 播放速度
+   3. 橫式解說顯示
+   4. 手機解說顯示
+   不改棋盤尺寸/棋鐘核心/RWD 棋盤演算法
+   ========================================================== */
+
+/* 取消舊版橫式 fixed 解說，改放右欄播放控制旁 */
+@media (min-width:700px) and (orientation:landscape){
+  #jgSmartCommentary{
+    position:relative!important;
+    inset:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:34vh!important;
+    overflow-y:auto!important;
+    margin:6px 0!important;
+    transform:none!important;
+    z-index:200!important;
+  }
+}
+
+/* 直式/手機：棋盤 → 解說 → 棋鐘 */
+@media (orientation:portrait){
+  #jgSmartCommentary{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 16px)!important;
+    max-width:none!important;
+    margin:6px auto 4px!important;
+    transform:none!important;
+    z-index:200!important;
+  }
+}
+@media (max-width:699px){
+  #jgSmartCommentary{
+    width:calc(100% - 10px)!important;
+    margin:4px auto!important;
+    padding:7px 8px!important;
+  }
+  #jgSmartCommentaryText{
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+}
+
+/* 播放速度欄保持精簡 */
+#jgPlaybackSettings{
+  margin-top:5px!important;
+}
+#jgSmartSpeed{
+  min-height:36px!important;
+  font-size:12px!important;
 }
 </style>
 
@@ -14814,6 +14876,249 @@ function patch(){
   addEventListener("resize",()=>{
     setTimeout(placePortraitCommentary,160);
   },{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3312hFourFixJS">
+(()=>{
+  const RETURN_KEY="joygo_admin_return_until_3312h";
+  const BETA_KEY="joygo_beta_v1_session";
+  const BETA_UNTIL="joygo_beta_v1_access_until";
+
+  /* ----------------------------------------------------------
+     1. 管理區返回平台
+     原因：舊版只攔 [id^=adminCenterBtn_]，有些管理按鈕實際是 adminCenterBtn。
+     本版所有 adminCenterBtn 開頭都攔截並保存通行狀態。
+     ---------------------------------------------------------- */
+  function rememberPlatformAccess(){
+    try{
+      localStorage.setItem(RETURN_KEY,String(Date.now()+6*60*60*1000));
+      sessionStorage.setItem(BETA_KEY,"1");
+      localStorage.setItem(BETA_UNTIL,String(Date.now()+12*60*60*1000));
+    }catch{}
+  }
+
+  function installAdminHook(){
+    if(document.documentElement.dataset.jg3312hAdmin==="1")return;
+    document.documentElement.dataset.jg3312hAdmin="1";
+
+    document.addEventListener("click",(e)=>{
+      const btn=e.target?.closest?.('[id^="adminCenterBtn"]');
+      if(btn) rememberPlatformAccess();
+    },true);
+  }
+
+  function recoverAfterAdmin(){
+    let until=0;
+    try{until=Number(localStorage.getItem(RETURN_KEY)||0)}catch{}
+    if(!until || until<Date.now())return;
+
+    try{
+      sessionStorage.setItem(BETA_KEY,"1");
+      localStorage.setItem(BETA_UNTIL,String(Date.now()+12*60*60*1000));
+    }catch{}
+
+    const gate=document.getElementById("joygoBetaGate");
+    if(gate && !gate.hidden){
+      const input=document.getElementById("joygoBetaCode");
+      const enter=document.getElementById("joygoBetaEnter");
+      if(input&&enter){
+        input.value="JOYGO10";
+        enter.click();
+      }
+    }
+
+    try{localStorage.removeItem(RETURN_KEY)}catch{}
+  }
+
+  /* ----------------------------------------------------------
+     2. 解說位置
+     橫式：放 .player 的播放控制後方
+     直式/手機：放 board-wrap 後、rightTools 棋鐘前
+     ---------------------------------------------------------- */
+  let relocating=false;
+
+  function placeCommentary(){
+    if(relocating)return;
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return;
+
+    relocating=true;
+    try{
+      const portrait=matchMedia("(orientation:portrait)").matches;
+
+      if(portrait){
+        const board=document.querySelector(".board-wrap");
+        const right=document.getElementById("rightTools");
+        if(board?.parentNode){
+          const parent=board.parentNode;
+          if(right && right.parentNode===parent){
+            parent.insertBefore(box,right);
+          }else{
+            board.insertAdjacentElement("afterend",box);
+          }
+        }
+      }else{
+        const player=document.querySelector(".player");
+        const controls=player?.querySelector(".controls");
+        if(player){
+          if(controls) controls.insertAdjacentElement("afterend",box);
+          else player.insertBefore(box,player.firstChild);
+        }
+      }
+
+      box.style.setProperty("position","relative","important");
+      box.style.setProperty("inset","auto","important");
+      box.style.setProperty("transform","none","important");
+    }finally{
+      relocating=false;
+    }
+  }
+
+  function installPositionGuard(){
+    const app=document.querySelector(".app");
+    if(!app || app.dataset.jg3312hObs==="1")return;
+    app.dataset.jg3312hObs="1";
+
+    const obs=new MutationObserver(()=>{
+      requestAnimationFrame(placeCommentary);
+    });
+    obs.observe(app,{childList:true,subtree:true});
+  }
+
+  /* ----------------------------------------------------------
+     3. 播放速度：用單一權威 selector，切換時立即重啟 timer。
+     避免舊版多個 change listener 互相干擾。
+     ---------------------------------------------------------- */
+  function restartPlaybackTimer(ms){
+    try{
+      window.jgClassicPlaybackMs=ms;
+      if(!state?.playing)return;
+
+      clearInterval(state.timer);
+      state.timer=setInterval(()=>{
+        if(state.index>=state.moves.length){
+          state.playing=false;
+          const p=document.getElementById("playBtn");
+          if(p)p.textContent="▶";
+          clearInterval(state.timer);
+          try{resumeClockAfterReplay()}catch{}
+          return;
+        }
+        goTo(state.index+1);
+      },ms);
+    }catch(e){
+      console.warn("restart playback:",e);
+    }
+  }
+
+  function installSpeedFix(){
+    const old=document.getElementById("jgSmartSpeed");
+    if(!old || old.dataset.jg3312h==="1")return;
+
+    /* clone 直接移除前幾版累積的 change listeners */
+    const speed=old.cloneNode(true);
+    old.replaceWith(speed);
+    speed.dataset.jg3312h="1";
+    speed.value=String(window.jgClassicPlaybackMs||700);
+
+    speed.addEventListener("change",()=>{
+      const ms=Math.max(250,Number(speed.value)||700);
+      restartPlaybackTimer(ms);
+      try{toast(`播放速度：${ms/1000} 秒／手`)}catch{}
+    });
+  }
+
+  /* ----------------------------------------------------------
+     4. 解說每手強制刷新
+     ---------------------------------------------------------- */
+  function refreshCommentary(){
+    try{
+      if(typeof window.jgSmartCommentaryMap==="function"){
+        const n=Number(state?.index||0);
+        const map=window.jgSmartCommentaryMap()||{};
+        let txt=String(map[String(n)]||map[n]||"").trim();
+
+        if(!txt && n>0){
+          txt=String(state?.moves?.[n-1]?.comment||"").trim();
+        }
+
+        const box=document.getElementById("jgSmartCommentary");
+        const title=document.getElementById("jgSmartCommentaryTitle");
+        const text=document.getElementById("jgSmartCommentaryText");
+        const edit=document.getElementById("jgSmartEditBtn");
+        if(!box||!title||!text)return;
+
+        let isAdmin=false;
+        try{isAdmin=memberAccess?.role==="admin"}catch{}
+
+        if(txt){
+          box.classList.remove("jg-empty-admin");
+          box.classList.add("jg-has-comment","show");
+          title.textContent=`第 ${n} 手｜朱老師解說`;
+          text.textContent=txt;
+          if(edit)edit.textContent="✏️ 編輯";
+        }else if(isAdmin && n>0){
+          box.classList.remove("jg-has-comment");
+          box.classList.add("jg-empty-admin","show");
+          title.textContent=`第 ${n} 手｜尚未解說`;
+          text.textContent="";
+          if(edit)edit.textContent="＋ 新增解說";
+        }else{
+          box.classList.remove("show","jg-has-comment","jg-empty-admin");
+        }
+      }
+    }catch(e){
+      console.warn("refresh commentary:",e);
+    }
+  }
+
+  function wirePlaybackButtons(){
+    ["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","jumpMoveBtn"].forEach(id=>{
+      const b=document.getElementById(id);
+      if(!b || b.dataset.jg3312hRefresh==="1")return;
+      b.dataset.jg3312hRefresh="1";
+      b.addEventListener("click",()=>{
+        setTimeout(()=>{
+          refreshCommentary();
+          placeCommentary();
+        },50);
+      });
+    });
+  }
+
+  function boot(){
+    installAdminHook();
+    recoverAfterAdmin();
+    installPositionGuard();
+    placeCommentary();
+    installSpeedFix();
+    wirePlaybackButtons();
+    refreshCommentary();
+
+    [250,600,1100,1800].forEach(ms=>setTimeout(()=>{
+      placeCommentary();
+      installSpeedFix();
+      wirePlaybackButtons();
+      refreshCommentary();
+    },ms));
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
+  addEventListener("resize",()=>setTimeout(placeCommentary,180),{passive:true});
+
+  setInterval(()=>{
+    if(document.body.classList.contains("jg-classic-playback")){
+      refreshCommentary();
+      placeCommentary();
+    }
+  },400);
 })();
 </script>
 
