@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12l">
+<meta name="joygo-stable-reset-version" content="3.3.12m">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -15722,6 +15722,105 @@ function patch(){
     document.addEventListener("DOMContentLoaded",boot,{once:true});
   }else boot();
 
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
+  [300,800,1400].forEach(ms=>setTimeout(boot,ms));
+})();
+</script>
+
+
+<style id="joygoBeta3312mLayoutResetCSS">
+#moreGamePanel,#moreGameSection,.more-game-panel,.more-game-section,
+#mainActions,.main-actions,#primaryActions,.primary-actions{
+  min-height:0!important;max-height:none!important;height:auto!important;
+}
+#moreGamePanel>button,#moreGameSection>button,.more-game-panel>button,.more-game-section>button{
+  min-height:44px!important;height:auto!important;
+}
+#jgSmartCommentary.jg-empty-admin{
+  min-height:0!important;height:auto!important;max-height:none!important;
+  padding:8px 10px!important;overflow:visible!important;
+}
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryText,
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentEditor,
+#jgSmartCommentary.jg-empty-admin #jgSpeedButtonPanel{display:none!important}
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryHeader{margin:0!important}
+</style>
+
+<script id="joygoBeta3312mLayoutResetJS">
+(()=>{
+  const moveNo=()=>{try{return Number(state?.index||0)}catch{return 0}};
+  const isAdmin=()=>{try{return memberAccess?.role==="admin"}catch{return false}};
+
+  function clearSizing(el){
+    if(!el)return;
+    ["height","min-height","max-height","flex","flex-basis","padding-top","padding-bottom"].forEach(p=>{
+      try{el.style.removeProperty(p)}catch{}
+    });
+  }
+
+  function normalize(){
+    document.querySelectorAll(
+      "#moreGamePanel,#moreGameSection,.more-game-panel,.more-game-section,"+
+      "#mainActions,.main-actions,#primaryActions,.primary-actions,#rightTools,.player"
+    ).forEach(clearSizing);
+
+    document.querySelectorAll("button").forEach(btn=>{
+      const t=(btn.textContent||"").trim();
+      if(t.includes("收合對局")||t.includes("更多對局")){
+        clearSizing(btn);
+        clearSizing(btn.parentElement);
+        clearSizing(btn.parentElement?.parentElement);
+      }
+    });
+  }
+
+  function compactEmpty(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return;
+    const n=moveNo();
+    clearSizing(box);
+    clearSizing(box.parentElement);
+
+    if(isAdmin()&&n>0){
+      box.classList.remove("jg-has-comment");
+      box.classList.add("jg-empty-admin","show");
+      const title=document.getElementById("jgSmartCommentaryTitle");
+      const text=document.getElementById("jgSmartCommentaryText");
+      const edit=document.getElementById("jgSmartEditBtn");
+      const editor=document.getElementById("jgSmartCommentEditor");
+      const speed=document.getElementById("jgSpeedButtonPanel");
+      if(title)title.textContent=`第 ${n} 手｜尚未解說`;
+      if(text)text.textContent="";
+      if(edit)edit.textContent="＋ 新增解說";
+      editor?.classList.remove("open");
+      if(editor)editor.style.setProperty("display","none","important");
+      if(speed)speed.style.setProperty("display","none","important");
+    }
+  }
+
+  function relayout(){
+    normalize();
+    compactEmpty();
+    void document.body.offsetHeight;
+    normalize();
+  }
+
+  function wireDelete(){
+    const btn=document.getElementById("jgSmartDeleteBtn");
+    if(!btn||btn.dataset.jg3312m==="1")return;
+    btn.dataset.jg3312m="1";
+    btn.addEventListener("click",()=>{
+      const y=window.scrollY;
+      [120,260,500].forEach(ms=>setTimeout(()=>{
+        relayout();
+        try{window.scrollTo(0,y)}catch{}
+      },ms));
+    });
+  }
+
+  function boot(){wireDelete();normalize()}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
   [300,800,1400].forEach(ms=>setTimeout(boot,ms));
