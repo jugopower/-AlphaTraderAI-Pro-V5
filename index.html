@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12-online-classic-v1">
+<meta name="joygo-stable-reset-version" content="3.3.12a">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -5912,6 +5912,114 @@ body.jg-classic-playback .player .controls button{
 }
 </style>
 
+
+<style id="joygoBeta3312aCommentaryCSS">
+/* ==========================================================
+   Beta 3.3.12a｜線上逐手解說＋播放速度
+   僅加在名局播放控制區，不改棋盤尺寸/RWD
+   ========================================================== */
+
+#jgClassicCommentaryPanel{
+  display:none;
+  box-sizing:border-box;
+  width:100%;
+  margin-top:8px;
+  padding:9px;
+  border:1px solid #7c6033;
+  border-radius:11px;
+  background:#12100e;
+  color:#eee2c8;
+}
+body.jg-classic-playback #jgClassicCommentaryPanel{
+  display:block;
+}
+.jg-classic-toolbar{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-bottom:8px;
+}
+.jg-classic-toolbar label{
+  color:#cab892;
+  font-size:11px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+#jgClassicSpeed{
+  min-height:36px;
+  border-radius:8px;
+  background:#0c1719;
+  color:#fff;
+  border:1px solid #5d593e;
+  padding:5px 7px;
+}
+#jgClassicMoveLabel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  border:1px solid #5d593e;
+  border-radius:8px;
+  color:#f2ca68;
+  font-weight:900;
+  font-size:12px;
+  margin-top:15px;
+}
+#jgClassicCommentView{
+  min-height:52px;
+  padding:8px;
+  border:1px solid #4e4535;
+  border-radius:9px;
+  background:#0a0908;
+  line-height:1.5;
+  font-size:12px;
+  white-space:pre-wrap;
+}
+#jgClassicCommentView.empty{
+  color:#8f8574;
+}
+#jgClassicCommentEditorWrap{
+  display:none;
+  margin-top:7px;
+}
+body.jg-classic-admin #jgClassicCommentEditorWrap{
+  display:block;
+}
+#jgClassicCommentText{
+  width:100%;
+  min-height:72px;
+  box-sizing:border-box;
+  resize:vertical;
+  border-radius:9px;
+  border:1px solid #665238;
+  background:#0b1011;
+  color:#fff;
+  padding:8px;
+  font-size:12px;
+}
+.jg-classic-comment-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:6px;
+}
+.jg-classic-comment-actions button{
+  min-height:36px!important;
+  font-size:12px!important;
+}
+#jgClassicSaveComment{background:#225f3d!important;color:#fff!important}
+#jgClassicDeleteComment{background:#61282a!important;color:#fff!important}
+
+/* 橫式控制在右欄內；不對 app / board-wrap / board 下尺寸規則 */
+@media (min-width:700px) and (orientation:landscape){
+  #jgClassicCommentaryPanel{
+    max-height:36vh;
+    overflow-y:auto;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -10749,7 +10857,7 @@ function togglePlay(){
   if(state.humanMode)pauseClockForReplay();
   state.playing=!state.playing;$("playBtn").textContent=state.playing?"⏸":"▶";
   clearInterval(state.timer);
-  if(state.playing)state.timer=setInterval(()=>{if(state.index>=state.moves.length){togglePlay();resumeClockAfterReplay();return}goTo(state.index+1)},700);
+  if(state.playing)state.timer=setInterval(()=>{if(state.index>=state.moves.length){togglePlay();resumeClockAfterReplay();return}goTo(state.index+1)},(window.jgClassicPlaybackMs||700));
   else resumeClockAfterReplay();
 }
 
@@ -13361,6 +13469,7 @@ document.addEventListener("click",(ev)=>{
       result:row.result||"",
       category:row.category||"其他",
       note:row.note||"",
+      commentary:(row.commentary&&typeof row.commentary==="object")?row.commentary:{},
       sgf:row.sgf_text||"",
       savedAt:row.updated_at||row.created_at||""
     };
@@ -13448,7 +13557,7 @@ document.addEventListener("click",(ev)=>{
     try{
       const {data,error}=await memberSupabase
         .from(ONLINE_TABLE)
-        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,sgf_text,is_published,created_at,updated_at")
+        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,commentary,sgf_text,is_published,created_at,updated_at")
         .eq("is_published",true)
         .order("published_at",{ascending:false});
       if(error)throw error;
@@ -13553,7 +13662,7 @@ document.addEventListener("click",(ev)=>{
     if(!(await ensureSupabase()))return;
     try{
       const {data,error}=await memberSupabase.from(ONLINE_TABLE)
-        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,sgf_text,is_published,created_at,updated_at")
+        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,commentary,sgf_text,is_published,created_at,updated_at")
         .eq("id",id).eq("is_published",true).single();
       if(error)throw error;
       const game=onlineClassicToGame(data);
@@ -13619,6 +13728,279 @@ document.addEventListener("click",(ev)=>{
     installClassicCardPublisher();
     installOpenHook();
   },{passive:true});
+})();
+</script>
+
+
+<script id="joygoBeta3312aCommentaryJS">
+(()=>{
+  let currentOnlineClassic = null;
+  let commentaryMap = {};
+  window.jgClassicPlaybackMs = window.jgClassicPlaybackMs || 700;
+
+  function isAdmin(){
+    try{return memberAccess?.role==="admin"}catch{return false}
+  }
+
+  function ensurePanel(){
+    const player=document.querySelector(".player");
+    if(!player || document.getElementById("jgClassicCommentaryPanel")) return;
+
+    const panel=document.createElement("section");
+    panel.id="jgClassicCommentaryPanel";
+    panel.innerHTML=`
+      <div class="jg-classic-toolbar">
+        <label>播放速度
+          <select id="jgClassicSpeed">
+            <option value="300">快速｜0.3 秒／手</option>
+            <option value="700" selected>正常｜0.7 秒／手</option>
+            <option value="1200">慢速｜1.2 秒／手</option>
+            <option value="2000">解說｜2 秒／手</option>
+            <option value="3000">教學｜3 秒／手</option>
+          </select>
+        </label>
+        <div id="jgClassicMoveLabel">第 0 手</div>
+      </div>
+
+      <div id="jgClassicCommentView" class="empty">此手目前沒有解說。</div>
+
+      <div id="jgClassicCommentEditorWrap">
+        <textarea id="jgClassicCommentText" placeholder="輸入這一手的朱老師解說…"></textarea>
+        <div class="jg-classic-comment-actions">
+          <button type="button" id="jgClassicSaveComment">儲存本手解說</button>
+          <button type="button" id="jgClassicDeleteComment">刪除本手文字</button>
+        </div>
+      </div>
+    `;
+    player.appendChild(panel);
+
+    const speed=document.getElementById("jgClassicSpeed");
+    speed.value=String(window.jgClassicPlaybackMs||700);
+    speed.addEventListener("change",()=>{
+      window.jgClassicPlaybackMs=Number(speed.value)||700;
+      try{
+        if(state?.playing){
+          clearInterval(state.timer);
+          state.timer=setInterval(()=>{
+            if(state.index>=state.moves.length){
+              togglePlay();
+              resumeClockAfterReplay();
+              return;
+            }
+            goTo(state.index+1);
+          },window.jgClassicPlaybackMs);
+        }
+      }catch{}
+      toast("播放速度已設定");
+    });
+
+    document.getElementById("jgClassicSaveComment")?.addEventListener("click",saveCurrentMoveComment);
+    document.getElementById("jgClassicDeleteComment")?.addEventListener("click",deleteCurrentMoveComment);
+  }
+
+  function sgfCommentAt(moveNo){
+    try{
+      if(moveNo<=0) return "";
+      return String(state?.moves?.[moveNo-1]?.comment||"").trim();
+    }catch{return ""}
+  }
+
+  function currentComment(){
+    const move=Number(state?.index||0);
+    const online=String(commentaryMap?.[String(move)]||commentaryMap?.[move]||"").trim();
+    return online || sgfCommentAt(move);
+  }
+
+  function renderComment(){
+    ensurePanel();
+    const move=Number(state?.index||0);
+    const label=document.getElementById("jgClassicMoveLabel");
+    const view=document.getElementById("jgClassicCommentView");
+    const edit=document.getElementById("jgClassicCommentText");
+
+    if(label) label.textContent=`第 ${move} 手`;
+    const text=currentComment();
+
+    if(view){
+      if(text){
+        view.textContent=text;
+        view.classList.remove("empty");
+      }else{
+        view.textContent=move===0 ? "棋局開始。可按播放或下一手。" : "此手目前沒有解說。";
+        view.classList.add("empty");
+      }
+    }
+    if(edit) edit.value=String(commentaryMap?.[String(move)]||commentaryMap?.[move]||"");
+  }
+
+  async function saveCurrentMoveComment(){
+    if(!isAdmin()){
+      toast("只有主管理員可以修改逐手解說");
+      return;
+    }
+    if(!currentOnlineClassic?.onlineId){
+      toast("請先載入一盤線上名局，再編輯逐手解說");
+      return;
+    }
+    const move=Number(state?.index||0);
+    if(move<1){
+      toast("請先移到要解說的手數");
+      return;
+    }
+    const text=String(document.getElementById("jgClassicCommentText")?.value||"").trim();
+    if(!text){
+      toast("請輸入解說文字");
+      return;
+    }
+
+    commentaryMap={...(commentaryMap||{}),[String(move)]:text};
+
+    try{
+      const {error}=await memberSupabase
+        .from("joygo_classic_games")
+        .update({commentary:commentaryMap,updated_at:new Date().toISOString()})
+        .eq("id",currentOnlineClassic.onlineId);
+      if(error)throw error;
+      currentOnlineClassic.commentary={...commentaryMap};
+      renderComment();
+      toast(`✅ 第 ${move} 手解說已儲存`);
+    }catch(err){
+      toast("儲存解說失敗："+(err?.message||String(err)));
+    }
+  }
+
+  async function deleteCurrentMoveComment(){
+    if(!isAdmin()){
+      toast("只有主管理員可以刪除逐手解說");
+      return;
+    }
+    if(!currentOnlineClassic?.onlineId){
+      toast("請先載入一盤線上名局");
+      return;
+    }
+    const move=Number(state?.index||0);
+    if(move<1)return;
+
+    const next={...(commentaryMap||{})};
+    delete next[String(move)];
+
+    try{
+      const {error}=await memberSupabase
+        .from("joygo_classic_games")
+        .update({commentary:next,updated_at:new Date().toISOString()})
+        .eq("id",currentOnlineClassic.onlineId);
+      if(error)throw error;
+      commentaryMap=next;
+      currentOnlineClassic.commentary={...next};
+      renderComment();
+      toast(`第 ${move} 手解說文字已刪除`);
+    }catch(err){
+      toast("刪除解說失敗："+(err?.message||String(err)));
+    }
+  }
+
+  async function loadFullOnlineGame(game){
+    currentOnlineClassic=game||null;
+    commentaryMap=(game?.commentary&&typeof game.commentary==="object")?{...game.commentary}:{};
+
+    if(game?.onlineId && memberSupabase){
+      try{
+        const {data,error}=await memberSupabase
+          .from("joygo_classic_games")
+          .select("commentary,note")
+          .eq("id",game.onlineId)
+          .single();
+        if(!error && data){
+          commentaryMap=(data.commentary&&typeof data.commentary==="object")?{...data.commentary}:{};
+          currentOnlineClassic.commentary={...commentaryMap};
+          if(data.note!=null) currentOnlineClassic.note=data.note;
+        }
+      }catch{}
+    }
+    document.body.classList.toggle("jg-classic-admin",isAdmin());
+    setTimeout(renderComment,80);
+  }
+
+  /* 包裝線上名局載入，不改棋盤 loadClassicGame */
+  function patchOnlineLoader(){
+    if(window.__jg3312aOnlinePatched)return;
+    if(typeof loadOnlineClassicGame!=="function")return;
+    window.__jg3312aOnlinePatched=true;
+    const original=loadOnlineClassicGame;
+    loadOnlineClassicGame=function(game,autoPlay=false){
+      loadFullOnlineGame(game);
+      const result=original.apply(this,arguments);
+      setTimeout(renderComment,120);
+      return result;
+    };
+  }
+
+  /* 包裝 goTo：每走一手同步顯示解說 */
+  function patchGoTo(){
+    if(window.__jg3312aGoToPatched)return;
+    if(typeof goTo!=="function")return;
+    window.__jg3312aGoToPatched=true;
+    const original=goTo;
+    goTo=function(n){
+      const result=original.apply(this,arguments);
+      if(document.body.classList.contains("jg-classic-playback")) renderComment();
+      return result;
+    };
+
+    /* 原按鍵 onclick 指向舊 goTo，重新接一次 */
+    const first=document.getElementById("firstBtn");
+    const prev=document.getElementById("prevBtn");
+    const next=document.getElementById("nextBtn");
+    const last=document.getElementById("lastBtn");
+    if(first) first.onclick=()=>goTo(0);
+    if(prev) prev.onclick=()=>goTo(state.index-1);
+    if(next) next.onclick=()=>goTo(state.index+1);
+    if(last) last.onclick=()=>goTo(state.moves.length);
+  }
+
+  /* 重新接播放鍵，確保使用可調速度 */
+  function patchPlay(){
+    const btn=document.getElementById("playBtn");
+    if(!btn || btn.dataset.jg3312a==="1")return;
+    btn.dataset.jg3312a="1";
+    btn.onclick=()=>{
+      if(state.humanMode)pauseClockForReplay();
+      state.playing=!state.playing;
+      btn.textContent=state.playing?"⏸":"▶";
+      clearInterval(state.timer);
+      if(state.playing){
+        state.timer=setInterval(()=>{
+          if(state.index>=state.moves.length){
+            state.playing=false;
+            btn.textContent="▶";
+            clearInterval(state.timer);
+            resumeClockAfterReplay();
+            return;
+          }
+          goTo(state.index+1);
+        },window.jgClassicPlaybackMs||700);
+      }else{
+        resumeClockAfterReplay();
+      }
+    };
+  }
+
+  function boot(){
+    ensurePanel();
+    document.body.classList.toggle("jg-classic-admin",isAdmin());
+    patchOnlineLoader();
+    patchGoTo();
+    patchPlay();
+    renderComment();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,280),{passive:true});
+  [400,900,1600].forEach(ms=>setTimeout(boot,ms));
 })();
 </script>
 
