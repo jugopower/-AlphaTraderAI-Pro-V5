@@ -6578,6 +6578,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 
 <!-- Joy Go Platform 正式版介面整理：第四輪按鈕名稱統一 -->
+<!-- Joy Go Platform 正式版介面整理：第五輪產品用語統一 -->
 </head>
 <body>
 
@@ -6604,7 +6605,7 @@ body.jg-online-mode #jgUSpeedPanel{
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
     <h2>朱老師圍棋 AI 教學平台</h2>
-    <div class="jg-beta">Joy Go Platform｜會員棋局・AI 教學・真人對弈</div>
+    <div class="jg-beta">Joy Go Platform｜棋譜・AI 教學・真人弈廳</div>
     <div class="jg-grid">
       <div class="jg-feature">🤖 AI 人機對弈</div><div class="jg-feature">📊 AI 棋局分析</div>
       <div class="jg-feature">🧩 圍棋題庫</div><div class="jg-feature">🎓 教學工具</div>
@@ -6696,7 +6697,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="memberChip" class="member-chip">
   <span id="memberChipText">👤 尚未登入</span>
-  <button id="memberChipBtn" type="button">會員</button>
+  <button id="memberChipBtn" type="button">會員中心</button>
 </div>
 
 <div class="app">
@@ -6883,7 +6884,7 @@ body.jg-online-mode #jgUSpeedPanel{
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">Joy Go Platform · KataGo AI 分析</div>
+  <div class="pro-footer">Joy Go Platform｜KataGo AI 分析</div>
   <p style="color:var(--muted);font-size:11px" hidden>
     查看勝率、目差與推薦手。
   </p>
@@ -6923,8 +6924,8 @@ body.jg-online-mode #jgUSpeedPanel{
   <button class="close" data-close="onlineModal">✕</button>
   <div class="online-lobby-title-row">
     <div>
-      <h2 style="margin-bottom:4px">⚔️ 真人棋局</h2>
-      <div class="online-lobby-subtitle">線上棋友・建立房間・加入對局・即時同步</div>
+      <h2 style="margin-bottom:4px">⚔️ 真人弈廳</h2>
+      <div class="online-lobby-subtitle">線上棋友・建立房間・加入對局</div>
     </div>
     <div class="online-count-badge">🟢 在線 <b id="onlineLobbyCount">0</b> / 16</div>
   </div>
@@ -6978,7 +6979,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="spectatorModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="spectatorModal">✕</button>
-  <h2>👁 多盤觀戰大廳</h2>
+  <h2>👁 觀戰大廳</h2>
   <p class="spectator-note" hidden>選擇正在轉播的棋局即可觀看。</p>
 
   <div class="spectator-room-row">
@@ -7004,10 +7005,10 @@ body.jg-online-mode #jgUSpeedPanel{
     <button class="secondary" id="spectatorRefreshBtn" style="padding:8px 10px">重新整理</button>
   </div>
   <div id="spectatorLobbyList" class="spectator-lobby">
-    <div class="spectator-empty">正在讀取觀戰大廳…</div>
+    <div class="spectator-empty">正在讀取觀戰棋局…</div>
   </div>
 
-  <div id="spectatorMessage" class="connector-status warn" style="margin-top:12px">尚未開始觀戰或轉播。</div>
+  <div id="spectatorMessage" class="connector-status warn" style="margin-top:12px">尚未開始觀戰。</div>
 </div></div>
 
 
@@ -7311,7 +7312,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>🤖 KataGo 分析</h2>
+  <h2>🤖 KataGo AI 分析</h2>
 
   <label hidden>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
@@ -8190,7 +8191,7 @@ async function runCloudAnalysis({openDashboard=true}={}){
       closeModal("cloudModal");
       openModal("aiModal");
     }
-    toast("KataGo 分析完成");
+    toast("KataGo AI 分析完成");
     return true;
   }catch(err){
     setConnectorStatus("bad","KataGo 連線失敗，請稍後再試。");
@@ -8363,7 +8364,7 @@ function updateProfessionalDashboard(){
   // KataGo AI 分析：不再用本機示範數字冒充 AI 結果。
   const waiting={
     blackWin:50,whiteWin:50,scoreLead:0,situation:"尚未取得真實 KataGo 分析",
-    recommendations:[],teaching:"請按「KataGo」→「開始分析」。連線成功後才顯示勝率、目差與推薦手。",
+    recommendations:[],teaching:"請按「KataGo 分析」→「開始分析」。",
     history:[],mistakes:[],source:"waiting",visits:0,nps:0,model:"",moveNumber:state.index
   };
   renderProfessionalDashboard(waiting);
@@ -9859,7 +9860,7 @@ async function onlineResign(){
 
   const r=state.onlineRoom;
   if(!state.onlineMode||!r){
-    toast("目前沒有真人棋局");
+    toast("目前沒有進行中的真人對弈");
     return;
   }
 
@@ -10099,7 +10100,7 @@ const tools=[
   ["teachBtn","▣","教學",()=>memberGuard("teach",()=>{enterTeachingMode();state.teachingBarCollapsed=false;state.teachingBarSuppressed=false;updateTeachingUI();openModal("teachModal");toast("教學模式已啟動，計時已暫停")})],
   ["aiBtn","AI","分析總覽",()=>memberGuard("ai",()=>{updateProfessionalDashboard();openModal("aiModal")})],
   ["humanBtn",'<img class="tool-logo" src="human-ai-logo.png" alt="人機對弈">',"人機",()=>memberGuard("human",()=>openModal("humanModal"))],
-  ["onlineBtn","⚔️","弈廳",()=>memberGuard("online",openOnlineLobby)],
+  ["onlineBtn","⚔️","真人弈廳",()=>memberGuard("online",openOnlineLobby)],
   ["tournamentRegBtn","🏆","比賽報名",()=>memberGuard("online",()=>{window.location.href="tournament-register.html"})],
   ["activityNotifyBtn","🔔","活動通知",()=>memberGuard("online",()=>{window.location.href="notification-center.html"})],
   ["adminCenterBtn","👑","管理",()=>{window.location.href="admin-center.html"}],
@@ -13067,7 +13068,7 @@ $("analyzeCloudBtn").onclick=async()=>{
   saveApiSettings();
   await runCloudAnalysis({openDashboard:true});
 };
-setConnectorStatus("warn",getApiSettings().url?"KataGo 分析服務已設定，可按「測試分析」確認連線。":"尚未設定 KataGo 分析服務。");
+setConnectorStatus("warn",getApiSettings().url?"KataGo AI 分析服務已設定，可按「測試分析」確認連線。":"尚未設定 KataGo AI 分析服務。");
 
 let layoutTimer=0;
 function scheduleLayoutRefresh(delay=160){
@@ -13197,7 +13198,7 @@ if(state.engineVerified&&state.rendererVerified){
 
 <button id="apiInspectorToggle" class="api-inspector-toggle" type="button" hidden aria-hidden="true">API 資料</button>
 <section id="apiInspectorPanel" class="api-inspector-panel" hidden aria-label="Render API Inspector">
-  <div class="api-inspector-head"><strong>KataGo 分析</strong><button id="apiInspectorClose" type="button">收合</button></div>
+  <div class="api-inspector-head"><strong>KataGo AI 分析</strong><button id="apiInspectorClose" type="button">收合</button></div>
   <div class="api-inspector-status"><span id="apiInspectorDot" class="api-inspector-dot"></span><span id="apiInspectorStatus">尚未執行分析</span></div>
   <pre id="apiInspectorPre" class="api-inspector-pre">按一次 KataGo 分析後，這裡會同時顯示 Request、Response 與 Visits 核對結果。</pre>
   <div class="api-inspector-actions"><button id="apiInspectorCopy" class="primary" type="button">複製 JSON</button><button id="apiInspectorClear" type="button">清除</button></div>
@@ -13319,9 +13320,9 @@ window.addEventListener("DOMContentLoaded",()=>{
       const room=onlineRpcRow(data);
       if(error||!room){toast("無法進入配對棋局："+(error?.message||"找不到房間"));return}
       await onlineEnterRoom(room);
-      setTimeout(()=>{closeModal("onlineModal");toast("⚔️ 已進入真人棋局")},220);
+      setTimeout(()=>{closeModal("onlineModal");toast("⚔️ 已進入真人對弈")},220);
       try{history.replaceState({},"",location.pathname)}catch(_){}
-    }catch(e){console.error(e);toast("進入真人棋局失敗："+(e?.message||e))}
+    }catch(e){console.error(e);toast("進入真人對弈失敗："+(e?.message||e))}
   };
   setTimeout(enter,350);
 });
