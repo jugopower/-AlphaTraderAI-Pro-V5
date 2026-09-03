@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12o">
+<meta name="joygo-stable-reset-version" content="3.3.12p">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6631,6 +6631,69 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
     display:block!important;
     -webkit-line-clamp:unset;
     overflow:visible!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312pStaticDockCSS">
+/* ==========================================================
+   Beta 3.3.12p｜移除舊定位程式穩定版
+   - 不再每 500ms 搬解說
+   - 不再 resize 持續重定位
+   - 橫式只在進入橫式時定位一次
+   - 換手只更新文字
+   - 不改棋盤 / 棋鐘 / 右欄 / 功能鍵
+   ========================================================== */
+
+@media (min-width:700px) and (orientation:landscape){
+  #jgSmartCommentary.jg-static-dock{
+    position:fixed!important;
+    margin:0!important;
+    transform:none!important;
+    z-index:52000!important;
+    min-width:138px!important;
+    max-width:220px!important;
+    max-height:38vh!important;
+    overflow:auto!important;
+  }
+
+  #jgSmartCommentary.jg-static-dock > #jgSpeedButtonPanel{
+    display:none!important;
+  }
+
+  #jgSmartCommentary.jg-static-dock #jgSmartCommentaryText{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:4;
+    overflow:hidden!important;
+    line-height:1.45!important;
+    font-size:11px!important;
+  }
+
+  #jgSmartCommentary.jg-static-dock.jg-expanded #jgSmartCommentaryText{
+    display:block!important;
+    -webkit-line-clamp:unset;
+    overflow:visible!important;
+  }
+
+  #jgPExpand{
+    min-height:30px!important;
+    padding:3px 8px!important;
+    margin-top:6px!important;
+    border:1px solid #79623a!important;
+    border-radius:8px!important;
+    background:#24190f!important;
+    color:#f2cf73!important;
+    font-size:10.5px!important;
+    font-weight:800!important;
+  }
+
+  .player > #jgSpeedButtonPanel{
+    display:block!important;
+    flex:0 0 auto!important;
+    margin:6px 0 0!important;
+    padding:6px!important;
   }
 }
 </style>
@@ -15966,277 +16029,152 @@ function patch(){
 </script>
 
 
-<script id="joygoBeta3312nLandscapeCommentDockJS">
+
+
+
+
+
+
+<script id="joygoBeta3312pStaticDockJS">
 (()=>{
-  let moving=false;
+  let docked = false;
+  let wasLandscape = false;
 
-  function landscape(){
-    return matchMedia("(min-width:700px) and (orientation:landscape)").matches;
-  }
+  const isLandscape = () =>
+    matchMedia("(min-width:700px) and (orientation:landscape)").matches;
 
-  function ensureExpandButton(){
-    const box=document.getElementById("jgSmartCommentary");
-    if(!box)return null;
+  function ensureExpand(){
+    const box = document.getElementById("jgSmartCommentary");
+    if(!box) return;
 
-    let btn=document.getElementById("jgLandscapeCommentExpand");
-    if(btn)return btn;
+    let btn = document.getElementById("jgPExpand");
+    if(!btn){
+      btn = document.createElement("button");
+      btn.id = "jgPExpand";
+      btn.type = "button";
+      btn.textContent = "展開";
+      const text = document.getElementById("jgSmartCommentaryText");
+      if(text) text.insertAdjacentElement("afterend", btn);
+      else box.appendChild(btn);
 
-    btn=document.createElement("button");
-    btn.id="jgLandscapeCommentExpand";
-    btn.type="button";
-    btn.textContent="展開";
-    btn.addEventListener("click",()=>{
-      const expanded=box.classList.toggle("jg-expanded");
-      btn.textContent=expanded?"收合":"展開";
-      positionDock();
-    });
-
-    const text=document.getElementById("jgSmartCommentaryText");
-    if(text) text.insertAdjacentElement("afterend",btn);
-    else box.appendChild(btn);
-
-    return btn;
-  }
-
-  function moveSpeedBackToPlayer(){
-    const speed=document.getElementById("jgSpeedButtonPanel");
-    const player=document.querySelector(".player");
-    if(!speed||!player)return;
-
-    const controls=player.querySelector(".controls");
-    if(controls){
-      controls.insertAdjacentElement("afterend",speed);
-    }else if(speed.parentNode!==player){
-      player.appendChild(speed);
+      btn.addEventListener("click", ()=>{
+        const open = box.classList.toggle("jg-expanded");
+        btn.textContent = open ? "收合" : "展開";
+        /* 只改內容展開，不重新計算 top / left */
+      });
     }
+    btn.style.display = isLandscape() ? "inline-flex" : "none";
+  }
 
+  function keepSpeedInPlayer(){
+    const speed = document.getElementById("jgSpeedButtonPanel");
+    const player = document.querySelector(".player");
+    if(!speed || !player) return;
+
+    if(speed.parentNode !== player){
+      const controls = player.querySelector(".controls");
+      if(controls) controls.insertAdjacentElement("afterend", speed);
+      else player.appendChild(speed);
+    }
     speed.style.removeProperty("display");
   }
 
-  function positionDock(){
-    if(!landscape())return;
+  function dockOnce(){
+    if(!isLandscape() || docked) return;
 
-    const box=document.getElementById("jgSmartCommentary");
-    const canvas=document.getElementById("board");
-    const right=document.getElementById("rightTools");
-    const boardWrap=document.querySelector(".board-wrap");
-    if(!box||!canvas||!right||!boardWrap)return;
+    const box = document.getElementById("jgSmartCommentary");
+    const canvas = document.getElementById("board");
+    const right = document.getElementById("rightTools");
+    const wrap = document.querySelector(".board-wrap");
+    if(!box || !canvas || !right || !wrap) return;
 
-    const cr=canvas.getBoundingClientRect();
-    const rr=right.getBoundingClientRect();
-    const br=boardWrap.getBoundingClientRect();
+    if(box.parentNode !== document.body) document.body.appendChild(box);
 
-    /* 只使用棋盤 canvas 與右側工具欄之間原本就存在的黑色空白 */
-    const gapLeft=Math.max(cr.right+7,br.left+7);
-    const gapRight=Math.min(rr.left-7,br.right-7);
-    const gapWidth=gapRight-gapLeft;
+    const cr = canvas.getBoundingClientRect();
+    const rr = right.getBoundingClientRect();
+    const br = wrap.getBoundingClientRect();
 
-    if(gapWidth < 112){
-      /* 空白真的太窄才採用最窄卡片，仍不改棋盤 */
-      box.style.setProperty("left",`${Math.max(br.right-118,br.left+5)}px`,"important");
-      box.style.setProperty("width","110px","important");
-    }else{
-      const width=Math.min(210,Math.max(138,gapWidth));
-      const left=gapRight-width;
-      box.style.setProperty("left",`${left}px`,"important");
-      box.style.setProperty("width",`${width}px`,"important");
+    const gapLeft = Math.max(cr.right + 7, br.left + 7);
+    const gapRight = Math.min(rr.left - 7, br.right - 7);
+    const gapWidth = gapRight - gapLeft;
+
+    let width, left;
+    if(gapWidth >= 138){
+      width = Math.min(210, gapWidth);
+      left = gapRight - width;
+    } else {
+      width = 138;
+      left = Math.max(cr.right + 7, rr.left - width - 7);
     }
 
-    /* 靠棋盤下半部，避開右側上方棋鐘與功能鍵視覺 */
-    const maxTop=Math.max(br.top+8,br.bottom-box.offsetHeight-12);
-    const targetTop=Math.max(br.top+Math.round(br.height*0.58), br.top+8);
-    box.style.setProperty("top",`${Math.min(targetTop,maxTop)}px`,"important");
-    box.style.setProperty("right","auto","important");
-    box.style.setProperty("bottom","auto","important");
+    const top = Math.max(
+      br.top + 8,
+      Math.min(br.top + Math.round(br.height * 0.58), br.bottom - 180)
+    );
 
-    box.classList.add("jg-landscape-dock");
+    box.style.setProperty("left", `${Math.round(left)}px`, "important");
+    box.style.setProperty("top", `${Math.round(top)}px`, "important");
+    box.style.setProperty("width", `${Math.round(width)}px`, "important");
+    box.style.setProperty("right", "auto", "important");
+    box.style.setProperty("bottom", "auto", "important");
+    box.classList.add("jg-static-dock");
+
+    docked = true;
   }
 
-  function restorePortrait(){
-    const box=document.getElementById("jgSmartCommentary");
-    if(!box)return;
-    box.classList.remove("jg-landscape-dock","jg-expanded");
-    box.style.removeProperty("left");
-    box.style.removeProperty("top");
-    box.style.removeProperty("right");
-    box.style.removeProperty("bottom");
-    box.style.removeProperty("width");
+  function undockForPortrait(){
+    const box = document.getElementById("jgSmartCommentary");
+    if(!box) return;
 
-    const expand=document.getElementById("jgLandscapeCommentExpand");
-    if(expand)expand.style.display="none";
+    box.classList.remove("jg-static-dock", "jg-expanded");
+    ["left","top","right","bottom","width"].forEach(p=>box.style.removeProperty(p));
+    const btn = document.getElementById("jgPExpand");
+    if(btn) btn.style.display = "none";
+    docked = false;
   }
 
-  function updateExpandVisibility(){
-    const btn=ensureExpandButton();
-    if(!btn)return;
-    btn.style.display=landscape()?"inline-flex":"none";
-  }
+  function syncOrientation(){
+    const now = isLandscape();
 
-  function repair(){
-    if(moving)return;
-    moving=true;
-    try{
-      moveSpeedBackToPlayer();
-      updateExpandVisibility();
-
-      if(landscape()){
-        const box=document.getElementById("jgSmartCommentary");
-        if(box && box.parentNode!==document.body){
-          document.body.appendChild(box);
-        }
-        positionDock();
-      }else{
-        restorePortrait();
-      }
-    }finally{
-      moving=false;
-    }
-  }
-
-  /* 每換一手，重新定位一次；不碰棋盤 resize */
-  ["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","jumpMoveBtn"].forEach(id=>{
-    const btn=document.getElementById(id);
-    if(btn && btn.dataset.jg3312n!=="1"){
-      btn.dataset.jg3312n="1";
-      btn.addEventListener("click",()=>setTimeout(repair,60));
-    }
-  });
-
-  function boot(){
-    repair();
-    [250,650,1200,1800].forEach(ms=>setTimeout(repair,ms));
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
-  addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
-
-  setInterval(()=>{
-    if(document.body.classList.contains("jg-classic-playback"))repair();
-  },500);
-})();
-</script>
-
-
-<script id="joygoBeta3312oLandscapeStableDockJS">
-(()=>{
-  let docked=false;
-  let lastLandscape=false;
-
-  function isLandscape(){
-    return matchMedia("(min-width:700px) and (orientation:landscape)").matches;
-  }
-
-  function computeAndDockOnce(){
-    if(!isLandscape())return;
-
-    const box=document.getElementById("jgSmartCommentary");
-    const canvas=document.getElementById("board");
-    const right=document.getElementById("rightTools");
-    const boardWrap=document.querySelector(".board-wrap");
-    if(!box||!canvas||!right||!boardWrap)return;
-
-    if(box.parentNode!==document.body){
-      document.body.appendChild(box);
+    if(now && !wasLandscape){
+      docked = false;
+      keepSpeedInPlayer();
+      ensureExpand();
+      /* Safari 旋轉完成後只補一次定位 */
+      setTimeout(dockOnce, 260);
+    } else if(!now && wasLandscape){
+      undockForPortrait();
     }
 
-    const cr=canvas.getBoundingClientRect();
-    const rr=right.getBoundingClientRect();
-    const br=boardWrap.getBoundingClientRect();
-
-    const gapLeft=Math.max(cr.right+7,br.left+7);
-    const gapRight=Math.min(rr.left-7,br.right-7);
-    const gapWidth=gapRight-gapLeft;
-
-    let width,left;
-    if(gapWidth<112){
-      width=110;
-      left=Math.max(br.right-118,br.left+5);
-    }else{
-      width=Math.min(210,Math.max(138,gapWidth));
-      left=gapRight-width;
-    }
-
-    box.style.setProperty("left",`${left}px`,"important");
-    box.style.setProperty("width",`${width}px`,"important");
-
-    /* 固定在棋盤下半部，算一次後不再變動 */
-    const desiredTop=br.top+Math.round(br.height*0.58);
-    const maxTop=Math.max(br.top+8,br.bottom-Math.max(box.offsetHeight,140)-12);
-    const top=Math.max(br.top+8,Math.min(desiredTop,maxTop));
-
-    box.style.setProperty("top",`${top}px`,"important");
-    box.style.setProperty("right","auto","important");
-    box.style.setProperty("bottom","auto","important");
-    box.classList.add("jg-landscape-static");
-
-    docked=true;
-  }
-
-  function restorePortrait(){
-    const box=document.getElementById("jgSmartCommentary");
-    if(!box)return;
-
-    box.classList.remove("jg-landscape-static");
-    box.style.removeProperty("left");
-    box.style.removeProperty("top");
-    box.style.removeProperty("right");
-    box.style.removeProperty("bottom");
-    box.style.removeProperty("width");
-    docked=false;
-  }
-
-  function updateOrientation(){
-    const now=isLandscape();
-
-    if(now && !lastLandscape){
-      docked=false;
-      setTimeout(computeAndDockOnce,220);
-    }else if(!now && lastLandscape){
-      restorePortrait();
-    }
-
-    lastLandscape=now;
-  }
-
-  function ensureDock(){
-    if(isLandscape() && !docked){
-      computeAndDockOnce();
-    }
+    wasLandscape = now;
   }
 
   function boot(){
-    lastLandscape=isLandscape();
-    if(lastLandscape){
-      setTimeout(computeAndDockOnce,220);
+    wasLandscape = isLandscape();
+    keepSpeedInPlayer();
+    ensureExpand();
+
+    if(wasLandscape){
+      docked = false;
+      setTimeout(dockOnce, 260);
     }
   }
 
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", boot, {once:true});
+  } else {
+    boot();
+  }
 
-  addEventListener("pageshow",()=>{
-    docked=false;
-    setTimeout(ensureDock,220);
-  },{passive:true});
+  addEventListener("pageshow", ()=>{
+    if(isLandscape() && !docked) setTimeout(dockOnce, 260);
+  }, {passive:true});
 
-  addEventListener("orientationchange",()=>{
-    setTimeout(updateOrientation,320);
-  },{passive:true});
+  addEventListener("orientationchange", ()=>{
+    setTimeout(syncOrientation, 320);
+  }, {passive:true});
 
-  /* resize 只在尚未定位時補一次，不再持續搬動 */
-  addEventListener("resize",()=>{
-    if(isLandscape() && !docked){
-      setTimeout(ensureDock,180);
-    }
-  },{passive:true});
-
-  /* 換手只更新內容，由既有解說刷新程式處理，不重新定位 */
+  /* 注意：本版刻意沒有 setInterval 定位，也沒有 resize 重定位。 */
 })();
 </script>
 
