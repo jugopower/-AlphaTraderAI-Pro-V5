@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12x">
+<meta name="joygo-stable-reset-version" content="3.3.12y">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -15117,6 +15117,75 @@ function patch(){
 
   /* state 可能由既有程式延遲更新，補幾次即可，不用永久 interval */
   [250,700,1300].forEach(ms=>setTimeout(refresh,ms));
+})();
+</script>
+
+
+<style id="joygoBeta3312yMoveConfirmDockCSS">
+#moveConfirmBar.jg-confirm-docked{
+  position:relative!important;
+  left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  transform:none!important;
+  width:100%!important;max-width:none!important;box-sizing:border-box!important;
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;
+  padding:9px!important;margin:8px 0!important;
+  border:1px solid #d5a443!important;border-radius:12px!important;
+  background:#17100e!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  z-index:auto!important;
+}
+#moveConfirmBar.jg-confirm-docked[hidden]{display:none!important}
+#moveConfirmBar.jg-confirm-docked #moveConfirmText{
+  grid-column:1 / -1!important;min-width:0!important;width:100%!important;
+  text-align:left!important;font-size:12px!important;line-height:1.35!important;
+  padding:0 2px 2px!important;
+}
+#moveConfirmBar.jg-confirm-docked #moveConfirmOk,
+#moveConfirmBar.jg-confirm-docked #moveConfirmCancel{
+  width:100%!important;min-height:40px!important;padding:7px 8px!important;
+}
+</style>
+
+<script id="joygoBeta3312yMoveConfirmDockJS">
+(()=>{
+  function dockConfirmBar(){
+    const bar=document.getElementById("moveConfirmBar");
+    const right=document.getElementById("rightTools");
+    const clock=document.getElementById("gameClockPanel");
+    if(!bar||!right)return;
+
+    if(bar.parentNode!==right){
+      if(clock && clock.parentNode===right){
+        clock.insertAdjacentElement("afterend",bar);
+      }else{
+        right.prepend(bar);
+      }
+    }
+    bar.classList.add("jg-confirm-docked");
+  }
+
+  function repair(){ dockConfirmBar(); }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",repair,{once:true});
+  }else repair();
+
+  addEventListener("pageshow",repair,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(repair,280),{passive:true});
+
+  const oldShow=window.joygoShowPendingMove;
+  if(typeof oldShow==="function"){
+    window.joygoShowPendingMove=function(...args){
+      dockConfirmBar();
+      return oldShow.apply(this,args);
+    };
+  }
+
+  new MutationObserver(()=>{
+    const bar=document.getElementById("moveConfirmBar");
+    const right=document.getElementById("rightTools");
+    if(bar && right && bar.parentNode!==right) dockConfirmBar();
+  }).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 
