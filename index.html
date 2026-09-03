@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12p">
+<meta name="joygo-stable-reset-version" content="3.3.12q">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6695,6 +6695,57 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
     margin:6px 0 0!important;
     padding:6px!important;
   }
+}
+</style>
+
+
+<style id="joygoBeta3312qCommentaryModeEditCSS">
+/* ==========================================================
+   Beta 3.3.12q｜名局解說模式與編輯修正版
+   1. 只有名局館播放模式顯示逐手解說
+   2. AI 人機 / 真人對弈隱藏名局解說
+   3. ＋新增解說 / ✏️編輯 都可正常展開輸入框
+   4. 不改棋盤 / 棋鐘 / 右側功能鍵 / 播放速度
+   ========================================================== */
+
+/* 非名局播放模式完全隱藏 */
+body:not(.jg-classic-playback) #jgSmartCommentary{
+  display:none!important;
+}
+
+/* 名局播放模式恢復 */
+body.jg-classic-playback #jgSmartCommentary.show{
+  display:block!important;
+}
+
+/* 修掉之前 empty-admin 把編輯器永久鎖死的規則 */
+#jgSmartCommentary #jgSmartCommentEditor.open{
+  display:block!important;
+}
+
+#jgSmartCommentary.jg-empty-admin #jgSmartCommentEditor.open{
+  display:block!important;
+}
+
+#jgSmartCommentary #jgSmartCommentEditor:not(.open){
+  display:none!important;
+}
+
+/* 編輯展開時，空狀態也要允許文字框顯示 */
+#jgSmartCommentary.jg-editing #jgSmartCommentaryText{
+  display:none!important;
+}
+
+#jgSmartCommentary.jg-editing #jgSmartCommentEditor{
+  display:block!important;
+}
+
+/* 名局播放中的新增/編輯按鈕保持可點 */
+#jgSmartEditBtn,
+#jgSmartSaveBtn,
+#jgSmartDeleteBtn{
+  pointer-events:auto!important;
+  touch-action:manipulation;
 }
 </style>
 
@@ -16175,6 +16226,200 @@ function patch(){
   }, {passive:true});
 
   /* 注意：本版刻意沒有 setInterval 定位，也沒有 resize 重定位。 */
+})();
+</script>
+
+
+<script id="joygoBeta3312qCommentaryModeEditJS">
+(()=>{
+  function inClassicPlayback(){
+    return document.body.classList.contains("jg-classic-playback");
+  }
+
+  function currentMove(){
+    try{return Number(state?.index||0)}catch{return 0}
+  }
+
+  function currentMap(){
+    try{
+      return (typeof window.jgSmartCommentaryMap==="function")
+        ? (window.jgSmartCommentaryMap()||{})
+        : {};
+    }catch{return {}}
+  }
+
+  function currentText(){
+    const n=currentMove();
+    const map=currentMap();
+    let txt=String(map[String(n)]||map[n]||"").trim();
+    if(!txt && n>0){
+      try{txt=String(state?.moves?.[n-1]?.comment||"").trim()}catch{}
+    }
+    return txt;
+  }
+
+  function syncVisibility(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return;
+
+    if(!inClassicPlayback()){
+      box.classList.remove("show","jg-editing");
+      box.style.setProperty("display","none","important");
+      return;
+    }
+
+    box.style.removeProperty("display");
+  }
+
+  function openEditor(){
+    if(!inClassicPlayback())return;
+
+    const box=document.getElementById("jgSmartCommentary");
+    const editor=document.getElementById("jgSmartCommentEditor");
+    const textarea=document.getElementById("jgSmartCommentTextarea");
+    const title=document.getElementById("jgSmartCommentaryTitle");
+    if(!box||!editor||!textarea)return;
+
+    const n=currentMove();
+    textarea.value=currentText();
+
+    box.classList.add("show","jg-editing");
+    editor.classList.add("open");
+    editor.style.setProperty("display","block","important");
+    if(title)title.textContent=`第 ${n} 手｜朱老師解說編輯`;
+
+    setTimeout(()=>{
+      try{
+        textarea.focus({preventScroll:true});
+        const len=textarea.value.length;
+        textarea.setSelectionRange(len,len);
+      }catch{}
+    },50);
+  }
+
+  function closeEditor(){
+    const box=document.getElementById("jgSmartCommentary");
+    const editor=document.getElementById("jgSmartCommentEditor");
+    if(box)box.classList.remove("jg-editing");
+    if(editor){
+      editor.classList.remove("open");
+      editor.style.removeProperty("display");
+    }
+  }
+
+  function refreshCommentary(){
+    const box=document.getElementById("jgSmartCommentary");
+    const title=document.getElementById("jgSmartCommentaryTitle");
+    const text=document.getElementById("jgSmartCommentaryText");
+    const edit=document.getElementById("jgSmartEditBtn");
+    if(!box||!title||!text)return;
+
+    if(!inClassicPlayback()){
+      box.classList.remove("show","jg-editing");
+      box.style.setProperty("display","none","important");
+      return;
+    }
+
+    box.style.removeProperty("display");
+    const n=currentMove();
+    const txt=currentText();
+
+    let isAdmin=false;
+    try{isAdmin=memberAccess?.role==="admin"}catch{}
+
+    if(txt){
+      box.classList.remove("jg-empty-admin");
+      box.classList.add("jg-has-comment","show");
+      title.textContent=`第 ${n} 手｜朱老師解說`;
+      text.textContent=txt;
+      if(edit)edit.textContent="✏️ 編輯";
+    }else if(isAdmin && n>0){
+      box.classList.remove("jg-has-comment");
+      box.classList.add("jg-empty-admin","show");
+      title.textContent=`第 ${n} 手｜尚未解說`;
+      text.textContent="";
+      if(edit)edit.textContent="＋ 新增解說";
+    }else{
+      box.classList.remove("show","jg-has-comment","jg-empty-admin");
+    }
+  }
+
+  function rewireEditButton(){
+    const old=document.getElementById("jgSmartEditBtn");
+    if(!old || old.dataset.jg3312q==="1")return;
+
+    /* 用 capture 阻止前版可能的錯誤 listener 繼續干擾 */
+    old.dataset.jg3312q="1";
+    old.addEventListener("click",(e)=>{
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      openEditor();
+    },true);
+  }
+
+  function wireSaveDelete(){
+    const save=document.getElementById("jgSmartSaveBtn");
+    if(save && save.dataset.jg3312q!=="1"){
+      save.dataset.jg3312q="1";
+      save.addEventListener("click",()=>{
+        setTimeout(()=>{
+          closeEditor();
+          refreshCommentary();
+        },280);
+      });
+    }
+
+    const del=document.getElementById("jgSmartDeleteBtn");
+    if(del && del.dataset.jg3312q!=="1"){
+      del.dataset.jg3312q="1";
+      del.addEventListener("click",()=>{
+        setTimeout(()=>{
+          closeEditor();
+          refreshCommentary();
+        },280);
+      });
+    }
+  }
+
+  function guardMode(){
+    /* AI / 真人模式一旦離開 classic playback，立即收掉解說 */
+    syncVisibility();
+    if(inClassicPlayback()) refreshCommentary();
+  }
+
+  function boot(){
+    rewireEditButton();
+    wireSaveDelete();
+    guardMode();
+
+    [250,700,1200].forEach(ms=>setTimeout(()=>{
+      rewireEditButton();
+      wireSaveDelete();
+      guardMode();
+    },ms));
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
+
+  /* 只監看 body class 是否進出名局播放模式，不改任何版面尺寸 */
+  const observer=new MutationObserver(()=>{
+    guardMode();
+  });
+  observer.observe(document.body,{attributes:true,attributeFilter:["class"]});
+
+  /* 換手只刷新文字 */
+  ["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","jumpMoveBtn"].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b && b.dataset.jg3312qMove!=="1"){
+      b.dataset.jg3312qMove="1";
+      b.addEventListener("click",()=>setTimeout(refreshCommentary,50));
+    }
+  });
 })();
 </script>
 
