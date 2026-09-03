@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12m">
+<meta name="joygo-stable-reset-version" content="3.3.12n">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6494,6 +6494,110 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
 
 #jgSmartCommentary.jg-empty-admin #jgSmartCommentaryHeader{
   margin:0!important;
+}
+</style>
+
+
+<style id="joygoBeta3312nLandscapeCommentDockCSS">
+/* ==========================================================
+   Beta 3.3.12n｜iPad 橫式外掛解說條版
+   原則：
+   - 棋盤尺寸完全不動
+   - 右側欄寬度完全不動
+   - 棋鐘、功能鍵排列完全不動
+   - 解說只使用棋盤右側「原本就存在的黑色空白」
+   - 播放速度按鈕留在主要播放控制區
+   ========================================================== */
+
+/* 橫式：解說成為獨立浮動卡片，不再參與 grid / player 排版 */
+@media (min-width:700px) and (orientation:landscape){
+  #jgSmartCommentary{
+    position:fixed!important;
+    inset:auto!important;
+    width:auto!important;
+    min-width:138px!important;
+    max-width:220px!important;
+    max-height:38vh!important;
+    overflow:auto!important;
+    margin:0!important;
+    padding:9px 10px!important;
+    border-radius:12px!important;
+    z-index:52000!important;
+    transform:none!important;
+  }
+
+  #jgSmartCommentary.jg-landscape-dock{
+    display:block;
+  }
+
+  /* 播放速度不跟著解說浮窗走 */
+  #jgSmartCommentary > #jgSpeedButtonPanel{
+    display:none!important;
+  }
+
+  /* 精簡顯示，避免窄空白區塞太多 */
+  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentaryText{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:4;
+    overflow:hidden!important;
+    line-height:1.45!important;
+    font-size:11px!important;
+  }
+
+  #jgSmartCommentary.jg-landscape-dock.jg-expanded #jgSmartCommentaryText{
+    display:block!important;
+    -webkit-line-clamp:unset;
+    overflow:visible!important;
+  }
+
+  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentaryHeader{
+    margin-bottom:5px!important;
+  }
+
+  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentaryTitle{
+    font-size:11px!important;
+  }
+
+  #jgLandscapeCommentExpand{
+    min-height:30px!important;
+    padding:3px 8px!important;
+    margin-top:6px!important;
+    border:1px solid #79623a!important;
+    border-radius:8px!important;
+    background:#24190f!important;
+    color:#f2cf73!important;
+    font-size:10.5px!important;
+    font-weight:800!important;
+  }
+
+  /* 編輯時允許解說卡片自行捲動，但仍不擠棋盤 */
+  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentEditor.open{
+    display:block!important;
+  }
+
+  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentTextarea{
+    min-height:82px!important;
+    font-size:11px!important;
+  }
+
+  /* 速度按鈕：固定回 player 播放控制區 */
+  .player > #jgSpeedButtonPanel{
+    display:block!important;
+    flex:0 0 auto!important;
+    margin:6px 0 0!important;
+    padding:6px!important;
+  }
+
+  .player > #jgSpeedButtonPanel #jgSpeedButtons{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:4px!important;
+  }
+
+  .player > #jgSpeedButtonPanel #jgSpeedButtons button{
+    min-height:31px!important;
+    font-size:10.5px!important;
+  }
 }
 </style>
 
@@ -15824,6 +15928,162 @@ function patch(){
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
   [300,800,1400].forEach(ms=>setTimeout(boot,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312nLandscapeCommentDockJS">
+(()=>{
+  let moving=false;
+
+  function landscape(){
+    return matchMedia("(min-width:700px) and (orientation:landscape)").matches;
+  }
+
+  function ensureExpandButton(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return null;
+
+    let btn=document.getElementById("jgLandscapeCommentExpand");
+    if(btn)return btn;
+
+    btn=document.createElement("button");
+    btn.id="jgLandscapeCommentExpand";
+    btn.type="button";
+    btn.textContent="展開";
+    btn.addEventListener("click",()=>{
+      const expanded=box.classList.toggle("jg-expanded");
+      btn.textContent=expanded?"收合":"展開";
+      positionDock();
+    });
+
+    const text=document.getElementById("jgSmartCommentaryText");
+    if(text) text.insertAdjacentElement("afterend",btn);
+    else box.appendChild(btn);
+
+    return btn;
+  }
+
+  function moveSpeedBackToPlayer(){
+    const speed=document.getElementById("jgSpeedButtonPanel");
+    const player=document.querySelector(".player");
+    if(!speed||!player)return;
+
+    const controls=player.querySelector(".controls");
+    if(controls){
+      controls.insertAdjacentElement("afterend",speed);
+    }else if(speed.parentNode!==player){
+      player.appendChild(speed);
+    }
+
+    speed.style.removeProperty("display");
+  }
+
+  function positionDock(){
+    if(!landscape())return;
+
+    const box=document.getElementById("jgSmartCommentary");
+    const canvas=document.getElementById("board");
+    const right=document.getElementById("rightTools");
+    const boardWrap=document.querySelector(".board-wrap");
+    if(!box||!canvas||!right||!boardWrap)return;
+
+    const cr=canvas.getBoundingClientRect();
+    const rr=right.getBoundingClientRect();
+    const br=boardWrap.getBoundingClientRect();
+
+    /* 只使用棋盤 canvas 與右側工具欄之間原本就存在的黑色空白 */
+    const gapLeft=Math.max(cr.right+7,br.left+7);
+    const gapRight=Math.min(rr.left-7,br.right-7);
+    const gapWidth=gapRight-gapLeft;
+
+    if(gapWidth < 112){
+      /* 空白真的太窄才採用最窄卡片，仍不改棋盤 */
+      box.style.setProperty("left",`${Math.max(br.right-118,br.left+5)}px`,"important");
+      box.style.setProperty("width","110px","important");
+    }else{
+      const width=Math.min(210,Math.max(138,gapWidth));
+      const left=gapRight-width;
+      box.style.setProperty("left",`${left}px`,"important");
+      box.style.setProperty("width",`${width}px`,"important");
+    }
+
+    /* 靠棋盤下半部，避開右側上方棋鐘與功能鍵視覺 */
+    const maxTop=Math.max(br.top+8,br.bottom-box.offsetHeight-12);
+    const targetTop=Math.max(br.top+Math.round(br.height*0.58), br.top+8);
+    box.style.setProperty("top",`${Math.min(targetTop,maxTop)}px`,"important");
+    box.style.setProperty("right","auto","important");
+    box.style.setProperty("bottom","auto","important");
+
+    box.classList.add("jg-landscape-dock");
+  }
+
+  function restorePortrait(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return;
+    box.classList.remove("jg-landscape-dock","jg-expanded");
+    box.style.removeProperty("left");
+    box.style.removeProperty("top");
+    box.style.removeProperty("right");
+    box.style.removeProperty("bottom");
+    box.style.removeProperty("width");
+
+    const expand=document.getElementById("jgLandscapeCommentExpand");
+    if(expand)expand.style.display="none";
+  }
+
+  function updateExpandVisibility(){
+    const btn=ensureExpandButton();
+    if(!btn)return;
+    btn.style.display=landscape()?"inline-flex":"none";
+  }
+
+  function repair(){
+    if(moving)return;
+    moving=true;
+    try{
+      moveSpeedBackToPlayer();
+      updateExpandVisibility();
+
+      if(landscape()){
+        const box=document.getElementById("jgSmartCommentary");
+        if(box && box.parentNode!==document.body){
+          document.body.appendChild(box);
+        }
+        positionDock();
+      }else{
+        restorePortrait();
+      }
+    }finally{
+      moving=false;
+    }
+  }
+
+  /* 每換一手，重新定位一次；不碰棋盤 resize */
+  ["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","jumpMoveBtn"].forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn && btn.dataset.jg3312n!=="1"){
+      btn.dataset.jg3312n="1";
+      btn.addEventListener("click",()=>setTimeout(repair,60));
+    }
+  });
+
+  function boot(){
+    repair();
+    [250,650,1200,1800].forEach(ms=>setTimeout(repair,ms));
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
+  addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
+
+  setInterval(()=>{
+    if(document.body.classList.contains("jg-classic-playback"))repair();
+  },500);
 })();
 </script>
 
