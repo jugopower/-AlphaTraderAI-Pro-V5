@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12v">
+<meta name="joygo-stable-reset-version" content="3.3.12w">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6298,6 +6298,100 @@ body.jg-classic-playback #jgSmartCommentary.show #jgUSpeedPanel{
 
   #jgSmartCommentary.jg-u-editing #jgSmartCommentEditor .jg-u-actionbar > *{
     min-height:40px!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312wPlaybackSeparateCSS">
+/* ==========================================================
+   Beta 3.3.12w｜播放控制與解說分離版
+   只做：
+   1. 播放速度離開解說卡，回到 player 主要操作區
+   2. 名局播放時，上一手/播放/下一手控制永遠可見
+   3. 編輯解說後立即恢復播放列
+   不改棋盤、棋鐘、正式數地、主要功能鍵
+   ========================================================== */
+
+/* 名局播放時，播放控制不再被「更多對局」收合邏輯藏起來 */
+body.jg-classic-playback .player .controls{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  gap:4px!important;
+  min-height:40px!important;
+  margin:4px 0 6px!important;
+}
+
+/* 播放速度成為獨立區塊，不再依賴 commentary 是否展開 */
+#jgUSpeedPanel{
+  display:none!important;
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  overflow:visible!important;
+  margin:6px 0!important;
+  padding:7px!important;
+  box-sizing:border-box!important;
+  border:1px solid #66512f!important;
+  border-radius:9px!important;
+  background:#12100d!important;
+  transform:none!important;
+  z-index:auto!important;
+}
+body.jg-classic-playback .player > #jgUSpeedPanel{
+  display:block!important;
+}
+
+#jgUSpeedButtons{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+#jgUSpeedButtons button{
+  min-height:34px!important;
+  padding:4px!important;
+}
+
+/* 直式：速度列與播放列分開，完全走正常文流，不重疊 */
+@media (min-width:700px) and (orientation:portrait){
+  body.jg-classic-playback .player{
+    overflow:visible!important;
+  }
+  body.jg-classic-playback .player .controls{
+    margin-bottom:7px!important;
+  }
+  body.jg-classic-playback .player > #jgUSpeedPanel{
+    margin:8px 0!important;
+  }
+}
+
+/* 橫式：播放列 + 速度列固定留在 player，不跟解說卡一起移動 */
+@media (min-width:700px) and (orientation:landscape){
+  body.jg-classic-playback .player{
+    overflow-y:auto!important;
+  }
+
+  body.jg-classic-playback .player .controls{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    z-index:2!important;
+  }
+
+  body.jg-classic-playback .player > #jgUSpeedPanel{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    z-index:2!important;
+    margin:6px 0!important;
+  }
+
+  /* 解說卡只管文字與編輯，不再含播放速度 */
+  #jgSmartCommentary #jgUSpeedPanel{
+    display:none!important;
   }
 }
 </style>
@@ -14816,6 +14910,86 @@ function patch(){
       },50);
     }
   },true);
+})();
+</script>
+
+
+<script id="joygoBeta3312wPlaybackSeparateJS">
+(()=>{
+  function player(){
+    return document.querySelector(".player");
+  }
+
+  function speed(){
+    return document.getElementById("jgUSpeedPanel");
+  }
+
+  function controls(){
+    return document.querySelector(".player .controls");
+  }
+
+  function moveSpeedToPlayer(){
+    const p=player(), s=speed(), c=controls();
+    if(!p||!s)return;
+
+    /* 固定順序：播放列 → 播放速度 → 對局功能 */
+    if(c){
+      if(c.nextElementSibling!==s){
+        c.insertAdjacentElement("afterend",s);
+      }
+    }else if(s.parentNode!==p){
+      p.prepend(s);
+    }
+
+    s.style.removeProperty("display");
+  }
+
+  function ensurePlaybackVisible(){
+    if(!document.body.classList.contains("jg-classic-playback"))return;
+    const c=controls();
+    if(c){
+      c.style.setProperty("display","flex","important");
+      c.style.setProperty("visibility","visible","important");
+      c.style.setProperty("opacity","1","important");
+    }
+    moveSpeedToPlayer();
+  }
+
+  function repair(){
+    ensurePlaybackVisible();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",repair,{once:true});
+  }else repair();
+
+  addEventListener("pageshow",repair,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(repair,320),{passive:true});
+
+  /* 名局載入後 jgUSpeedPanel 可能才建立，補幾次即可，不做永久 interval */
+  [250,700,1200,1800].forEach(ms=>setTimeout(repair,ms));
+
+  /* 編輯、新增、儲存、刪除、完成收合後，播放列立即回到 player */
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest?.("#jgSmartEditBtn,#jgSmartSaveBtn,#jgSmartDeleteBtn,#jgSmartDoneBtn")){
+      setTimeout(repair,80);
+      setTimeout(repair,420);
+    }
+  },true);
+
+  /* 換手 / 播放操作後也確認一次，不改位置計算 */
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest?.("#firstBtn,#prevBtn,#playBtn,#nextBtn,#lastBtn,#jumpMoveBtn")){
+      setTimeout(repair,50);
+    }
+  },false);
+
+  /* body 進入名局播放模式時恢復控制列 */
+  new MutationObserver(()=>{
+    if(document.body.classList.contains("jg-classic-playback")){
+      setTimeout(repair,30);
+    }
+  }).observe(document.body,{attributes:true,attributeFilter:["class"]});
 })();
 </script>
 
