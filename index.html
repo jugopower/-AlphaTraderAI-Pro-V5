@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12t">
+<meta name="joygo-stable-reset-version" content="3.3.12u">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6056,914 +6056,190 @@ body.jg-classic-admin #jgSmartEditBtn{display:inline-flex;align-items:center;jus
 </style>
 
 
-<style id="joygoBeta3312cCommentEntryCSS">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style id="joygoBeta3312uCleanCommentaryCSS">
 /* ==========================================================
-   Beta 3.3.12c｜新增解說入口修正版
-   只修：沒有解說時，主管理員仍可新增第一段解說
-   不改棋盤、棋鐘、直橫式版面
+   Beta 3.3.12u｜解說輸入乾淨重置版
+   c～t 舊解說補丁已移除，只留單一輸入規則
    ========================================================== */
 
-/* 管理員：即使本手沒有解說，也顯示精簡入口 */
-body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
-  display:block!important;
-}
-
-/* 沒解說時只顯示標題＋新增解說，避免大空框 */
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryText,
-#jgSmartCommentary.jg-empty-admin #jgPlaybackSettings{
-  display:none!important;
-}
-
-#jgSmartCommentary.jg-empty-admin #jgSmartEditBtn{
-  display:inline-flex!important;
-}
-
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryHeader{
-  margin-bottom:0!important;
-}
-
-/* 有解說時恢復正常 */
-#jgSmartCommentary:not(.jg-empty-admin) #jgSmartCommentaryText{
-  display:block;
-}
-
-/* 新增狀態按鈕文字更清楚 */
-#jgSmartCommentary.jg-empty-admin #jgSmartEditBtn{
-  background:#1f5f3d!important;
-  border-color:#43875f!important;
-  color:#fff!important;
-  min-width:96px!important;
-}
-
-/* 編輯器展開時，播放設定仍可用 */
-#jgSmartCommentary #jgSmartCommentEditor.open ~ #jgPlaybackSettings{
-  display:block!important;
-}
-</style>
-
-
-<style id="joygoBeta3312dSaveFixCSS">
-/* Beta 3.3.12d：儲存成功後保持解說框清楚可見 */
-#jgSmartCommentary.jg-saved-flash{
-  outline:2px solid #4d9b67;
-  outline-offset:2px;
-}
-</style>
-
-
-<style id="joygoBeta3312eCommentDisplayFixCSS">
-/* Beta 3.3.12e｜解說文字顯示修正 */
-#jgSmartCommentary.jg-has-comment{
-  display:block!important;
-}
-#jgSmartCommentary.jg-has-comment #jgSmartCommentaryText{
-  display:block!important;
-}
-#jgSmartCommentary.jg-has-comment #jgPlaybackSettings{
-  display:block;
-}
-</style>
-
-
-<style id="joygoBeta3312fMobileCommentPositionCSS">
-/* ==========================================================
-   Beta 3.3.12f｜手機解說位置修正版
-   只調整 iPad直式/手機解說框位置
-   不改棋盤尺寸、不改棋鐘、不改橫式右側解說
-   ========================================================== */
-
-/* 直式與手機：解說固定在棋盤下方、棋鐘上方 */
-@media (orientation:portrait){
-  #jgSmartCommentary{
-    position:relative!important;
-    inset:auto!important;
-    width:calc(100% - 16px)!important;
-    max-width:none!important;
-    margin:6px auto 4px!important;
-    z-index:120!important;
-  }
-}
-
-/* 手機再縮短高度，避免佔太多畫面 */
-@media (max-width:699px){
-  #jgSmartCommentary{
-    width:calc(100% - 10px)!important;
-    margin:4px auto 3px!important;
-    padding:7px 8px!important;
-    border-radius:10px!important;
-  }
-
-  #jgSmartCommentaryHeader{
-    margin-bottom:3px!important;
-  }
-
-  #jgSmartCommentaryTitle{
-    font-size:11px!important;
-  }
-
-  #jgSmartCommentaryText{
-    font-size:11px!important;
-    line-height:1.4!important;
-  }
-
-  #jgSmartEditBtn{
-    min-height:30px!important;
-    padding:3px 8px!important;
-    font-size:10.5px!important;
-  }
-
-  #jgPlaybackSettings{
-    margin-top:4px!important;
-  }
-
-  #jgPlaybackSettings > summary{
-    min-height:30px!important;
-    font-size:10.5px!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312gFixCSS">
-/* ==========================================================
-   Beta 3.3.12g
-   1. 手機/iPad直式：逐手解說固定在棋盤下方、棋鐘上方
-   2. 管理區返回平台：回已通行主平台，不再停在通行碼入口
-   3. 不改棋盤尺寸 / 棋鐘尺寸 / 橫式棋盤 RWD
-   ========================================================== */
-
-@media (orientation:portrait){
-  /* 強制解說框在正常文件流中，不允許舊規則把它放到最底部 */
-  #jgSmartCommentary{
-    position:relative!important;
-    top:auto!important;
-    right:auto!important;
-    bottom:auto!important;
-    left:auto!important;
-    inset:auto!important;
-    transform:none!important;
-    width:calc(100% - 16px)!important;
-    max-width:none!important;
-    margin:6px auto 4px!important;
-    z-index:200!important;
-  }
-}
-
-/* 手機縮短解說框，但保持可讀 */
-@media (max-width:699px){
-  #jgSmartCommentary{
-    width:calc(100% - 10px)!important;
-    margin:4px auto!important;
-    padding:7px 8px!important;
-  }
-  #jgSmartCommentaryText{
-    font-size:12px!important;
-    line-height:1.45!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312hFourFixCSS">
-/* ==========================================================
-   Beta 3.3.12h｜四項修正版
-   1. 管理區返回平台
-   2. 播放速度
-   3. 橫式解說顯示
-   4. 手機解說顯示
-   不改棋盤尺寸/棋鐘核心/RWD 棋盤演算法
-   ========================================================== */
-
-/* 取消舊版橫式 fixed 解說，改放右欄播放控制旁 */
-@media (min-width:700px) and (orientation:landscape){
-  #jgSmartCommentary{
-    position:relative!important;
-    inset:auto!important;
-    right:auto!important;
-    bottom:auto!important;
-    width:100%!important;
-    max-width:none!important;
-    max-height:34vh!important;
-    overflow-y:auto!important;
-    margin:6px 0!important;
-    transform:none!important;
-    z-index:200!important;
-  }
-}
-
-/* 直式/手機：棋盤 → 解說 → 棋鐘 */
-@media (orientation:portrait){
-  #jgSmartCommentary{
-    position:relative!important;
-    inset:auto!important;
-    width:calc(100% - 16px)!important;
-    max-width:none!important;
-    margin:6px auto 4px!important;
-    transform:none!important;
-    z-index:200!important;
-  }
-}
-@media (max-width:699px){
-  #jgSmartCommentary{
-    width:calc(100% - 10px)!important;
-    margin:4px auto!important;
-    padding:7px 8px!important;
-  }
-  #jgSmartCommentaryText{
-    font-size:12px!important;
-    line-height:1.45!important;
-  }
-}
-
-/* 播放速度欄保持精簡 */
-#jgPlaybackSettings{
-  margin-top:5px!important;
-}
-#jgSmartSpeed{
-  min-height:36px!important;
-  font-size:12px!important;
-}
-</style>
-
-
-<style id="joygoBeta3312iLandscapeCommentaryCSS">
-/* ==========================================================
-   Beta 3.3.12i｜iPad 橫式解說固定版
-   只修橫式解說顯示，不動直式/棋盤/棋鐘
-   ========================================================== */
-
-@media (min-width:700px) and (orientation:landscape){
-  /* 右側 player 可捲動，避免解說被裁掉 */
-  .player{
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    max-height:calc(100vh - 24px)!important;
-    padding-bottom:12px!important;
-  }
-
-  /* 解說框固定放在右側欄內，正常文件流，不用 fixed */
-  #jgSmartCommentary{
-    position:relative!important;
-    inset:auto!important;
-    right:auto!important;
-    bottom:auto!important;
-    width:100%!important;
-    max-width:none!important;
-    max-height:none!important;
-    overflow:visible!important;
-    margin:8px 0 0!important;
-    transform:none!important;
-    z-index:300!important;
-  }
-
-  #jgSmartCommentary.show{
-    display:block!important;
-  }
-
-  #jgSmartCommentaryText{
-    display:block!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312jLandscapeScrollCSS">
-/* ==========================================================
-   Beta 3.3.12j｜橫式右欄完整捲動版
-   只修 iPad 橫式右側欄被截斷、播放設定看不到
-   不改棋盤尺寸、不改直式、不改棋鐘核心
-   ========================================================== */
-
-@media (min-width:700px) and (orientation:landscape){
-  .player{
-    box-sizing:border-box!important;
-    height:calc(100dvh - 18px)!important;
-    max-height:calc(100dvh - 18px)!important;
-    min-height:0!important;
-
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    overscroll-behavior:contain!important;
-    -webkit-overflow-scrolling:touch!important;
-
-    padding-bottom:calc(34px + env(safe-area-inset-bottom))!important;
-    scroll-padding-bottom:calc(54px + env(safe-area-inset-bottom))!important;
-  }
-
-  /* 解說、播放設定不可被壓扁或裁切 */
-  #jgSmartCommentary{
-    flex:0 0 auto!important;
-    max-height:none!important;
-    overflow:visible!important;
-  }
-
-  #jgPlaybackSettings{
-    display:block;
-    flex:0 0 auto!important;
-    margin-bottom:8px!important;
-  }
-
-  #jgPlaybackSettings[open]{
-    display:block!important;
-  }
-
-  #jgPlaybackSettingsInner{
-    padding-bottom:10px!important;
-  }
-
-  /* 右欄最後一個區塊加安全留白 */
-  .player::after{
-    content:"";
-    display:block;
-    height:calc(44px + env(safe-area-inset-bottom));
-    flex:0 0 auto;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312kSpeedButtonsCSS">
-/* ==========================================================
-   Beta 3.3.12k｜播放速度按鈕版
-   只修播放速度控制
-   - 不再使用 select 下拉選單
-   - 不再依賴 details 開合
-   - iPad Safari 橫式可直接點選
-   - 不改棋盤、棋鐘、解說位置
-   ========================================================== */
-
-/* 隱藏舊 select / details 速度控制 */
-#jgPlaybackSettings{
-  display:none!important;
-}
-
-/* 新速度按鈕區 */
-#jgSpeedButtonPanel{
-  box-sizing:border-box;
-  width:100%;
-  margin-top:8px;
-  padding:8px;
-  border:1px solid #5b4c31;
-  border-radius:10px;
-  background:#0c0b0a;
-}
-
-#jgSpeedButtonTitle{
-  color:#d9c08a;
-  font-size:11px;
-  font-weight:800;
-  margin-bottom:6px;
-}
-
-#jgSpeedButtons{
-  display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:5px;
-}
-
-#jgSpeedButtons button{
-  min-width:0!important;
-  min-height:34px!important;
-  padding:4px 3px!important;
-  border-radius:8px!important;
-  border:1px solid #66583b!important;
-  background:#17120f!important;
-  color:#fff!important;
-  font-size:11px!important;
-  font-weight:800!important;
-  touch-action:manipulation;
-}
-
-#jgSpeedButtons button.active{
-  background:#e0ad35!important;
-  color:#15110a!important;
-  border-color:#f2cf73!important;
-}
-
-@media(max-width:699px){
-  #jgSpeedButtons{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-  }
-}
-
-@media(min-width:700px) and (orientation:landscape){
-  #jgSpeedButtonPanel{
-    margin-bottom:8px;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312lDeleteLayoutFixCSS">
-/* ==========================================================
-   Beta 3.3.12l｜刪除解說版面修正版
-   只修：
-   - 刪除文字後，不留下大空白
-   - 解說區縮回「尚未解說＋新增解說」
-   - 保持目前手數與畫面位置
-   - 不改棋盤、棋鐘、直橫式、播放速度
-   ========================================================== */
-
-#jgSmartCommentary.jg-empty-admin{
-  min-height:0!important;
-  height:auto!important;
-  max-height:none!important;
-  overflow:visible!important;
-}
-
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentEditor{
-  display:none!important;
-}
-
-#jgSmartCommentary.jg-empty-admin #jgSpeedButtonPanel{
-  display:none!important;
-}
-
-/* 防止更多對局區塊被舊高度撐大 */
-#moreGamePanel,
-.more-game-panel,
-#moreGameSection{
-  min-height:0!important;
-  height:auto!important;
-}
-
-/* 刪除後的精簡列 */
-#jgSmartCommentary.jg-empty-admin{
-  padding:8px 10px!important;
-}
-
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryHeader{
-  margin:0!important;
-}
-</style>
-
-
-<style id="joygoBeta3312nLandscapeCommentDockCSS">
-/* ==========================================================
-   Beta 3.3.12n｜iPad 橫式外掛解說條版
-   原則：
-   - 棋盤尺寸完全不動
-   - 右側欄寬度完全不動
-   - 棋鐘、功能鍵排列完全不動
-   - 解說只使用棋盤右側「原本就存在的黑色空白」
-   - 播放速度按鈕留在主要播放控制區
-   ========================================================== */
-
-/* 橫式：解說成為獨立浮動卡片，不再參與 grid / player 排版 */
-@media (min-width:700px) and (orientation:landscape){
-  #jgSmartCommentary{
-    position:fixed!important;
-    inset:auto!important;
-    width:auto!important;
-    min-width:138px!important;
-    max-width:220px!important;
-    max-height:38vh!important;
-    overflow:auto!important;
-    margin:0!important;
-    padding:9px 10px!important;
-    border-radius:12px!important;
-    z-index:52000!important;
-    transform:none!important;
-  }
-
-  #jgSmartCommentary.jg-landscape-dock{
-    display:block;
-  }
-
-  /* 播放速度不跟著解說浮窗走 */
-  #jgSmartCommentary > #jgSpeedButtonPanel{
-    display:none!important;
-  }
-
-  /* 精簡顯示，避免窄空白區塞太多 */
-  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentaryText{
-    display:-webkit-box!important;
-    -webkit-box-orient:vertical;
-    -webkit-line-clamp:4;
-    overflow:hidden!important;
-    line-height:1.45!important;
-    font-size:11px!important;
-  }
-
-  #jgSmartCommentary.jg-landscape-dock.jg-expanded #jgSmartCommentaryText{
-    display:block!important;
-    -webkit-line-clamp:unset;
-    overflow:visible!important;
-  }
-
-  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentaryHeader{
-    margin-bottom:5px!important;
-  }
-
-  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentaryTitle{
-    font-size:11px!important;
-  }
-
-  #jgLandscapeCommentExpand{
-    min-height:30px!important;
-    padding:3px 8px!important;
-    margin-top:6px!important;
-    border:1px solid #79623a!important;
-    border-radius:8px!important;
-    background:#24190f!important;
-    color:#f2cf73!important;
-    font-size:10.5px!important;
-    font-weight:800!important;
-  }
-
-  /* 編輯時允許解說卡片自行捲動，但仍不擠棋盤 */
-  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentEditor.open{
-    display:block!important;
-  }
-
-  #jgSmartCommentary.jg-landscape-dock #jgSmartCommentTextarea{
-    min-height:82px!important;
-    font-size:11px!important;
-  }
-
-  /* 速度按鈕：固定回 player 播放控制區 */
-  .player > #jgSpeedButtonPanel{
-    display:block!important;
-    flex:0 0 auto!important;
-    margin:6px 0 0!important;
-    padding:6px!important;
-  }
-
-  .player > #jgSpeedButtonPanel #jgSpeedButtons{
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    gap:4px!important;
-  }
-
-  .player > #jgSpeedButtonPanel #jgSpeedButtons button{
-    min-height:31px!important;
-    font-size:10.5px!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312oLandscapeStableDockCSS">
-/* ==========================================================
-   Beta 3.3.12o｜橫式解說防跳動穩定版
-   只修 iPad 橫式解說卡片反覆跳動
-   - 轉成橫式時定位一次
-   - 換手只更新文字，不再搬位置
-   - 展開/收合不重新定位
-   - 不改棋盤、右欄、棋鐘、功能鍵
-   ========================================================== */
-
-@media (min-width:700px) and (orientation:landscape){
-  #jgSmartCommentary.jg-landscape-static{
-    position:fixed!important;
-    margin:0!important;
-    transform:none!important;
-    z-index:52000!important;
-  }
-
-  #jgSmartCommentary.jg-landscape-static #jgSmartCommentaryText{
-    display:-webkit-box!important;
-    -webkit-box-orient:vertical;
-    -webkit-line-clamp:4;
-    overflow:hidden!important;
-  }
-
-  #jgSmartCommentary.jg-landscape-static.jg-expanded #jgSmartCommentaryText{
-    display:block!important;
-    -webkit-line-clamp:unset;
-    overflow:visible!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312pStaticDockCSS">
-/* ==========================================================
-   Beta 3.3.12p｜移除舊定位程式穩定版
-   - 不再每 500ms 搬解說
-   - 不再 resize 持續重定位
-   - 橫式只在進入橫式時定位一次
-   - 換手只更新文字
-   - 不改棋盤 / 棋鐘 / 右欄 / 功能鍵
-   ========================================================== */
-
-@media (min-width:700px) and (orientation:landscape){
-  #jgSmartCommentary.jg-static-dock{
-    position:fixed!important;
-    margin:0!important;
-    transform:none!important;
-    z-index:52000!important;
-    min-width:138px!important;
-    max-width:220px!important;
-    max-height:38vh!important;
-    overflow:auto!important;
-  }
-
-  #jgSmartCommentary.jg-static-dock > #jgSpeedButtonPanel{
-    display:none!important;
-  }
-
-  #jgSmartCommentary.jg-static-dock #jgSmartCommentaryText{
-    display:-webkit-box!important;
-    -webkit-box-orient:vertical;
-    -webkit-line-clamp:4;
-    overflow:hidden!important;
-    line-height:1.45!important;
-    font-size:11px!important;
-  }
-
-  #jgSmartCommentary.jg-static-dock.jg-expanded #jgSmartCommentaryText{
-    display:block!important;
-    -webkit-line-clamp:unset;
-    overflow:visible!important;
-  }
-
-  #jgPExpand{
-    min-height:30px!important;
-    padding:3px 8px!important;
-    margin-top:6px!important;
-    border:1px solid #79623a!important;
-    border-radius:8px!important;
-    background:#24190f!important;
-    color:#f2cf73!important;
-    font-size:10.5px!important;
-    font-weight:800!important;
-  }
-
-  .player > #jgSpeedButtonPanel{
-    display:block!important;
-    flex:0 0 auto!important;
-    margin:6px 0 0!important;
-    padding:6px!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312qCommentaryModeEditCSS">
-/* ==========================================================
-   Beta 3.3.12q｜名局解說模式與編輯修正版
-   1. 只有名局館播放模式顯示逐手解說
-   2. AI 人機 / 真人對弈隱藏名局解說
-   3. ＋新增解說 / ✏️編輯 都可正常展開輸入框
-   4. 不改棋盤 / 棋鐘 / 右側功能鍵 / 播放速度
-   ========================================================== */
-
-/* 非名局播放模式完全隱藏 */
 body:not(.jg-classic-playback) #jgSmartCommentary{
   display:none!important;
 }
-
-/* 名局播放模式恢復 */
 body.jg-classic-playback #jgSmartCommentary.show{
   display:block!important;
 }
 
-/* 修掉之前 empty-admin 把編輯器永久鎖死的規則 */
-#jgSmartCommentary #jgSmartCommentEditor.open{
-  display:block!important;
-}
-
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentEditor.open{
-  display:block!important;
-}
-
-#jgSmartCommentary #jgSmartCommentEditor:not(.open){
-  display:none!important;
-}
-
-/* 編輯展開時，空狀態也要允許文字框顯示 */
-#jgSmartCommentary.jg-editing #jgSmartCommentaryText{
-  display:none!important;
-}
-
-#jgSmartCommentary.jg-editing #jgSmartCommentEditor{
-  display:block!important;
-}
-
-/* 名局播放中的新增/編輯按鈕保持可點 */
-#jgSmartEditBtn,
-#jgSmartSaveBtn,
-#jgSmartDeleteBtn{
-  pointer-events:auto!important;
-  touch-action:manipulation;
-}
-</style>
-
-
-<style id="joygoBeta3312rEditorFixCSS">
-/* ==========================================================
-   Beta 3.3.12r｜新增/編輯解說互動修正版
-   只修：
-   - 直式/橫式「＋新增解說」無效
-   - 「✏️編輯」無效
-   - 橫式輸入框被裁掉 / 滑不上來
-   - AI/真人模式不顯示名局解說
-   不改棋盤、棋鐘、右側功能鍵、播放速度
-   ========================================================== */
-
-#jgSmartCommentary #jgSmartCommentEditor.open{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  max-height:none!important;
-}
-
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentEditor.open{
-  display:block!important;
-}
-
-#jgSmartCommentary.jg-editing #jgSmartCommentEditor{
-  display:block!important;
-}
-
-/* 橫式編輯時暫時佔用右側工具欄區域，不覆蓋棋盤 */
-@media (min-width:700px) and (orientation:landscape){
-  #jgSmartCommentary.jg-editing{
-    position:fixed!important;
-    top:max(12px, env(safe-area-inset-top))!important;
-    right:8px!important;
-    left:auto!important;
-    bottom:auto!important;
-    width:min(320px, calc(100vw - 16px))!important;
-    max-width:320px!important;
-    max-height:calc(100dvh - 24px - env(safe-area-inset-bottom))!important;
-    overflow-y:auto!important;
-    -webkit-overflow-scrolling:touch!important;
-    z-index:2147482000!important;
-    transform:none!important;
-  }
-
-  #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
-    min-height:150px!important;
-    max-height:42dvh!important;
-    resize:vertical!important;
-  }
-}
-
-/* 直式 / 手機編輯時維持原位置，但確保可捲到輸入框 */
-@media (orientation:portrait), (max-width:699px){
-  #jgSmartCommentary.jg-editing{
-    position:relative!important;
-    inset:auto!important;
-    max-height:none!important;
-    overflow:visible!important;
-  }
-  #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
-    min-height:120px!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312sIPadKeyboardCSS">
-/* ==========================================================
-   Beta 3.3.12s｜iPad 鍵盤輸入修正版
-   核心：按「新增／編輯」的同一個 tap 事件內立即 focus textarea
-   不改棋盤、棋鐘、右側功能鍵、播放速度
-   ========================================================== */
-
-#jgSmartCommentary #jgSmartCommentEditor.open,
-#jgSmartCommentary.jg-editing #jgSmartCommentEditor{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  max-height:none!important;
-}
-
-#jgSmartCommentary #jgSmartCommentTextarea{
-  pointer-events:auto!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  touch-action:manipulation!important;
-}
-
-/* 橫式：編輯時放在右側欄，不蓋棋盤，允許完整捲動 */
-@media (min-width:700px) and (orientation:landscape){
-  #jgSmartCommentary.jg-editing{
-    position:fixed!important;
-    top:max(10px, env(safe-area-inset-top))!important;
-    right:8px!important;
-    left:auto!important;
-    bottom:auto!important;
-    width:320px!important;
-    max-width:calc(100vw - 16px)!important;
-    max-height:calc(100dvh - 20px - env(safe-area-inset-bottom))!important;
-    overflow-y:auto!important;
-    -webkit-overflow-scrolling:touch!important;
-    z-index:2147482000!important;
-    transform:none!important;
-  }
-
-  #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
-    min-height:150px!important;
-    max-height:38dvh!important;
-  }
-}
-
-/* 直式：維持棋盤下方的解說區 */
-@media (orientation:portrait), (max-width:699px){
-  #jgSmartCommentary.jg-editing{
-    position:relative!important;
-    inset:auto!important;
-    max-height:none!important;
-    overflow:visible!important;
-  }
-
-  #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
-    min-height:130px!important;
-  }
-}
-</style>
-
-
-<style id="joygoBeta3312tNativeTextareaCSS">
-/* ==========================================================
-   Beta 3.3.12t｜iPad 原生文字輸入版
-   核心：
-   - 不再用 JS 強制彈鍵盤
-   - textarea 永遠保留在 DOM，可直接點擊
-   - 新增/編輯只負責展開
-   - 使用者點 textarea，由 Safari 原生彈出鍵盤
-   - 不改棋盤 / 棋鐘 / 功能鍵 / 播放速度
-   ========================================================== */
-
-/* textarea 永遠存在，只在未編輯時視覺收合 */
+/* 編輯器：未開啟時收合；開啟時就是正常原生表單 */
 #jgSmartCommentEditor{
+  display:none!important;
+  margin-top:8px!important;
+  padding-top:8px!important;
+  border-top:1px solid #443b2c!important;
+}
+#jgSmartCommentEditor.open{
   display:block!important;
   visibility:visible!important;
   opacity:1!important;
-  max-height:none!important;
-  overflow:visible!important;
-}
-
-#jgSmartCommentary:not(.jg-editing) #jgSmartCommentEditor{
-  height:0!important;
-  min-height:0!important;
-  max-height:0!important;
-  overflow:hidden!important;
-  padding-top:0!important;
-  padding-bottom:0!important;
-  border-width:0!important;
-  margin:0!important;
-  pointer-events:none!important;
-}
-
-#jgSmartCommentary.jg-editing #jgSmartCommentEditor{
-  height:auto!important;
-  min-height:0!important;
-  max-height:none!important;
-  overflow:visible!important;
   pointer-events:auto!important;
 }
 
 #jgSmartCommentTextarea{
   display:block!important;
   width:100%!important;
-  min-height:130px!important;
+  min-height:140px!important;
   box-sizing:border-box!important;
+  border:1px solid #67533a!important;
+  border-radius:10px!important;
+  background:#071012!important;
+  color:#fff!important;
+  padding:10px!important;
+  font-size:16px!important;
+  line-height:1.45!important;
+  resize:vertical!important;
   pointer-events:auto!important;
   -webkit-user-select:text!important;
   user-select:text!important;
-  touch-action:manipulation!important;
-  font-size:16px!important; /* 避免 iOS 點入時自動放大 */
+  touch-action:auto!important;
+  caret-color:#fff!important;
 }
 
-/* 讓整個文字框都容易點 */
-#jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
-  cursor:text!important;
+/* 管理員在沒有解說的手也保留新增入口 */
+body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
+  display:block!important;
+}
+body.jg-classic-admin #jgSmartCommentary.jg-empty-admin #jgSmartCommentaryText{
+  display:none!important;
+}
+body.jg-classic-admin #jgSmartCommentary.jg-empty-admin #jgSmartEditBtn{
+  display:inline-flex!important;
 }
 
-/* 橫式編輯：右側獨立卡片，不蓋棋盤，可滑動 */
+/* 橫式：解說卡固定留在右側欄下方，不蓋棋盤；輸入區本身可捲 */
 @media (min-width:700px) and (orientation:landscape){
-  #jgSmartCommentary.jg-editing{
-    position:fixed!important;
-    top:max(10px, env(safe-area-inset-top))!important;
-    right:8px!important;
-    left:auto!important;
-    bottom:auto!important;
-    width:320px!important;
-    max-width:calc(100vw - 16px)!important;
-    max-height:calc(100dvh - 20px - env(safe-area-inset-bottom))!important;
-    overflow-y:auto!important;
-    -webkit-overflow-scrolling:touch!important;
-    z-index:2147482000!important;
+  #jgSmartCommentary{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:8px 0 0!important;
     transform:none!important;
   }
 
-  #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
-    min-height:180px!important;
-    max-height:46dvh!important;
+  #jgSmartCommentary.jg-u-editing{
+    max-height:52vh!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #jgSmartCommentary.jg-u-editing #jgSmartCommentTextarea{
+    min-height:170px!important;
   }
 }
 
-/* 直式：保持棋盤下方原本位置 */
+/* 直式 / 手機：放棋盤後、棋鐘前，維持正常文流 */
 @media (orientation:portrait), (max-width:699px){
-  #jgSmartCommentary.jg-editing{
+  #jgSmartCommentary{
     position:relative!important;
     inset:auto!important;
+    width:calc(100% - 24px)!important;
     max-height:none!important;
     overflow:visible!important;
+    margin:8px auto!important;
   }
+}
+
+/* 播放速度：單一按鈕列 */
+#jgUSpeedPanel{
+  display:none;
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid #443b2c;
+}
+body.jg-classic-playback #jgSmartCommentary.show #jgUSpeedPanel{
+  display:block;
+}
+#jgUSpeedTitle{
+  color:#f2cb6a;
+  font-size:11px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+#jgUSpeedButtons{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:5px;
+}
+#jgUSpeedButtons button{
+  min-height:34px!important;
+  padding:4px 5px!important;
+  border-radius:8px!important;
+  border:1px solid #6f5938!important;
+  background:#1d1712!important;
+  color:#fff!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+#jgUSpeedButtons button.active{
+  background:#e9b731!important;
+  color:#17120a!important;
+}
+
+/* 隱藏 b 核心的舊 select，只保留 u 的按鈕速度 */
+#jgPlaybackSettings{
+  display:none!important;
 }
 </style>
 
@@ -15159,1378 +14435,167 @@ function patch(){
 </script>
 
 
-<script id="joygoBeta3312cCommentEntryJS">
-(()=>{
-  function currentMove(){
-    try{return Number(state?.index||0)}catch{return 0}
-  }
-
-  function getOnlineText(){
-    const n=currentMove();
-    try{
-      const map=(typeof window.jgSmartCommentaryMap==="function")
-        ? window.jgSmartCommentaryMap()
-        : {};
-      return String(map?.[String(n)]||map?.[n]||"").trim();
-    }catch{}
-    return "";
-  }
-
-  function getSgfText(){
-    const n=currentMove();
-    try{
-      if(n<=0)return "";
-      return String(state?.moves?.[n-1]?.comment||"").trim();
-    }catch{return ""}
-  }
-
-  function hasCurrentComment(){
-    return !!(getOnlineText() || getSgfText());
-  }
-
-  function patchEntry(){
-    const box=document.getElementById("jgSmartCommentary");
-    const btn=document.getElementById("jgSmartEditBtn");
-    const title=document.getElementById("jgSmartCommentaryTitle");
-    if(!box || !btn || !title)return;
-
-    let isAdmin=false;
-    try{isAdmin=memberAccess?.role==="admin"}catch{}
-
-    const n=currentMove();
-    const has=hasCurrentComment();
-
-    if(isAdmin && n>0 && !has){
-      box.classList.add("jg-empty-admin");
-      box.classList.add("show");
-      title.textContent=`第 ${n} 手｜尚未解說`;
-      btn.textContent="＋ 新增解說";
-      btn.setAttribute("aria-label",`新增第 ${n} 手解說`);
-    }else{
-      box.classList.remove("jg-empty-admin");
-      if(has){
-        btn.textContent="✏️ 編輯";
-        btn.setAttribute("aria-label",`編輯第 ${n} 手解說`);
-      }else if(n<=0){
-        box.classList.remove("show");
-      }
-    }
-  }
-
-  function wireAddButton(){
-    const btn=document.getElementById("jgSmartEditBtn");
-    if(!btn || btn.dataset.jg3312c==="1")return;
-    btn.dataset.jg3312c="1";
-
-    btn.addEventListener("click",()=>{
-      const ta=document.getElementById("jgSmartCommentTextarea");
-      const n=currentMove();
-      if(ta && !hasCurrentComment()){
-        ta.value="";
-        ta.placeholder=`輸入第 ${n} 手的朱老師解說…`;
-      }
-    },{capture:true});
-  }
-
-  function repair(){
-    wireAddButton();
-    patchEntry();
-  }
-
-  /* 包裝 renderSmartComment：原本沒解說會隱藏，之後補回管理員新增入口 */
-  if(typeof renderSmartComment==="function" && !window.__jg3312cRenderPatched){
-    window.__jg3312cRenderPatched=true;
-    const old=renderSmartComment;
-    renderSmartComment=function(){
-      const r=old.apply(this,arguments);
-      setTimeout(repair,0);
-      return r;
-    };
-  }
-
-  /* 包裝 goTo：每換一手更新新增/編輯狀態 */
-  if(typeof goTo==="function" && !window.__jg3312cGoToPatched){
-    window.__jg3312cGoToPatched=true;
-    const oldGo=goTo;
-    goTo=function(n){
-      const r=oldGo.apply(this,arguments);
-      setTimeout(repair,0);
-      return r;
-    };
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",repair,{once:true});
-  }else repair();
-
-  addEventListener("pageshow",repair,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(repair,250),{passive:true});
-  [300,800,1500].forEach(ms=>setTimeout(repair,ms));
-})();
-</script>
-
-
-<script id="joygoBeta3312dSaveFeedbackJS">
-(()=>{
-  function wireFeedback(){
-    const save=document.getElementById("jgSmartSaveBtn");
-    if(!save || save.dataset.jg3312d==="1")return;
-    save.dataset.jg3312d="1";
-    save.addEventListener("click",()=>{
-      setTimeout(()=>{
-        const box=document.getElementById("jgSmartCommentary");
-        if(!box || !box.classList.contains("show"))return;
-        box.classList.add("jg-saved-flash");
-        setTimeout(()=>box.classList.remove("jg-saved-flash"),700);
-      },500);
-    });
-  }
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",wireFeedback,{once:true});
-  }else wireFeedback();
-  addEventListener("pageshow",wireFeedback,{passive:true});
-})();
-</script>
-
-
-<script id="joygoBeta3312eCommentDisplayFixJS">
-(()=>{
-  function repairCommentDisplay(){
-    const box=document.getElementById("jgSmartCommentary");
-    const text=document.getElementById("jgSmartCommentaryText");
-    const title=document.getElementById("jgSmartCommentaryTitle");
-    const btn=document.getElementById("jgSmartEditBtn");
-    if(!box||!text)return;
-
-    let n=0;
-    try{n=Number(state?.index||0)}catch{}
-
-    let mapText="";
-    try{
-      const map=(typeof window.jgSmartCommentaryMap==="function")
-        ? window.jgSmartCommentaryMap()
-        : {};
-      mapText=String(map?.[String(n)]||map?.[n]||"").trim();
-    }catch{}
-
-    let sgfText="";
-    try{
-      if(n>0)sgfText=String(state?.moves?.[n-1]?.comment||"").trim();
-    }catch{}
-
-    const actual=mapText||sgfText;
-
-    if(actual){
-      text.textContent=actual;
-      box.classList.remove("jg-empty-admin");
-      box.classList.add("jg-has-comment","show");
-      if(title)title.textContent=`第 ${n} 手｜朱老師解說`;
-      if(btn)btn.textContent="✏️ 編輯";
-    }else{
-      box.classList.remove("jg-has-comment");
-    }
-  }
-
-  function installNavigationRefresh(){
-    ["firstBtn","prevBtn","nextBtn","lastBtn","playBtn"].forEach(id=>{
-      const b=document.getElementById(id);
-      if(!b||b.dataset.jg3312e==="1")return;
-      b.dataset.jg3312e="1";
-      b.addEventListener("click",()=>setTimeout(repairCommentDisplay,40));
-    });
-  }
-
-  function boot(){
-    installNavigationRefresh();
-    repairCommentDisplay();
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,250),{passive:true});
-  [300,700,1200,1800].forEach(ms=>setTimeout(boot,ms));
-
-  /* 播放中每手也同步刷新顯示 */
-  setInterval(()=>{
-    if(document.body.classList.contains("jg-classic-playback")){
-      repairCommentDisplay();
-    }
-  },350);
-})();
-</script>
-
-
-<script id="joygoBeta3312fMobileCommentPositionJS">
-(()=>{
-  function placeCommentary(){
-    const box=document.getElementById("jgSmartCommentary");
-    if(!box)return;
-
-    const portrait=matchMedia("(orientation:portrait)").matches;
-    if(!portrait){
-      /* 橫式沿用既有右側 fixed 位置 */
-      if(box.parentNode!==document.body) document.body.appendChild(box);
-      return;
-    }
-
-    const boardWrap=document.querySelector(".board-wrap");
-    const rightTools=document.getElementById("rightTools");
-    const clock=document.getElementById("gameClockPanel");
-
-    /* 優先放在棋盤後、棋鐘前 */
-    if(boardWrap && boardWrap.parentNode){
-      if(clock && clock.parentNode===boardWrap.parentNode){
-        boardWrap.insertAdjacentElement("afterend",box);
-        if(box.nextElementSibling!==clock){
-          clock.parentNode.insertBefore(box,clock);
-        }
-      }else if(rightTools && rightTools.parentNode===boardWrap.parentNode){
-        boardWrap.insertAdjacentElement("afterend",box);
-        if(box.nextElementSibling!==rightTools){
-          rightTools.parentNode.insertBefore(box,rightTools);
-        }
-      }else{
-        boardWrap.insertAdjacentElement("afterend",box);
-      }
-    }
-  }
-
-  function boot(){
-    placeCommentary();
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
-  addEventListener("resize",()=>setTimeout(boot,150),{passive:true});
-  [300,800,1500].forEach(ms=>setTimeout(boot,ms));
-})();
-</script>
-
-
-<script id="joygoBeta3312gFixJS">
-(()=>{
-  const ADMIN_RETURN_KEY="joygo_admin_return_until_3312g";
-  const BETA_SESSION_KEY="joygo_beta_v1_session";
-  const BETA_ACCESS_KEY="joygo_beta_v1_access_until";
-
-  /* ----------------------------------------------------------
-     A. 手機／iPad直式：解說框永遠置於 board-wrap 後、
-        rightTools(棋鐘) 前。舊版延遲 relocation 也不能拉走。
-     ---------------------------------------------------------- */
-  let movingCommentary=false;
-
-  function placePortraitCommentary(){
-    if(movingCommentary)return;
-    if(!matchMedia("(orientation:portrait)").matches)return;
-
-    const box=document.getElementById("jgSmartCommentary");
-    const board=document.querySelector(".board-wrap");
-    const right=document.getElementById("rightTools");
-    if(!box||!board||!board.parentNode)return;
-
-    const parent=board.parentNode;
-
-    movingCommentary=true;
-    try{
-      /* 最理想：board → commentary → rightTools(棋鐘) */
-      if(right && right.parentNode===parent){
-        if(box.parentNode!==parent || box.previousElementSibling!==board || box.nextElementSibling!==right){
-          parent.insertBefore(box,right);
-        }
-      }else{
-        if(box.parentNode!==parent || box.previousElementSibling!==board){
-          board.insertAdjacentElement("afterend",box);
-        }
-      }
-
-      box.style.setProperty("position","relative","important");
-      box.style.setProperty("inset","auto","important");
-      box.style.setProperty("transform","none","important");
-    }finally{
-      movingCommentary=false;
-    }
-  }
-
-  function installCommentaryGuard(){
-    const app=document.querySelector(".app");
-    if(!app || app.dataset.jg3312gObserver==="1")return;
-    app.dataset.jg3312gObserver="1";
-
-    const observer=new MutationObserver(()=>{
-      if(matchMedia("(orientation:portrait)").matches){
-        requestAnimationFrame(placePortraitCommentary);
-      }
-    });
-    observer.observe(app,{childList:true});
-  }
-
-  /* ----------------------------------------------------------
-     B. 進管理區之前記錄「回平台」通行狀態。
-        即使 admin-center.html 的返回鍵指向 ./，
-        回來也自動開啟平台，不停在通行碼入口。
-     ---------------------------------------------------------- */
-  function markAdminDeparture(){
-    try{
-      const until=Date.now()+4*60*60*1000; // 4 小時回平台保護
-      localStorage.setItem(ADMIN_RETURN_KEY,String(until));
-      sessionStorage.setItem(BETA_SESSION_KEY,"1");
-      localStorage.setItem(BETA_ACCESS_KEY,String(Date.now()+12*60*60*1000));
-    }catch{}
-  }
-
-  function installAdminDepartureHook(){
-    if(document.documentElement.dataset.jg3312gAdminHook==="1")return;
-    document.documentElement.dataset.jg3312gAdminHook="1";
-
-    document.addEventListener("click",(ev)=>{
-      const b=ev.target?.closest?.('[id^="adminCenterBtn_"]');
-      if(!b)return;
-      markAdminDeparture();
-    },true);
-  }
-
-  function restorePlatformAfterAdmin(){
-    let until=0;
-    try{until=Number(localStorage.getItem(ADMIN_RETURN_KEY)||0)}catch{}
-    if(!until || until<Date.now()){
-      try{localStorage.removeItem(ADMIN_RETURN_KEY)}catch{}
-      return;
-    }
-
-    try{
-      sessionStorage.setItem(BETA_SESSION_KEY,"1");
-      localStorage.setItem(BETA_ACCESS_KEY,String(Date.now()+12*60*60*1000));
-    }catch{}
-
-    const gate=document.getElementById("joygoBetaGate");
-    if(!gate || gate.hidden){
-      try{localStorage.removeItem(ADMIN_RETURN_KEY)}catch{}
-      return;
-    }
-
-    /* 使用原本入口的合法 open 流程，避免直接改內部狀態 */
-    const input=document.getElementById("joygoBetaCode");
-    const enter=document.getElementById("joygoBetaEnter");
-    if(input && enter){
-      input.value="JOYGO10";
-      enter.click();
-      try{localStorage.removeItem(ADMIN_RETURN_KEY)}catch{}
-    }
-  }
-
-  function boot(){
-    installCommentaryGuard();
-    installAdminDepartureHook();
-
-    placePortraitCommentary();
-    restorePlatformAfterAdmin();
-
-    /* 舊版有 300/800/1500/1600ms 延遲搬位，
-       本版最後再校正幾次，確保手機解說不被拉回底部。 */
-    [250,650,1050,1750,2400].forEach(ms=>
-      setTimeout(placePortraitCommentary,ms)
-    );
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else{
-    boot();
-  }
-
-  addEventListener("pageshow",()=>{
-    boot();
-    setTimeout(placePortraitCommentary,300);
-  },{passive:true});
-
-  addEventListener("orientationchange",()=>{
-    setTimeout(placePortraitCommentary,350);
-    setTimeout(placePortraitCommentary,900);
-  },{passive:true});
-
-  addEventListener("resize",()=>{
-    setTimeout(placePortraitCommentary,160);
-  },{passive:true});
-})();
-</script>
-
-
-<script id="joygoBeta3312hFourFixJS">
-(()=>{
-  const RETURN_KEY="joygo_admin_return_until_3312h";
-  const BETA_KEY="joygo_beta_v1_session";
-  const BETA_UNTIL="joygo_beta_v1_access_until";
-
-  /* ----------------------------------------------------------
-     1. 管理區返回平台
-     原因：舊版只攔 [id^=adminCenterBtn_]，有些管理按鈕實際是 adminCenterBtn。
-     本版所有 adminCenterBtn 開頭都攔截並保存通行狀態。
-     ---------------------------------------------------------- */
-  function rememberPlatformAccess(){
-    try{
-      localStorage.setItem(RETURN_KEY,String(Date.now()+6*60*60*1000));
-      sessionStorage.setItem(BETA_KEY,"1");
-      localStorage.setItem(BETA_UNTIL,String(Date.now()+12*60*60*1000));
-    }catch{}
-  }
-
-  function installAdminHook(){
-    if(document.documentElement.dataset.jg3312hAdmin==="1")return;
-    document.documentElement.dataset.jg3312hAdmin="1";
-
-    document.addEventListener("click",(e)=>{
-      const btn=e.target?.closest?.('[id^="adminCenterBtn"]');
-      if(btn) rememberPlatformAccess();
-    },true);
-  }
-
-  function recoverAfterAdmin(){
-    let until=0;
-    try{until=Number(localStorage.getItem(RETURN_KEY)||0)}catch{}
-    if(!until || until<Date.now())return;
-
-    try{
-      sessionStorage.setItem(BETA_KEY,"1");
-      localStorage.setItem(BETA_UNTIL,String(Date.now()+12*60*60*1000));
-    }catch{}
-
-    const gate=document.getElementById("joygoBetaGate");
-    if(gate && !gate.hidden){
-      const input=document.getElementById("joygoBetaCode");
-      const enter=document.getElementById("joygoBetaEnter");
-      if(input&&enter){
-        input.value="JOYGO10";
-        enter.click();
-      }
-    }
-
-    try{localStorage.removeItem(RETURN_KEY)}catch{}
-  }
-
-  /* ----------------------------------------------------------
-     2. 解說位置
-     橫式：放 .player 的播放控制後方
-     直式/手機：放 board-wrap 後、rightTools 棋鐘前
-     ---------------------------------------------------------- */
-  let relocating=false;
-
-  function placeCommentary(){
-    if(relocating)return;
-    const box=document.getElementById("jgSmartCommentary");
-    if(!box)return;
-
-    relocating=true;
-    try{
-      const portrait=matchMedia("(orientation:portrait)").matches;
-
-      if(portrait){
-        const board=document.querySelector(".board-wrap");
-        const right=document.getElementById("rightTools");
-        if(board?.parentNode){
-          const parent=board.parentNode;
-          if(right && right.parentNode===parent){
-            parent.insertBefore(box,right);
-          }else{
-            board.insertAdjacentElement("afterend",box);
-          }
-        }
-      }else{
-        const player=document.querySelector(".player");
-        const controls=player?.querySelector(".controls");
-        if(player){
-          if(controls) controls.insertAdjacentElement("afterend",box);
-          else player.insertBefore(box,player.firstChild);
-        }
-      }
-
-      box.style.setProperty("position","relative","important");
-      box.style.setProperty("inset","auto","important");
-      box.style.setProperty("transform","none","important");
-    }finally{
-      relocating=false;
-    }
-  }
-
-  function installPositionGuard(){
-    const app=document.querySelector(".app");
-    if(!app || app.dataset.jg3312hObs==="1")return;
-    app.dataset.jg3312hObs="1";
-
-    const obs=new MutationObserver(()=>{
-      requestAnimationFrame(placeCommentary);
-    });
-    obs.observe(app,{childList:true,subtree:true});
-  }
-
-  /* ----------------------------------------------------------
-     3. 播放速度：用單一權威 selector，切換時立即重啟 timer。
-     避免舊版多個 change listener 互相干擾。
-     ---------------------------------------------------------- */
-  function restartPlaybackTimer(ms){
-    try{
-      window.jgClassicPlaybackMs=ms;
-      if(!state?.playing)return;
-
-      clearInterval(state.timer);
-      state.timer=setInterval(()=>{
-        if(state.index>=state.moves.length){
-          state.playing=false;
-          const p=document.getElementById("playBtn");
-          if(p)p.textContent="▶";
-          clearInterval(state.timer);
-          try{resumeClockAfterReplay()}catch{}
-          return;
-        }
-        goTo(state.index+1);
-      },ms);
-    }catch(e){
-      console.warn("restart playback:",e);
-    }
-  }
-
-  function installSpeedFix(){
-    const old=document.getElementById("jgSmartSpeed");
-    if(!old || old.dataset.jg3312h==="1")return;
-
-    /* clone 直接移除前幾版累積的 change listeners */
-    const speed=old.cloneNode(true);
-    old.replaceWith(speed);
-    speed.dataset.jg3312h="1";
-    speed.value=String(window.jgClassicPlaybackMs||700);
-
-    speed.addEventListener("change",()=>{
-      const ms=Math.max(250,Number(speed.value)||700);
-      restartPlaybackTimer(ms);
-      try{toast(`播放速度：${ms/1000} 秒／手`)}catch{}
-    });
-  }
-
-  /* ----------------------------------------------------------
-     4. 解說每手強制刷新
-     ---------------------------------------------------------- */
-  function refreshCommentary(){
-    try{
-      if(typeof window.jgSmartCommentaryMap==="function"){
-        const n=Number(state?.index||0);
-        const map=window.jgSmartCommentaryMap()||{};
-        let txt=String(map[String(n)]||map[n]||"").trim();
-
-        if(!txt && n>0){
-          txt=String(state?.moves?.[n-1]?.comment||"").trim();
-        }
-
-        const box=document.getElementById("jgSmartCommentary");
-        const title=document.getElementById("jgSmartCommentaryTitle");
-        const text=document.getElementById("jgSmartCommentaryText");
-        const edit=document.getElementById("jgSmartEditBtn");
-        if(!box||!title||!text)return;
-
-        let isAdmin=false;
-        try{isAdmin=memberAccess?.role==="admin"}catch{}
-
-        if(txt){
-          box.classList.remove("jg-empty-admin");
-          box.classList.add("jg-has-comment","show");
-          title.textContent=`第 ${n} 手｜朱老師解說`;
-          text.textContent=txt;
-          if(edit)edit.textContent="✏️ 編輯";
-        }else if(isAdmin && n>0){
-          box.classList.remove("jg-has-comment");
-          box.classList.add("jg-empty-admin","show");
-          title.textContent=`第 ${n} 手｜尚未解說`;
-          text.textContent="";
-          if(edit)edit.textContent="＋ 新增解說";
-        }else{
-          box.classList.remove("show","jg-has-comment","jg-empty-admin");
-        }
-      }
-    }catch(e){
-      console.warn("refresh commentary:",e);
-    }
-  }
-
-  function wirePlaybackButtons(){
-    ["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","jumpMoveBtn"].forEach(id=>{
-      const b=document.getElementById(id);
-      if(!b || b.dataset.jg3312hRefresh==="1")return;
-      b.dataset.jg3312hRefresh="1";
-      b.addEventListener("click",()=>{
-        setTimeout(()=>{
-          refreshCommentary();
-          placeCommentary();
-        },50);
-      });
-    });
-  }
-
-  function boot(){
-    installAdminHook();
-    recoverAfterAdmin();
-    installPositionGuard();
-    placeCommentary();
-    installSpeedFix();
-    wirePlaybackButtons();
-    refreshCommentary();
-
-    [250,600,1100,1800].forEach(ms=>setTimeout(()=>{
-      placeCommentary();
-      installSpeedFix();
-      wirePlaybackButtons();
-      refreshCommentary();
-    },ms));
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
-  addEventListener("resize",()=>setTimeout(placeCommentary,180),{passive:true});
-
-  setInterval(()=>{
-    if(document.body.classList.contains("jg-classic-playback")){
-      refreshCommentary();
-      placeCommentary();
-    }
-  },400);
-})();
-</script>
-
-
-<script id="joygoBeta3312iLandscapeCommentaryJS">
-(()=>{
-  let moving=false;
-
-  function placeLandscapeCommentary(){
-    if(moving)return;
-    if(!matchMedia("(min-width:700px) and (orientation:landscape)").matches)return;
-
-    const box=document.getElementById("jgSmartCommentary");
-    const player=document.querySelector(".player");
-    if(!box||!player)return;
-
-    moving=true;
-    try{
-      /* 優先放在播放控制區後面，若找不到就放 player 最後 */
-      const controls=player.querySelector(".controls");
-      if(controls){
-        controls.insertAdjacentElement("afterend",box);
-      }else if(box.parentNode!==player){
-        player.appendChild(box);
-      }
-
-      box.style.setProperty("position","relative","important");
-      box.style.setProperty("inset","auto","important");
-      box.style.setProperty("transform","none","important");
-      box.style.setProperty("width","100%","important");
-
-      player.style.setProperty("overflow-y","auto","important");
-      player.style.setProperty("overflow-x","hidden","important");
-      player.style.setProperty("max-height","calc(100vh - 24px)","important");
-    }finally{
-      moving=false;
-    }
-  }
-
-  function forceRefresh(){
-    try{
-      const n=Number(state?.index||0);
-      const box=document.getElementById("jgSmartCommentary");
-      const title=document.getElementById("jgSmartCommentaryTitle");
-      const text=document.getElementById("jgSmartCommentaryText");
-      const edit=document.getElementById("jgSmartEditBtn");
-      if(!box||!title||!text)return;
-
-      let map={};
-      try{
-        if(typeof window.jgSmartCommentaryMap==="function"){
-          map=window.jgSmartCommentaryMap()||{};
-        }
-      }catch{}
-
-      let txt=String(map[String(n)]||map[n]||"").trim();
-      if(!txt && n>0){
-        try{txt=String(state?.moves?.[n-1]?.comment||"").trim()}catch{}
-      }
-
-      let isAdmin=false;
-      try{isAdmin=memberAccess?.role==="admin"}catch{}
-
-      if(txt){
-        box.classList.remove("jg-empty-admin");
-        box.classList.add("jg-has-comment","show");
-        title.textContent=`第 ${n} 手｜朱老師解說`;
-        text.textContent=txt;
-        if(edit)edit.textContent="✏️ 編輯";
-      }else if(isAdmin && n>0){
-        box.classList.remove("jg-has-comment");
-        box.classList.add("jg-empty-admin","show");
-        title.textContent=`第 ${n} 手｜尚未解說`;
-        text.textContent="";
-        if(edit)edit.textContent="＋ 新增解說";
-      }
-    }catch(e){
-      console.warn("3312i commentary refresh:",e);
-    }
-  }
-
-  function boot(){
-    placeLandscapeCommentary();
-    forceRefresh();
-    [250,600,1000,1600].forEach(ms=>setTimeout(()=>{
-      placeLandscapeCommentary();
-      forceRefresh();
-    },ms));
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
-  addEventListener("resize",()=>setTimeout(placeLandscapeCommentary,180),{passive:true});
-
-  setInterval(()=>{
-    if(document.body.classList.contains("jg-classic-playback") &&
-       matchMedia("(min-width:700px) and (orientation:landscape)").matches){
-      placeLandscapeCommentary();
-      forceRefresh();
-    }
-  },400);
-})();
-</script>
-
-
-<script id="joygoBeta3312jLandscapeScrollJS">
-(()=>{
-  function repairRightPanel(){
-    if(!matchMedia("(min-width:700px) and (orientation:landscape)").matches)return;
-
-    const player=document.querySelector(".player");
-    const comment=document.getElementById("jgSmartCommentary");
-    const settings=document.getElementById("jgPlaybackSettings");
-    if(!player)return;
-
-    player.style.setProperty("height","calc(100dvh - 18px)","important");
-    player.style.setProperty("max-height","calc(100dvh - 18px)","important");
-    player.style.setProperty("overflow-y","auto","important");
-    player.style.setProperty("overflow-x","hidden","important");
-    player.style.setProperty("-webkit-overflow-scrolling","touch","important");
-    player.style.setProperty("padding-bottom","calc(34px + env(safe-area-inset-bottom))","important");
-
-    /* 若解說框存在，確保它在右欄且完整展開 */
-    if(comment && comment.parentNode!==player){
-      const controls=player.querySelector(".controls");
-      if(controls) controls.insertAdjacentElement("afterend",comment);
-      else player.appendChild(comment);
-    }
-
-    if(comment){
-      comment.style.setProperty("max-height","none","important");
-      comment.style.setProperty("overflow","visible","important");
-    }
-
-    if(settings){
-      settings.style.removeProperty("max-height");
-      settings.style.removeProperty("overflow");
-    }
-  }
-
-  function ensureSettingsVisibleAfterOpen(){
-    const settings=document.getElementById("jgPlaybackSettings");
-    if(!settings || settings.dataset.jg3312j==="1")return;
-    settings.dataset.jg3312j="1";
-
-    settings.addEventListener("toggle",()=>{
-      if(!settings.open)return;
-      setTimeout(()=>{
-        repairRightPanel();
-        try{
-          settings.scrollIntoView({behavior:"smooth",block:"nearest"});
-        }catch{
-          settings.scrollIntoView(false);
-        }
-      },80);
-    });
-  }
-
-  function boot(){
-    repairRightPanel();
-    ensureSettingsVisibleAfterOpen();
-
-    [250,600,1100,1700].forEach(ms=>setTimeout(()=>{
-      repairRightPanel();
-      ensureSettingsVisibleAfterOpen();
-    },ms));
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
-  addEventListener("resize",()=>setTimeout(repairRightPanel,180),{passive:true});
-})();
-</script>
-
-
-<script id="joygoBeta3312kSpeedButtonsJS">
-(()=>{
-  const speeds=[
-    {ms:300,label:"0.3秒"},
-    {ms:700,label:"0.7秒"},
-    {ms:1200,label:"1.2秒"},
-    {ms:2000,label:"2秒"},
-    {ms:3000,label:"3秒"}
-  ];
-
-  function currentMs(){
-    const n=Number(window.jgClassicPlaybackMs||700);
-    return speeds.some(s=>s.ms===n)?n:700;
-  }
-
-  function restartTimer(ms){
-    window.jgClassicPlaybackMs=ms;
-
-    try{
-      if(state?.playing){
-        clearInterval(state.timer);
-        state.timer=setInterval(()=>{
-          if(state.index>=state.moves.length){
-            state.playing=false;
-            const play=document.getElementById("playBtn");
-            if(play)play.textContent="▶";
-            clearInterval(state.timer);
-            try{resumeClockAfterReplay()}catch{}
-            return;
-          }
-          goTo(state.index+1);
-        },ms);
-      }
-    }catch(e){
-      console.warn("speed restart:",e);
-    }
-  }
-
-  function refreshActive(){
-    const ms=currentMs();
-    document.querySelectorAll("#jgSpeedButtons button").forEach(btn=>{
-      btn.classList.toggle("active",Number(btn.dataset.ms)===ms);
-    });
-  }
-
-  function ensurePanel(){
-    let panel=document.getElementById("jgSpeedButtonPanel");
-    if(panel)return panel;
-
-    const commentary=document.getElementById("jgSmartCommentary");
-    if(!commentary)return null;
-
-    panel=document.createElement("section");
-    panel.id="jgSpeedButtonPanel";
-    panel.innerHTML=`
-      <div id="jgSpeedButtonTitle">⏱ 播放速度</div>
-      <div id="jgSpeedButtons"></div>
-    `;
-
-    const holder=panel.querySelector("#jgSpeedButtons");
-
-    speeds.forEach(item=>{
-      const btn=document.createElement("button");
-      btn.type="button";
-      btn.dataset.ms=String(item.ms);
-      btn.textContent=item.label;
-
-      btn.addEventListener("click",(ev)=>{
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        restartTimer(item.ms);
-        refreshActive();
-
-        try{toast(`播放速度：${item.label}／手`)}catch{}
-      });
-
-      holder.appendChild(btn);
-    });
-
-    commentary.appendChild(panel);
-    refreshActive();
-    return panel;
-  }
-
-  function removeOldSpeedUI(){
-    const old=document.getElementById("jgPlaybackSettings");
-    if(old)old.style.setProperty("display","none","important");
-
-    const oldSelect=document.getElementById("jgSmartSpeed");
-    if(oldSelect){
-      oldSelect.disabled=true;
-      oldSelect.style.display="none";
-    }
-  }
-
-  function boot(){
-    removeOldSpeedUI();
-    ensurePanel();
-    refreshActive();
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,280),{passive:true});
-  [300,700,1300].forEach(ms=>setTimeout(boot,ms));
-})();
-</script>
-
-
-<script id="joygoBeta3312lDeleteLayoutFixJS">
-(()=>{
-  function currentMove(){
-    try{return Number(state?.index||0)}catch{return 0}
-  }
-
-  function isAdmin(){
-    try{return memberAccess?.role==="admin"}catch{return false}
-  }
-
-  function compactAfterDelete(){
-    const box=document.getElementById("jgSmartCommentary");
-    const title=document.getElementById("jgSmartCommentaryTitle");
-    const text=document.getElementById("jgSmartCommentaryText");
-    const edit=document.getElementById("jgSmartEditBtn");
-    const editor=document.getElementById("jgSmartCommentEditor");
-    const speed=document.getElementById("jgSpeedButtonPanel");
-    if(!box)return;
-
-    const n=currentMove();
-
-    if(isAdmin() && n>0){
-      box.classList.remove("jg-has-comment");
-      box.classList.add("jg-empty-admin","show");
-      if(title) title.textContent=`第 ${n} 手｜尚未解說`;
-      if(text) text.textContent="";
-      if(edit) edit.textContent="＋ 新增解說";
-      editor?.classList.remove("open");
-      if(editor) editor.style.display="none";
-      if(speed) speed.style.display="none";
-    }else{
-      box.classList.remove("show","jg-has-comment","jg-empty-admin");
-    }
-
-    /* 清除可能由舊版留下的高度 */
-    ["moreGamePanel","moreGameSection"].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el){
-        el.style.removeProperty("height");
-        el.style.removeProperty("min-height");
-        el.style.removeProperty("max-height");
-      }
-    });
-    document.querySelectorAll(".more-game-panel").forEach(el=>{
-      el.style.removeProperty("height");
-      el.style.removeProperty("min-height");
-      el.style.removeProperty("max-height");
-    });
-  }
-
-  function wireDelete(){
-    const btn=document.getElementById("jgSmartDeleteBtn");
-    if(!btn || btn.dataset.jg3312l==="1")return;
-    btn.dataset.jg3312l="1";
-
-    btn.addEventListener("click",()=>{
-      const y=window.scrollY;
-      const n=currentMove();
-
-      /* 等原本刪除資料完成後，強制收合版面 */
-      setTimeout(()=>{
-        compactAfterDelete();
-
-        /* 保持使用者原來畫面位置，不跳頁 */
-        requestAnimationFrame(()=>{
-          window.scrollTo({top:y,behavior:"auto"});
-        });
-
-        try{toast(`第 ${n} 手解說已刪除`)}catch{}
-      },220);
-    });
-  }
-
-  function wireSave(){
-    const btn=document.getElementById("jgSmartSaveBtn");
-    if(!btn || btn.dataset.jg3312l==="1")return;
-    btn.dataset.jg3312l="1";
-
-    btn.addEventListener("click",()=>{
-      setTimeout(()=>{
-        const speed=document.getElementById("jgSpeedButtonPanel");
-        if(speed) speed.style.removeProperty("display");
-      },300);
-    });
-  }
-
-  function boot(){
-    wireDelete();
-    wireSave();
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else boot();
-
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
-  [300,800,1400].forEach(ms=>setTimeout(boot,ms));
-})();
-</script>
-
-
-<style id="joygoBeta3312mLayoutResetCSS">
-#moreGamePanel,#moreGameSection,.more-game-panel,.more-game-section,
-#mainActions,.main-actions,#primaryActions,.primary-actions{
-  min-height:0!important;max-height:none!important;height:auto!important;
-}
-#moreGamePanel>button,#moreGameSection>button,.more-game-panel>button,.more-game-section>button{
-  min-height:44px!important;height:auto!important;
-}
-#jgSmartCommentary.jg-empty-admin{
-  min-height:0!important;height:auto!important;max-height:none!important;
-  padding:8px 10px!important;overflow:visible!important;
-}
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryText,
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentEditor,
-#jgSmartCommentary.jg-empty-admin #jgSpeedButtonPanel{display:none!important}
-#jgSmartCommentary.jg-empty-admin #jgSmartCommentaryHeader{margin:0!important}
-</style>
-
-<script id="joygoBeta3312mLayoutResetJS">
-(()=>{
-  const moveNo=()=>{try{return Number(state?.index||0)}catch{return 0}};
-  const isAdmin=()=>{try{return memberAccess?.role==="admin"}catch{return false}};
-
-  function clearSizing(el){
-    if(!el)return;
-    ["height","min-height","max-height","flex","flex-basis","padding-top","padding-bottom"].forEach(p=>{
-      try{el.style.removeProperty(p)}catch{}
-    });
-  }
-
-  function normalize(){
-    document.querySelectorAll(
-      "#moreGamePanel,#moreGameSection,.more-game-panel,.more-game-section,"+
-      "#mainActions,.main-actions,#primaryActions,.primary-actions,#rightTools,.player"
-    ).forEach(clearSizing);
-
-    document.querySelectorAll("button").forEach(btn=>{
-      const t=(btn.textContent||"").trim();
-      if(t.includes("收合對局")||t.includes("更多對局")){
-        clearSizing(btn);
-        clearSizing(btn.parentElement);
-        clearSizing(btn.parentElement?.parentElement);
-      }
-    });
-  }
-
-  function compactEmpty(){
-    const box=document.getElementById("jgSmartCommentary");
-    if(!box)return;
-    const n=moveNo();
-    clearSizing(box);
-    clearSizing(box.parentElement);
-
-    if(isAdmin()&&n>0){
-      box.classList.remove("jg-has-comment");
-      box.classList.add("jg-empty-admin","show");
-      const title=document.getElementById("jgSmartCommentaryTitle");
-      const text=document.getElementById("jgSmartCommentaryText");
-      const edit=document.getElementById("jgSmartEditBtn");
-      const editor=document.getElementById("jgSmartCommentEditor");
-      const speed=document.getElementById("jgSpeedButtonPanel");
-      if(title)title.textContent=`第 ${n} 手｜尚未解說`;
-      if(text)text.textContent="";
-      if(edit)edit.textContent="＋ 新增解說";
-      editor?.classList.remove("open");
-      if(editor)editor.style.setProperty("display","none","important");
-      if(speed)speed.style.setProperty("display","none","important");
-    }
-  }
-
-  function relayout(){
-    normalize();
-    compactEmpty();
-    void document.body.offsetHeight;
-    normalize();
-  }
-
-  function wireDelete(){
-    const btn=document.getElementById("jgSmartDeleteBtn");
-    if(!btn||btn.dataset.jg3312m==="1")return;
-    btn.dataset.jg3312m="1";
-    btn.addEventListener("click",()=>{
-      const y=window.scrollY;
-      [120,260,500].forEach(ms=>setTimeout(()=>{
-        relayout();
-        try{window.scrollTo(0,y)}catch{}
-      },ms));
-    });
-  }
-
-  function boot(){wireDelete();normalize()}
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-  addEventListener("pageshow",boot,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(boot,300),{passive:true});
-  [300,800,1400].forEach(ms=>setTimeout(boot,ms));
-})();
-</script>
-
-
-
-
-
-
-
-
-<script id="joygoBeta3312pStaticDockJS">
-(()=>{
-  let docked = false;
-  let wasLandscape = false;
-
-  const isLandscape = () =>
-    matchMedia("(min-width:700px) and (orientation:landscape)").matches;
-
-  function ensureExpand(){
-    const box = document.getElementById("jgSmartCommentary");
-    if(!box) return;
-
-    let btn = document.getElementById("jgPExpand");
-    if(!btn){
-      btn = document.createElement("button");
-      btn.id = "jgPExpand";
-      btn.type = "button";
-      btn.textContent = "展開";
-      const text = document.getElementById("jgSmartCommentaryText");
-      if(text) text.insertAdjacentElement("afterend", btn);
-      else box.appendChild(btn);
-
-      btn.addEventListener("click", ()=>{
-        const open = box.classList.toggle("jg-expanded");
-        btn.textContent = open ? "收合" : "展開";
-        /* 只改內容展開，不重新計算 top / left */
-      });
-    }
-    btn.style.display = isLandscape() ? "inline-flex" : "none";
-  }
-
-  function keepSpeedInPlayer(){
-    const speed = document.getElementById("jgSpeedButtonPanel");
-    const player = document.querySelector(".player");
-    if(!speed || !player) return;
-
-    if(speed.parentNode !== player){
-      const controls = player.querySelector(".controls");
-      if(controls) controls.insertAdjacentElement("afterend", speed);
-      else player.appendChild(speed);
-    }
-    speed.style.removeProperty("display");
-  }
-
-  function dockOnce(){
-    if(!isLandscape() || docked) return;
-
-    const box = document.getElementById("jgSmartCommentary");
-    const canvas = document.getElementById("board");
-    const right = document.getElementById("rightTools");
-    const wrap = document.querySelector(".board-wrap");
-    if(!box || !canvas || !right || !wrap) return;
-
-    if(box.parentNode !== document.body) document.body.appendChild(box);
-
-    const cr = canvas.getBoundingClientRect();
-    const rr = right.getBoundingClientRect();
-    const br = wrap.getBoundingClientRect();
-
-    const gapLeft = Math.max(cr.right + 7, br.left + 7);
-    const gapRight = Math.min(rr.left - 7, br.right - 7);
-    const gapWidth = gapRight - gapLeft;
-
-    let width, left;
-    if(gapWidth >= 138){
-      width = Math.min(210, gapWidth);
-      left = gapRight - width;
-    } else {
-      width = 138;
-      left = Math.max(cr.right + 7, rr.left - width - 7);
-    }
-
-    const top = Math.max(
-      br.top + 8,
-      Math.min(br.top + Math.round(br.height * 0.58), br.bottom - 180)
-    );
-
-    box.style.setProperty("left", `${Math.round(left)}px`, "important");
-    box.style.setProperty("top", `${Math.round(top)}px`, "important");
-    box.style.setProperty("width", `${Math.round(width)}px`, "important");
-    box.style.setProperty("right", "auto", "important");
-    box.style.setProperty("bottom", "auto", "important");
-    box.classList.add("jg-static-dock");
-
-    docked = true;
-  }
-
-  function undockForPortrait(){
-    const box = document.getElementById("jgSmartCommentary");
-    if(!box) return;
-
-    box.classList.remove("jg-static-dock", "jg-expanded");
-    ["left","top","right","bottom","width"].forEach(p=>box.style.removeProperty(p));
-    const btn = document.getElementById("jgPExpand");
-    if(btn) btn.style.display = "none";
-    docked = false;
-  }
-
-  function syncOrientation(){
-    const now = isLandscape();
-
-    if(now && !wasLandscape){
-      docked = false;
-      keepSpeedInPlayer();
-      ensureExpand();
-      /* Safari 旋轉完成後只補一次定位 */
-      setTimeout(dockOnce, 260);
-    } else if(!now && wasLandscape){
-      undockForPortrait();
-    }
-
-    wasLandscape = now;
-  }
-
-  function boot(){
-    wasLandscape = isLandscape();
-    keepSpeedInPlayer();
-    ensureExpand();
-
-    if(wasLandscape){
-      docked = false;
-      setTimeout(dockOnce, 260);
-    }
-  }
-
-  if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", boot, {once:true});
-  } else {
-    boot();
-  }
-
-  addEventListener("pageshow", ()=>{
-    if(isLandscape() && !docked) setTimeout(dockOnce, 260);
-  }, {passive:true});
-
-  addEventListener("orientationchange", ()=>{
-    setTimeout(syncOrientation, 320);
-  }, {passive:true});
-
-  /* 注意：本版刻意沒有 setInterval 定位，也沒有 resize 重定位。 */
-})();
-</script>
-
-
-
-
-
-
-
-
-
-
-
-<script id="joygoBeta3312tNativeTextareaJS">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script id="joygoBeta3312uCleanCommentaryJS">
 (()=>{
   const isAdmin=()=>{try{return memberAccess?.role==="admin"}catch{return false}};
   const moveNo=()=>{try{return Number(state?.index||0)}catch{return 0}};
   const classicGame=()=>{try{return window.jgSmartCurrentGame?.()||null}catch{return null}};
+  const cmap=()=>{try{return window.jgSmartCommentaryMap?.()||{}}catch{return {}}};
 
-  function validClassic(){
-    let human=false, online=false;
-    try{
-      human=!!state?.humanMode;
-      online=!!state?.onlineMode;
-    }catch{}
-    return document.body.classList.contains("jg-classic-playback")
-      && !!classicGame()
-      && !human
-      && !online;
+  function inClassic(){
+    return document.body.classList.contains("jg-classic-playback") && !!classicGame();
   }
 
-  function mapNow(){
-    try{return window.jgSmartCommentaryMap?.()||{}}catch{return {}}
-  }
-
-  function textNow(){
+  function commentText(){
     const n=moveNo();
-    const map=mapNow();
-    let txt=String(map?.[String(n)]||map?.[n]||"").trim();
+    let txt=String(cmap()?.[String(n)]||cmap()?.[n]||"").trim();
     if(!txt && n>0){
       try{txt=String(state?.moves?.[n-1]?.comment||"").trim()}catch{}
     }
     return txt;
   }
 
-  function refresh(){
+  function ensureSpeed(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box || document.getElementById("jgUSpeedPanel"))return;
+
+    const panel=document.createElement("div");
+    panel.id="jgUSpeedPanel";
+    panel.innerHTML=`
+      <div id="jgUSpeedTitle">⏱ 播放速度</div>
+      <div id="jgUSpeedButtons">
+        <button type="button" data-ms="300">0.3秒</button>
+        <button type="button" data-ms="700">0.7秒</button>
+        <button type="button" data-ms="1200">1.2秒</button>
+        <button type="button" data-ms="2000">2秒</button>
+        <button type="button" data-ms="3000">3秒</button>
+      </div>`;
+    box.appendChild(panel);
+
+    panel.addEventListener("click",(e)=>{
+      const b=e.target.closest("button[data-ms]");
+      if(!b)return;
+      const ms=Number(b.dataset.ms)||700;
+      window.jgClassicPlaybackMs=ms;
+      panel.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));
+      try{toast("播放速度已設定")}catch{}
+    });
+
+    const current=Number(window.jgClassicPlaybackMs||700);
+    panel.querySelector(`button[data-ms="${current}"]`)?.classList.add("active");
+  }
+
+  function relocate(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return;
+
+    if(matchMedia("(min-width:700px) and (orientation:landscape)").matches){
+      const right=document.getElementById("rightTools");
+      if(right && box.parentNode!==right) right.appendChild(box);
+    }else{
+      const board=document.querySelector(".board-wrap");
+      const clock=document.getElementById("gameClockPanel");
+      if(clock?.parentNode){
+        if(box.nextElementSibling!==clock) clock.parentNode.insertBefore(box,clock);
+      }else if(board?.parentNode && box.parentNode!==board.parentNode){
+        board.insertAdjacentElement("afterend",box);
+      }
+    }
+  }
+
+  function renderU(){
     const box=document.getElementById("jgSmartCommentary");
     const title=document.getElementById("jgSmartCommentaryTitle");
     const text=document.getElementById("jgSmartCommentaryText");
     const edit=document.getElementById("jgSmartEditBtn");
-    const ta=document.getElementById("jgSmartCommentTextarea");
-    if(!box||!title||!text)return;
+    if(!box||!title||!text||!edit)return;
 
-    if(!validClassic()){
-      box.classList.remove("show","jg-editing");
-      box.style.setProperty("display","none","important");
+    document.body.classList.toggle("jg-classic-admin",isAdmin());
+
+    if(!inClassic()){
+      box.classList.remove("show","jg-empty-admin","jg-has-comment","jg-u-editing");
+      box.style.removeProperty("display");
       return;
     }
 
-    box.style.removeProperty("display");
-    const n=moveNo();
-    const txt=textNow();
-
+    const n=moveNo(), txt=commentText();
     if(txt){
       box.classList.remove("jg-empty-admin");
-      box.classList.add("jg-has-comment","show");
+      box.classList.add("show","jg-has-comment");
       title.textContent=`第 ${n} 手｜朱老師解說`;
       text.textContent=txt;
-      if(edit)edit.textContent="✏️ 編輯";
+      edit.textContent="✏️ 編輯";
     }else if(isAdmin() && n>0){
       box.classList.remove("jg-has-comment");
-      box.classList.add("jg-empty-admin","show");
+      box.classList.add("show","jg-empty-admin");
       title.textContent=`第 ${n} 手｜尚未解說`;
       text.textContent="";
-      if(edit)edit.textContent="＋ 新增解說";
+      edit.textContent="＋ 新增解說";
     }else{
-      box.classList.remove("show","jg-has-comment","jg-empty-admin");
+      box.classList.remove("show","jg-empty-admin","jg-has-comment");
     }
-
-    if(ta && !box.classList.contains("jg-editing")){
-      ta.value=txt;
-    }
+    ensureSpeed();
   }
 
   function openEditor(){
-    if(!validClassic()){
-      try{toast("請先從名局館載入棋譜再新增解說")}catch{}
+    if(!inClassic()){
+      try{toast("請先從名局館載入棋譜")}catch{}
       return;
     }
     if(!isAdmin()){
@@ -16544,76 +14609,65 @@ function patch(){
     const title=document.getElementById("jgSmartCommentaryTitle");
     if(!box||!editor||!ta)return;
 
-    ta.removeAttribute("readonly");
-    ta.removeAttribute("disabled");
-    ta.value=textNow();
+    ta.disabled=false;
+    ta.readOnly=false;
+    ta.value=commentText();
+    ta.placeholder=`輸入第 ${moveNo()} 手的朱老師解說…`;
 
-    box.classList.add("show","jg-editing");
+    box.classList.add("show","jg-u-editing");
     editor.classList.add("open");
     if(title)title.textContent=`第 ${moveNo()} 手｜朱老師解說編輯`;
 
-    /* 本版刻意不 focus。
-       使用者直接點 textarea，由 Safari 原生喚起鍵盤。 */
+    /* 不攔截、不延遲、不強迫鍵盤。textarea 本身就是原生可點輸入區。 */
   }
 
   function closeEditor(){
     const box=document.getElementById("jgSmartCommentary");
     const editor=document.getElementById("jgSmartCommentEditor");
     const ta=document.getElementById("jgSmartCommentTextarea");
-    if(box)box.classList.remove("jg-editing");
-    if(editor)editor.classList.remove("open");
+    box?.classList.remove("jg-u-editing");
+    editor?.classList.remove("open");
     try{ta?.blur()}catch{}
-    refresh();
+    setTimeout(renderU,0);
   }
 
-  /* delegated click：動態建立按鈕也可用 */
+  /* 捕捉階段只處理「新增/編輯」本身，阻止 b 的舊 edit handler 再重複改 textarea */
   document.addEventListener("click",(e)=>{
-    const edit=e.target?.closest?.("#jgSmartEditBtn");
-    if(edit){
-      e.preventDefault();
-      e.stopPropagation();
-      openEditor();
-      return;
-    }
+    const edit=e.target.closest?.("#jgSmartEditBtn");
+    if(!edit)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openEditor();
+  },true);
 
-    const done=e.target?.closest?.("#jgSmartDoneBtn");
-    if(done){
-      e.preventDefault();
+  /* 儲存/刪除仍交給 b 核心原始 saveComment/deleteComment 寫 Supabase/IndexedDB。
+     这里只在完成後更新外觀。 */
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest?.("#jgSmartDoneBtn")){
       closeEditor();
       return;
     }
-
-    const save=e.target?.closest?.("#jgSmartSaveBtn");
-    if(save){
-      setTimeout(()=>{
-        closeEditor();
-      },400);
+    if(e.target.closest?.("#jgSmartSaveBtn")){
+      setTimeout(()=>{closeEditor();renderU()},500);
       return;
     }
-
-    const del=e.target?.closest?.("#jgSmartDeleteBtn");
-    if(del){
-      setTimeout(()=>{
-        closeEditor();
-      },400);
+    if(e.target.closest?.("#jgSmartDeleteBtn")){
+      setTimeout(()=>{closeEditor();renderU()},500);
     }
-  },true);
+  },false);
 
-  /* 點 textarea 時不做任何攔截，完全交給 Safari 原生處理 */
-  document.addEventListener("pointerdown",(e)=>{
-    const ta=e.target?.closest?.("#jgSmartCommentTextarea");
-    if(ta){
-      e.stopPropagation();
-    }
-  },true);
-
+  /* 每換一手刷新，不改輸入焦點 */
   document.addEventListener("click",(e)=>{
-    if(e.target?.closest?.("#firstBtn,#prevBtn,#playBtn,#nextBtn,#lastBtn,#jumpMoveBtn")){
-      setTimeout(refresh,60);
+    if(e.target.closest?.("#firstBtn,#prevBtn,#playBtn,#nextBtn,#lastBtn,#jumpMoveBtn")){
+      setTimeout(renderU,60);
     }
-  },true);
+  },false);
 
-  function boot(){refresh()}
+  function boot(){
+    ensureSpeed();
+    relocate();
+    renderU();
+  }
 
   if(document.readyState==="loading"){
     document.addEventListener("DOMContentLoaded",boot,{once:true});
@@ -16621,14 +14675,10 @@ function patch(){
 
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>{
-    closeEditor();
-    setTimeout(refresh,320);
+    setTimeout(()=>{closeEditor();relocate();renderU()},320);
   },{passive:true});
 
-  new MutationObserver(refresh).observe(document.body,{
-    attributes:true,
-    attributeFilter:["class"]
-  });
+  [300,800,1400].forEach(ms=>setTimeout(boot,ms));
 })();
 </script>
 
