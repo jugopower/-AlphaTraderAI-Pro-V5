@@ -6576,6 +6576,8 @@ body.jg-online-mode #jgUSpeedPanel{
 }
 </style>
 
+
+<!-- Joy Go Platform 正式版介面整理：第四輪按鈕名稱統一 -->
 </head>
 <body>
 
@@ -6867,7 +6869,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
   <div class="pro-section">
     <h3>朱老師 AI 解說</h3>
-    <div class="analysis-note" id="teacherAnalysis">請先載入棋譜，再按「更新分析」。</div>
+    <div class="analysis-note" id="teacherAnalysis">請先載入棋譜，再按「重新分析」。</div>
   </div>
 
   <div class="pro-section">
@@ -6876,8 +6878,8 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <div class="dashboard-actions">
-    <button class="action" id="refreshAnalysisBtn">更新分析</button>
-    <button class="secondary" id="bookmarkBtn">收藏目前手數</button>
+    <button class="action" id="refreshAnalysisBtn">重新分析</button>
+    <button class="secondary" id="bookmarkBtn">收藏局面</button>
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
@@ -6983,7 +6985,7 @@ body.jg-online-mode #jgUSpeedPanel{
     <label>我的房間名稱
       <input id="spectatorRoomInput" maxlength="40" placeholder="例如：朱老師-1">
     </label>
-    <button class="action" id="spectatorBroadcastBtn">📡 轉播我的棋局</button>
+    <button class="action" id="spectatorBroadcastBtn">📡 開始轉播</button>
   </div>
 
   <div class="spectator-status">
@@ -6993,13 +6995,13 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <div class="grid2" style="margin-top:10px">
-    <button class="action" id="spectatorWatchBtn">👁 觀看輸入的房間</button>
-    <button class="secondary" id="spectatorStopBtn">← 離開觀戰／停止轉播</button>
+    <button class="action" id="spectatorWatchBtn">👁 開始觀戰</button>
+    <button class="secondary" id="spectatorStopBtn">← 離開觀戰</button>
   </div>
 
   <div class="spectator-lobby-head">
     <b>🎥 正在轉播</b>
-    <button class="secondary" id="spectatorRefreshBtn" style="padding:8px 10px">重新整理大廳</button>
+    <button class="secondary" id="spectatorRefreshBtn" style="padding:8px 10px">重新整理</button>
   </div>
   <div id="spectatorLobbyList" class="spectator-lobby">
     <div class="spectator-empty">正在讀取觀戰大廳…</div>
@@ -7209,12 +7211,12 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <div class="classic-db-actions">
-    <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
-    <button class="secondary" id="classicImportSgfBtn">📂 單次開啟 SGF</button>
-    <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
-<button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
+    <button class="action" id="classicAddOfficialBtn">＋ 加入名局 SGF</button>
+    <button class="secondary" id="classicImportSgfBtn">📂 開啟 SGF</button>
+    <button class="secondary" id="classicBackupBtn">⬇︎ 備份</button>
+<button class="secondary" id="classicRestoreBtn">⬆︎ 還原</button>
 <input id="classicRestoreFile" type="file" accept=".json,application/json" hidden>
-<button class="secondary" id="classicClearUserDbBtn">清除全部已保存名局</button>
+<button class="secondary" id="classicClearUserDbBtn">清除名局</button>
   </div>
 
   <div class="classic-db-filters">
@@ -7255,7 +7257,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicImportModal">✕</button>
-  <h2>＋ 加入正式名局 SGF</h2>
+  <h2>＋ 加入名局 SGF</h2>
   <p class="classic-library-note" hidden>選擇 SGF 後即可整理名局資料。</p>
 
   <div class="classic-import-file">
@@ -7349,7 +7351,7 @@ body.jg-online-mode #jgUSpeedPanel{
     <button class="secondary" id="testApiBtn" hidden>測試分析</button>
     <button class="secondary" id="katagoReconnectBtn">重新連線</button>
   </div>
-  <button class="action" id="analyzeCloudBtn" style="width:100%;margin-top:10px">以 KataGo 分析目前局面</button>
+  <button class="action" id="analyzeCloudBtn" style="width:100%;margin-top:10px">開始分析</button>
 
   <div id="cloudStatus" class="connector-status warn">尚未連線。</div>
 
@@ -8361,7 +8363,7 @@ function updateProfessionalDashboard(){
   // KataGo AI 分析：不再用本機示範數字冒充 AI 結果。
   const waiting={
     blackWin:50,whiteWin:50,scoreLead:0,situation:"尚未取得真實 KataGo 分析",
-    recommendations:[],teaching:"請按「KataGo」→「以 KataGo 分析目前局面」。連線成功後才顯示勝率、目差與推薦手。",
+    recommendations:[],teaching:"請按「KataGo」→「開始分析」。連線成功後才顯示勝率、目差與推薦手。",
     history:[],mistakes:[],source:"waiting",visits:0,nps:0,model:"",moveNumber:state.index
   };
   renderProfessionalDashboard(waiting);
@@ -8571,7 +8573,7 @@ async function loadSpectatorLobby(){
       .slice(0,8);
     box.innerHTML='';
     if(!games.length){
-      box.innerHTML='<div class="spectator-empty">目前沒有棋局正在轉播。請先由棋手按「📡 轉播我的棋局」。</div>';
+      box.innerHTML='<div class="spectator-empty">目前沒有棋局正在轉播。請先由棋手按「📡 開始轉播」。</div>';
       return;
     }
     games.forEach(g=>box.appendChild(spectatorGameCard(g)));
@@ -9037,7 +9039,7 @@ async function classicClearUserDb(){
       classicWriteMirror([]);
       await classicRefreshCache();
       renderClassicGameLibrary();
-      toast("已清除全部已保存名局");
+      toast("已清除名局");
     }catch(err){toast("清除失敗："+(err?.message||String(err)))}
   }
 }
@@ -13218,7 +13220,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout
 <div id="photoReference" class="photo-reference" hidden>
   <div class="photo-reference-head" id="photoReferenceDrag"><span>📷 題目照片參考</span><button class="secondary" id="photoReferenceClose" type="button">收合</button></div>
   <div class="photo-reference-view"><img id="photoReferenceImg" alt="浮動題目照片"></div>
-  <div class="photo-reference-actions"><button class="secondary" id="photoReferenceSmaller" type="button">縮小</button><button class="secondary" id="photoReferenceLarger" type="button">放大</button><button class="secondary" id="photoReferenceOpacity" type="button">透明 100%</button><button class="secondary" id="photoReferenceLock" type="button">🔓 可拖曳</button><button class="secondary" id="photoReferenceShow" type="button">返回拍照設定</button><button class="secondary" id="photoReferenceRemove" type="button">移除</button><button class="secondary" id="photoReferenceHide" type="button">關閉</button><div class="photo-reference-status" id="photoReferenceStatus">視窗 100%</div></div>
+  <div class="photo-reference-actions"><button class="secondary" id="photoReferenceSmaller" type="button">縮小</button><button class="secondary" id="photoReferenceLarger" type="button">放大</button><button class="secondary" id="photoReferenceOpacity" type="button">透明度</button><button class="secondary" id="photoReferenceLock" type="button">拖曳</button><button class="secondary" id="photoReferenceShow" type="button">拍照設定</button><button class="secondary" id="photoReferenceRemove" type="button">移除</button><button class="secondary" id="photoReferenceHide" type="button">關閉</button><div class="photo-reference-status" id="photoReferenceStatus">視窗 100%</div></div>
 </div>
 
 
