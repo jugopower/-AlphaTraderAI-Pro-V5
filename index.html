@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12za">
+<meta name="joygo-stable-reset-version" content="3.3.12zb">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6525,26 +6525,43 @@ body.jg-online-mode #jgUSpeedPanel{
 </style>
 
 
-<script id="joygoBeta3312zaAdminReturnPreGate">
-/* Beta 3.3.12za｜管理中心返回平台修正版
-   必須在 Beta Gate 執行前先恢復平台通行狀態。 */
+
+
+
+<script id="joygoBeta3312zbPreGate">
+/* ==========================================================
+   Beta 3.3.12zb｜入口解鎖＋管理返回穩定版
+   必須在入口 Gate 執行前：
+   - 管理中心返回：直接恢復平台通行
+   - 正常首次進站：仍保留原本通行碼
+   ========================================================== */
 (()=>{
   const SESSION_KEY="joygo_beta_v1_session";
   const PERSIST_KEY="joygo_beta_v1_access_until";
-  const RETURN_COOKIE="joygo_admin_return";
   const ACCESS_MS=12*60*60*1000;
 
-  function hasReturnCookie(){
+  function cameFromAdmin(){
     try{
-      return document.cookie.split(";").some(v=>v.trim().startsWith(RETURN_COOKIE+"="));
-    }catch{return false}
+      const p=new URLSearchParams(location.search);
+      if(p.get("return")==="admin") return true;
+
+      const ref=String(document.referrer||"").toLowerCase();
+      return (
+        ref.includes("admin-center") ||
+        ref.includes("member-admin") ||
+        ref.includes("management-audit") ||
+        ref.includes("admin.html")
+      );
+    }catch{
+      return false;
+    }
   }
 
-  if(hasReturnCookie()){
+  if(cameFromAdmin()){
     try{
       sessionStorage.setItem(SESSION_KEY,"1");
       localStorage.setItem(PERSIST_KEY,String(Date.now()+ACCESS_MS));
-      document.cookie=RETURN_COOKIE+"=; Max-Age=0; Path=/; SameSite=Lax";
+      sessionStorage.setItem("joygo_admin_return_ok","1");
     }catch{}
   }
 })();
@@ -15300,7 +15317,13 @@ function patch(){
 </script>
 
 
-<script id="joygoBeta3312zMobileConfirmJS">
+
+
+
+
+
+
+<script id="joygoBeta3312zbSafeMobileConfirmJS">
 (()=>{
   function isMobilePortrait(){
     return matchMedia("(max-width:699px), (orientation:portrait) and (max-width:899px)").matches;
@@ -15308,119 +15331,100 @@ function patch(){
 
   function dockConfirmBar(){
     const bar=document.getElementById("moveConfirmBar");
+    if(!bar)return;
+
     const right=document.getElementById("rightTools");
     const clock=document.getElementById("gameClockPanel");
     const boardWrap=document.querySelector(".board-wrap");
 
-    if(!bar)return;
-
     if(isMobilePortrait()){
-      /* 手機：棋盤後、棋鐘前 */
       if(clock?.parentNode){
         if(bar.parentNode!==clock.parentNode || bar.nextElementSibling!==clock){
           clock.parentNode.insertBefore(bar,clock);
         }
-      }else if(boardWrap){
+      }else if(boardWrap?.parentNode && bar.parentNode!==boardWrap.parentNode){
         boardWrap.insertAdjacentElement("afterend",bar);
       }
-    }else{
-      /* iPad 橫式 / 桌面：右側棋鐘下方 */
-      if(right){
-        if(clock && clock.parentNode===right){
-          if(bar.parentNode!==right || clock.nextElementSibling!==bar){
-            clock.insertAdjacentElement("afterend",bar);
-          }
-        }else if(bar.parentNode!==right){
-          right.prepend(bar);
+    }else if(right){
+      if(clock && clock.parentNode===right){
+        if(bar.parentNode!==right || clock.nextElementSibling!==bar){
+          clock.insertAdjacentElement("afterend",bar);
         }
+      }else if(bar.parentNode!==right){
+        right.prepend(bar);
       }
     }
 
     bar.classList.add("jg-confirm-docked");
 
-    /* 防止 y 版只剩狀態提示，看不到真正按鈕 */
     const ok=document.getElementById("moveConfirmOk");
     const cancel=document.getElementById("moveConfirmCancel");
-    if(ok){
-      ok.hidden=false;
-      ok.style.removeProperty("display");
-      ok.style.removeProperty("visibility");
-    }
-    if(cancel){
-      cancel.hidden=false;
-      cancel.style.removeProperty("display");
-      cancel.style.removeProperty("visibility");
-    }
+    if(ok){ ok.hidden=false; }
+    if(cancel){ cancel.hidden=false; }
   }
 
-  function repair(){
-    dockConfirmBar();
+  function repairSoon(delay=30){
+    setTimeout(dockConfirmBar,delay);
   }
 
   if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",repair,{once:true});
-  }else repair();
+    document.addEventListener("DOMContentLoaded",()=>repairSoon(0),{once:true});
+  }else{
+    repairSoon(0);
+  }
 
-  addEventListener("pageshow",repair,{passive:true});
-  addEventListener("orientationchange",()=>setTimeout(repair,300),{passive:true});
-  addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
+  addEventListener("pageshow",()=>repairSoon(0),{passive:true});
+  addEventListener("orientationchange",()=>repairSoon(300),{passive:true});
+  addEventListener("resize",()=>repairSoon(180),{passive:true});
 
-  /* 每次棋盤點擊後若進入 pending move，立即確認位置 */
+  /* 只在棋盤點擊後重新確認位置；不再監看整個 body attributes */
   document.addEventListener("click",(e)=>{
     if(e.target.closest?.("#board,.board-wrap")){
-      setTimeout(repair,30);
+      repairSoon(20);
     }
   },true);
 
-  /* 監看 moveConfirmBar 顯示狀態與 DOM 重排 */
-  const obs=new MutationObserver(()=>{
-    const bar=document.getElementById("moveConfirmBar");
-    if(bar) dockConfirmBar();
+  /* 安全 observer：只看 body 直接子節點新增/移除，不看 attributes、不看 subtree */
+  new MutationObserver(()=>repairSoon(20)).observe(document.body,{
+    childList:true,
+    subtree:false
   });
-  obs.observe(document.body,{childList:true,subtree:true,attributes:true});
 })();
 </script>
 
 
-<script id="joygoBeta3312zaAdminReturnJS">
+<script id="joygoBeta3312zbAdminReturnCleanup">
 (()=>{
-  const SESSION_KEY="joygo_beta_v1_session";
-  const PERSIST_KEY="joygo_beta_v1_access_until";
-  const RETURN_COOKIE="joygo_admin_return";
-  const ACCESS_MS=12*60*60*1000;
-
-  function grantPlatformReturn(){
+  function cleanupAdminReturnUrl(){
     try{
-      sessionStorage.setItem(SESSION_KEY,"1");
-      localStorage.setItem(PERSIST_KEY,String(Date.now()+ACCESS_MS));
-      document.cookie=RETURN_COOKIE+"=1; Max-Age=1800; Path=/; SameSite=Lax";
+      const p=new URLSearchParams(location.search);
+      if(p.get("return")==="admin"){
+        p.delete("return");
+        const q=p.toString();
+        history.replaceState(
+          null,"",
+          location.pathname+(q?("?"+q):"")+location.hash
+        );
+      }
     }catch{}
   }
 
-  /* 進管理中心前先留下「回平台免入口」憑證。
-     即使管理頁用 index.html / ./ 返回，主平台也會直接開啟。 */
+  function markBeforeEnteringAdmin(){
+    try{
+      sessionStorage.setItem("joygo_admin_return_source","1");
+    }catch{}
+  }
+
   document.addEventListener("click",(e)=>{
-    const admin=e.target?.closest?.(
-      '[id^="adminCenterBtn_"], a[href*="admin-center.html"], button[data-href*="admin-center.html"]'
+    const el=e.target?.closest?.(
+      '[id^="adminCenterBtn_"],a[href*="admin-center"],a[href*="member-admin"],a[href*="management-audit"],button[data-href*="admin"]'
     );
-    if(!admin)return;
-    grantPlatformReturn();
+    if(el) markBeforeEnteringAdmin();
   },true);
 
-  /* 若既有程式直接指定 window.location.href，也在頁面離開前保留狀態。 */
-  addEventListener("pagehide",()=>{
-    try{
-      const ae=document.activeElement;
-      if(ae && (
-        String(ae.id||"").startsWith("adminCenterBtn_") ||
-        String(ae.getAttribute?.("href")||"").includes("admin-center.html")
-      )){
-        grantPlatformReturn();
-      }
-    }catch{}
-  },{passive:true});
-
-  window.joygoGrantAdminReturn3312za=grantPlatformReturn;
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",cleanupAdminReturnUrl,{once:true});
+  }else cleanupAdminReturnUrl();
 })();
 </script>
 
