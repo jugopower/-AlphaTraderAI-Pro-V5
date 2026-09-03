@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12n">
+<meta name="joygo-stable-reset-version" content="3.3.12o">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6597,6 +6597,40 @@ body.jg-classic-admin #jgSmartCommentary.jg-empty-admin{
   .player > #jgSpeedButtonPanel #jgSpeedButtons button{
     min-height:31px!important;
     font-size:10.5px!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312oLandscapeStableDockCSS">
+/* ==========================================================
+   Beta 3.3.12o｜橫式解說防跳動穩定版
+   只修 iPad 橫式解說卡片反覆跳動
+   - 轉成橫式時定位一次
+   - 換手只更新文字，不再搬位置
+   - 展開/收合不重新定位
+   - 不改棋盤、右欄、棋鐘、功能鍵
+   ========================================================== */
+
+@media (min-width:700px) and (orientation:landscape){
+  #jgSmartCommentary.jg-landscape-static{
+    position:fixed!important;
+    margin:0!important;
+    transform:none!important;
+    z-index:52000!important;
+  }
+
+  #jgSmartCommentary.jg-landscape-static #jgSmartCommentaryText{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:4;
+    overflow:hidden!important;
+  }
+
+  #jgSmartCommentary.jg-landscape-static.jg-expanded #jgSmartCommentaryText{
+    display:block!important;
+    -webkit-line-clamp:unset;
+    overflow:visible!important;
   }
 }
 </style>
@@ -16084,6 +16118,125 @@ function patch(){
   setInterval(()=>{
     if(document.body.classList.contains("jg-classic-playback"))repair();
   },500);
+})();
+</script>
+
+
+<script id="joygoBeta3312oLandscapeStableDockJS">
+(()=>{
+  let docked=false;
+  let lastLandscape=false;
+
+  function isLandscape(){
+    return matchMedia("(min-width:700px) and (orientation:landscape)").matches;
+  }
+
+  function computeAndDockOnce(){
+    if(!isLandscape())return;
+
+    const box=document.getElementById("jgSmartCommentary");
+    const canvas=document.getElementById("board");
+    const right=document.getElementById("rightTools");
+    const boardWrap=document.querySelector(".board-wrap");
+    if(!box||!canvas||!right||!boardWrap)return;
+
+    if(box.parentNode!==document.body){
+      document.body.appendChild(box);
+    }
+
+    const cr=canvas.getBoundingClientRect();
+    const rr=right.getBoundingClientRect();
+    const br=boardWrap.getBoundingClientRect();
+
+    const gapLeft=Math.max(cr.right+7,br.left+7);
+    const gapRight=Math.min(rr.left-7,br.right-7);
+    const gapWidth=gapRight-gapLeft;
+
+    let width,left;
+    if(gapWidth<112){
+      width=110;
+      left=Math.max(br.right-118,br.left+5);
+    }else{
+      width=Math.min(210,Math.max(138,gapWidth));
+      left=gapRight-width;
+    }
+
+    box.style.setProperty("left",`${left}px`,"important");
+    box.style.setProperty("width",`${width}px`,"important");
+
+    /* 固定在棋盤下半部，算一次後不再變動 */
+    const desiredTop=br.top+Math.round(br.height*0.58);
+    const maxTop=Math.max(br.top+8,br.bottom-Math.max(box.offsetHeight,140)-12);
+    const top=Math.max(br.top+8,Math.min(desiredTop,maxTop));
+
+    box.style.setProperty("top",`${top}px`,"important");
+    box.style.setProperty("right","auto","important");
+    box.style.setProperty("bottom","auto","important");
+    box.classList.add("jg-landscape-static");
+
+    docked=true;
+  }
+
+  function restorePortrait(){
+    const box=document.getElementById("jgSmartCommentary");
+    if(!box)return;
+
+    box.classList.remove("jg-landscape-static");
+    box.style.removeProperty("left");
+    box.style.removeProperty("top");
+    box.style.removeProperty("right");
+    box.style.removeProperty("bottom");
+    box.style.removeProperty("width");
+    docked=false;
+  }
+
+  function updateOrientation(){
+    const now=isLandscape();
+
+    if(now && !lastLandscape){
+      docked=false;
+      setTimeout(computeAndDockOnce,220);
+    }else if(!now && lastLandscape){
+      restorePortrait();
+    }
+
+    lastLandscape=now;
+  }
+
+  function ensureDock(){
+    if(isLandscape() && !docked){
+      computeAndDockOnce();
+    }
+  }
+
+  function boot(){
+    lastLandscape=isLandscape();
+    if(lastLandscape){
+      setTimeout(computeAndDockOnce,220);
+    }
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",()=>{
+    docked=false;
+    setTimeout(ensureDock,220);
+  },{passive:true});
+
+  addEventListener("orientationchange",()=>{
+    setTimeout(updateOrientation,320);
+  },{passive:true});
+
+  /* resize 只在尚未定位時補一次，不再持續搬動 */
+  addEventListener("resize",()=>{
+    if(isLandscape() && !docked){
+      setTimeout(ensureDock,180);
+    }
+  },{passive:true});
+
+  /* 換手只更新內容，由既有解說刷新程式處理，不重新定位 */
 })();
 </script>
 
