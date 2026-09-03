@@ -39,7 +39,7 @@
 </head>
 <body>
 <main class="shell">
-<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.5i｜4 人真人瑞士制整合測試版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div></header>
+<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>Beta 3.2.5i｜4 人真人瑞士制整合測試版</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="platform.html">返回平台</a></div></header>
 <div id="notice" class="notice">正在確認管理員身分…</div>
 <section id="app" hidden>
 <div id="printHeader">
@@ -52,7 +52,7 @@
     <option value="JOYGO16-001">JOYGO16-001｜原 16 人賽</option>
     <option value="JOYGO8-TEST-001">JOYGO8-TEST-001｜8 人虛擬測試</option>
     <option value="JOYGO16-TEST-001">JOYGO16-TEST-001｜16 人虛擬測試</option>
-    <option value="JOYGO4-LIVE-TEST-001">JOYGO4-LIVE-TEST-001｜4 人真人測試</option>
+    <option value="JOYGO4-LIVE-TEST-001">JOYGO4-LIVE-TEST-001｜4 人真人測試</option
   </select>
   <button class="btn gold" id="loadTournamentCode">載入比賽</button>
   <span class="current">目前：<b id="currentTournamentCode">—</b></span>
@@ -62,7 +62,7 @@
 
 <section class="pane active" id="pane-home">
 <div class="stats"><div class="stat"><span>全部會員</span><b id="hMembers">—</b></div><div class="stat"><span>待審核報名</span><b id="hPending">—</b></div><div class="stat"><span>正式參賽</span><b id="hApproved">—</b></div><div class="stat"><span>進行中棋局</span><b id="hPlaying">—</b></div></div>
-<div class="grid"><section class="card"><h2>今日管理重點</h2><div class="card-body" id="todayFocus" class="muted">讀取中…</div></section><section class="card"><h2>快速入口</h2><div class="card-body quick"><a href="tournament-register.html">🏆 選手報名頁<span>查看公開報名畫面</span></a><a href="lobby.html">🟢 真人大廳<span>進入棋友與比賽大廳</span></a><a href="tournament-register.html">📋 選手報名頁<span>查看與測試公開報名入口</span></a><a href="index.html">🎯 回主平台<span>返回 Joy Go Platform</span></a></div></section></div>
+<div class="grid"><section class="card"><h2>今日管理重點</h2><div class="card-body" id="todayFocus" class="muted">讀取中…</div></section><section class="card"><h2>快速入口</h2><div class="card-body quick"><a href="tournament-register.html">🏆 選手報名頁<span>查看公開報名畫面</span></a><a href="lobby.html">🟢 真人大廳<span>進入棋友與比賽大廳</span></a><a href="tournament-register.html">📋 選手報名頁<span>查看與測試公開報名入口</span></a><a href="platform.html">🎯 回主平台<span>返回 Joy Go Platform</span></a></div></section></div>
 </section>
 
 <section class="pane" id="pane-control">
@@ -75,7 +75,7 @@
   <div class="grid">
     <section class="card"><h2>🎛️ 本輪比賽總控</h2><div class="card-body">
       <div class="toolbar"><button class="btn gold" id="controlRefresh">重新整理總控</button><button class="btn" onclick="showTab('swiss')">進入瑞士制</button><button class="btn" onclick="showTab('live')">棋局監控</button><button class="btn" onclick="showTab('broadcast')">廣播中心</button></div>
-      <div id="controlAlerts" class="sub">讀取中…</div>
+      <div id="controlAlerts" class="sub">讀取中…</div> ／
       <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>桌次</th><th>黑方</th><th>白方</th><th>房號</th><th>棋局狀態</th><th>成績</th></tr></thead><tbody id="controlMatchRows"><tr><td colspan="6" class="sub">尚未載入。</td></tr></tbody></table></div>
     </div></section>
     <section class="card"><h2>🧾 最近管理操作</h2><div class="card-body"><div id="auditList" class="audit-list"><div class="sub">需先執行 Beta 2.6.0 SQL 後顯示。</div></div></div></section>
