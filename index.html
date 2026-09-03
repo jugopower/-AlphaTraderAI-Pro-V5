@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12u">
+<meta name="joygo-stable-reset-version" content="3.3.12v">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6240,6 +6240,65 @@ body.jg-classic-playback #jgSmartCommentary.show #jgUSpeedPanel{
 /* 隱藏 b 核心的舊 select，只保留 u 的按鈕速度 */
 #jgPlaybackSettings{
   display:none!important;
+}
+</style>
+
+
+<style id="joygoBeta3312vLandscapeSaveBarCSS">
+/* ==========================================================
+   Beta 3.3.12v｜橫式解說儲存列固定版
+   只修 iPad 橫式：鍵盤出現後儲存/刪除/完成收合被擠出畫面
+   不改直式、不改棋盤、不改棋鐘、不改右側主要功能鍵、不改播放速度
+   ========================================================== */
+
+@media (min-width:700px) and (orientation:landscape){
+  #jgSmartCommentary.jg-u-editing{
+    position:fixed!important;
+    top:max(8px, env(safe-area-inset-top))!important;
+    right:8px!important;
+    left:auto!important;
+    bottom:auto!important;
+    width:320px!important;
+    max-width:calc(100vw - 16px)!important;
+    max-height:calc(100dvh - 16px - env(safe-area-inset-bottom))!important;
+    overflow:hidden!important;
+    display:flex!important;
+    flex-direction:column!important;
+    z-index:2147482000!important;
+    transform:none!important;
+  }
+
+  #jgSmartCommentary.jg-u-editing #jgSmartCommentEditor{
+    display:flex!important;
+    flex-direction:column!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+
+  #jgSmartCommentary.jg-u-editing #jgSmartCommentTextarea{
+    flex:1 1 auto!important;
+    min-height:120px!important;
+    max-height:34dvh!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  /* 找出 editor 裡最後一列按鈕，固定在卡片底部 */
+  #jgSmartCommentary.jg-u-editing #jgSmartCommentEditor .jg-u-actionbar{
+    position:sticky!important;
+    bottom:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+    margin-top:8px!important;
+    padding-top:8px!important;
+    background:#120d09!important;
+    z-index:3!important;
+  }
+
+  #jgSmartCommentary.jg-u-editing #jgSmartCommentEditor .jg-u-actionbar > *{
+    min-height:40px!important;
+  }
 }
 </style>
 
@@ -14679,6 +14738,84 @@ function patch(){
   },{passive:true});
 
   [300,800,1400].forEach(ms=>setTimeout(boot,ms));
+})();
+</script>
+
+
+<script id="joygoBeta3312vLandscapeSaveBarJS">
+(()=>{
+  function isLandscape(){
+    return matchMedia("(min-width:700px) and (orientation:landscape)").matches;
+  }
+
+  function ensureActionBar(){
+    const editor=document.getElementById("jgSmartCommentEditor");
+    if(!editor)return;
+
+    if(editor.querySelector(".jg-u-actionbar"))return;
+
+    const save=document.getElementById("jgSmartSaveBtn");
+    const del=document.getElementById("jgSmartDeleteBtn");
+    const done=document.getElementById("jgSmartDoneBtn");
+
+    if(!save||!del||!done)return;
+
+    const bar=document.createElement("div");
+    bar.className="jg-u-actionbar";
+
+    bar.appendChild(save);
+    bar.appendChild(del);
+    bar.appendChild(done);
+    editor.appendChild(bar);
+  }
+
+  function keepVisible(){
+    const box=document.getElementById("jgSmartCommentary");
+    const editor=document.getElementById("jgSmartCommentEditor");
+    if(!box||!editor)return;
+
+    ensureActionBar();
+
+    if(isLandscape() && box.classList.contains("jg-u-editing")){
+      /* 鍵盤出現時只讓解說卡片自己縮，不碰棋盤與主版面 */
+      box.scrollTop=0;
+      editor.scrollTop=0;
+    }
+  }
+
+  function boot(){
+    ensureActionBar();
+    keepVisible();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else boot();
+
+  addEventListener("pageshow",boot,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
+
+  /* visualViewport 專門因應 iPad 鍵盤高度變化，只調整解說卡本身 */
+  if(window.visualViewport){
+    visualViewport.addEventListener("resize",()=>{
+      if(!isLandscape())return;
+      const box=document.getElementById("jgSmartCommentary");
+      if(!box||!box.classList.contains("jg-u-editing"))return;
+
+      const h=Math.max(220,Math.floor(visualViewport.height-16));
+      box.style.setProperty("max-height",`${h}px`,"important");
+      keepVisible();
+    },{passive:true});
+  }
+
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest?.("#jgSmartEditBtn")){
+      setTimeout(()=>{
+        ensureActionBar();
+        keepVisible();
+      },50);
+    }
+  },true);
 })();
 </script>
 
