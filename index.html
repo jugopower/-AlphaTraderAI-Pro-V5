@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12w">
+<meta name="joygo-stable-reset-version" content="3.3.12x">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6393,6 +6393,50 @@ body.jg-classic-playback .player > #jgUSpeedPanel{
   #jgSmartCommentary #jgUSpeedPanel{
     display:none!important;
   }
+}
+</style>
+
+
+<style id="joygoBeta3312xModeSwitchCSS">
+/* ==========================================================
+   Beta 3.3.12x｜名局／人機模式切換修正版
+   只修模式切換殘留，不改棋盤尺寸、不改棋鐘本身、不改橫式版面
+   ========================================================== */
+
+/* 非名局播放模式：隱藏名局播放控制、速度、解說 */
+body:not(.jg-classic-playback) #jgSmartCommentary,
+body:not(.jg-classic-playback) #jgUSpeedPanel{
+  display:none!important;
+}
+
+body:not(.jg-classic-playback) .player .controls{
+  display:none!important;
+}
+
+/* 名局播放模式：恢復播放控制與速度 */
+body.jg-classic-playback .player .controls{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+body.jg-classic-playback .player > #jgUSpeedPanel{
+  display:block!important;
+}
+
+/* 人機/一般對局時，不讓名局控制列殘留高度 */
+body.jg-human-mode .player,
+body.jg-online-mode .player{
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+}
+
+body.jg-human-mode #jgSmartCommentary,
+body.jg-online-mode #jgSmartCommentary,
+body.jg-human-mode #jgUSpeedPanel,
+body.jg-online-mode #jgUSpeedPanel{
+  display:none!important;
 }
 </style>
 
@@ -14990,6 +15034,89 @@ function patch(){
       setTimeout(repair,30);
     }
   }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+})();
+</script>
+
+
+<script id="joygoBeta3312xModeSwitchJS">
+(()=>{
+  function detectModes(){
+    let human=false, online=false;
+    try{
+      human=!!state?.humanMode;
+      online=!!state?.onlineMode;
+    }catch{}
+
+    document.body.classList.toggle("jg-human-mode",human);
+    document.body.classList.toggle("jg-online-mode",online);
+
+    /* 一旦進入人機/真人模式，就強制退出名局播放模式 */
+    if(human || online){
+      document.body.classList.remove("jg-classic-playback");
+
+      const box=document.getElementById("jgSmartCommentary");
+      const editor=document.getElementById("jgSmartCommentEditor");
+      const speed=document.getElementById("jgUSpeedPanel");
+
+      box?.classList.remove("show","jg-u-editing","jg-has-comment","jg-empty-admin");
+      editor?.classList.remove("open");
+
+      if(box)box.style.setProperty("display","none","important");
+      if(speed)speed.style.setProperty("display","none","important");
+    }else{
+      const box=document.getElementById("jgSmartCommentary");
+      const speed=document.getElementById("jgUSpeedPanel");
+      if(box)box.style.removeProperty("display");
+      if(speed)speed.style.removeProperty("display");
+    }
+  }
+
+  function restoreHumanControls(){
+    let human=false, online=false;
+    try{
+      human=!!state?.humanMode;
+      online=!!state?.onlineMode;
+    }catch{}
+    if(!human && !online)return;
+
+    /* 人機/真人對局時，保留原本對局控制，不讓名局 controls 佔位置 */
+    const controls=document.querySelector(".player .controls");
+    if(controls){
+      controls.style.setProperty("display","none","important");
+    }
+
+    const speed=document.getElementById("jgUSpeedPanel");
+    if(speed)speed.style.setProperty("display","none","important");
+
+    const commentary=document.getElementById("jgSmartCommentary");
+    if(commentary)commentary.style.setProperty("display","none","important");
+  }
+
+  function refresh(){
+    detectModes();
+    restoreHumanControls();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",refresh,{once:true});
+  }else refresh();
+
+  addEventListener("pageshow",refresh,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(refresh,320),{passive:true});
+
+  /* 常見模式切換按鈕：點完後重新判斷 */
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest?.(
+      "#humanBtn_rightTools,#humanBtn_topbar,#aiPlayBtn,#onlinePlayBtn,"+
+      "#classicBtn,#hallBtn,#backPlatformBtn,#returnPlatformBtn"
+    )){
+      setTimeout(refresh,80);
+      setTimeout(refresh,350);
+    }
+  },true);
+
+  /* state 可能由既有程式延遲更新，補幾次即可，不用永久 interval */
+  [250,700,1300].forEach(ms=>setTimeout(refresh,ms));
 })();
 </script>
 
