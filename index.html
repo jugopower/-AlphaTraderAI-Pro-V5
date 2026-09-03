@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12zb">
+<meta name="joygo-stable-reset-version" content="3.3.12zc">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6566,6 +6566,15 @@ body.jg-online-mode #jgUSpeedPanel{
   }
 })();
 </script>
+
+
+<style id="joygoBeta3312zcConfirmSoundCSS">
+/* Beta 3.3.12zc｜落子確認＋讀秒音效修正版 */
+#moveConfirmToggleBtn{
+  pointer-events:auto!important;
+  opacity:1!important;
+}
+</style>
 
 </head>
 <body>
@@ -15425,6 +15434,193 @@ function patch(){
   if(document.readyState==="loading"){
     document.addEventListener("DOMContentLoaded",cleanupAdminReturnUrl,{once:true});
   }else cleanupAdminReturnUrl();
+})();
+</script>
+
+
+<script id="joygoBeta3312zcConfirmSoundJS">
+(()=>{
+  /* =========================================================
+     1) 落子確認開關：真人對弈也允許個人自行開/關
+     ========================================================= */
+  const originalShowPending = joygoShowPendingMove;
+
+  function saveConfirmSetting(){
+    try{
+      localStorage.setItem("joygo_move_confirm_enabled", joygoMoveConfirmEnabled ? "1" : "0");
+    }catch(_){}
+  }
+
+  joygoUpdateMoveConfirmToggle = function(){
+    const wrap=$("moveConfirmToggleWrap"),btn=$("moveConfirmToggleBtn");
+    if(!wrap||!btn)return;
+
+    const show=state.onlineMode||joygoIsHumanGameMode();
+    wrap.style.display=show?"block":"none";
+
+    btn.disabled=false;
+    btn.style.opacity="1";
+    btn.textContent="落子確認："+(joygoMoveConfirmEnabled?"開":"關");
+    btn.title="點此切換落子確認";
+  };
+
+  joygoToggleMoveConfirm = function(){
+    joygoMoveConfirmEnabled=!joygoMoveConfirmEnabled;
+    saveConfirmSetting();
+    joygoClearPendingMove();
+    joygoUpdateMoveConfirmToggle();
+    toast("落子確認："+(joygoMoveConfirmEnabled?"開":"關"));
+  };
+
+  /* 舊按鈕已有 3.3.5 listener；用 capture 攔下，避免舊的「真人固定開啟」邏輯再執行 */
+  document.addEventListener("click",(e)=>{
+    const btn=e.target?.closest?.("#moveConfirmToggleBtn");
+    if(!btn)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    joygoToggleMoveConfirm();
+  },true);
+
+  /* online 的 handleBoardInput 原本固定呼叫 showPendingMove。
+     這裡在「關」時直接送出棋步，不顯示確認列。 */
+  joygoShowPendingMove = function(x,y,point,mode){
+    if(mode==="online" && !joygoMoveConfirmEnabled){
+      joygoClearPendingMove();
+      onlinePlayAt(x,y,false);
+      return;
+    }
+    return originalShowPending(x,y,point,mode);
+  };
+
+  /* 頁面進入/同步後重新顯示真正狀態 */
+  function refreshConfirm(){
+    try{
+      const saved=localStorage.getItem("joygo_move_confirm_enabled");
+      if(saved==="0") joygoMoveConfirmEnabled=false;
+      if(saved==="1") joygoMoveConfirmEnabled=true;
+    }catch(_){}
+    joygoUpdateMoveConfirmToggle();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",refreshConfirm,{once:true});
+  }else refreshConfirm();
+
+  addEventListener("pageshow",refreshConfirm,{passive:true});
+  document.addEventListener("click",(e)=>{
+    if(e.target?.closest?.("#humanBtn_rightTools,#humanBtn_topbar,#onlinePlayBtn,#onlineJoinBtn,#onlineResumeBtn")){
+      setTimeout(refreshConfirm,120);
+      setTimeout(refreshConfirm,500);
+    }
+  },true);
+
+  /* =========================================================
+     2) 讀秒聲音：先解鎖 iPad/iPhone 音訊
+     ========================================================= */
+  let audioUnlocked=false;
+  function unlockOnce(){
+    if(audioUnlocked)return;
+    try{
+      unlockClockAudio();
+      audioUnlocked=true;
+    }catch(_){}
+  }
+  document.addEventListener("pointerdown",unlockOnce,{capture:true,passive:true});
+  document.addEventListener("touchstart",unlockOnce,{capture:true,passive:true});
+  document.addEventListener("click",unlockOnce,{capture:true,passive:true});
+
+  /* =========================================================
+     3) 真人網路對弈讀秒監聽
+        原本 online clock 只顯示時間，沒有呼叫 clockBeep。
+     ========================================================= */
+  let lastRoomId="";
+  let lastTurn="";
+  let lastWhole=null;
+  let lastPeriods=null;
+  let wasInByo=false;
+
+  function speakByoStart(){
+    if(!state.sound)return;
+    try{
+      clockBeep(10);
+      if(state.voiceCountdown && "speechSynthesis" in window){
+        speechSynthesis.cancel();
+        const u=new SpeechSynthesisUtterance("進入讀秒");
+        u.lang="zh-TW";
+        u.rate=1.05;
+        u.volume=.9;
+        speechSynthesis.speak(u);
+      }
+    }catch(_){}
+  }
+
+  function onlineByoSoundTick(){
+    if(!state.onlineMode || !state.onlineRoom || state.onlineRoom.status!=="playing"){
+      lastRoomId="";lastTurn="";lastWhole=null;lastPeriods=null;wasInByo=false;
+      return;
+    }
+
+    const room=state.onlineRoom;
+    const roomId=String(room.id||"");
+    const turn=room.turn==="W"?"W":"B";
+
+    if(roomId!==lastRoomId || turn!==lastTurn){
+      lastRoomId=roomId;
+      lastTurn=turn;
+      lastWhole=null;
+      lastPeriods=null;
+      wasInByo=false;
+    }
+
+    let values;
+    try{ values=onlineClockValues(); }catch(_){ return; }
+    const v=values?.[turn];
+    if(!v)return;
+
+    const inByo=Number(v.main)<=0;
+    if(!inByo){
+      wasInByo=false;
+      lastWhole=null;
+      lastPeriods=Number(v.periods||0);
+      return;
+    }
+
+    const periods=Number(v.periods||0);
+    const whole=Math.max(0,Math.ceil(Number(v.byo||0)));
+
+    if(!wasInByo){
+      wasInByo=true;
+      lastPeriods=periods;
+      lastWhole=whole;
+      speakByoStart();
+      return;
+    }
+
+    /* 新一個讀秒期 */
+    if(lastPeriods!==null && periods!==lastPeriods){
+      lastPeriods=periods;
+      lastWhole=null;
+      clockBeep(0);
+    }
+
+    /* 最後 10 秒每秒提示；5~1 秒沿用 clockBeep 內建中文語音 */
+    if(whole<=10 && whole>=1 && whole!==lastWhole){
+      lastWhole=whole;
+      clockBeep(whole);
+    }
+  }
+
+  setInterval(onlineByoSoundTick,250);
+
+  /* 音效圖示也可直接切換聲音 */
+  document.addEventListener("click",(e)=>{
+    const icon=e.target?.closest?.("#clockSoundIcon");
+    if(!icon)return;
+    state.sound=!state.sound;
+    if(state.sound)unlockOnce();
+    updateClockUI();
+    toast("讀秒聲音："+(state.sound?"開":"關"));
+  },true);
 })();
 </script>
 
