@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12z">
+<meta name="joygo-stable-reset-version" content="3.3.12za">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6523,6 +6523,32 @@ body.jg-online-mode #jgUSpeedPanel{
   }
 }
 </style>
+
+
+<script id="joygoBeta3312zaAdminReturnPreGate">
+/* Beta 3.3.12za｜管理中心返回平台修正版
+   必須在 Beta Gate 執行前先恢復平台通行狀態。 */
+(()=>{
+  const SESSION_KEY="joygo_beta_v1_session";
+  const PERSIST_KEY="joygo_beta_v1_access_until";
+  const RETURN_COOKIE="joygo_admin_return";
+  const ACCESS_MS=12*60*60*1000;
+
+  function hasReturnCookie(){
+    try{
+      return document.cookie.split(";").some(v=>v.trim().startsWith(RETURN_COOKIE+"="));
+    }catch{return false}
+  }
+
+  if(hasReturnCookie()){
+    try{
+      sessionStorage.setItem(SESSION_KEY,"1");
+      localStorage.setItem(PERSIST_KEY,String(Date.now()+ACCESS_MS));
+      document.cookie=RETURN_COOKIE+"=; Max-Age=0; Path=/; SameSite=Lax";
+    }catch{}
+  }
+})();
+</script>
 
 </head>
 <body>
@@ -15352,6 +15378,49 @@ function patch(){
     if(bar) dockConfirmBar();
   });
   obs.observe(document.body,{childList:true,subtree:true,attributes:true});
+})();
+</script>
+
+
+<script id="joygoBeta3312zaAdminReturnJS">
+(()=>{
+  const SESSION_KEY="joygo_beta_v1_session";
+  const PERSIST_KEY="joygo_beta_v1_access_until";
+  const RETURN_COOKIE="joygo_admin_return";
+  const ACCESS_MS=12*60*60*1000;
+
+  function grantPlatformReturn(){
+    try{
+      sessionStorage.setItem(SESSION_KEY,"1");
+      localStorage.setItem(PERSIST_KEY,String(Date.now()+ACCESS_MS));
+      document.cookie=RETURN_COOKIE+"=1; Max-Age=1800; Path=/; SameSite=Lax";
+    }catch{}
+  }
+
+  /* 進管理中心前先留下「回平台免入口」憑證。
+     即使管理頁用 index.html / ./ 返回，主平台也會直接開啟。 */
+  document.addEventListener("click",(e)=>{
+    const admin=e.target?.closest?.(
+      '[id^="adminCenterBtn_"], a[href*="admin-center.html"], button[data-href*="admin-center.html"]'
+    );
+    if(!admin)return;
+    grantPlatformReturn();
+  },true);
+
+  /* 若既有程式直接指定 window.location.href，也在頁面離開前保留狀態。 */
+  addEventListener("pagehide",()=>{
+    try{
+      const ae=document.activeElement;
+      if(ae && (
+        String(ae.id||"").startsWith("adminCenterBtn_") ||
+        String(ae.getAttribute?.("href")||"").includes("admin-center.html")
+      )){
+        grantPlatformReturn();
+      }
+    }catch{}
+  },{passive:true});
+
+  window.joygoGrantAdminReturn3312za=grantPlatformReturn;
 })();
 </script>
 
