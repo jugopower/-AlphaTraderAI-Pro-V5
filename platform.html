@@ -6597,7 +6597,7 @@ body.jg-online-mode #jgUSpeedPanel{
 })();
 </script>
 
-<div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
+<div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 平台入口">
   <div class="jg-card">
     <div class="jg-mark">JOY GO PLATFORM</div>
     <h1>Joy Go Platform</h1>
@@ -6609,7 +6609,7 @@ body.jg-online-mode #jgUSpeedPanel{
     </div>
     <div class="jg-login"><input id="joygoBetaCode" type="password" inputmode="text" autocomplete="off" placeholder="輸入平台通行碼"><button id="joygoBetaEnter" type="button">進入 Joy Go Platform</button></div>
     <div class="jg-msg" id="joygoBetaMsg"></div>
-    <div class="jg-note">Beta 測試版｜核心：Build 028.3.7 Stable</div>
+    <div class="jg-note">Joy Go Platform V1.0</div>
   </div>
 </div>
 <button id="joygoBetaExit" class="jg-exit" type="button" hidden>← 返回平台</button>
@@ -6634,6 +6634,11 @@ body.jg-online-mode #jgUSpeedPanel{
  }
  function hasBetaAccess(){
    try{
+     // Joy Go V1.0 正式入口已驗證：避免進平台後再次要求舊通行碼
+     if(sessionStorage.getItem('joygo-entry-ok')==='1'){
+       rememberBeta();
+       return true;
+     }
      if(sessionStorage.getItem(KEY)==='1')return true;
      const until=Number(localStorage.getItem(PERSIST_KEY)||0);
      if(until>Date.now()){
@@ -6652,7 +6657,7 @@ body.jg-online-mode #jgUSpeedPanel{
    try{sessionStorage.removeItem(KEY);localStorage.removeItem(PERSIST_KEY)}catch{}
    setTimeout(()=>input.focus(),80)
  }
- function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='測試碼不正確，請重新輸入。';input.select()}}
+ function check(){if(input.value.trim().toUpperCase()===CODE){msg.textContent='';open()}else{msg.textContent='通行碼不正確，請重新輸入。';input.select()}}
  enter.addEventListener('click',check);input.addEventListener('keydown',e=>{if(e.key==='Enter')check()});exit.addEventListener('click',lock);
  if(guidanceEmbed){openGuidanceEmbed()}
  else{if(hasBetaAccess())open();else setTimeout(()=>input.focus(),120)}
