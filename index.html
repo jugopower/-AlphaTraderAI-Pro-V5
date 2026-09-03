@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12r">
+<meta name="joygo-stable-reset-version" content="3.3.12s">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6810,6 +6810,67 @@ body.jg-classic-playback #jgSmartCommentary.show{
   }
   #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
     min-height:120px!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312sIPadKeyboardCSS">
+/* ==========================================================
+   Beta 3.3.12s｜iPad 鍵盤輸入修正版
+   核心：按「新增／編輯」的同一個 tap 事件內立即 focus textarea
+   不改棋盤、棋鐘、右側功能鍵、播放速度
+   ========================================================== */
+
+#jgSmartCommentary #jgSmartCommentEditor.open,
+#jgSmartCommentary.jg-editing #jgSmartCommentEditor{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  max-height:none!important;
+}
+
+#jgSmartCommentary #jgSmartCommentTextarea{
+  pointer-events:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  touch-action:manipulation!important;
+}
+
+/* 橫式：編輯時放在右側欄，不蓋棋盤，允許完整捲動 */
+@media (min-width:700px) and (orientation:landscape){
+  #jgSmartCommentary.jg-editing{
+    position:fixed!important;
+    top:max(10px, env(safe-area-inset-top))!important;
+    right:8px!important;
+    left:auto!important;
+    bottom:auto!important;
+    width:320px!important;
+    max-width:calc(100vw - 16px)!important;
+    max-height:calc(100dvh - 20px - env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    z-index:2147482000!important;
+    transform:none!important;
+  }
+
+  #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
+    min-height:150px!important;
+    max-height:38dvh!important;
+  }
+}
+
+/* 直式：維持棋盤下方的解說區 */
+@media (orientation:portrait), (max-width:699px){
+  #jgSmartCommentary.jg-editing{
+    position:relative!important;
+    inset:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  #jgSmartCommentary.jg-editing #jgSmartCommentTextarea{
+    min-height:130px!important;
   }
 }
 </style>
@@ -16298,13 +16359,16 @@ function patch(){
 
 
 
-<script id="joygoBeta3312rEditorFixJS">
+
+
+
+<script id="joygoBeta3312sIPadKeyboardJS">
 (()=>{
   const isAdmin=()=>{try{return memberAccess?.role==="admin"}catch{return false}};
   const moveNo=()=>{try{return Number(state?.index||0)}catch{return 0}};
   const classicGame=()=>{try{return window.jgSmartCurrentGame?.()||null}catch{return null}};
 
-  function validClassicMode(){
+  function validClassic(){
     let human=false, online=false;
     try{
       human=!!state?.humanMode;
@@ -16330,71 +16394,17 @@ function patch(){
     return txt;
   }
 
-  function hideOutsideClassic(){
-    const box=document.getElementById("jgSmartCommentary");
-    if(!box)return;
-    if(!validClassicMode()){
-      box.classList.remove("show","jg-editing");
-      box.style.setProperty("display","none","important");
-    }else{
-      box.style.removeProperty("display");
-    }
-  }
-
-  function openEditor(){
-    if(!validClassicMode()){
-      try{toast("請先從名局館載入棋譜再新增解說")}catch{}
-      return;
-    }
-    if(!isAdmin()){
-      try{toast("只有主管理員可以新增或編輯解說")}catch{}
-      return;
-    }
-
-    const box=document.getElementById("jgSmartCommentary");
-    const editor=document.getElementById("jgSmartCommentEditor");
-    const ta=document.getElementById("jgSmartCommentTextarea");
-    const title=document.getElementById("jgSmartCommentaryTitle");
-    if(!box||!editor||!ta)return;
-
-    ta.value=textNow();
-    box.classList.add("show","jg-editing");
-    editor.classList.add("open");
-    editor.style.setProperty("display","block","important");
-    editor.style.setProperty("visibility","visible","important");
-    if(title) title.textContent=`第 ${moveNo()} 手｜朱老師解說編輯`;
-
-    /* iPad Safari：先把輸入區放到可視範圍，再叫出鍵盤 */
-    setTimeout(()=>{
-      try{
-        if(matchMedia("(min-width:700px) and (orientation:landscape)").matches){
-          box.scrollTop=0;
-        }else{
-          editor.scrollIntoView({block:"center",behavior:"smooth"});
-        }
-      }catch{}
-    },40);
-
-    setTimeout(()=>{
-      try{
-        ta.focus({preventScroll:true});
-        const len=ta.value.length;
-        ta.setSelectionRange(len,len);
-      }catch{
-        try{ta.focus()}catch{}
-      }
-    },160);
-  }
-
   function closeEditor(){
     const box=document.getElementById("jgSmartCommentary");
     const editor=document.getElementById("jgSmartCommentEditor");
+    const ta=document.getElementById("jgSmartCommentTextarea");
     if(box)box.classList.remove("jg-editing");
     if(editor){
       editor.classList.remove("open");
       editor.style.removeProperty("display");
       editor.style.removeProperty("visibility");
     }
+    try{ta?.blur()}catch{}
   }
 
   function refresh(){
@@ -16404,12 +16414,14 @@ function patch(){
     const edit=document.getElementById("jgSmartEditBtn");
     if(!box||!title||!text)return;
 
-    if(!validClassicMode()){
-      hideOutsideClassic();
+    if(!validClassic()){
+      box.classList.remove("show","jg-editing");
+      box.style.setProperty("display","none","important");
       return;
     }
 
     box.style.removeProperty("display");
+
     const n=moveNo();
     const txt=textNow();
 
@@ -16430,30 +16442,79 @@ function patch(){
     }
   }
 
-  /* 關鍵修正：使用 document delegated click。
-     即使解說按鈕稍後才由 ensureBox() 動態建立，也一定收得到點擊。 */
+  function openEditorAndFocusImmediately(){
+    if(!validClassic()){
+      try{toast("請先從名局館載入棋譜再新增解說")}catch{}
+      return;
+    }
+    if(!isAdmin()){
+      try{toast("只有主管理員可以新增或編輯解說")}catch{}
+      return;
+    }
+
+    const box=document.getElementById("jgSmartCommentary");
+    const editor=document.getElementById("jgSmartCommentEditor");
+    const ta=document.getElementById("jgSmartCommentTextarea");
+    const title=document.getElementById("jgSmartCommentaryTitle");
+    if(!box||!editor||!ta)return;
+
+    ta.value=textNow();
+
+    box.classList.add("show","jg-editing");
+    editor.classList.add("open");
+    editor.style.setProperty("display","block","important");
+    editor.style.setProperty("visibility","visible","important");
+
+    if(title)title.textContent=`第 ${moveNo()} 手｜朱老師解說編輯`;
+
+    /* 關鍵：必須在同一個使用者 tap/click callback 裡立即 focus。
+       不使用 setTimeout，不等待 scrollIntoView。 */
+    try{
+      ta.removeAttribute("readonly");
+      ta.removeAttribute("disabled");
+      ta.focus();
+      const len=ta.value.length;
+      ta.setSelectionRange(len,len);
+    }catch{
+      try{ta.focus()}catch{}
+    }
+  }
+
+  /* 使用 pointerdown + click delegated。
+     iPad Safari 先在 pointerdown 同步 focus，提高虛擬鍵盤彈出成功率。 */
+  document.addEventListener("pointerdown",(e)=>{
+    const btn=e.target?.closest?.("#jgSmartEditBtn");
+    if(!btn)return;
+    openEditorAndFocusImmediately();
+  },true);
+
   document.addEventListener("click",(e)=>{
     const edit=e.target?.closest?.("#jgSmartEditBtn");
     if(edit){
       e.preventDefault();
       e.stopPropagation();
-      openEditor();
+
+      /* 若 pointerdown 已打開，這裡只再同步 focus 一次，不延遲 */
+      const ta=document.getElementById("jgSmartCommentTextarea");
+      try{ta?.focus()}catch{}
       return;
     }
 
     const done=e.target?.closest?.("#jgSmartDoneBtn");
     if(done){
-      setTimeout(closeEditor,0);
+      e.preventDefault();
+      closeEditor();
+      refresh();
       return;
     }
 
     const save=e.target?.closest?.("#jgSmartSaveBtn");
     if(save){
-      /* 原本 Beta 3.3.12b 的 saveComment 仍負責真正儲存 */
+      /* 原本 saveComment 繼續負責真正儲存 */
       setTimeout(()=>{
         closeEditor();
         refresh();
-      },450);
+      },350);
       return;
     }
 
@@ -16462,22 +16523,18 @@ function patch(){
       setTimeout(()=>{
         closeEditor();
         refresh();
-      },450);
+      },350);
     }
   },true);
 
-  ["firstBtn","prevBtn","playBtn","nextBtn","lastBtn","jumpMoveBtn"].forEach(id=>{
-    document.addEventListener("click",(e)=>{
-      if(e.target?.closest?.(`#${id}`)){
-        setTimeout(refresh,80);
-      }
-    },true);
-  });
+  /* 換手只刷新，不碰焦點 */
+  document.addEventListener("click",(e)=>{
+    if(e.target?.closest?.("#firstBtn,#prevBtn,#playBtn,#nextBtn,#lastBtn,#jumpMoveBtn")){
+      setTimeout(refresh,60);
+    }
+  },true);
 
-  function boot(){
-    hideOutsideClassic();
-    refresh();
-  }
+  function boot(){refresh()}
 
   if(document.readyState==="loading"){
     document.addEventListener("DOMContentLoaded",boot,{once:true});
@@ -16485,15 +16542,14 @@ function patch(){
 
   addEventListener("pageshow",boot,{passive:true});
   addEventListener("orientationchange",()=>{
-    setTimeout(()=>{
-      closeEditor();
-      refresh();
-    },320);
+    closeEditor();
+    setTimeout(refresh,320);
   },{passive:true});
 
-  new MutationObserver(()=>{
-    hideOutsideClassic();
-  }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  new MutationObserver(refresh).observe(document.body,{
+    attributes:true,
+    attributeFilter:["class"]
+  });
 })();
 </script>
 
