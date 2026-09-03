@@ -6882,8 +6882,8 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <div class="pro-footer">Joy Go Platform · KataGo AI 分析</div>
-  <p style="color:var(--muted);font-size:11px">
-    可查看勝率、目差、推薦手與棋局重點。
+  <p style="color:var(--muted);font-size:11px" hidden>
+    查看勝率、目差與推薦手。
   </p>
 </div></div>
 
@@ -6970,14 +6970,14 @@ body.jg-online-mode #jgUSpeedPanel{
     <button id="onlineLeaveBtn" class="secondary" type="button" style="width:100%;margin-top:8px">離開真人對弈</button>
     <button id="onlineClearEndedBtn" class="action" type="button" style="width:100%;margin-top:8px;display:none">🧹 清除本局並回大廳</button>
   </section>
-  <div id="onlineStatus" class="online-status">請先登入會員，再建立或加入房間。</div>
+  <div id="onlineStatus" class="online-status">請先登入會員。</div>
 </div></div>
 
 
 <div id="spectatorModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="spectatorModal">✕</button>
   <h2>👁 多盤觀戰大廳</h2>
-  <p class="spectator-note">可從大廳選擇正在轉播的棋局觀看；觀戰同步棋步，不影響對局進行。</p>
+  <p class="spectator-note" hidden>選擇正在轉播的棋局即可觀看。</p>
 
   <div class="spectator-room-row">
     <label>我的房間名稱
@@ -7016,7 +7016,7 @@ body.jg-online-mode #jgUSpeedPanel{
   <button class="close" data-close="rankAdminModal">✕</button>
   <h2>👑 會員棋力管理</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.55">
-    主管理員與副管理員可調整會員棋力。每次變更都會留下原棋力、新棋力、修改者與時間。
+    主管理員與副管理員可調整會員棋力。
   </p>
   <div class="rowbtns" style="margin-bottom:10px">
     <button id="rankAdminRefreshBtn" class="secondary" type="button">重新整理</button>
@@ -7029,7 +7029,7 @@ body.jg-online-mode #jgUSpeedPanel{
   <button class="close" data-close="memberModal">✕</button>
   <h2>👤 會員中心｜棋力・升降戰績</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.5">
-    查看會員身分、棋力與升降戰績。
+    查看會員資料與升降戰績。
   </p>
 
   <div id="memberSignedOut">
@@ -7197,8 +7197,8 @@ body.jg-online-mode #jgUSpeedPanel{
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
   <h2>🏛️ 名局館</h2>
-  <p class="classic-library-note">
-    可依棋手、賽事、日期、結果與分類整理名局，並支援 SGF 匯入與保存。
+  <p class="classic-library-note" hidden>
+    可整理、匯入與保存 SGF 名局。
   </p>
 
 
@@ -7256,7 +7256,7 @@ body.jg-online-mode #jgUSpeedPanel{
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicImportModal">✕</button>
   <h2>＋ 加入正式名局 SGF</h2>
-  <p class="classic-library-note">先選擇 SGF，再補上名局資料。若棋譜內已有棋手、日期、賽事與結果，系統會自動帶入可辨識的資料。</p>
+  <p class="classic-library-note" hidden>選擇 SGF 後即可整理名局資料。</p>
 
   <div class="classic-import-file">
     <input id="classicOfficialFile" type="file">
@@ -7351,7 +7351,7 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
   <button class="action" id="analyzeCloudBtn" style="width:100%;margin-top:10px">以 KataGo 分析目前局面</button>
 
-  <div id="cloudStatus" class="connector-status warn">尚未連線。請先測試 KataGo；連線成功後才會顯示真實分析結果。</div>
+  <div id="cloudStatus" class="connector-status warn">尚未連線。</div>
 
   <div class="connector-meta" hidden>
     <div><small>連線狀態</small><strong id="connectorState">Offline</strong></div>
@@ -7393,7 +7393,7 @@ body.jg-online-mode #jgUSpeedPanel{
   </details>
 
   <p style="color:var(--muted);font-size:11px;margin-top:10px">
-    分析服務由系統自動連線；如暫時無法使用，可稍後重新連線。
+    分析服務會自動連線。
   </p>
 </div></div>
 
@@ -7438,7 +7438,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
   <section id="questionBankPanel" class="question-bank-panel">
     <h3>📚 教學題庫</h3>
-    <p class="teach-hint">可新增、修改、收藏與快速切換題目；重要題庫請定期備份。</p>
+    <p class="teach-hint">可新增、修改、收藏與切換題目。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
       <label>題名<input id="qbTitle" placeholder="例如 角部淨殺"></label>
@@ -7449,7 +7449,7 @@ body.jg-online-mode #jgUSpeedPanel{
     </div>
     <section class="photo-import-panel" id="photoImportPanel">
       <div class="photo-import-head">
-        <div><b>📷 拍照匯入題目</b><div class="teach-hint">可直接拍照或從相簿選圖，裁切、放大後作為擺題參考。</div></div>
+        <div><b>📷 拍照匯入題目</b><div class="teach-hint">可拍照或選圖作為擺題參考。</div></div>
         <div class="photo-source-actions"><button class="action" id="photoCameraBtn" type="button">📷 直接拍照</button><button class="secondary" id="photoLibraryBtn" type="button">🖼️ 相簿選圖</button></div>
       </div>
       <input id="photoCameraInput" type="file" accept="image/*" capture="environment" hidden>
@@ -8151,7 +8151,7 @@ async function runLifeDeathVerification(){
     if(!response.ok)throw new Error(data?.detail||data?.message||`HTTP ${response.status}`);
     pre.textContent=formatLifeDeathReport(data);
     status.className="connector-status "+(data.status==="ok"?"ok":"bad");
-    status.textContent=data.status==="ok"?"初步驗證完成；仍需朱老師確認淨殺、劫與唯一解。":"驗證失敗";
+    status.textContent=data.status==="ok"?"初步驗證完成。":"驗證失敗";
     window.__lastLifeDeathVerification=data;
   }catch(err){
     status.className="connector-status bad";status.textContent="驗證失敗："+err.message;pre.textContent=String(err.message);
@@ -8358,7 +8358,7 @@ function updateProfessionalDashboard(){
     renderProfessionalDashboard(state.analysis);
     return;
   }
-  // Build024.8 Real KataGo：不再用本機示範數字冒充 AI 結果。
+  // KataGo AI 分析：不再用本機示範數字冒充 AI 結果。
   const waiting={
     blackWin:50,whiteWin:50,scoreLead:0,situation:"尚未取得真實 KataGo 分析",
     recommendations:[],teaching:"請按「KataGo」→「以 KataGo 分析目前局面」。連線成功後才顯示勝率、目差與推薦手。",
@@ -13195,7 +13195,7 @@ if(state.engineVerified&&state.rendererVerified){
 
 <button id="apiInspectorToggle" class="api-inspector-toggle" type="button" hidden aria-hidden="true">API 資料</button>
 <section id="apiInspectorPanel" class="api-inspector-panel" hidden aria-label="Render API Inspector">
-  <div class="api-inspector-head"><strong>Build027.0 API Inspector</strong><button id="apiInspectorClose" type="button">收合</button></div>
+  <div class="api-inspector-head"><strong>KataGo 分析</strong><button id="apiInspectorClose" type="button">收合</button></div>
   <div class="api-inspector-status"><span id="apiInspectorDot" class="api-inspector-dot"></span><span id="apiInspectorStatus">尚未執行分析</span></div>
   <pre id="apiInspectorPre" class="api-inspector-pre">按一次 KataGo 分析後，這裡會同時顯示 Request、Response 與 Visits 核對結果。</pre>
   <div class="api-inspector-actions"><button id="apiInspectorCopy" class="primary" type="button">複製 JSON</button><button id="apiInspectorClear" type="button">清除</button></div>
