@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12y">
+<meta name="joygo-stable-reset-version" content="3.3.12z">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6437,6 +6437,90 @@ body.jg-online-mode #jgSmartCommentary,
 body.jg-human-mode #jgUSpeedPanel,
 body.jg-online-mode #jgUSpeedPanel{
   display:none!important;
+}
+</style>
+
+
+<style id="joygoBeta3312zMobileConfirmCSS">
+/* ==========================================================
+   Beta 3.3.12z｜手機落子確認修正版
+   - 橫式寬螢幕：維持右側棋鐘下方
+   - 手機/窄螢幕直式：移到棋盤下方、棋鐘上方
+   - 不遮棋盤
+   - 確定/取消按鈕必須完整可見
+   ========================================================== */
+
+/* 預設：寬螢幕橫式維持右側停靠 */
+#moveConfirmBar.jg-confirm-docked{
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  width:100%!important;
+  max-width:none!important;
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:7px!important;
+  padding:9px!important;
+  margin:8px 0!important;
+  border:1px solid #d5a443!important;
+  border-radius:12px!important;
+  background:#17100e!important;
+  box-shadow:none!important;
+  z-index:auto!important;
+}
+
+#moveConfirmBar.jg-confirm-docked[hidden]{
+  display:none!important;
+}
+
+#moveConfirmBar.jg-confirm-docked #moveConfirmText{
+  grid-column:1/-1!important;
+  width:100%!important;
+  min-width:0!important;
+  text-align:left!important;
+  font-size:12px!important;
+  line-height:1.35!important;
+  white-space:normal!important;
+}
+
+#moveConfirmBar.jg-confirm-docked #moveConfirmOk,
+#moveConfirmBar.jg-confirm-docked #moveConfirmCancel{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:42px!important;
+  padding:8px 10px!important;
+  font-size:14px!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+/* 手機 / 窄螢幕：確認列改成棋盤下方、棋鐘上方 */
+@media (max-width:699px), (orientation:portrait) and (max-width:899px){
+  #moveConfirmBar.jg-confirm-docked{
+    width:calc(100% - 16px)!important;
+    margin:8px auto!important;
+    grid-template-columns:1fr 1fr!important;
+    position:relative!important;
+    inset:auto!important;
+    z-index:30!important;
+  }
+
+  #moveConfirmBar.jg-confirm-docked #moveConfirmText{
+    grid-column:1/-1!important;
+    font-size:13px!important;
+  }
+
+  #moveConfirmBar.jg-confirm-docked #moveConfirmOk,
+  #moveConfirmBar.jg-confirm-docked #moveConfirmCancel{
+    min-height:44px!important;
+    font-size:15px!important;
+  }
 }
 </style>
 
@@ -15186,6 +15270,88 @@ function patch(){
     const right=document.getElementById("rightTools");
     if(bar && right && bar.parentNode!==right) dockConfirmBar();
   }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
+
+<script id="joygoBeta3312zMobileConfirmJS">
+(()=>{
+  function isMobilePortrait(){
+    return matchMedia("(max-width:699px), (orientation:portrait) and (max-width:899px)").matches;
+  }
+
+  function dockConfirmBar(){
+    const bar=document.getElementById("moveConfirmBar");
+    const right=document.getElementById("rightTools");
+    const clock=document.getElementById("gameClockPanel");
+    const boardWrap=document.querySelector(".board-wrap");
+
+    if(!bar)return;
+
+    if(isMobilePortrait()){
+      /* 手機：棋盤後、棋鐘前 */
+      if(clock?.parentNode){
+        if(bar.parentNode!==clock.parentNode || bar.nextElementSibling!==clock){
+          clock.parentNode.insertBefore(bar,clock);
+        }
+      }else if(boardWrap){
+        boardWrap.insertAdjacentElement("afterend",bar);
+      }
+    }else{
+      /* iPad 橫式 / 桌面：右側棋鐘下方 */
+      if(right){
+        if(clock && clock.parentNode===right){
+          if(bar.parentNode!==right || clock.nextElementSibling!==bar){
+            clock.insertAdjacentElement("afterend",bar);
+          }
+        }else if(bar.parentNode!==right){
+          right.prepend(bar);
+        }
+      }
+    }
+
+    bar.classList.add("jg-confirm-docked");
+
+    /* 防止 y 版只剩狀態提示，看不到真正按鈕 */
+    const ok=document.getElementById("moveConfirmOk");
+    const cancel=document.getElementById("moveConfirmCancel");
+    if(ok){
+      ok.hidden=false;
+      ok.style.removeProperty("display");
+      ok.style.removeProperty("visibility");
+    }
+    if(cancel){
+      cancel.hidden=false;
+      cancel.style.removeProperty("display");
+      cancel.style.removeProperty("visibility");
+    }
+  }
+
+  function repair(){
+    dockConfirmBar();
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",repair,{once:true});
+  }else repair();
+
+  addEventListener("pageshow",repair,{passive:true});
+  addEventListener("orientationchange",()=>setTimeout(repair,300),{passive:true});
+  addEventListener("resize",()=>setTimeout(repair,180),{passive:true});
+
+  /* 每次棋盤點擊後若進入 pending move，立即確認位置 */
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest?.("#board,.board-wrap")){
+      setTimeout(repair,30);
+    }
+  },true);
+
+  /* 監看 moveConfirmBar 顯示狀態與 DOM 重排 */
+  const obs=new MutationObserver(()=>{
+    const bar=document.getElementById("moveConfirmBar");
+    if(bar) dockConfirmBar();
+  });
+  obs.observe(document.body,{childList:true,subtree:true,attributes:true});
 })();
 </script>
 
