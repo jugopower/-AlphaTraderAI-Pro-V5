@@ -6824,7 +6824,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="infoModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="infoModal">✕</button><h2>資訊與棋譜</h2>
-  <p>版本：Build024.8 Real KataGo · KataGo Core</p>
+  <p>Joy Go Platform V1.0｜SGF 棋譜工具</p>
   <div class="grid2">
     <button class="action" id="chooseSgfBtn">選擇 SGF</button>
     <button class="secondary" id="newGameBtn">空棋盤</button>
@@ -6839,7 +6839,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="aiModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="aiModal">✕</button>
-  <h2>Build024.8 Real KataGo</h2>
+  <h2>🤖 KataGo AI 分析</h2>
   <span class="ai-badge" id="aiEngineBadge">● 尚未連線</span>
 
   <div class="ai-summary-grid">
@@ -6881,9 +6881,9 @@ body.jg-online-mode #jgUSpeedPanel{
     <button class="secondary" id="clearBookmarksBtn">清除收藏</button>
   </div>
 
-  <div class="pro-footer">AlphaTrader AI Pro V5 · KataGo Connector · Build028.1.10</div>
+  <div class="pro-footer">Joy Go Platform · KataGo AI 分析</div>
   <p style="color:var(--muted);font-size:11px">
-    已加入 KataGo Connector；設定有效的 HTTPS 分析 API 後，可顯示真實勝率、目差、Policy 與推薦手。
+    可查看勝率、目差、推薦手與棋局重點。
   </p>
 </div></div>
 
@@ -6921,7 +6921,7 @@ body.jg-online-mode #jgUSpeedPanel{
   <button class="close" data-close="onlineModal">✕</button>
   <div class="online-lobby-title-row">
     <div>
-      <h2 style="margin-bottom:4px">⚔️ Beta 2.1.1｜真人棋局資訊</h2>
+      <h2 style="margin-bottom:4px">⚔️ 真人棋局</h2>
       <div class="online-lobby-subtitle">線上棋友・建立房間・加入對局・即時同步</div>
     </div>
     <div class="online-count-badge">🟢 在線 <b id="onlineLobbyCount">0</b> / 16</div>
@@ -6931,7 +6931,7 @@ body.jg-online-mode #jgUSpeedPanel{
     <section class="online-panel online-friends-panel">
       <div class="online-section-head"><h3>🟢 線上棋友</h3><button id="onlineLobbyRefreshBtn" class="secondary online-mini-btn" type="button">重新整理</button></div>
       <div id="onlineFriendsList" class="online-friends-list"><div class="online-empty">正在連線大廳…</div></div>
-      <div class="online-lobby-hint">V1 測試上限：16 人同時在線。對弈中的棋友會標示「對弈中」。</div>
+      <div class="online-lobby-hint">目前最多 16 人同時在線；對弈中的棋友會標示「對弈中」。</div>
     </section>
 
     <section class="online-panel">
@@ -7256,12 +7256,12 @@ body.jg-online-mode #jgUSpeedPanel{
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicImportModal">✕</button>
   <h2>＋ 加入正式名局 SGF</h2>
-  <p class="classic-library-note">先選 SGF，再補上資料。Beta 1.6b.2 已加強 iPad／Safari 的 SGF 讀取流程；選檔後會立即顯示讀取狀態，並檢查內容是否為有效 SGF。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
+  <p class="classic-library-note">先選擇 SGF，再補上名局資料。若棋譜內已有棋手、日期、賽事與結果，系統會自動帶入可辨識的資料。</p>
 
   <div class="classic-import-file">
     <input id="classicOfficialFile" type="file">
     <div id="classicOfficialFileName" style="margin-top:6px">尚未選擇 SGF</div>
-    <div style="margin-top:5px;font-size:12px;color:var(--muted)">支援 iPad「檔案」中的 .sgf；選取後請等候約 1 秒完成讀取。</div>
+    <div style="margin-top:5px;font-size:12px;color:var(--muted)">支援 .sgf 棋譜檔案。</div>
   </div>
 
   <div class="classic-import-form" style="margin-top:12px">
@@ -7309,13 +7309,13 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="cloudModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="cloudModal">✕</button>
-  <h2>Build027.0 API Inspector</h2>
+  <h2>🤖 KataGo 分析</h2>
 
-  <label>分析 API 網址
+  <label hidden>分析 API 網址
     <input id="apiUrl" placeholder="https://alphatrader-katago-server-v2.onrender.com/analyze">
   </label>
 
-  <div class="connector-grid">
+  <div class="connector-grid" hidden>
     <label>API 金鑰
       <input id="apiKey" type="password" placeholder="可留空">
     </label>
@@ -7345,15 +7345,15 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <div class="grid2" style="margin-top:12px">
-    <button class="action" id="saveApiBtn">儲存設定</button>
-    <button class="secondary" id="testApiBtn">測試分析</button>
-<button class="secondary" id="katagoReconnectBtn">重新連線</button>
+    <button class="action" id="saveApiBtn" hidden>儲存設定</button>
+    <button class="secondary" id="testApiBtn" hidden>測試分析</button>
+    <button class="secondary" id="katagoReconnectBtn">重新連線</button>
   </div>
   <button class="action" id="analyzeCloudBtn" style="width:100%;margin-top:10px">以 KataGo 分析目前局面</button>
 
   <div id="cloudStatus" class="connector-status warn">尚未連線。請先測試 KataGo；連線成功後才會顯示真實分析結果。</div>
 
-  <div class="connector-meta">
+  <div class="connector-meta" hidden>
     <div><small>連線狀態</small><strong id="connectorState">Offline</strong></div>
     <div><small>伺服器</small><strong id="connectorServer">Render</strong></div>
     <div><small>模型</small><strong id="connectorModel">—</strong></div>
@@ -7365,7 +7365,7 @@ body.jg-online-mode #jgUSpeedPanel{
     <div><small>協定模式</small><strong id="connectorProtocol">雙格式相容</strong></div>
   </div>
 
-  <details style="margin-top:10px">
+  <details style="margin-top:10px" hidden>
     <summary>後端 JSON 規格</summary>
     <div class="schema-box">POST JSON:
 {
@@ -7393,7 +7393,7 @@ body.jg-online-mode #jgUSpeedPanel{
   </details>
 
   <p style="color:var(--muted);font-size:11px;margin-top:10px">
-    GitHub Pages 不能直接執行 KataGo 引擎；必須連接允許 CORS 的 HTTPS 後端分析服務。
+    分析服務由系統自動連線；如暫時無法使用，可稍後重新連線。
   </p>
 </div></div>
 
@@ -7437,8 +7437,8 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <section id="questionBankPanel" class="question-bank-panel">
-    <h3>Build 028.3.7｜部署恢復穩定版</h3>
-    <p class="teach-hint">可載入、修改、另存、刪除、收藏與快速切換題目。資料保存在這台 iPad 的 Safari，請定期備份。</p>
+    <h3>📚 教學題庫</h3>
+    <p class="teach-hint">可新增、修改、收藏與快速切換題目；重要題庫請定期備份。</p>
     <div class="qb-grid">
       <label>題號<input id="qbNumber" placeholder="例如 320"></label>
       <label>題名<input id="qbTitle" placeholder="例如 角部淨殺"></label>
@@ -7449,7 +7449,7 @@ body.jg-online-mode #jgUSpeedPanel{
     </div>
     <section class="photo-import-panel" id="photoImportPanel">
       <div class="photo-import-head">
-        <div><b>📷 拍照匯入題目</b><div class="teach-hint">可直接拍照或從相簿選圖，裁切、放大後作為擺題參考；本版不自動辨識棋子。</div></div>
+        <div><b>📷 拍照匯入題目</b><div class="teach-hint">可直接拍照或從相簿選圖，裁切、放大後作為擺題參考。</div></div>
         <div class="photo-source-actions"><button class="action" id="photoCameraBtn" type="button">📷 直接拍照</button><button class="secondary" id="photoLibraryBtn" type="button">🖼️ 相簿選圖</button></div>
       </div>
       <input id="photoCameraInput" type="file" accept="image/*" capture="environment" hidden>
@@ -7500,7 +7500,7 @@ body.jg-online-mode #jgUSpeedPanel{
   </section>
 
   <section id="lifeDeathVerifyPanel" style="margin-top:14px;padding:14px;border:1px solid #6c4a28;border-radius:16px;background:#100b08">
-    <h3 style="margin:0 0 10px">Build 027.1｜AI 解題（暫停／實驗）</h3>
+    <h3 style="margin:0 0 10px">🧩 AI 死活解題（進階）</h3>
     <div class="grid2">
       <label>題號<input id="verifyQuestionNo" placeholder="例如 320"></label>
       <label>題型<select id="verifyProblemType">
@@ -7530,7 +7530,7 @@ body.jg-online-mode #jgUSpeedPanel{
       <button class="secondary" id="playAiSolution" type="button">▶ 播放解答</button>
       <button class="secondary" id="resetAiSolution" type="button">重設回題目</button>
     </div>
-    <details style="margin-top:10px"><summary>進階：保留 Build 026.1 局部候選驗證</summary>
+    <details style="margin-top:10px"><summary>進階：局部候選驗證</summary>
       <div class="grid2" style="margin-top:10px">
         <label>驗證 Visits<select id="verifyVisits">
           <option value="100">100（快速初判）</option>
@@ -8174,7 +8174,7 @@ async function runCloudAnalysis({openDashboard=true}={}){
   btn.disabled=true;
   btn.textContent="分析中…";
   btn.classList.add("loading-dot");
-  setConnectorStatus("warn","正在傳送目前局面到 KataGo 後端…");
+  setConnectorStatus("warn","KataGo 正在分析目前局面…");
   try{
     state.analysis=await requestCloudAnalysis();
     {
@@ -8191,7 +8191,7 @@ async function runCloudAnalysis({openDashboard=true}={}){
     toast("KataGo 分析完成");
     return true;
   }catch(err){
-    setConnectorStatus("bad","連線失敗："+err.message+"。請確認 Render 後端後再試。");
+    setConnectorStatus("bad","KataGo 連線失敗，請稍後再試。");
     toast("KataGo 連線失敗");
     return false;
   }finally{
