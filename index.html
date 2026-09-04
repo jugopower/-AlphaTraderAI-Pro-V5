@@ -1,3 +1,4 @@
+<!-- Beta 3.3.12zj｜KataGo 落子即時顯示版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -13365,7 +13366,14 @@ async function joygoExecuteLocalHumanMove(x,y){
   state.turn=state.turn==="B"?"W":"B";
   completeTurnClock(movedColor);
   state.hintPoints=[];
-  syncUI();
+
+  // Beta 3.3.12zj：先把人類剛落下的棋子畫到 canvas，
+  // 讓 Safari 有機會先完成一幀，再做完整 UI / KataGo 工作。
+  try{
+    const immediateSnap=positionAtMove(state.index);
+    state.currentSnapshot=immediateSnap;
+    drawBoard(immediateSnap);
+  }catch(_){}
 
   if(state.sound){
     try{
@@ -13376,6 +13384,14 @@ async function joygoExecuteLocalHumanMove(x,y){
       o.start();o.stop(a.currentTime+.06);
     }catch(_){}
   }
+
+  // 這個 await 會把控制權交還瀏覽器，確保棋子先真正顯示。
+  await new Promise(resolve=>{
+    if(typeof requestAnimationFrame==="function")requestAnimationFrame(()=>resolve());
+    else setTimeout(resolve,0);
+  });
+
+  syncUI();
 
   if(state.hintEnabled){
     evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
@@ -13490,7 +13506,14 @@ function handleBoardInput(e){
   state.turn=state.turn==="B"?"W":"B";
   if(!state.trialMode && !state.casualMode)completeTurnClock(movedColor);
   state.hintPoints=[];
-  syncUI();
+
+  // Beta 3.3.12zj：先立即重畫棋盤，不讓 KataGo / syncUI 卡住人類落子顯示。
+  try{
+    const immediateSnap=positionAtMove(state.index);
+    state.currentSnapshot=immediateSnap;
+    drawBoard(immediateSnap);
+  }catch(_){}
+
   if(state.sound){
     try{
       const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();
@@ -13498,13 +13521,22 @@ function handleBoardInput(e){
     }catch(_){}
   }
 
-  if(state.trialMode){
-    toast(`試下第 ${state.index-state.trialBaseIndex} 手`);
-  }else if(state.casualMode){
-    toast(`${movedColor==="B"?"黑":"白"}棋：${coordLabel(x,y)}`);
-  }else if(state.hintEnabled){
-    evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
-  }else scheduleLocalAiMove(350);
+  // 下一幀才做完整 UI 與 AI 工作，讓 iPad Safari 先把棋子畫出來。
+  const afterHumanStonePaint=()=>{
+    syncUI();
+
+    if(state.trialMode){
+      toast(`試下第 ${state.index-state.trialBaseIndex} 手`);
+    }else if(state.casualMode){
+      toast(`${movedColor==="B"?"黑":"白"}棋：${coordLabel(x,y)}`);
+    }else if(state.hintEnabled){
+      evaluateHumanMoveForHint(move,hintBefore).finally(()=>scheduleLocalAiMove(120));
+    }else{
+      scheduleLocalAiMove(350);
+    }
+  };
+  if(typeof requestAnimationFrame==="function")requestAnimationFrame(afterHumanStonePaint);
+  else setTimeout(afterHumanStonePaint,0);
 
 }
 if(window.PointerEvent){
