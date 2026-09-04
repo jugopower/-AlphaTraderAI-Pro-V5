@@ -23,7 +23,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-stable-reset-version" content="3.3.12ze">
+<meta name="joygo-stable-reset-version" content="3.3.12zf">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
 <meta name="joygo-rating-auto-version" content="3.3.2">
@@ -6937,6 +6937,128 @@ body.jg-online-mode #jgUSpeedPanel{
     height:100dvh!important;
     width:auto!important;
     aspect-ratio:2 / 3!important;
+  }
+}
+</style>
+
+
+<style id="joygoBeta3312zfEntranceLoginDeOverlapCSS">
+#joygoBetaGate .jg-card::after{
+  content:"";
+  position:absolute!important;
+  left:19.5%!important;
+  top:66.2%!important;
+  width:61%!important;
+  height:11.2%!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,rgba(35,24,16,.96),rgba(28,20,15,.94))!important;
+  border:1px solid rgba(226,186,105,.42)!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.26)!important;
+  z-index:3!important;
+  pointer-events:none!important;
+}
+#joygoBetaGate .jg-login{
+  left:22.3%!important;
+  top:69.0%!important;
+  width:55.2%!important;
+  height:5.1%!important;
+  z-index:5!important;
+  display:grid!important;
+  grid-template-columns:1.58fr .92fr!important;
+  gap:1.7%!important;
+}
+#joygoBetaGate .jg-login::before{
+  content:"🔒 平台通行碼";
+  position:absolute!important;
+  left:0!important;
+  top:-68%!important;
+  width:100%!important;
+  color:#f2d38b!important;
+  font-size:clamp(12px,1.7vw,18px)!important;
+  font-weight:800!important;
+  letter-spacing:.04em!important;
+  text-align:left!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.4)!important;
+  pointer-events:none!important;
+}
+#joygoBetaGate .jg-login input{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  border-radius:12px!important;
+  font-size:clamp(14px,1.85vw,19px)!important;
+  padding:0 7%!important;
+  text-align:left!important;
+}
+#joygoBetaGate .jg-login button{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  border-radius:12px!important;
+  font-size:clamp(13px,1.6vw,18px)!important;
+  white-space:nowrap!important;
+}
+#joygoBetaGate .jg-msg{
+  left:22%!important;
+  top:74.55%!important;
+  width:56%!important;
+  z-index:6!important;
+}
+@media (min-width:621px) and (orientation:portrait){
+  #joygoBetaGate .jg-card::after{
+    left:20.2%!important;
+    top:66.4%!important;
+    width:59.6%!important;
+    height:10.8%!important;
+    border-radius:20px!important;
+  }
+  #joygoBetaGate .jg-login{
+    left:22.4%!important;
+    top:69.05%!important;
+    width:55.0%!important;
+    height:5.0%!important;
+  }
+  #joygoBetaGate .jg-login::before{
+    top:-70%!important;
+  }
+}
+@media (max-width:620px){
+  #joygoBetaGate .jg-card::after{
+    left:16.5%!important;
+    top:65.3%!important;
+    width:67%!important;
+    height:14.3%!important;
+    border-radius:16px!important;
+  }
+  #joygoBetaGate .jg-login{
+    left:20%!important;
+    top:68.25%!important;
+    width:60%!important;
+    height:auto!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+  }
+  #joygoBetaGate .jg-login::before{
+    position:relative!important;
+    left:auto!important;
+    top:auto!important;
+    width:100%!important;
+    grid-column:1!important;
+    margin-bottom:2px!important;
+    font-size:12px!important;
+  }
+  #joygoBetaGate .jg-login input,
+  #joygoBetaGate .jg-login button{
+    height:42px!important;
+    min-height:42px!important;
+    font-size:16px!important;
+  }
+  #joygoBetaGate .jg-msg{
+    left:18%!important;
+    top:78.7%!important;
+    width:64%!important;
+    font-size:10px!important;
   }
 }
 </style>
