@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.3.8b｜棋力權限擴充</title>
+<title>Joy Go Beta 3.3.8c｜棋力權限擴充</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -68,7 +68,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.8b｜棋力權限擴充版</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.3.8c｜完整棋力權限版</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="management-audit.html">🛡️ 權限／管理紀錄</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
@@ -182,8 +182,9 @@ function roleText(r){return r.role==="admin"?"主管理員":r.role==="trial"?"�
 function buildRankOptions(currentCode="1D") {
  const sel=$("detailRankSelect");
  if(!sel)return;
- const amateurMax=staffRole==="admin"?9:6;
  const opts=[];
+ for(let i=30;i>=1;i--) opts.push(`<option value="${i}K">${i}級</option>`);
+ const amateurMax=staffRole==="admin"?9:6;
  for(let i=1;i<=amateurMax;i++) opts.push(`<option value="${i}D">${i===1?"1段":i+"段"}</option>`);
  if(staffRole==="admin") {
    for(let i=1;i<=9;i++) opts.push(`<option value="${i}P">${i}P</option>`);
@@ -192,7 +193,9 @@ function buildRankOptions(currentCode="1D") {
  const allowed=[...sel.options].map(o=>o.value);
  sel.value=allowed.includes(currentCode)?currentCode:"1D";
  if($("rankAdminTitle")) $("rankAdminTitle").textContent=staffRole==="admin"?"🎯 主管理員棋力調整":"🎯 副管理員棋力調整";
- if($("rankAdminHint")) $("rankAdminHint").textContent=staffRole==="admin"?"主管理員可設定：1～9段、1P～9P。":"副管理員僅可設定：1～6段。";
+ if($("rankAdminHint")) $("rankAdminHint").textContent=staffRole==="admin"
+   ?"主管理員可設定：30級～1級、1～9段、1P～9P。"
+   :"副管理員可設定：30級～1級、1～6段。";
 }
 
 
@@ -342,14 +345,18 @@ async function auditV334(action,targetId,detail=""){
 async function saveRank(){
  if(!selectedId||!["admin","deputy"].includes(staffRole))return;
  const r=members.find(x=>x.id===selectedId),x=rr(selectedId),code=$("detailRankSelect").value,nl=$("detailRankSelect").selectedOptions[0]?.text||code;
- const m=code.match(/^(\d+)([DP])$/);
+ const m=code.match(/^(\d+)([KDP])$/);
  if(!m)return alert("棋力格式錯誤，請重新選擇。");
  const n=Number(m[1]),kind=m[2];
- if(staffRole!=="admin" && (kind!=="D" || n<1 || n>6)) return alert("副管理員只能設定1～6段。");
- if(staffRole==="admin" && !((kind==="D"&&n>=1&&n<=9)||(kind==="P"&&n>=1&&n<=9))) return alert("主管理員可設定1～9段或1P～9P。");
+ const validK=kind==="K"&&n>=1&&n<=30;
+ const validDeputyD=kind==="D"&&n>=1&&n<=6;
+ const validAdminD=kind==="D"&&n>=1&&n<=9;
+ const validAdminP=kind==="P"&&n>=1&&n<=9;
+ if(staffRole!=="admin" && !(validK||validDeputyD)) return alert("副管理員可設定30級～1級、1～6段。");
+ if(staffRole==="admin" && !(validK||validAdminD||validAdminP)) return alert("主管理員可設定30級～1級、1～9段、1P～9P。");
  if(!confirm(`確定將「${r?.display_name||"會員"}」由 ${x.rank_label||"未設定"} 改為 ${nl}？`))return;
  const {error}=await sb.rpc("joygo_staff_set_member_rank_v333",{p_target_id:selectedId,p_rank_code:code});
- if(error)return alert("棋力修改失敗："+error.message+"\n\n若是7～9段或職業棋力，代表資料庫 RPC 尚未擴充，請再執行棋力 RPC 升級 SQL。");
+ if(error)return alert("棋力修改失敗："+error.message);
  await loadMembers();await openMember(selectedId)
 }
 async function saveMember(){
