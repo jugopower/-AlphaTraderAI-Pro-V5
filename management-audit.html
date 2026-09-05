@@ -5,66 +5,64 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07100b">
 <meta name="referrer" content="no-referrer">
-<title>Joy Go Beta 3.3.4a｜管理權限與操作紀錄</title>
+<title>Joy Go Beta 3.4.0｜管理紀錄查詢</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--blue:#83cfff}
+:root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--blue:#83cfff;--red:#ff9a9a}
 *{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}
 .shell{width:min(1250px,100%);margin:auto;padding:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
 h1{margin:0;color:var(--gold);font-size:clamp(24px,4vw,36px)}.sub{color:var(--muted);font-size:12px;line-height:1.5}.actions{display:flex;gap:7px;flex-wrap:wrap}
 .btn{border:1px solid var(--line);background:#0a120d;color:var(--ink);padding:9px 12px;border-radius:10px;text-decoration:none;font-weight:850;cursor:pointer}.gold{background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400;border:0}
 .notice{padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#0a120d;color:var(--muted);margin-bottom:10px}.good{border-color:#257657;color:#9cebc7}.bad{border-color:#914343;color:#ffb0b0}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px}.card{border:1px solid var(--line);border-radius:14px;background:#0a120d;overflow:hidden}.card h2{margin:0;padding:11px 12px;background:#17271c;color:var(--gold);font-size:16px}.body{padding:11px}
-.perm-table{width:100%;border-collapse:collapse}.perm-table th,.perm-table td{padding:8px;border-bottom:1px solid #27392d;text-align:center;font-size:12px}.perm-table th:first-child,.perm-table td:first-child{text-align:left}.yes{color:#8fe6ba;font-weight:900}.no{color:#826f6f}
-.toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:7px;margin:10px 0}.toolbar input,.toolbar select{background:#050806;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px}
-.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px;background:#08100b}table.audit{width:100%;border-collapse:collapse;min-width:930px}table.audit th,table.audit td{padding:8px;border-bottom:1px solid #24372b;text-align:left;font-size:12px;vertical-align:top}table.audit th{background:#17271c;color:#ffe083;position:sticky;top:0}.badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;background:#213427;color:#bfe9cf}.rank{background:#423516;color:#ffe19a}.muted{color:var(--muted)}
-@media(max-width:850px){.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.stat{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#0d1811}.stat span{font-size:11px;color:var(--muted)}.stat b{display:block;color:var(--gold);font-size:22px}
+.card{border:1px solid var(--line);border-radius:14px;background:#0a120d;overflow:hidden}.card h2{margin:0;padding:11px 12px;background:#17271c;color:var(--gold);font-size:16px}.body{padding:11px}
+.toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:7px;margin-bottom:10px}.toolbar input,.toolbar select{background:#050806;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px;background:#08100b}table{width:100%;border-collapse:collapse;min-width:980px}th,td{padding:8px;border-bottom:1px solid #24372b;text-align:left;font-size:12px;vertical-align:top}th{background:#17271c;color:#ffe083;position:sticky;top:0}
+.badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900}.invite{background:#15334b;color:#a9dcff}.lobby{background:#4b2222;color:#ffb6b6}.suspend{background:#4a3616;color:#ffe0a0}.clear{background:#173d2b;color:#aaf0c9}.other{background:#263428;color:#c7dfcf}
+.muted{color:var(--muted)}.active{color:#ffb1b1;font-weight:900}.expired{color:#8fc9a8}.reason{white-space:pre-wrap}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>🛡️ Joy Go 管理權限／操作紀錄</h1><div class="sub">Beta 3.3.4a｜權限總覽＋管理日誌</div></div>
- <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="member-admin.html">會員管理</a><a class="btn" href="admin-center.html">管理中心</a><a class="btn gold" href="platform.html">返回平台</a></div>
+ <div><h1>🧾 Joy Go 管理紀錄查詢</h1><div class="sub">Beta 3.4.0｜主管理員秩序處置紀錄</div></div>
+ <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="member-admin.html">會員管理</a><a class="btn" href="admin-center.html">管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
-<div id="notice" class="notice">正在確認管理權限…</div>
+
+<div id="notice" class="notice">正在確認主管理員權限…</div>
 
 <section id="app" hidden>
- <div class="grid">
-  <section class="card"><h2>👑 主管理員</h2><div class="body"><div id="adminNames" style="font-weight:900">—</div><p class="sub">完整會員管理、棋力管理、停權、參賽資格、巡場員設定與管理紀錄。</p></div></section>
-  <section class="card"><h2>🧑‍💼 副管理員</h2><div class="body"><div id="deputyNames" style="font-weight:900">—</div><p class="sub">可查看會員資料與升降戰績、調整會員棋力；不可設定管理權限。</p></div></section>
-  <section class="card"><h2>🛡️ 巡場員</h2><div class="body"><div id="moderatorNames" style="font-weight:900">—</div><p class="sub">負責巡場與既有巡場處置；不可修改棋力、會員身分、期限或管理權限。</p></div></section>
+ <div class="stats">
+  <div class="stat"><span>載入紀錄</span><b id="sTotal">0</b></div>
+  <div class="stat"><span>禁邀紀錄</span><b id="sInvite">0</b></div>
+  <div class="stat"><span>真人大廳限制</span><b id="sLobby">0</b></div>
+  <div class="stat"><span>停權／解除</span><b id="sSuspend">0</b></div>
  </div>
 
- <section class="card" style="margin-bottom:12px">
-  <h2>📋 權限對照表</h2>
-  <div class="body" style="overflow:auto">
-   <table class="perm-table">
-    <thead><tr><th>功能</th><th>主管理員</th><th>副管理員</th><th>巡場員</th></tr></thead>
-    <tbody>
-     <tr><td>查看會員／戰績</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-     <tr><td>修改會員棋力</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td></tr>
-     <tr><td>修改身分／到期／參賽資格</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
-     <tr><td>設定／取消巡場員</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
-     <tr><td>停權／解除</td><td class="yes">✓</td><td class="no">依既有權限</td><td class="yes">依巡場權限</td></tr>
-     <tr><td>查看管理紀錄</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-    </tbody>
-   </table>
-  </div>
- </section>
-
  <section class="card">
-  <h2>🧾 最近管理操作</h2>
+  <h2>📋 秩序管理處置紀錄</h2>
   <div class="body">
    <div class="toolbar">
-    <input id="search" placeholder="搜尋管理員、會員、操作或內容">
-    <select id="typeFilter"><option value="all">全部類型</option><option value="management">會員／巡場管理</option><option value="rank">棋力修改</option></select>
-    <select id="limitSelect"><option value="50">最近 50 筆</option><option value="100" selected>最近 100 筆</option><option value="200">最近 200 筆</option></select>
+    <input id="search" placeholder="搜尋會員、管理員、處置或原因">
+    <select id="typeFilter">
+     <option value="all">全部處置</option>
+     <option value="invite">禁止邀請</option>
+     <option value="lobby">真人大廳限制</option>
+     <option value="suspend">帳號停權</option>
+     <option value="clear">解除限制</option>
+    </select>
+    <select id="limitSelect">
+     <option value="50">最近 50 筆</option>
+     <option value="100" selected>最近 100 筆</option>
+     <option value="200">最近 200 筆</option>
+     <option value="500">最近 500 筆</option>
+    </select>
    </div>
    <div class="tablewrap">
-    <table class="audit">
-     <thead><tr><th>時間</th><th>類型</th><th>管理員</th><th>對象</th><th>操作</th><th>內容</th></tr></thead>
-     <tbody id="auditRows"><tr><td colspan="6">讀取中…</td></tr></tbody>
+    <table>
+     <thead><tr><th>時間</th><th>管理員</th><th>會員</th><th>處置</th><th>原因</th><th>到期時間</th><th>狀態</th></tr></thead>
+     <tbody id="rows"><tr><td colspan="7">讀取中…</td></tr></tbody>
     </table>
    </div>
   </div>
@@ -76,65 +74,75 @@ h1{margin:0;color:var(--gold);font-size:clamp(24px,4vw,36px)}.sub{color:var(--mu
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let auditRows=[],profiles=new Map();
+let dataRows=[];
 
 function notice(t,k=""){$("notice").className="notice"+(k?" "+k:"");$("notice").textContent=t}
 function fmt(ts){if(!ts)return "—";try{return new Date(ts).toLocaleString("zh-TW",{hour12:false})}catch{return String(ts)}}
-function actionLabel(a){
- return ({
-  rank_change:"棋力修改",member_settings:"會員設定",
-  moderator_grant:"設為巡場員",moderator_revoke:"取消巡場員",
-  moderation_suspend_1d:"停權1天",moderation_suspend_7d:"停權7天",
-  moderation_suspend_permanent:"永久停權",moderation_unsuspend:"解除停權"
- })[a]||a||"操作";
+function actionInfo(a){
+ const m={
+  invite_10m:["禁止邀請10分鐘","invite","invite"],
+  invite_60m:["禁止邀請1小時","invite","invite"],
+  invite_clear:["解除禁止邀請","解除","clear"],
+  lobby_10m:["禁入真人大廳10分鐘","大廳","lobby"],
+  lobby_60m:["禁入真人大廳1小時","大廳","lobby"],
+  lobby_clear:["解除真人大廳限制","解除","clear"],
+  kick:["踢出真人大廳10分鐘","大廳","lobby"],
+  suspend_1d:["停權1天","停權","suspend"],
+  suspend_7d:["停權7天","停權","suspend"],
+  suspend_permanent:["永久停權","停權","suspend"],
+  unsuspend:["解除停權","解除","clear"],
+  end_room:["裁判終止棋局","管理","other"]
+ };
+ return m[a]||[a||"操作","管理","other"];
 }
-async function loadProfiles(){
- const {data}=await sb.from("profiles").select("id,display_name,email,role");
- profiles=new Map((data||[]).map(x=>[x.id,x]));
-}
-async function loadStaff(){
- const all=[...profiles.values()];
- const admins=all.filter(x=>x.role==="admin").map(x=>x.display_name||x.email);
- $("adminNames").textContent=admins.join("、")||"尚未設定";
- let dep=[],mods=[];
- try{const {data}=await sb.rpc("joygo_get_deputy_ids");dep=(data||[]).map(x=>profiles.get(x.user_id)?.display_name||profiles.get(x.user_id)?.email||"副管理員")}catch{}
- try{const {data}=await sb.rpc("joygo_get_moderator_ids");mods=(data||[]).map(x=>profiles.get(x.user_id)?.display_name||"匿名巡場員")}catch{}
- $("deputyNames").textContent=dep.join("、")||"尚未設定";
- $("moderatorNames").textContent=mods.length?`${mods.length} 位巡場員`:"尚未設定";
-}
-function renderAudit(){
- const q=$("search").value.trim().toLowerCase(),type=$("typeFilter").value;
- const arr=auditRows.filter(x=>{
-  const typeOk=type==="all"||x.source_type===type;
-  const text=[x.actor_name,x.target_name,x.action_name,x.detail,x.old_value,x.new_value].join(" ").toLowerCase();
-  return typeOk&&(!q||text.includes(q));
+function render(){
+ const q=$("search").value.trim().toLowerCase(),filter=$("typeFilter").value;
+ const arr=dataRows.filter(x=>{
+  const [,group]=actionInfo(x.action_name);
+  const ok=filter==="all"||group===filter;
+  const text=[x.actor_name,x.target_name,x.action_name,x.reason].join(" ").toLowerCase();
+  return ok&&(!q||text.includes(q));
  });
- $("auditRows").innerHTML=arr.map(x=>{
-   const detail=x.source_type==="rank"
-     ? `${esc(x.old_value||"—")} → <b>${esc(x.new_value||"—")}</b><br><span class="muted">${esc(x.detail||"")}</span>`
-     : esc(x.detail||"—");
-   return `<tr><td>${fmt(x.created_at)}</td><td><span class="badge ${x.source_type==="rank"?"rank":""}">${x.source_type==="rank"?"棋力":"管理"}</span></td><td>${esc(x.actor_name||"—")}</td><td>${esc(x.target_name||"—")}</td><td>${esc(actionLabel(x.action_name))}</td><td>${detail}</td></tr>`;
- }).join("")||'<tr><td colspan="6">目前沒有符合的管理紀錄。</td></tr>';
+ $("rows").innerHTML=arr.map(x=>{
+  const [label,,cls]=actionInfo(x.action_name);
+  const active=x.expires_at && new Date(x.expires_at).getTime()>Date.now();
+  const status=x.expires_at?(active?'<span class="active">限制中</span>':'<span class="expired">已到期</span>'):(x.action_name==="suspend_permanent"?'<span class="active">永久</span>':"—");
+  return `<tr>
+   <td>${fmt(x.created_at)}</td>
+   <td>${esc(x.actor_name||"—")}</td>
+   <td><b>${esc(x.target_name||"—")}</b></td>
+   <td><span class="badge ${cls}">${esc(label)}</span></td>
+   <td class="reason">${esc(x.reason||"—")}</td>
+   <td>${fmt(x.expires_at)}</td>
+   <td>${status}</td>
+  </tr>`;
+ }).join("")||'<tr><td colspan="7">目前沒有符合的管理紀錄。</td></tr>';
+
+ $("sTotal").textContent=dataRows.length;
+ $("sInvite").textContent=dataRows.filter(x=>actionInfo(x.action_name)[1]==="invite").length;
+ $("sLobby").textContent=dataRows.filter(x=>actionInfo(x.action_name)[1]==="lobby").length;
+ $("sSuspend").textContent=dataRows.filter(x=>["suspend","clear"].includes(actionInfo(x.action_name)[1])).length;
 }
-async function loadAudit(){
+async function load(){
  const limit=Number($("limitSelect").value)||100;
- const {data,error}=await sb.rpc("joygo_admin_management_audit_v334",{p_limit:limit});
+ const {data,error}=await sb.rpc("joygo_admin_moderation_audit_v340",{p_limit:limit});
  if(error){notice("管理紀錄讀取失敗："+error.message,"bad");return}
- auditRows=data||[];renderAudit();
+ dataRows=data||[];render();
+ notice(`✅ 已載入 ${dataRows.length} 筆秩序管理紀錄。`,"good");
 }
 async function init(){
  const {data:{session},error}=await sb.auth.getSession();
- if(error||!session)return notice("請先登入 Joy Go 管理團隊帳號。","bad");
+ if(error||!session)return notice("請先登入 Joy Go 主管理員帳號。","bad");
  const {data:access,error:ae}=await sb.rpc("joygo_get_staff_access");
  if(ae)return notice("管理權限讀取失敗："+ae.message,"bad");
  const a=Array.isArray(access)?access[0]:access;
- if(!["admin","deputy","moderator"].includes(a?.staff_role||"none"))return notice("此頁僅限 Joy Go 管理團隊使用。","bad");
- $("app").hidden=false;
- await loadProfiles();await loadStaff();await loadAudit();
- notice("✅ 管理權限與操作紀錄已就緒。","good");
+ if((a?.staff_role||"none")!=="admin")return notice("此頁僅限主管理員查看。","bad");
+ $("app").hidden=false;await load();
 }
-$("refreshBtn").onclick=async()=>{await loadProfiles();await loadStaff();await loadAudit()};
-$("search").oninput=renderAudit;$("typeFilter").onchange=renderAudit;$("limitSelect").onchange=loadAudit;
+$("refreshBtn").onclick=load;
+$("search").oninput=render;
+$("typeFilter").onchange=render;
+$("limitSelect").onchange=load;
 init();
 </script>
 </body>
