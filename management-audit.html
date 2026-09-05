@@ -26,7 +26,7 @@ h1{margin:0;color:var(--gold);font-size:clamp(24px,4vw,36px)}.sub{color:var(--mu
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>🧾 Joy Go 管理紀錄查詢</h1><div class="sub">Beta 3.4.0｜主管理員秩序處置紀錄</div></div>
+ <div><h1>🧾 Joy Go 管理紀錄查詢</h1><div class="sub">Beta 3.4.0a｜管理紀錄顯示修正版</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="member-admin.html">會員管理</a><a class="btn" href="admin-center.html">管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 
@@ -107,12 +107,20 @@ function render(){
   const [label,,cls]=actionInfo(x.action_name);
   const active=x.expires_at && new Date(x.expires_at).getTime()>Date.now();
   const status=x.expires_at?(active?'<span class="active">限制中</span>':'<span class="expired">已到期</span>'):(x.action_name==="suspend_permanent"?'<span class="active">永久</span>':"—");
+  let targetDisplay=esc(x.target_name||"—");
+  let reasonDisplay=esc(x.reason||"—");
+  if(x.action_name==="end_room"){
+    const m=String(x.reason||"").match(/room=([^｜|\s]+)/);
+    const roomId=m?.[1]||"";
+    targetDisplay=roomId?`房間／棋局<br><span class="muted">${esc(roomId)}</span>`:"房間／棋局";
+    reasonDisplay=esc(String(x.reason||"").replace(/^room=[^｜|\s]+[｜|]?\s*/,"")||"—");
+  }
   return `<tr>
    <td>${fmt(x.created_at)}</td>
    <td>${esc(x.actor_name||"—")}</td>
-   <td><b>${esc(x.target_name||"—")}</b></td>
+   <td><b>${targetDisplay}</b></td>
    <td><span class="badge ${cls}">${esc(label)}</span></td>
-   <td class="reason">${esc(x.reason||"—")}</td>
+   <td class="reason">${reasonDisplay}</td>
    <td>${fmt(x.expires_at)}</td>
    <td>${status}</td>
   </tr>`;
