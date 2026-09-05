@@ -12,7 +12,7 @@
  img-src 'self' data: blob:;
  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
  object-src 'none';base-uri 'self';form-action 'self';">
-<title>Joy Go Beta 3.4.2｜秩序管理強化</title>
+<title>Joy Go Beta 3.4.2a｜主管理員鎖定版</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{color-scheme:dark;--line:#365543;--gold:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff}
@@ -68,7 +68,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 <body>
 <main class="shell">
 <header class="head">
- <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.4.2｜副管理員日常管理權限版</div></div>
+ <div><h1>👥 Joy Go 會員管理</h1><div class="subtitle">Beta 3.4.2a｜主管理員鎖定保護版</div></div>
  <div class="actions"><button id="refreshBtn" class="btn">重新整理</button><a class="btn" href="management-audit.html">🛡️ 權限／管理紀錄</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="index.html">返回平台</a></div>
 </header>
 <div id="notice" class="notice">正在確認管理權限…</div>
@@ -173,7 +173,7 @@ tr:hover{background:#102018}.clickname{font-weight:900;color:#fff0b4;cursor:poin
 
   <div id="adminSection" class="section" hidden>
    <h3>👑 主管理員會員控制中心</h3><div style="margin:-4px 0 12px;color:#9fb0a7;font-size:13px">可管理棋力、會員身分、到期日、參賽資格、巡場權限、停權與密碼重設。</div>
-   <div class="adminrow"><label>會員身分／權限</label><div class="field"><select id="detailRole"><option value="trial">試用會員</option><option value="member">正式會員</option><option value="admin">管理員</option></select></div></div>
+   <div class="adminrow"><label>會員身分</label><div class="field"><select id="detailRole"><option value="trial">試用會員</option><option value="member">正式會員</option></select><small class="sub">主管理員身分已鎖定，不可由此處變更。</small></div></div>
    <div class="adminrow"><label>會員到期</label><div class="field"><input id="detailExpires" type="date"></div></div>
    <div class="adminrow"><label>參賽資格</label><div class="field"><select id="detailEligible"><option value="true">可參賽</option><option value="false">不可參賽</option></select></div></div>
    <div class="adminrow"><label>密碼安全</label><div class="field"><button id="resetPasswordBtn" class="mini neutral" type="button">寄送重設密碼信</button><small style="display:block;margin-top:7px;color:#9fb0a7">主管理員看不到會員原密碼，只能寄送安全重設信。</small></div></div>
@@ -358,7 +358,7 @@ async function openMember(id){
  $("adminSection").hidden=staffRole!=="admin"||id===me.id||r.role==="admin";
  if($("deputyEligible")) $("deputyEligible").value=String(r.competition_eligible!==false);
  buildRankOptions(x.rank_code&&x.rank_code!=="UNRATED"?x.rank_code:"1D");
- $("detailRole").value=r.role||"member";$("detailExpires").value=dateVal(r.expires_at);$("detailEligible").value=String(r.competition_eligible!==false);
+ $("detailRole").value=r.role==="trial"?"trial":"member";$("detailExpires").value=dateVal(r.expires_at);$("detailEligible").value=String(r.competition_eligible!==false);
  if($("deputyBtn")) $("deputyBtn").textContent=deputyIds.has(id)?"取消副管理員":"設為副管理員";
  if($("moderatorBtn")) $("moderatorBtn").textContent=moderatorIds.has(id)?"取消巡場員":"設為巡場員";
  $("detailModal").classList.add("open");
@@ -395,7 +395,22 @@ async function saveRank(){
  await loadMembers();await openMember(selectedId)
 }
 async function saveMember(){
- if(staffRole!=="admin"||!selectedId)return;const {error}=await sb.rpc("joygo_admin_update_member_settings",{p_target_user:selectedId,p_role:$("detailRole").value,p_expires_at:$("detailExpires").value?new Date($("detailExpires").value+"T23:59:59").toISOString():null,p_competition_eligible:$("detailEligible").value==="true"});if(error)return alert("會員設定更新失敗："+error.message);await auditV334("member_settings",selectedId,`身分=${$("detailRole").value}；到期=${$("detailExpires").value||"未設定"}；參賽=${$("detailEligible").value}`);await loadMembers();await openMember(selectedId)
+ if(staffRole!=="admin"||!selectedId)return;
+ const r=members.find(x=>x.id===selectedId);
+ if(!r)return;
+ if(r.role==="admin")return alert("主管理員帳號已鎖定，不可由會員管理頁修改。");
+ const newRole=$("detailRole").value;
+ if(!["trial","member"].includes(newRole))return alert("安全保護：此頁只能設定試用會員或正式會員。");
+ const {error}=await sb.rpc("joygo_admin_update_member_settings",{
+   p_target_user:selectedId,
+   p_role:newRole,
+   p_expires_at:$("detailExpires").value?new Date($("detailExpires").value+"T23:59:59").toISOString():null,
+   p_competition_eligible:$("detailEligible").value==="true"
+ });
+ if(error)return alert("會員設定更新失敗："+error.message);
+ await auditV334("member_settings",selectedId,`身分=${newRole}；到期=${$("detailExpires").value||"未設定"}；參賽=${$("detailEligible").value}`);
+ await loadMembers();
+ await openMember(selectedId)
 }
 
 
