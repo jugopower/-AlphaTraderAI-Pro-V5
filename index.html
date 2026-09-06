@@ -36,7 +36,7 @@
 <meta name="joygo-reconnect-version" content="3.4.3b">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
-<meta name="joygo-classic-delete-version" content="3.4.6a">
+<meta name="joygo-classic-delete-version" content="3.4.6b">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -14671,6 +14671,15 @@ document.addEventListener("click",(ev)=>{
     return memberAccess?.role==="admin";
   }
 
+  function syncOnlineClassicAdminFilterVisibility(){
+    const wrap=$jg("onlineClassicAdminFilterWrap");
+    const filter=$jg("onlineClassicAdminFilter");
+    const isAdmin=canPublishOnlineClassic();
+    if(wrap)wrap.style.display=isAdmin?"block":"none";
+    if(filter && !isAdmin)filter.value="published";
+    return isAdmin;
+  }
+
   function ensureOnlineClassicUI(){
     const modal=$jg("classicGameModal")?.querySelector(".modal");
     if(!modal || $jg("onlineClassicPanel")) return;
@@ -14710,7 +14719,7 @@ document.addEventListener("click",(ev)=>{
 
     const adminWrap=$jg("onlineClassicAdminFilterWrap");
     const adminFilter=$jg("onlineClassicAdminFilter");
-    if(adminWrap)adminWrap.style.display=canPublishOnlineClassic()?"block":"none";
+    syncOnlineClassicAdminFilterVisibility();
     if(adminFilter){
       try{adminFilter.value=sessionStorage.getItem("joygo-online-classic-filter")||"published"}catch{}
       adminFilter.addEventListener("change",()=>{
@@ -14757,6 +14766,7 @@ document.addEventListener("click",(ev)=>{
 
   function renderOnlineClassicGames(){
     ensureOnlineClassicUI();
+    syncOnlineClassicAdminFilterVisibility();
     const list=$jg("onlineClassicList");
     const status=$jg("onlineClassicStatus");
     if(!list)return;
@@ -14840,6 +14850,7 @@ document.addEventListener("click",(ev)=>{
 
   async function fetchOnlineClassicGames(){
     ensureOnlineClassicUI();
+    syncOnlineClassicAdminFilterVisibility();
     const status=$jg("onlineClassicStatus");
     if(status)status.textContent="正在讀取線上名局…";
 
@@ -16414,7 +16425,7 @@ console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保
 console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
 </script>
 <script id="joygo-beta346-marker">
-console.info("Joy Go Beta 3.4.6a｜已下架名局管理｜保留 3.4.6、3.4.5、3.4.4c、3.4.3b、3.3.12zl");
+console.info("Joy Go Beta 3.4.6b｜主管理員已下架名局檢視修正｜保留 3.4.6a、3.4.6、3.4.5、3.4.4c、3.4.3b、3.3.12zl");
 </script>
 </body>
 </html>
