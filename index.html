@@ -35,6 +35,7 @@
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 <meta name="joygo-reconnect-version" content="3.4.3b">
 <meta name="joygo-room-rank-version" content="3.4.4c">
+<meta name="joygo-auto-spectator-version" content="3.4.5">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -7483,8 +7484,8 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="spectatorModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="spectatorModal">✕</button>
-  <h2>👁 Beta 1.5b｜多盤觀戰大廳</h2>
-  <p class="spectator-note">每位棋手可建立自己的轉播房間；觀戰者從大廳選擇棋局觀看。觀戰只同步棋步，不呼叫 KataGo，因此不增加 AI 分析負擔。測試版大廳先顯示最多 8 盤。</p>
+  <h2>👁 Beta 3.4.5｜真人棋局自動觀戰</h2>
+  <p class="spectator-note">真人對局會自動出現在觀戰大廳，不需棋手另外按轉播。觀戰者直接從大廳選擇棋局觀看；觀戰只同步棋步，不呼叫 KataGo，因此不增加 AI 分析負擔。大廳先顯示最近 8 盤。</p>
 
   <div class="spectator-room-row">
     <label>我的房間名稱
@@ -8965,6 +8966,86 @@ function spectatorSelectRoom(id){
   if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=spectatorCurrentGameId;
   return spectatorCurrentGameId;
 }
+
+let onlineAutoSpectatorLastHash="";
+let onlineAutoSpectatorLastGameId="";
+
+function onlineAutoSpectatorGameId(room){
+  return room?.room_code ? `ROOM-${String(room.room_code).toUpperCase()}` : "";
+}
+
+async function onlineAutoSpectatorPublish(room){
+  // Beta 3.4.5：真人棋局自動出現在觀戰大廳。
+  // 僅由黑方發布，避免黑白雙方重複覆寫同一盤。
+  if(!room||!memberSession?.user||!memberSupabase)return;
+  if(room.black_id!==memberSession.user.id)return;
+  if(!["playing","ended"].includes(room.status))return;
+
+  const gameId=onlineAutoSpectatorGameId(room);
+  if(!gameId)return;
+
+  const payload={
+    game_id:gameId,
+    broadcaster_id:`online-${room.black_id}`,
+    board_size:Number(room.board_size||state.size||19),
+    moves:(state.moves||[]).map(m=>({
+      c:m.c,
+      x:Number(m.x),
+      y:Number(m.y),
+      pass:!!m.pass
+    })),
+    setup_b:[],
+    setup_w:[],
+    index:Number(state.index||0),
+    black_name:String(room.black_name||"黑方"),
+    white_name:String(room.white_name||"白方"),
+    status:room.status==="ended"?"ended":"playing"
+  };
+
+  const hash=JSON.stringify([
+    payload.game_id,
+    payload.status,
+    payload.index,
+    payload.moves,
+    payload.black_name,
+    payload.white_name
+  ]);
+
+  if(hash===onlineAutoSpectatorLastHash && gameId===onlineAutoSpectatorLastGameId)return;
+
+  try{
+    const r=await spectatorFetch("/spectator/publish",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    onlineAutoSpectatorLastHash=hash;
+    onlineAutoSpectatorLastGameId=gameId;
+  }catch(e){
+    // 自動觀戰失敗不能影響真人下棋。
+    console.warn("auto spectator publish",e);
+  }
+}
+
+async function onlineAutoSpectatorStop(room){
+  if(!room||!memberSession?.user||room.black_id!==memberSession.user.id)return;
+  const gameId=onlineAutoSpectatorGameId(room);
+  if(!gameId)return;
+  try{
+    await spectatorFetch("/spectator/stop",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        game_id:gameId,
+        broadcaster_id:`online-${room.black_id}`
+      })
+    });
+  }catch(_){}
+  onlineAutoSpectatorLastHash="";
+  onlineAutoSpectatorLastGameId="";
+}
+
 async function spectatorFetch(path,options={}){
   const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),7000);
   try{return await fetch(spectatorApiBase()+path,{cache:'no-store',signal:ctl.signal,...options})}finally{clearTimeout(timer)}
@@ -10348,6 +10429,7 @@ async function onlineSyncRoom(){
     $("whiteClockName").textContent="白方｜"+whiteNameOnly+(state.onlineColor==="W"?"（我）":"");
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
+    onlineAutoSpectatorPublish(room);
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
     onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"🏁 對局已結束。"),myTurn?"ok":"");
     const lastMove=(moves||[]).at(-1);
@@ -10514,6 +10596,7 @@ async function onlineResign(){
   }
 }
 async function onlineClearEndedRoom(){
+  if(state.onlineRoom)await onlineAutoSpectatorStop(state.onlineRoom);
   const r=state.onlineRoom;
   if(!r||r.status!=="ended"){toast("棋局尚未結束，不能清除。");return}
   if(!confirm("確定清除這一局？棋步會從真人大廳移除；如要保存，請先儲存 SGF。"))return;
@@ -16248,6 +16331,9 @@ console.info("Joy Go Beta 3.4.3b｜斷線重連棋鐘保護｜底本 Beta 3.3.12
 </script>
 <script id="joygo-beta344-marker">
 console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保留 Beta 3.4.3b 與 3.3.12zl");
+</script>
+<script id="joygo-beta345-marker">
+console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
 </script>
 </body>
 </html>
