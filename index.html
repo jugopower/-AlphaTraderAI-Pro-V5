@@ -36,6 +36,7 @@
 <meta name="joygo-reconnect-version" content="3.4.3b">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
+<meta name="joygo-classic-delete-version" content="3.4.6">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -14795,6 +14796,14 @@ document.addEventListener("click",(ev)=>{
         del.textContent="下架";
         del.onclick=()=>unpublishOnlineClassic(row);
         actions.appendChild(del);
+
+        if(row.is_published===false){
+          const hardDel=document.createElement("button");
+          hardDel.className="danger";
+          hardDel.textContent="永久刪除";
+          hardDel.onclick=()=>deleteOnlineClassicPermanent(row);
+          actions.appendChild(hardDel);
+        }
       }
 
       card.append(info,actions);
@@ -14900,6 +14909,35 @@ document.addEventListener("click",(ev)=>{
       await fetchOnlineClassicGames();
     }catch(err){
       toast("下架失敗："+(err?.message||String(err)));
+    }
+  }
+
+  async function deleteOnlineClassicPermanent(row){
+    if(!canPublishOnlineClassic())return;
+    if(!row?.id)return;
+
+    const name=row.title||"這盤名局";
+
+    if(!confirm(`⚠️ 永久刪除「${name}」？\n\n此動作會從 Supabase 永久移除，無法復原。`))return;
+
+    const typed=prompt(`第二次確認：請輸入 DELETE 才會永久刪除「${name}」`);
+    if(typed!=="DELETE"){
+      toast("已取消永久刪除");
+      return;
+    }
+
+    try{
+      const {data,error}=await memberSupabase.rpc("joygo_admin_delete_classic_game_v346",{
+        p_game_id:row.id
+      });
+      if(error)throw error;
+
+      const ok=Array.isArray(data)?data[0]:data;
+      toast(ok?.message||("已永久刪除："+name));
+      await fetchOnlineClassicGames();
+    }catch(err){
+      console.error(err);
+      toast("永久刪除失敗："+(err?.message||String(err)));
     }
   }
 
@@ -16334,6 +16372,9 @@ console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保
 </script>
 <script id="joygo-beta345-marker">
 console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
+</script>
+<script id="joygo-beta346-marker">
+console.info("Joy Go Beta 3.4.6｜線上名局永久刪除｜保留 3.4.5、3.4.4c、3.4.3b、3.3.12zl");
 </script>
 </body>
 </html>
