@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zj｜KataGo 落子即時顯示版 -->
+<!-- Beta 3.3.12zk｜iPad 橫式棋盤底部安全修正版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -7073,6 +7073,46 @@ body.jg-online-mode #jgUSpeedPanel{
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Joy Go Platform">
 <meta name="twitter:description" content="">
+
+
+<!-- Beta 3.3.12zk｜iPad 橫式棋盤底部安全修正：僅調整棋盤，不動右側棋鐘與功能鍵 -->
+<style id="beta3312zk-ipad-landscape-board-safe-bottom">
+/*
+  iPad landscape only
+  - 修正 9x9 / 13x13 / 19x19 放大時棋盤下緣與座標被裁切
+  - 不修改 .app 欄寬、.right、棋鐘或右側功能鍵
+  - 直式與手機維持原版
+*/
+@media (orientation: landscape) and (min-width: 900px) and (pointer: coarse) {
+  .board-wrap {
+    /* 保留少量上下安全邊界，避免 Safari 橫式 viewport 四捨五入裁掉最下緣 */
+    padding-top: 6px !important;
+    padding-right: 6px !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    padding-left: 6px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #board,
+  #goBoard,
+  .board,
+  .go-board,
+  .board-canvas,
+  .board-wrap canvas {
+    aspect-ratio: 1 / 1 !important;
+    width: min(
+      calc(100% - 12px),
+      calc(100dvh - 128px - env(safe-area-inset-bottom))
+    ) !important;
+    height: auto !important;
+    max-width: calc(100% - 12px) !important;
+    max-height: calc(100dvh - 128px - env(safe-area-inset-bottom)) !important;
+    margin: 0 auto 4px auto !important;
+    flex: 0 0 auto !important;
+  }
+}
+</style>
 
 </head>
 <body>
