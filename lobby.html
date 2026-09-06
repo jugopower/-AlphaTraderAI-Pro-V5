@@ -29,7 +29,7 @@
 <body>
 <div class="page">
   <div class="top">
-    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.4.3 + Chat Beta 1.2j｜真人棋局斷線重連版</p></div>
+    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.4.3a + Chat Beta 1.2j｜斷線自動返回棋局版</p></div>
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
@@ -101,7 +101,7 @@
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
 const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let activeRoomCode=null,session=null,meName="會員",meRank="未設定",meRankCode="UNRATED",meRankSort=0,meRole="member",meStatus="active",staffRole="none",moderationKickVersion=null,moderationTimer=null,chatControl={muted_until:null,kicked_until:null,blocked:false,warning_text:null,warning_at:null},presence=null,presenceStatus="CLOSED",presenceReconnectTimer=null,presenceHealthTimer=null,presenceConnecting=false,inviteChannel=null,roomChannel=null,chatChannel=null,chatControlChannel=null,refreshTimer=null,chatControlPollTimer=null,chatSending=false,lastWarningAt="",chatAdminExpanded=new Set();
+let activeRoomCode=null,activeRoomAutoJumped=false,session=null,meName="會員",meRank="未設定",meRankCode="UNRATED",meRankSort=0,meRole="member",meStatus="active",staffRole="none",moderationKickVersion=null,moderationTimer=null,chatControl={muted_until:null,kicked_until:null,blocked:false,warning_text:null,warning_at:null},presence=null,presenceStatus="CLOSED",presenceReconnectTimer=null,presenceHealthTimer=null,presenceConnecting=false,inviteChannel=null,roomChannel=null,chatChannel=null,chatControlChannel=null,refreshTimer=null,chatControlPollTimer=null,chatSending=false,lastWarningAt="",chatAdminExpanded=new Set();
 const $=id=>document.getElementById(id);
 function msg(t,type=""){const n=$("notice");n.textContent=t;n.className="notice "+type;if(!t)n.style.display="none";else n.style.display="block"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -223,6 +223,16 @@ async function loadMyActiveRoom(){
     $("reconnectMeta").textContent=`房號 ${row.room_code}｜你是${side}｜對手：${opponent}｜${Number(row.board_size||19)}路`;
     $("reconnectBtn").textContent=row.room_status==="waiting"?"返回房間":"返回棋局";
     banner.classList.add("show");
+
+    // Beta 3.4.3a：若棋局仍在 playing，回到大廳後自動返回原棋局。
+    // 保留按鈕作為網路慢或跳轉失敗時的備用入口。
+    if(row.room_status==="playing" && !activeRoomAutoJumped){
+      activeRoomAutoJumped=true;
+      $("reconnectMeta").textContent=`房號 ${row.room_code}｜你是${side}｜對手：${opponent}｜正在自動返回棋局…`;
+      setTimeout(()=>{
+        if(activeRoomCode===row.room_code) goRoom(row.room_code);
+      },1200);
+    }
   }catch(e){
     console.warn("loadMyActiveRoom",e);
   }
