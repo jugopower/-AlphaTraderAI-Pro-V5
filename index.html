@@ -34,7 +34,7 @@
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 <meta name="joygo-reconnect-version" content="3.4.3b">
-<meta name="joygo-room-rank-version" content="3.4.4b">
+<meta name="joygo-room-rank-version" content="3.4.4c">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -530,6 +530,13 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .photo-reference-actions{display:flex;gap:8px;margin-top:8px}.photo-reference-actions button{flex:1}
 @media(max-width:700px){.photo-import-workspace{grid-template-columns:1fr}.photo-reference{width:min(58vw,300px);left:8px;bottom:calc(10px + env(safe-area-inset-bottom))}}
 
+
+
+.clock-rank{
+  color:#f2d36b;
+  font-weight:900;
+  text-shadow:0 0 5px rgba(242,211,107,.18);
+}
 
 </style>
 
@@ -12184,10 +12191,12 @@ function updateClockUI(){
       const rankLabel=c==="B"
         ? (state.onlineRoom.black_rank_label||"未設定")
         : (state.onlineRoom.white_rank_label||"未設定");
-      const rankPrefix=rankLabel&&rankLabel!=="未設定"?`${rankLabel}｜`:"";
-      $(byoId).textContent=inByo
-        ? `${rankPrefix}讀秒 ${Math.ceil(v.byo)}秒｜剩餘 ${v.periods} 次`
-        : `${rankPrefix}讀秒 ${state.onlineRoom.byo_seconds||30}秒 × ${state.onlineRoom.byo_periods||3}次`;
+      const rankHtml=rankLabel&&rankLabel!=="未設定"
+        ? `<span class="clock-rank">${rankLabel}</span>｜`
+        : "";
+      $(byoId).innerHTML=inByo
+        ? `${rankHtml}讀秒 ${Math.ceil(v.byo)}秒｜剩餘 ${v.periods} 次`
+        : `${rankHtml}讀秒 ${state.onlineRoom.byo_seconds||30}秒 × ${state.onlineRoom.byo_periods||3}次`;
       const box=$(boxId);box.classList.toggle('active',state.onlineRoom.status==="playing"&&state.onlineRoom.turn===c);box.classList.toggle('danger',inByo&&v.byo<=10);
     }
     $("clockSoundIcon").textContent=state.sound?'🔊':'🔇';return;
@@ -16238,7 +16247,7 @@ function patch(){
 console.info("Joy Go Beta 3.4.3b｜斷線重連棋鐘保護｜底本 Beta 3.3.12zl");
 </script>
 <script id="joygo-beta344-marker">
-console.info("Joy Go Beta 3.4.4b｜棋力改顯示於棋鐘下方資訊列｜不擠壓版面｜保留 Beta 3.4.3b 與 3.3.12zl");
+console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保留 Beta 3.4.3b 與 3.3.12zl");
 </script>
 </body>
 </html>
