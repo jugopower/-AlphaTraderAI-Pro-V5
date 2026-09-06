@@ -34,6 +34,7 @@
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 <meta name="joygo-reconnect-version" content="3.4.3b">
+<meta name="joygo-room-rank-version" content="3.4.4a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -528,6 +529,22 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .photo-reference-view{height:min(38vh,300px);overflow:hidden;border-radius:10px;background:#000;display:flex;align-items:center;justify-content:center;touch-action:none}.photo-reference img{display:block;max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;will-change:transform;pointer-events:none}
 .photo-reference-actions{display:flex;gap:8px;margin-top:8px}.photo-reference-actions button{flex:1}
 @media(max-width:700px){.photo-import-workspace{grid-template-columns:1fr}.photo-reference{width:min(58vw,300px);left:8px;bottom:calc(10px + env(safe-area-inset-bottom))}}
+
+
+#blackClockName,#whiteClockName{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  display:block;
+  min-width:0;
+  max-width:100%;
+}
+@media(max-width:520px){
+  #blackClockName,#whiteClockName{
+    font-size:clamp(12px,3.7vw,16px);
+    letter-spacing:-0.2px;
+  }
+}
 
 </style>
 
@@ -10237,14 +10254,60 @@ async function openOnlineLobby(){
   if(!await onlineReady())return;
   onlineRenderRoom();openModal("onlineModal");
 }
+
+function onlineDisplayNameWithRank(name,rank,fallback){
+  const n=String(name||fallback||"棋友").trim();
+  const r=String(rank||"").trim();
+  if(!r||r==="未設定")return n;
+  if(n.endsWith(r))return n;
+  return `${n} ${r}`;
+}
+async function onlineLoadRoomRanks(room){
+  if(!room||!memberSupabase)return room;
+  try{
+    let loaded=false;
+
+    if(room.id){
+      const {data,error}=await memberSupabase.rpc("joygo_get_room_player_ranks_v344",{p_room_id:room.id});
+      if(!error){
+        const row=Array.isArray(data)?data[0]:data;
+        if(row){
+          room.black_rank_label=row.black_rank_label||"未設定";
+          room.white_rank_label=row.white_rank_label||"未設定";
+          loaded=true;
+        }
+      }
+    }
+
+    // Beta 3.4.4a fallback:
+    // If the RPC returns nothing on some mobile/session path, fetch only the two players' profiles.
+    if(!loaded){
+      const ids=[room.black_id,room.white_id].filter(Boolean);
+      if(ids.length){
+        const {data:profiles,error:pe}=await memberSupabase
+          .from("profiles")
+          .select("id,rank_label")
+          .in("id",ids);
+        if(!pe&&Array.isArray(profiles)){
+          const map=new Map(profiles.map(p=>[p.id,p.rank_label||"未設定"]));
+          room.black_rank_label=map.get(room.black_id)||room.black_rank_label||"未設定";
+          room.white_rank_label=map.get(room.white_id)||room.white_rank_label||"未設定";
+        }
+      }
+    }
+  }catch(e){
+    console.warn("room rank load",e);
+  }
+  return room;
+}
 function onlineRenderRoom(){
   const r=state.onlineRoom,active=!!r;
   if($("onlineLobbyPanel"))$("onlineLobbyPanel").style.display=active?"none":"grid";
   if($("onlineRoomPanel"))$("onlineRoomPanel").style.display=active?"block":"none";
   if(!active)return;
   $("onlineRoomCode").textContent=r.room_code||"——";
-  $("onlineBlackName").textContent=r.black_name||"黑方";
-  $("onlineWhiteName").textContent=r.white_name||"等待加入";
+  $("onlineBlackName").textContent=onlineDisplayNameWithRank(r.black_name,r.black_rank_label,"黑方");
+  $("onlineWhiteName").textContent=onlineDisplayNameWithRank(r.white_name,r.white_rank_label,"等待加入");
   $("onlineMoveCount").textContent=String(r.move_count||0);
   $("onlineTurnText").textContent=r.status==="waiting"?"等待白方加入":(r.status==="ended"?"對局結束":(r.turn==="B"?"黑方":"白方"));
   if($("onlineRoomBoardSize"))$("onlineRoomBoardSize").textContent=String(r.board_size||19)+" 路";
@@ -10272,6 +10335,7 @@ async function onlineSyncRoom(){
       memberSupabase.from("online_moves").select("move_no,color,x,y,is_pass").eq("room_id",roomId).order("move_no")
     ]);
     if(roomError)throw roomError;if(movesError)throw movesError;
+    await onlineLoadRoomRanks(room);
     state.onlineRoom=room;
     state.onlineColor=room.black_id===memberSession.user.id?"B":(room.white_id===memberSession.user.id?"W":"");
     state.onlineMode=true;state.casualMode=false;state.humanMode=false;state.teachingMode=false;state.trialMode=false;state.spectatorMode=false;
@@ -10284,10 +10348,12 @@ async function onlineSyncRoom(){
       try{localStorage.removeItem("joygo-online-room-code")}catch(_){}
       onlineReconnectProtectUntil=0;
     }
-    $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
-    $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
-    $("blackClockName").textContent="黑方｜"+(room.black_name||"等待加入")+(state.onlineColor==="B"?"（我）":"");
-    $("whiteClockName").textContent="白方｜"+(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
+    const blackShown=onlineDisplayNameWithRank(room.black_name,room.black_rank_label,"黑方");
+    const whiteShown=onlineDisplayNameWithRank(room.white_name,room.white_rank_label,"等待加入");
+    $("blackName").textContent=blackShown+(state.onlineColor==="B"?"（我）":"");
+    $("whiteName").textContent=whiteShown+(state.onlineColor==="W"?"（我）":"");
+    $("blackClockName").textContent="黑方｜"+blackShown+(state.onlineColor==="B"?"（我）":"");
+    $("whiteClockName").textContent="白方｜"+whiteShown+(state.onlineColor==="W"?"（我）":"");
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
@@ -16179,6 +16245,9 @@ function patch(){
 
 <script id="joygo-beta343b-marker">
 console.info("Joy Go Beta 3.4.3b｜斷線重連棋鐘保護｜底本 Beta 3.3.12zl");
+</script>
+<script id="joygo-beta344-marker">
+console.info("Joy Go Beta 3.4.4a｜真人房間棋力顯示修正｜防擠壓｜保留 Beta 3.4.3b 與 3.3.12zl");
 </script>
 </body>
 </html>
