@@ -34,7 +34,7 @@
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 <meta name="joygo-reconnect-version" content="3.4.3b">
-<meta name="joygo-room-rank-version" content="3.4.4a">
+<meta name="joygo-room-rank-version" content="3.4.4b">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -530,21 +530,6 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .photo-reference-actions{display:flex;gap:8px;margin-top:8px}.photo-reference-actions button{flex:1}
 @media(max-width:700px){.photo-import-workspace{grid-template-columns:1fr}.photo-reference{width:min(58vw,300px);left:8px;bottom:calc(10px + env(safe-area-inset-bottom))}}
 
-
-#blackClockName,#whiteClockName{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  display:block;
-  min-width:0;
-  max-width:100%;
-}
-@media(max-width:520px){
-  #blackClockName,#whiteClockName{
-    font-size:clamp(12px,3.7vw,16px);
-    letter-spacing:-0.2px;
-  }
-}
 
 </style>
 
@@ -10348,12 +10333,12 @@ async function onlineSyncRoom(){
       try{localStorage.removeItem("joygo-online-room-code")}catch(_){}
       onlineReconnectProtectUntil=0;
     }
-    const blackShown=onlineDisplayNameWithRank(room.black_name,room.black_rank_label,"黑方");
-    const whiteShown=onlineDisplayNameWithRank(room.white_name,room.white_rank_label,"等待加入");
-    $("blackName").textContent=blackShown+(state.onlineColor==="B"?"（我）":"");
-    $("whiteName").textContent=whiteShown+(state.onlineColor==="W"?"（我）":"");
-    $("blackClockName").textContent="黑方｜"+blackShown+(state.onlineColor==="B"?"（我）":"");
-    $("whiteClockName").textContent="白方｜"+whiteShown+(state.onlineColor==="W"?"（我）":"");
+    const blackNameOnly=String(room.black_name||"黑方");
+    const whiteNameOnly=String(room.white_name||"等待加入");
+    $("blackName").textContent=onlineDisplayNameWithRank(room.black_name,room.black_rank_label,"黑方")+(state.onlineColor==="B"?"（我）":"");
+    $("whiteName").textContent=onlineDisplayNameWithRank(room.white_name,room.white_rank_label,"等待加入")+(state.onlineColor==="W"?"（我）":"");
+    $("blackClockName").textContent="黑方｜"+blackNameOnly+(state.onlineColor==="B"?"（我）":"");
+    $("whiteClockName").textContent="白方｜"+whiteNameOnly+(state.onlineColor==="W"?"（我）":"");
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
     const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
@@ -12196,7 +12181,13 @@ function updateClockUI(){
     for(const [c,timeId,byoId,boxId] of data){
       const v=values[c],inByo=v.main<=0;
       $(timeId).textContent=formatClock(inByo?v.byo:v.main);
-      $(byoId).textContent=inByo?`伺服器讀秒 ${Math.ceil(v.byo)}秒｜剩餘 ${v.periods} 次`:`網路同步｜讀秒 ${state.onlineRoom.byo_seconds||30}秒 × ${state.onlineRoom.byo_periods||3}次`;
+      const rankLabel=c==="B"
+        ? (state.onlineRoom.black_rank_label||"未設定")
+        : (state.onlineRoom.white_rank_label||"未設定");
+      const rankPrefix=rankLabel&&rankLabel!=="未設定"?`${rankLabel}｜`:"";
+      $(byoId).textContent=inByo
+        ? `${rankPrefix}讀秒 ${Math.ceil(v.byo)}秒｜剩餘 ${v.periods} 次`
+        : `${rankPrefix}讀秒 ${state.onlineRoom.byo_seconds||30}秒 × ${state.onlineRoom.byo_periods||3}次`;
       const box=$(boxId);box.classList.toggle('active',state.onlineRoom.status==="playing"&&state.onlineRoom.turn===c);box.classList.toggle('danger',inByo&&v.byo<=10);
     }
     $("clockSoundIcon").textContent=state.sound?'🔊':'🔇';return;
@@ -16247,7 +16238,7 @@ function patch(){
 console.info("Joy Go Beta 3.4.3b｜斷線重連棋鐘保護｜底本 Beta 3.3.12zl");
 </script>
 <script id="joygo-beta344-marker">
-console.info("Joy Go Beta 3.4.4a｜真人房間棋力顯示修正｜防擠壓｜保留 Beta 3.4.3b 與 3.3.12zl");
+console.info("Joy Go Beta 3.4.4b｜棋力改顯示於棋鐘下方資訊列｜不擠壓版面｜保留 Beta 3.4.3b 與 3.3.12zl");
 </script>
 </body>
 </html>
