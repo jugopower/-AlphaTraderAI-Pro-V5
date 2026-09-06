@@ -36,7 +36,7 @@
 <meta name="joygo-reconnect-version" content="3.4.3b">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
-<meta name="joygo-classic-delete-version" content="3.4.6">
+<meta name="joygo-classic-delete-version" content="3.4.6a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -14688,6 +14688,16 @@ document.addEventListener("click",(ev)=>{
           <button type="button" class="secondary" id="onlineClassicRefreshBtn">重新整理</button>
         </div>
       </div>
+      <div id="onlineClassicAdminFilterWrap" style="display:none;margin:8px 0 10px">
+        <label style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-weight:800">主管理員檢視</span>
+          <select id="onlineClassicAdminFilter">
+            <option value="published">上架中</option>
+            <option value="unpublished">已下架</option>
+            <option value="all">全部</option>
+          </select>
+        </label>
+      </div>
       <div id="onlineClassicStatus" class="online-classic-status">讀取中…</div>
       <div id="onlineClassicList"></div>
     `;
@@ -14697,6 +14707,17 @@ document.addEventListener("click",(ev)=>{
     else modal.insertBefore(panel,modal.children[2]||null);
 
     $jg("onlineClassicRefreshBtn")?.addEventListener("click",fetchOnlineClassicGames);
+
+    const adminWrap=$jg("onlineClassicAdminFilterWrap");
+    const adminFilter=$jg("onlineClassicAdminFilter");
+    if(adminWrap)adminWrap.style.display=canPublishOnlineClassic()?"block":"none";
+    if(adminFilter){
+      try{adminFilter.value=sessionStorage.getItem("joygo-online-classic-filter")||"published"}catch{}
+      adminFilter.addEventListener("change",()=>{
+        try{sessionStorage.setItem("joygo-online-classic-filter",adminFilter.value)}catch{}
+        fetchOnlineClassicGames();
+      });
+    }
 
     const player=document.querySelector(".player");
     if(player && !$jg("onlineClassicExplanation")){
@@ -14755,7 +14776,13 @@ document.addEventListener("click",(ev)=>{
       const info=document.createElement("div");
       const title=document.createElement("div");
       title.className="online-classic-card-title";
-      title.textContent=game.title;
+      title.textContent=game.title+" ";
+      const stateBadge=document.createElement("span");
+      stateBadge.textContent=row.is_published===false?"已下架":"上架中";
+      stateBadge.style.cssText=row.is_published===false
+        ?"display:inline-block;padding:2px 7px;border:1px solid #9b3d3d;border-radius:999px;color:#ff9b9b;font-size:12px;font-weight:800"
+        :"display:inline-block;padding:2px 7px;border:1px solid #2e7d4f;border-radius:999px;color:#7fe0a3;font-size:12px;font-weight:800";
+      title.appendChild(stateBadge);
       const meta=document.createElement("div");
       meta.className="online-classic-card-meta";
       meta.textContent=`${game.black||"黑方"} vs ${game.white||"白方"}｜${game.event||"未填賽事"}｜${game.date||"未填日期"}${game.result?`｜${game.result}`:""}`;
@@ -14791,18 +14818,18 @@ document.addEventListener("click",(ev)=>{
       actions.append(view,play,share);
 
       if(canPublishOnlineClassic()){
-        const del=document.createElement("button");
-        del.className="danger";
-        del.textContent="下架";
-        del.onclick=()=>unpublishOnlineClassic(row);
-        actions.appendChild(del);
-
         if(row.is_published===false){
           const hardDel=document.createElement("button");
           hardDel.className="danger";
           hardDel.textContent="永久刪除";
           hardDel.onclick=()=>deleteOnlineClassicPermanent(row);
           actions.appendChild(hardDel);
+        }else{
+          const del=document.createElement("button");
+          del.className="danger";
+          del.textContent="下架";
+          del.onclick=()=>unpublishOnlineClassic(row);
+          actions.appendChild(del);
         }
       }
 
@@ -14822,11 +14849,24 @@ document.addEventListener("click",(ev)=>{
     }
 
     try{
-      const {data,error}=await memberSupabase
+      let q=memberSupabase
         .from(ONLINE_TABLE)
-        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,commentary,sgf_text,is_published,created_at,updated_at")
-        .eq("is_published",true)
-        .order("published_at",{ascending:false});
+        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,commentary,sgf_text,is_published,created_at,updated_at,published_at");
+
+      const isAdmin=canPublishOnlineClassic();
+      const filter=$jg("onlineClassicAdminFilter")?.value||"published";
+
+      if(!isAdmin){
+        q=q.eq("is_published",true);
+      }else if(filter==="published"){
+        q=q.eq("is_published",true);
+      }else if(filter==="unpublished"){
+        q=q.eq("is_published",false);
+      }
+
+      q=q.order("updated_at",{ascending:false});
+
+      const {data,error}=await q;
       if(error)throw error;
       onlineClassicCache=Array.isArray(data)?data:[];
       renderOnlineClassicGames();
@@ -16374,7 +16414,7 @@ console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保
 console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
 </script>
 <script id="joygo-beta346-marker">
-console.info("Joy Go Beta 3.4.6｜線上名局永久刪除｜保留 3.4.5、3.4.4c、3.4.3b、3.3.12zl");
+console.info("Joy Go Beta 3.4.6a｜已下架名局管理｜保留 3.4.6、3.4.5、3.4.4c、3.4.3b、3.3.12zl");
 </script>
 </body>
 </html>
