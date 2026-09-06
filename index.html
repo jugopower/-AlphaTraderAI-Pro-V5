@@ -33,6 +33,7 @@
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
+<meta name="joygo-reconnect-version" content="3.4.3b">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -9640,6 +9641,7 @@ let memberSupabase=null;
 let memberSession=null;
 let onlineLastPassMove=0;
 let onlineClockTimer=null;
+let onlineReconnectProtectUntil=0;
 let onlineTimeoutClaimed=false;
 let onlineLastResult="";
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",rankCode:"UNRATED",rankLabel:"未設定",rankSort:0,staffRole:"none"};
@@ -10206,8 +10208,14 @@ function startOnlineClockUI(){
   onlineClockTimer=setInterval(async()=>{
     if(!state.onlineMode||!state.onlineRoom){clearInterval(onlineClockTimer);onlineClockTimer=null;return}
     updateClockUI();const v=onlineClockValues(),r=state.onlineRoom,active=v?.[r.turn];
-    if(r.status==="playing"&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
-      onlineTimeoutClaimed=true;const {data}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
+    if(r.status==="playing"&&Date.now()>=onlineReconnectProtectUntil&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
+      onlineTimeoutClaimed=true;
+      const {data,error}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
+      if(error){
+        onlineTimeoutClaimed=false;
+        console.warn("timeout claim",error);
+        return;
+      }
       if(data){state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom()}
     }
   },250);
@@ -10272,6 +10280,10 @@ async function onlineSyncRoom(){
     state.index=state.moves.length;state.turn=room.turn||((state.moves.length%2)?"W":"B");
     state.setupB=[];state.setupW=[];state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";
     state.gameEnded=room.status==="ended";
+    if(room.status==="ended"){
+      try{localStorage.removeItem("joygo-online-room-code")}catch(_){}
+      onlineReconnectProtectUntil=0;
+    }
     $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
     $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
     $("blackClockName").textContent="黑方｜"+(room.black_name||"等待加入")+(state.onlineColor==="B"?"（我）":"");
@@ -10323,10 +10335,13 @@ async function onlineResumeRoom(){
   if(!await onlineReady())return;
   const code=onlineNormalizeCode($("onlineJoinCode").value||localStorage.getItem("joygo-online-room-code"));
   if(code.length!==6){onlineSetStatus("這台裝置沒有上次房間紀錄。","bad");return}
-  const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:code});
+  onlineSetStatus("正在恢復原棋局與棋鐘…");
+  const {data,error}=await memberSupabase.rpc("joygo_resume_room_v343b",{p_code:code});
   const room=onlineRpcRow(data);
   if(error||!room){onlineSetStatus("無法重新進入："+(error?.message||"找不到您的房間"),"bad");return}
+  onlineReconnectProtectUntil=Date.now()+5000;
   await onlineEnterRoom(room);
+  onlineSetStatus("✅ 已恢復原棋局；棋鐘已重新同步。","ok");
 }
 async function onlinePlayAt(x,y,isPass=false){
   const r=state.onlineRoom;if(!state.onlineMode||!r||state.onlineSyncing)return;
@@ -13846,9 +13861,10 @@ window.addEventListener("DOMContentLoaded",()=>{
     if(!window.memberSupabase&&!memberSupabase){if(tries<30)setTimeout(enter,250);return}
     try{
       if(!await onlineReady()){if(tries<30)setTimeout(enter,300);return}
-      const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:clean});
+      const {data,error}=await memberSupabase.rpc("joygo_resume_room_v343b",{p_code:clean});
       const room=onlineRpcRow(data);
       if(error||!room){toast("無法進入配對棋局："+(error?.message||"找不到房間"));return}
+      onlineReconnectProtectUntil=Date.now()+5000;
       await onlineEnterRoom(room);
       setTimeout(()=>{closeModal("onlineModal");toast("⚔️ 已進入真人棋局")},220);
       try{history.replaceState({},"",location.pathname)}catch(_){}
@@ -16161,5 +16177,8 @@ function patch(){
 })();
 </script>
 
+<script id="joygo-beta343b-marker">
+console.info("Joy Go Beta 3.4.3b｜斷線重連棋鐘保護｜底本 Beta 3.3.12zl");
+</script>
 </body>
 </html>
