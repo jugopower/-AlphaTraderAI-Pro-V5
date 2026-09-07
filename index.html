@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zm｜iPad 橫式棋盤底部完整安全邊距修正版（9/13/19 路；右欄不動） -->
+<!-- Beta 3.3.12zn｜iPad 多次直橫旋轉棋盤穩定修正版（落子座標同步） -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -7186,7 +7186,7 @@ body.jg-online-mode #jgUSpeedPanel{
 <meta name="twitter:description" content="">
 
 
-<!-- Beta 3.3.12zm｜iPad 橫式棋盤底部安全修正：resizeBoard 自適應保留 46–64px 安全高度，9/13/19 路共用；保持落子座標一致 -->
+<!-- Beta 3.3.12zl｜iPad 橫式棋盤底部安全修正：改由 resizeBoard 保留 10px 安全高度，保持落子座標一致 -->
 
 
 </head>
@@ -11684,21 +11684,31 @@ let ctx=canvas.getContext("2d",{alpha:false});
 function resizeBoard(force=false){
   const wrap=canvas.parentElement;
   if(!wrap)return false;
+
+  // Beta 3.3.12zn：iPad 多次直橫旋轉穩定版。
+  // 關鍵：棋盤大小同時受「容器」與「目前真正可視視窗」限制，
+  // 不再只相信旋轉瞬間可能尚未更新完成的 parent.height。
   const parent=wrap.getBoundingClientRect();
-  const vw=Math.max(320,window.innerWidth||document.documentElement.clientWidth||320);
-  const vh=Math.max(320,window.innerHeight||document.documentElement.clientHeight||320);
+  const vv=window.visualViewport;
+  const vw=Math.max(320,Math.floor(vv?.width||window.innerWidth||document.documentElement.clientWidth||320));
+  const vh=Math.max(320,Math.floor(vv?.height||window.innerHeight||document.documentElement.clientHeight||320));
   const fallback=Math.floor(Math.min(vw*0.88,vh*0.76));
-  const availableW=parent.width>80?Math.floor(parent.width-8):fallback;
-  // Beta 3.3.12zm：iPad 橫式棋盤底部安全區改為自適應。
-  // 原本固定 10px 不足，9/13/19 路最下線棋子會被 .board-wrap 的 overflow:hidden 裁掉。
-  // 這裡只縮小「棋盤 canvas 的實際正方形尺寸」，不改右側棋鐘、功能鍵或欄寬。
-  // drawBoard 與 boardInputPointFromEvent 仍共用 canvas._cssSize，因此顯示與落子座標保持同步。
-  const ipadLandscapeSafe = !!(window.matchMedia && window.matchMedia("(orientation: landscape) and (pointer: coarse) and (min-width: 900px)").matches);
-  const safeBottom = ipadLandscapeSafe
-    ? Math.max(46, Math.min(64, Math.round(parent.height * 0.075)))
-    : 0;
-  const availableH=parent.height>80?Math.floor(parent.height-8-safeBottom):fallback;
-  const css=Math.max(260,Math.floor(Math.min(availableW,availableH)));
+
+  // 實際可見範圍：避免 Safari 旋轉後沿用舊高度，造成 canvas 超出畫面而被裁切。
+  const visibleRight=Math.max(0,vw-Math.max(0,parent.left));
+  const visibleBottom=Math.max(0,vh-Math.max(0,parent.top));
+  const wrapW=parent.width>80?parent.width:visibleRight;
+  const wrapH=parent.height>80?parent.height:visibleBottom;
+
+  const edgeGap=8;
+  const ipadLandscape=!!(window.matchMedia && window.matchMedia("(orientation: landscape) and (pointer: coarse) and (min-width: 700px)").matches);
+  // 橫式多留一點底部安全距離，避免 Safari 底部工具列/安全區吃到最後一線。
+  const safeBottom=ipadLandscape?Math.max(18,Math.min(34,Math.round(vh*0.025))):8;
+
+  const availableW=Math.floor(Math.max(0,Math.min(wrapW,visibleRight)-edgeGap));
+  const availableH=Math.floor(Math.max(0,Math.min(wrapH,visibleBottom)-edgeGap-safeBottom));
+  const rawCss=Math.min(availableW||fallback,availableH||fallback);
+  const css=Math.max(260,Math.floor(rawCss));
   const oldCss=canvas._cssSize||0;
 
   state.boardCssSize=css;
@@ -11706,7 +11716,10 @@ function resizeBoard(force=false){
   canvas.style.setProperty("--board-size",css+"px");
   canvas.style.setProperty("width",css+"px","important");
   canvas.style.setProperty("height",css+"px","important");
+  canvas.style.setProperty("max-width",css+"px","important");
+  canvas.style.setProperty("max-height",css+"px","important");
   canvas.style.setProperty("display","block","important");
+  canvas.style.setProperty("flex","0 0 auto","important");
 
   const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
   const px=Math.max(260,Math.floor(css*dpr));
@@ -13946,8 +13959,10 @@ document.addEventListener("visibilitychange",()=>{
   if(!document.hidden)setTimeout(()=>forceBoardRebuild("visible"),100);
 },{passive:true});
 window.addEventListener("orientationchange",()=>{
-  setTimeout(()=>forceBoardRebuild("orientation-1"),180);
-  setTimeout(()=>forceBoardRebuild("orientation-2"),520);
+  // Safari/iPad 旋轉時 viewport 可能分數次才穩定；每次都重新量「可視視窗」。
+  [80,220,480,800,1200].forEach((ms,i)=>setTimeout(()=>{
+    requestAnimationFrame(()=>forceBoardRebuild("orientation-stable-"+(i+1)));
+  },ms));
 },{passive:true});
 window.addEventListener("load",()=>setTimeout(()=>forceBoardRebuild("load"),120),{once:true});
 
