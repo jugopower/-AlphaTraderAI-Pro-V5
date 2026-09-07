@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="joygo-chat-version" content="1.2j">
+<meta name="joygo-chat-version" content="1.2k">
 <title>Joy Go｜真人對弈大廳</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -59,7 +59,7 @@
     <aside style="display:grid;gap:14px;align-content:start">
       <section class="panel"><h2>📨 收到的邀請</h2><div id="incoming" class="invite-list"><div class="empty">目前沒有邀請</div></div></section>
       <section class="panel">
-        <div class="headrow"><h2>📤 我送出的邀請</h2><button id="cleanupInvitesBtn" class="btn">清除逾時邀請</button></div>
+        <div class="headrow"><h2>📤 我送出的邀請</h2><button id="cleanupInvitesBtn" class="btn">清除舊邀請</button></div>
         <div id="outgoing" class="invite-list"><div class="empty">目前沒有等待中的邀請</div></div>
       </section>
       <section class="panel">
@@ -207,16 +207,16 @@ async function replyInvite(id,accept){const {data,error}=await sb.rpc("joygo_rep
 async function cleanupExpiredInvites(showNotice=false){
   if(!session?.user?.id)return 0;
   try{
-    const {data,error}=await sb.rpc("joygo_cleanup_my_expired_invites_v12j",{p_expire_minutes:30});
+    const {data,error}=await sb.rpc("joygo_cleanup_my_old_invites_v12k",{p_pending_expire_minutes:30,p_accepted_grace_minutes:30});
     if(error)throw error;
     const row=Array.isArray(data)?data[0]:data;
     const count=Number(row?.deleted_count ?? row ?? 0)||0;
     lastInviteCleanupAt=Date.now();
-    if(showNotice)msg(count>0?`✅ 已清除 ${count} 筆逾時邀請`:"目前沒有需要清除的逾時邀請","ok");
+    if(showNotice)msg(count>0?`✅ 已清除 ${count} 筆舊邀請`:"目前沒有需要清除的舊邀請","ok");
     return count;
   }catch(err){
     console.warn("cleanupExpiredInvites:",err);
-    if(showNotice)msg("清除逾時邀請失敗："+(err?.message||String(err)),"bad");
+    if(showNotice)msg("清除舊邀請失敗："+(err?.message||String(err)),"bad");
     return 0;
   }
 }
@@ -294,5 +294,5 @@ $("cleanupInvitesBtn").onclick=async()=>{
 $("refreshBtn").onclick=async()=>{await loadProfile();await ensurePresenceHealthy();loadInvites();loadRooms();loadMyActiveRoom();await loadChatControl();loadChat()};$("chatSendBtn").onclick=sendChatMessage;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChatMessage()}});$("backBtn").onclick=()=>location.href="index.html";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);$("saveTournamentBtn").onclick=saveTournamentSettings;document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(presenceHealthTimer)clearInterval(presenceHealthTimer);if(presenceReconnectTimer)clearTimeout(presenceReconnectTimer);if(chatControlPollTimer)clearInterval(chatControlPollTimer);if(moderationTimer)clearInterval(moderationTimer)},{passive:true});$("reconnectBtn").onclick=()=>{if(activeRoomCode)goRoom(activeRoomCode)};
 init();
 </script>
-<script>console.info("Joy Go Chat Beta 1.2j｜逾時邀請自動清理｜30分鐘 pending 邀請｜保留 1.2i 與既有功能");</script>
+<script>console.info("Joy Go Chat Beta 1.2k｜舊邀請安全自動清理｜pending 逾時＋accepted 無有效房間｜保留 1.2j 與既有功能");</script>
 </body></html>
