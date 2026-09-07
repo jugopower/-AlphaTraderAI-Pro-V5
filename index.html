@@ -36,7 +36,8 @@
 <meta name="joygo-reconnect-version" content="3.4.3b">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
-<meta name="joygo-classic-delete-version" content="3.4.6e">
+<meta name="joygo-classic-delete-version" content="3.4.7">
+<meta name="joygo-classic-ui-version" content="3.4.7">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -2534,6 +2535,104 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
+
+
+<style id="joygoClassic347CleanStyle">
+#classicGameModal .modal{
+  width:min(980px,96vw);
+}
+.classic-clean-title{
+  margin:0 0 3px;
+  font-size:clamp(22px,3vw,30px);
+}
+.classic-clean-subtitle{
+  color:var(--muted);
+  font-size:13px;
+  margin:0 0 12px;
+}
+.classic-section-title{
+  font-weight:900;
+  color:#f1d28a;
+  font-size:16px;
+  margin:14px 0 6px;
+  padding-top:10px;
+  border-top:1px solid #ffffff14;
+}
+.classic-primary-actions{
+  margin-top:10px;
+}
+.classic-primary-actions button{
+  min-height:46px;
+}
+.classic-local-manage{
+  border:1px solid #ffffff16;
+  border-radius:12px;
+  background:#0c0806;
+  margin:6px 0 10px;
+  overflow:hidden;
+}
+.classic-local-manage summary{
+  cursor:pointer;
+  padding:10px 12px;
+  color:#d7c6a8;
+  font-weight:800;
+  user-select:none;
+}
+.classic-local-manage[open] summary{
+  border-bottom:1px solid #ffffff12;
+}
+.classic-manage-actions{
+  margin:0;
+  padding:10px;
+}
+.classic-clean-note{
+  margin:4px 0 10px;
+  color:#bda98a;
+  font-size:12px;
+}
+.classic-clean-tip{
+  opacity:.9;
+}
+#onlineClassicPanel{
+  margin-top:12px;
+}
+#onlineClassicPanel .online-classic-title{
+  font-size:17px;
+}
+#onlineClassicPanel .online-classic-sub{
+  margin-top:2px;
+}
+@media(max-width:700px){
+  .classic-primary-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .classic-primary-actions button{
+    min-width:0;
+    width:100%;
+  }
+  .classic-manage-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .classic-manage-actions button{
+    min-width:0;
+  }
+  #classicClearUserDbBtn{
+    grid-column:1 / -1;
+  }
+}
+@media(max-width:480px){
+  .classic-primary-actions,
+  .classic-manage-actions{
+    grid-template-columns:1fr;
+  }
+  #classicClearUserDbBtn{
+    grid-column:auto;
+  }
+}
+</style>
 
 <style id="classicGameDatabase16bStyle">
 .classic-db-filters{
@@ -7705,12 +7804,8 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2>🏛️ Beta 1.6b.7b｜名局雙重保存修正版</h2>
-  <p class="classic-library-note">
-    本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
-    內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
-  </p>
-
+  <h2 class="classic-clean-title">🏛️ Joy Go 名局館</h2>
+  <div class="classic-clean-subtitle">收藏、搜尋、觀看與分享精彩棋局</div>
 
   <div id="classicNowPlaying" class="classic-now-playing">
     <span class="classic-now-label">目前棋局</span>
@@ -7718,14 +7813,22 @@ body.jg-online-mode #jgUSpeedPanel{
     <span id="classicNowMeta">可選擇「載入」或「一鍵播放」</span>
   </div>
 
-  <div class="classic-db-actions">
+  <div class="classic-db-actions classic-primary-actions">
     <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
-    <button class="secondary" id="classicImportSgfBtn">📂 單次開啟 SGF</button>
-    <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
-<button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
-<input id="classicRestoreFile" type="file" accept=".json,application/json" hidden>
-<button class="secondary" id="classicClearUserDbBtn">清除全部已保存名局</button>
+    <button class="secondary" id="classicImportSgfBtn">📂 開啟 SGF（不保存）</button>
   </div>
+
+  <details class="classic-local-manage">
+    <summary>⚙️ 本機名局管理</summary>
+    <div class="classic-db-actions classic-manage-actions">
+      <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
+      <button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
+      <input id="classicRestoreFile" type="file" accept=".json,application/json" hidden>
+      <button class="secondary" id="classicClearUserDbBtn">清除本機名局</button>
+    </div>
+  </details>
+
+  <div class="classic-section-title">📚 我的正式名局</div>
 
   <div class="classic-db-filters">
     <label>搜尋
@@ -7752,26 +7855,25 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <div id="classicGameCount" class="classic-db-count"></div>
-<div class="classic-db-note" style="margin:6px 0 10px;color:#c9b28c;font-size:12px">
-正式 SGF 採 IndexedDB＋瀏覽器備援雙重保存；儲存後立即驗證。私密瀏覽結束仍可能被系統清除，重要棋譜請使用「備份名局」。
+<div class="classic-db-note classic-clean-note">
+重要棋譜建議定期使用「備份名局」保存。
 </div>
   <div id="classicGameList" class="classic-game-list"></div>
 
-  <div class="classic-library-tip">
-    「一鍵播放」會自動從第 1 手開始播放；「載入」則停在第 0 手，方便先看棋局資料。載入後仍可使用第一手、上一手、播放／暫停、下一手、最後一手、指定手數與棋號顯示。
-    您自己加入的正式名局會保存在這台裝置的瀏覽器資料中。
+  <div class="classic-library-tip classic-clean-tip">
+    「載入」從棋局開始查看；「一鍵播放」直接自動播放。
   </div>
 </div></div>
 
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicImportModal">✕</button>
   <h2>＋ 加入正式名局 SGF</h2>
-  <p class="classic-library-note">先選 SGF，再補上資料。Beta 1.6b.2 已加強 iPad／Safari 的 SGF 讀取流程；選檔後會立即顯示讀取狀態，並檢查內容是否為有效 SGF。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
+  <p class="classic-library-note">先選擇 SGF，再確認棋手、日期、賽事與結果；已有資料會自動帶入。</p>
 
   <div class="classic-import-file">
     <input id="classicOfficialFile" type="file">
     <div id="classicOfficialFileName" style="margin-top:6px">尚未選擇 SGF</div>
-    <div style="margin-top:5px;font-size:12px;color:var(--muted)">支援 iPad「檔案」中的 .sgf；選取後請等候約 1 秒完成讀取。</div>
+    <div style="margin-top:5px;font-size:12px;color:var(--muted)">可從 iPad「檔案」選擇 .sgf 棋譜。</div>
   </div>
 
   <div class="classic-import-form" style="margin-top:12px">
@@ -14691,7 +14793,7 @@ document.addEventListener("click",(ev)=>{
       <div class="online-classic-head">
         <div>
           <div class="online-classic-title">🌐 Joy Go 線上名局館</div>
-          <div class="online-classic-sub">發布一次，棋友即可在任何裝置直接觀看與播放。</div>
+          <div class="online-classic-sub">棋友可直接觀看、播放與分享。</div>
         </div>
         <div class="online-classic-actions">
           <button type="button" class="secondary" id="onlineClassicRefreshBtn">重新整理</button>
@@ -16467,7 +16569,7 @@ console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保
 console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
 </script>
 <script id="joygo-beta346-marker">
-console.info("Joy Go Beta 3.4.6e｜線上名局發布按鈕修正｜保留 3.4.6d、3.4.6c、3.4.6b、3.4.6a、3.4.6、3.4.5、3.4.4c、3.4.3b、3.3.12zl");
+console.info("Joy Go Beta 3.4.7｜名局館介面整理｜移除舊 Beta 技術文字、收合本機管理、保留 3.4.6e 全部名局功能");
 </script>
 </body>
 </html>
