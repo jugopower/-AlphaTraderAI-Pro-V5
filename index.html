@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zl｜iPad 橫式棋盤底部安全修正版（落子座標同步） -->
+<!-- Beta 3.3.12zm｜iPad 橫式棋盤底部完整安全邊距修正版（9/13/19 路；右欄不動） -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -7186,7 +7186,7 @@ body.jg-online-mode #jgUSpeedPanel{
 <meta name="twitter:description" content="">
 
 
-<!-- Beta 3.3.12zl｜iPad 橫式棋盤底部安全修正：改由 resizeBoard 保留 10px 安全高度，保持落子座標一致 -->
+<!-- Beta 3.3.12zm｜iPad 橫式棋盤底部安全修正：resizeBoard 自適應保留 46–64px 安全高度，9/13/19 路共用；保持落子座標一致 -->
 
 
 </head>
@@ -11689,10 +11689,14 @@ function resizeBoard(force=false){
   const vh=Math.max(320,window.innerHeight||document.documentElement.clientHeight||320);
   const fallback=Math.floor(Math.min(vw*0.88,vh*0.76));
   const availableW=parent.width>80?Math.floor(parent.width-8):fallback;
-  // Beta 3.3.12zl：iPad 橫式僅在「實際計算棋盤尺寸」時多保留 10px 底部安全高度。
-  // 不用 CSS 縮放 canvas，避免畫面座標與落子座標不同步；右側棋鐘／功能鍵完全不動。
+  // Beta 3.3.12zm：iPad 橫式棋盤底部安全區改為自適應。
+  // 原本固定 10px 不足，9/13/19 路最下線棋子會被 .board-wrap 的 overflow:hidden 裁掉。
+  // 這裡只縮小「棋盤 canvas 的實際正方形尺寸」，不改右側棋鐘、功能鍵或欄寬。
+  // drawBoard 與 boardInputPointFromEvent 仍共用 canvas._cssSize，因此顯示與落子座標保持同步。
   const ipadLandscapeSafe = !!(window.matchMedia && window.matchMedia("(orientation: landscape) and (pointer: coarse) and (min-width: 900px)").matches);
-  const safeBottom = ipadLandscapeSafe ? 10 : 0;
+  const safeBottom = ipadLandscapeSafe
+    ? Math.max(46, Math.min(64, Math.round(parent.height * 0.075)))
+    : 0;
   const availableH=parent.height>80?Math.floor(parent.height-8-safeBottom):fallback;
   const css=Math.max(260,Math.floor(Math.min(availableW,availableH)));
   const oldCss=canvas._cssSize||0;
