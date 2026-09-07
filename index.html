@@ -36,7 +36,7 @@
 <meta name="joygo-reconnect-version" content="3.4.3b">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
-<meta name="joygo-classic-delete-version" content="3.4.6d">
+<meta name="joygo-classic-delete-version" content="3.4.6e">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -15039,6 +15039,21 @@ document.addEventListener("click",(ev)=>{
   }
 
   /* 在本機名局卡片加「發布線上」 */
+  function syncClassicPublishButtons(){
+    const isAdmin=canPublishOnlineClassic();
+    document.querySelectorAll(".online-classic-publish").forEach(btn=>{
+      btn.style.display=isAdmin?"":"none";
+      btn.disabled=!isAdmin;
+    });
+    return isAdmin;
+  }
+
+  function scheduleClassicPublishButtonSync(){
+    [0,250,700,1500].forEach(ms=>{
+      setTimeout(()=>syncClassicPublishButtons(),ms);
+    });
+  }
+
   function installClassicCardPublisher(){
     if(window.__jgOnlineClassicCardPatched)return;
     if(typeof classicGameCard!=="function")return;
@@ -15047,16 +15062,23 @@ document.addEventListener("click",(ev)=>{
     const original=classicGameCard;
     classicGameCard=function(game){
       const card=original(game);
-      if(game?.source==="official" && canPublishOnlineClassic()){
+
+      if(game?.source==="official"){
         const actions=card.querySelector(".classic-game-actions");
-        if(actions){
+        if(actions && !actions.querySelector(".online-classic-publish")){
           const pub=document.createElement("button");
           pub.className="secondary online-classic-publish";
           pub.textContent="🌐 發布線上";
+          pub.style.display=canPublishOnlineClassic()?"":"none";
+          pub.disabled=!canPublishOnlineClassic();
           pub.onclick=()=>publishOnlineClassic(game);
           actions.insertBefore(pub,actions.firstChild);
         }
+
+        // 權限可能比名局卡片稍晚完成載入，延遲再次同步。
+        scheduleClassicPublishButtonSync();
       }
+
       return card;
     };
   }
@@ -15071,6 +15093,7 @@ document.addEventListener("click",(ev)=>{
       ensureOnlineClassicUI();
       installClassicCardPublisher();
       const result=await original.apply(this,arguments);
+      scheduleClassicPublishButtonSync();
       fetchOnlineClassicGames();
       return result;
     };
@@ -15080,6 +15103,7 @@ document.addEventListener("click",(ev)=>{
     ensureOnlineClassicUI();
     installClassicCardPublisher();
     installOpenHook();
+    scheduleClassicPublishButtonSync();
     setTimeout(openDeepLinkedClassic,700);
   }
 
@@ -15091,6 +15115,7 @@ document.addEventListener("click",(ev)=>{
     ensureOnlineClassicUI();
     installClassicCardPublisher();
     installOpenHook();
+    scheduleClassicPublishButtonSync();
   },{passive:true});
 })();
 </script>
@@ -16442,7 +16467,7 @@ console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保
 console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
 </script>
 <script id="joygo-beta346-marker">
-console.info("Joy Go Beta 3.4.6d｜已下架名局讀取 RPC 修正｜保留 3.4.6c、3.4.6b、3.4.6a、3.4.6、3.4.5、3.4.4c、3.4.3b、3.3.12zl");
+console.info("Joy Go Beta 3.4.6e｜線上名局發布按鈕修正｜保留 3.4.6d、3.4.6c、3.4.6b、3.4.6a、3.4.6、3.4.5、3.4.4c、3.4.3b、3.3.12zl");
 </script>
 </body>
 </html>
