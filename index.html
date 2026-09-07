@@ -36,8 +36,8 @@
 <meta name="joygo-reconnect-version" content="3.4.3b">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
-<meta name="joygo-classic-delete-version" content="3.4.7">
-<meta name="joygo-classic-ui-version" content="3.4.7">
+<meta name="joygo-classic-delete-version" content="3.4.7a">
+<meta name="joygo-classic-ui-version" content="3.4.7a">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -7860,9 +7860,7 @@ body.jg-online-mode #jgUSpeedPanel{
 </div>
   <div id="classicGameList" class="classic-game-list"></div>
 
-  <div class="classic-library-tip classic-clean-tip">
-    「載入」從棋局開始查看；「一鍵播放」直接自動播放。
-  </div>
+
 </div></div>
 
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
@@ -9538,7 +9536,7 @@ function renderClassicGameLibrary(){
     $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜已保存正式棋譜 ${officialCount} 盤`;
   }
   if(!games.length){
-    box.innerHTML='<div class="classic-db-empty">目前沒有棋譜。請按「加入正式名局」匯入 SGF；儲存後下次開啟仍會保留。</div>';
+    box.innerHTML='<div class="classic-db-empty">目前沒有本機名局。</div>';
     return;
   }
   games.forEach(g=>box.appendChild(classicGameCard(g)));
@@ -16569,7 +16567,7 @@ console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保
 console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
 </script>
 <script id="joygo-beta346-marker">
-console.info("Joy Go Beta 3.4.7｜名局館介面整理｜移除舊 Beta 技術文字、收合本機管理、保留 3.4.6e 全部名局功能");
+console.info("Joy Go Beta 3.4.7a｜名局館文字再精簡｜縮短空白提示、移除播放說明｜保留 3.4.7 全部功能");
 </script>
 </body>
 </html>
