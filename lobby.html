@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="joygo-chat-version" content="1.2i">
 <title>Joy Go｜真人對弈大廳</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -29,30 +30,30 @@
 <body>
 <div class="page">
   <div class="top">
-    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>Beta 3.4.3a + Chat Beta 1.2j｜斷線自動返回棋局版</p></div>
+    <div class="brand"><h1>⚔️ Joy Go 真人對弈大廳</h1><p>以棋會友・輕鬆對弈</p></div>
     <div class="actions"><span class="badge">🟢 在線 <b id="onlineCount">0</b> / 16</span><button class="btn" id="refreshBtn">重新整理</button><button class="btn" id="backBtn">← 回主平台</button></div>
   </div>
   <div id="notice" class="notice"></div>
   <div id="reconnectBanner" class="reconnect-banner">
     <div class="reconnect-main">
       <strong id="reconnectTitle">🔄 你有一盤進行中的棋局</strong>
-      <span id="reconnectMeta">重新連線後可直接返回原棋局，不必找房號。</span>
+      <span id="reconnectMeta">可直接返回原棋局。</span>
     </div>
     <button id="reconnectBtn" class="reconnect-btn" type="button">返回棋局</button>
   </div>
   <div class="grid">
     <main class="panel">
-      <div class="headrow"><h2>🟢 線上棋友</h2><span class="small">點「邀請」即可配對，不必抄房號</span></div>
+      <div class="headrow"><h2>🟢 線上棋友</h2></div>
       <div id="players" class="players"><div class="empty">正在連線…</div></div>
       <section class="chat-panel">
-        <div class="chat-head"><h2>💬 Joy Go 棋友聊天室 <span class="small">Beta 1.2h 在線同步防抖修正版</span></h2><span id="chatCount" class="chat-count">最近 0 則</span></div>
+        <div class="chat-head"><h2>💬 Joy Go 棋友聊天室</h2><span id="chatCount" class="chat-count">最近 0 則</span></div>
         <div class="chat-announcement"><strong>📢 管理員公告</strong><span class="ruleline">互相尊重・禁止辱罵挑釁・禁止洗版廣告・尊重隱私。</span><span class="ruleline">違規者將予以警告、禁言、踢出或封鎖。</span><span class="closing">以棋會友，輕鬆交流，共同維護良好氣氛。</span></div>
         <div id="chatControlBanner" class="chat-control-banner" hidden></div><div id="chatWarningBanner" class="chat-warning-banner" hidden></div><div id="chatList" class="chat-list"><div class="chat-empty">正在載入聊天室…</div></div>
         <div class="chat-compose">
           <input id="chatInput" maxlength="200" autocomplete="off" placeholder="輸入訊息……（最多 200 字）">
           <button class="btn primary" id="chatSendBtn" type="button">送出</button>
         </div>
-        <div class="chat-note">登入會員即可發言。請互相尊重、以棋會友；Beta 1.2d｜管理鍵收合；副管理員／巡場員不可管理主管理員。</div>
+        <div class="chat-note">登入會員即可發言，請互相尊重、以棋會友。</div>
       </section>
     </main>
     <aside style="display:grid;gap:14px;align-content:start">
@@ -73,7 +74,7 @@
           <button class="preset" data-free-preset="30,30,3">30分＋30秒×3</button>
           <button class="preset" data-free-preset="60,30,5">60分＋30秒×5</button>
         </div>
-        <div class="sectionnote">自由對弈：邀請者先設定時間；收到邀請的棋友會看到「棋盤／貼目／基本用時／讀秒／次數」，接受後自動帶入棋局。</div>
+        
       </section>
       <section class="panel">
         <div class="headrow"><h2>🏆 比賽統一計時設定</h2><button class="btn primary" id="saveTournamentBtn">儲存</button></div>
@@ -90,13 +91,13 @@
           <button class="preset" data-t-preset="30,30,3">30分＋30秒×3</button>
           <button class="preset" data-t-preset="60,30,5">60分＋30秒×5</button>
         </div>
-        <div class="sectionnote">這是主辦人的比賽預設。下一階段 16 人瑞士制建立每一輪 8 桌時，系統會把這組規則自動套用到全部棋桌，參賽者不能自行修改。</div>
+        
         <div id="tournamentStatus" class="small" style="margin-top:8px"></div>
       </section>
       <section class="panel"><div class="headrow"><h2>🚪 開放房間</h2><span class="small"><b id="roomCount">0</b> 間</span></div><div id="rooms" class="room-list"><div class="empty">目前沒有開放房間</div></div><div class="manual"><input id="roomCode" maxlength="6" placeholder="六碼房號" style="border:1px solid #5d4029;background:#0b0806;color:#fff;border-radius:10px;padding:10px;text-transform:uppercase"><button class="btn primary" id="joinCodeBtn">加入</button></div></section>
     </aside>
   </div>
-  <div class="footer">下一階段：16 人瑞士制報到 → 電腦自動配對 → 8 桌 → 自動下一輪</div>
+  
 </div>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
@@ -263,4 +264,5 @@ async function init(){const {data,error}=await sb.auth.getSession();session=data
 $("refreshBtn").onclick=async()=>{await loadProfile();await ensurePresenceHealthy();loadInvites();loadRooms();loadMyActiveRoom();await loadChatControl();loadChat()};$("chatSendBtn").onclick=sendChatMessage;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChatMessage()}});$("backBtn").onclick=()=>location.href="index.html";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);$("saveTournamentBtn").onclick=saveTournamentSettings;document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(presenceHealthTimer)clearInterval(presenceHealthTimer);if(presenceReconnectTimer)clearTimeout(presenceReconnectTimer);if(chatControlPollTimer)clearInterval(chatControlPollTimer);if(moderationTimer)clearInterval(moderationTimer)},{passive:true});$("reconnectBtn").onclick=()=>{if(activeRoomCode)goRoom(activeRoomCode)};
 init();
 </script>
+<script>console.info("Joy Go Chat Beta 1.2i｜弈廳介面精簡版｜保留斷線重連與既有功能");</script>
 </body></html>
