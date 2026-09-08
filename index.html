@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zp｜名局／人機模式互斥＋iPad 旋轉穩定版 -->
+<!-- Joy Go Platform Beta 3.4.8c｜手機真人對弈棋盤觸控保險版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -40,6 +40,7 @@
 <meta name="joygo-auto-spectator-version" content="3.4.5">
 <meta name="joygo-classic-delete-version" content="3.4.7a">
 <meta name="joygo-classic-ui-version" content="3.4.7a">
+<meta name="joygo-ready-mobile-version" content="3.4.8c">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -14059,6 +14060,50 @@ if(window.PointerEvent){
     handleBoardInput({clientX:t.clientX,clientY:t.clientY,cancelable:true,preventDefault:()=>e.preventDefault()});
   },{passive:false});
 }
+// Joy Go Beta 3.4.8c：手機真人對弈棋盤觸控保險
+// 部分 Android / 內嵌瀏覽器雖支援 PointerEvent，但 canvas 的 pointerup 可能不穩定。
+// 以 document capture 監聽 touchend；只有在最近沒有成功收到 pointerup 時才補送一次棋盤輸入，
+// 並且只接受實際落在 canvas 範圍內的觸碰，避免重複落子或誤觸其他按鈕。
+let joygoLastBoardPointerHandledAt=0;
+let joygoLastBoardPointerHandledX=0;
+let joygoLastBoardPointerHandledY=0;
+
+// 包住既有 pointerup：記錄確實已處理的觸碰。
+if(window.PointerEvent){
+  canvas.addEventListener('pointerup',e=>{
+    if(e.pointerType==='touch' || e.pointerType==='pen'){
+      joygoLastBoardPointerHandledAt=Date.now();
+      joygoLastBoardPointerHandledX=e.clientX;
+      joygoLastBoardPointerHandledY=e.clientY;
+    }
+  },{capture:true,passive:true});
+}
+
+document.addEventListener('touchend',e=>{
+  try{
+    if(!state.onlineMode)return;
+    if(state.spectatorMode||state.scoringMode)return;
+    const t=e.changedTouches&&e.changedTouches[0];
+    if(!t)return;
+    const r=canvas.getBoundingClientRect();
+    if(t.clientX<r.left||t.clientX>r.right||t.clientY<r.top||t.clientY>r.bottom)return;
+
+    // 若 pointerup 剛剛已經處理同一次觸碰，就不重送。
+    const dt=Date.now()-joygoLastBoardPointerHandledAt;
+    const d=Math.hypot(t.clientX-joygoLastBoardPointerHandledX,t.clientY-joygoLastBoardPointerHandledY);
+    if(dt>=0 && dt<420 && d<28)return;
+
+    if(e.cancelable)e.preventDefault();
+    resetBoardInputGuard();
+    handleBoardInput({
+      clientX:t.clientX,clientY:t.clientY,cancelable:true,
+      preventDefault:()=>{try{e.preventDefault()}catch(_){}}
+    });
+  }catch(err){
+    try{toast('手機落子觸控失敗：'+(err?.message||err))}catch(_){}
+  }
+},{capture:true,passive:false});
+
 // Build028.1.12：切換方向、分頁或返回頁面時清除殘留觸控鎖，避免下一次試下無法落子或誤判重複。
 window.addEventListener('orientationchange',()=>{joygoClearPendingMove();resetBoardInputGuard()},{passive:true});
 window.addEventListener('pageshow',resetBoardInputGuard,{passive:true});
