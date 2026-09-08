@@ -34,6 +34,7 @@
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 <meta name="joygo-reconnect-version" content="3.4.3b">
+<meta name="joygo-ready-start-version" content="3.4.8a">
 <meta name="joygo-ready-start-version" content="3.4.8">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
@@ -2974,14 +2975,18 @@ body.spectator-viewing #statusText{font-weight:800}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style id="joygoReadyStart348Style">
-/* Beta 3.4.8：真人對弈／升降賽／正式比賽「準備開賽」 */
+/* Beta 3.4.8a：準備開賽移至棋盤主畫面 */
 .online-ready-box{margin-top:10px;padding:10px;border:1px solid #6c4b2c;border-radius:12px;background:#0c0806}
 .online-ready-title{font-weight:900;color:#efc45f;margin-bottom:7px;text-align:center}
 .online-ready-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
 .online-ready-chip{padding:8px;border:1px solid #5b4028;border-radius:9px;background:#17100c;text-align:center;color:#c9b696;font-size:12px;font-weight:800}
 .online-ready-chip.ready{border-color:#4f8e5e;background:#102016;color:#c9f2d1}
-#onlineReadyBtn{width:100%;min-height:44px;font-weight:900}
-#onlineReadyBtn[disabled]{opacity:.58}
+#onlineReadyBtn,#mainOnlineReadyBtn{width:100%;min-height:44px;font-weight:900}
+#onlineReadyBtn[disabled],#mainOnlineReadyBtn[disabled]{opacity:.58}
+#mainOnlineReadyBox{display:none;margin:0 0 8px;padding:9px;border:2px solid #b88732;border-radius:12px;background:linear-gradient(180deg,#20160d,#100b08);box-shadow:0 4px 16px #0008}
+#mainOnlineReadyBox .online-ready-title{font-size:14px}
+#mainOnlineReadyBtn{background:linear-gradient(135deg,#ffd970,#e4aa2d);color:#241407;border:0;border-radius:10px}
+@media(max-width:700px){#mainOnlineReadyBox{margin-bottom:6px;padding:7px}.online-ready-grid{gap:5px;margin-bottom:6px}.online-ready-chip{padding:6px 4px;font-size:11px}#mainOnlineReadyBtn{min-height:40px}}
 .online-ready-note{margin-top:7px;text-align:center;color:#bba98c;font-size:11px;line-height:1.45}
 </style>
 
@@ -7377,6 +7382,15 @@ body.jg-online-mode #jgUSpeedPanel{
       <button id="nextBtn">▶</button>
       <button id="lastBtn">⏭</button>
     </div>
+    <div id="mainOnlineReadyBox" class="online-ready-box" style="display:none" aria-live="polite">
+      <div class="online-ready-title">⚔️ 準備開賽</div>
+      <div class="online-ready-grid">
+        <div id="mainOnlineBlackReady" class="online-ready-chip">⚫ 黑方：等待</div>
+        <div id="mainOnlineWhiteReady" class="online-ready-chip">⚪ 白方：等待</div>
+      </div>
+      <button id="mainOnlineReadyBtn" class="action" type="button">準備開賽</button>
+      <div id="mainOnlineReadyNote" class="online-ready-note">正式比賽與升降賽須雙方準備完成後才會開鐘。</div>
+    </div>
     <div class="game-action-row" id="gameActionRow">
       <button id="undoGameBtn">悔棋</button>
       <button id="scoreGameBtn">正式數地</button>
@@ -10514,8 +10528,9 @@ async function onlineLoadRoomRanks(room){
 function onlineMatchType(room){return String(room?.match_type||"friendly").toLowerCase()}
 function onlineForcedReady(room){
   const t=onlineMatchType(room);
+  const adminAssigned=!!(room?.black_id&&room?.white_id&&!room?.host_id&&!room?.guest_id);
   return t==="rating"||t==="tournament"||t==="formal"||t==="swiss"||t==="competition"
-    ||!!room?.tournament_code||!!room?.swiss_pairing_id||!!room?.tournament_pairing_id;
+    ||!!room?.tournament_code||!!room?.swiss_pairing_id||!!room?.tournament_pairing_id||adminAssigned;
 }
 function onlineBothReady(room){return !!(room?.black_ready&&room?.white_ready)}
 function onlineReadyToPlay(room){
@@ -10527,8 +10542,8 @@ async function onlineMarkReady(){
   if(!state.onlineMode||!r||!memberSupabase||!memberSession?.user)return;
   if(r.status==="ended"){toast("這盤棋已經結束");return}
   if(state.onlineColor!=="B"&&state.onlineColor!=="W"){toast("只有本局棋手可以準備開賽");return}
-  const btn=$("onlineReadyBtn");
-  if(btn){btn.disabled=true;btn.textContent="正在確認…"}
+  const readyBtns=[$("onlineReadyBtn"),$("mainOnlineReadyBtn")].filter(Boolean);
+  readyBtns.forEach(btn=>{btn.disabled=true;btn.textContent="正在確認…"});
   onlineSetStatus("正在送出準備狀態…");
   try{
     const {data,error}=await memberSupabase.rpc("joygo_set_room_ready_v1",{p_room_id:r.id});
@@ -10540,7 +10555,7 @@ async function onlineMarkReady(){
   }catch(e){
     onlineSetStatus("準備開賽失敗："+(e?.message||e),"bad");
   }finally{
-    if(btn)btn.disabled=false;
+    readyBtns.forEach(btn=>btn.disabled=false);
     onlineRenderRoom();
   }
 }
@@ -10570,6 +10585,18 @@ function onlineRenderRoom(){
     readyBtn.textContent=mine?(bothReady?"✅ 雙方已準備":"✅ 我已準備｜等待對手"):"準備開賽";
   }
   if($("onlineReadyNote"))$("onlineReadyNote").textContent=forced?"本局須雙方按「準備開賽」後才會開鐘並允許落子。":"友誼賽可直接開始。";
+
+  // Beta 3.4.8a：正式比賽進入棋盤後，準備按鈕直接顯示於主畫面。
+  const mainReadyBox=$("mainOnlineReadyBox"),mainReadyBtn=$("mainOnlineReadyBtn");
+  if(mainReadyBox)mainReadyBox.style.display=(state.onlineMode&&showReady&&!bothReady)?"block":"none";
+  if($("mainOnlineBlackReady")){ $("mainOnlineBlackReady").classList.toggle("ready",!!r.black_ready); $("mainOnlineBlackReady").textContent="⚫ 黑方："+(r.black_ready?"已準備":"等待"); }
+  if($("mainOnlineWhiteReady")){ $("mainOnlineWhiteReady").classList.toggle("ready",!!r.white_ready); $("mainOnlineWhiteReady").textContent="⚪ 白方："+(r.white_ready?"已準備":"等待"); }
+  if(mainReadyBtn&&showReady){
+    const mainMine=state.onlineColor==="B"?!!r.black_ready:state.onlineColor==="W"?!!r.white_ready:false;
+    mainReadyBtn.disabled=mainMine||!state.onlineColor;
+    mainReadyBtn.textContent=mainMine?(bothReady?"✅ 雙方已準備":"✅ 我已準備｜等待對手"):"準備開賽";
+  }
+  if($("mainOnlineReadyNote"))$("mainOnlineReadyNote").textContent="本局須雙方按「準備開賽」後才會開鐘並允許落子。";
   if($("onlineClearEndedBtn"))$("onlineClearEndedBtn").style.display=r.status==="ended"?"block":"none";
 }
 async function onlineUnsubscribe(){
@@ -10811,6 +10838,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("onlineJoinBtn")?.addEventListener("click",()=>onlineJoinRoom($("onlineJoinCode").value));
   $("onlineResumeBtn")?.addEventListener("click",onlineResumeRoom);
   $("onlineReadyBtn")?.addEventListener("click",onlineMarkReady);
+  $("mainOnlineReadyBtn")?.addEventListener("click",onlineMarkReady);
   $("onlineCopyCodeBtn")?.addEventListener("click",async()=>{const c=state.onlineRoom?.room_code||"";try{await navigator.clipboard.writeText(c);toast("房間號碼已複製") }catch(_){prompt("請複製房間號碼：",c)}});
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
   $("onlineClearEndedBtn")?.addEventListener("click",onlineClearEndedRoom);
