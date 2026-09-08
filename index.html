@@ -9932,7 +9932,7 @@ async function memberInitClient(showMessage=false){
 function memberDisplayName(user){
   return memberAccess.displayName||user?.user_metadata?.display_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"會員";
 }
-// Beta 3.2.8-F：首頁在線人數改用 Supabase Presence，與真人弈廳共用 joygo-lobby-v1
+// Beta 3.2.8-F：首頁在線人數改用 Supabase Presence，與真人弈廳共用 joygo-lobby-v21
 let joygoGlobalPresenceChannel=null;
 window.joygoPresenceOnlineCount=null;
 function joygoGlobalPresenceRender(){
@@ -9953,7 +9953,7 @@ async function joygoGlobalPresenceStart(){
     if(joygoGlobalPresenceChannel){
       try{await memberSupabase.removeChannel(joygoGlobalPresenceChannel)}catch(_){}
     }
-    joygoGlobalPresenceChannel=memberSupabase.channel('joygo-lobby-v1',{config:{presence:{key:memberSession.user.id}}})
+    joygoGlobalPresenceChannel=memberSupabase.channel('joygo-lobby-v21',{config:{presence:{key:memberSession.user.id}}})
       .on('presence',{event:'sync'},joygoGlobalPresenceRender)
       .on('presence',{event:'join'},joygoGlobalPresenceRender)
       .on('presence',{event:'leave'},joygoGlobalPresenceRender)
@@ -10801,7 +10801,7 @@ async function onlineLobbyTrackPresence(){
 async function onlineLobbyConnectPresence(){
   if(!memberSupabase||!memberSession?.user)return;
   if(onlineLobbyPresenceChannel){try{await memberSupabase.removeChannel(onlineLobbyPresenceChannel)}catch(_){}}
-  onlineLobbyPresenceChannel=memberSupabase.channel("joygo-lobby-v1",{config:{presence:{key:memberSession.user.id}}})
+  onlineLobbyPresenceChannel=memberSupabase.channel("joygo-lobby-v21",{config:{presence:{key:memberSession.user.id}}})
     .on("presence",{event:"sync"},onlineLobbyRenderFriends)
     .on("presence",{event:"join"},onlineLobbyRenderFriends)
     .on("presence",{event:"leave"},onlineLobbyRenderFriends)
