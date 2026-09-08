@@ -34,7 +34,7 @@
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
 <meta name="joygo-reconnect-version" content="3.4.3b">
-<meta name="joygo-ready-start-version" content="3.4.8a">
+<meta name="joygo-ready-start-version" content="3.4.8b">
 <meta name="joygo-ready-start-version" content="3.4.8">
 <meta name="joygo-room-rank-version" content="3.4.4c">
 <meta name="joygo-auto-spectator-version" content="3.4.5">
@@ -7206,6 +7206,58 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <!-- Beta 3.3.12zl｜iPad 橫式棋盤底部安全修正：改由 resizeBoard 保留 10px 安全高度，保持落子座標一致 -->
 
+
+
+<style id="joygoBeta348bMobileReadyFix">
+/* Beta 3.4.8b：手機準備開賽按鈕可點擊修正
+   手機只保留真正的按鈕，避免準備狀態盒被舊版固定高度裁切。 */
+@media (max-width:700px), (orientation:portrait) and (max-width:900px){
+  #mainOnlineReadyBox{
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:4px 0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    overflow:visible!important;
+    position:relative!important;
+    z-index:80!important;
+    pointer-events:auto!important;
+  }
+  #mainOnlineReadyBox .online-ready-title,
+  #mainOnlineReadyBox .online-ready-grid,
+  #mainOnlineReadyBox .online-ready-note{
+    display:none!important;
+  }
+  #mainOnlineReadyBtn{
+    display:block!important;
+    width:100%!important;
+    min-height:50px!important;
+    height:50px!important;
+    margin:0!important;
+    padding:8px 12px!important;
+    border:1px solid #d5a443!important;
+    border-radius:12px!important;
+    background:linear-gradient(135deg,#ffd970,#e4aa2d)!important;
+    color:#241407!important;
+    font-size:18px!important;
+    font-weight:900!important;
+    line-height:1.1!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+    -webkit-user-select:none!important;
+    user-select:none!important;
+    position:relative!important;
+    z-index:81!important;
+  }
+  #mainOnlineReadyBtn[disabled]{
+    opacity:.62!important;
+  }
+}
+</style>
 
 </head>
 <body>
