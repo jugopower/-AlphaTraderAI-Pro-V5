@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Joy Go 課程資訊</title>
+  <meta name="description" content="Joy Go Platform 公開課程資訊：1對1指導棋、多人指導棋、線上團體課、成人高段班。">
+  <style>
+    :root{
+      --deep:#063428; --deep2:#0a4736; --gold:#efc768; --gold2:#f7dd9a;
+      --cream:#f7f2e7; --paper:#f2eadb; --text:#fffdf7; --ink:#17392c;
+      --muted:#d9e3dc; --line:rgba(239,199,104,.42); --card:rgba(255,255,255,.055);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--text);background:linear-gradient(180deg,var(--deep2),var(--deep));line-height:1.65}
+    a{color:inherit}.wrap{max-width:1120px;margin:auto;padding:0 20px}
+    header{position:sticky;top:0;z-index:20;background:rgba(6,52,40,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .topbar{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{font-size:clamp(25px,4vw,38px);font-weight:900;color:var(--gold2)}
+    .brand small{display:block;font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.08em}
+    .nav{display:flex;gap:18px;flex-wrap:wrap;font-size:15px}.nav a{text-decoration:none;color:#f4f5ef}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:999px;border:1px solid var(--gold);text-decoration:none;font-weight:800;color:var(--gold2);background:rgba(255,255,255,.025)}
+    .btn.primary{background:linear-gradient(180deg,#f6d77f,#daa848);color:#17392c;border:none}
+    .hero{padding:54px 0 40px;background:radial-gradient(circle at 85% 20%, rgba(239,199,104,.14), transparent 24%),linear-gradient(90deg,rgba(6,52,40,.96),rgba(6,52,40,.72));border-bottom:1px solid var(--line)}
+    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:center}
+    .eyebrow{font-size:20px;color:#fff8df;font-weight:700}
+    .hero h1{font-size:clamp(44px,8vw,78px);line-height:1.05;margin:10px 0;color:var(--gold2)}
+    .hero p{font-size:clamp(17px,2.5vw,22px);margin:0;color:#eef3ee;max-width:680px}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.chip{padding:7px 13px;border:1px solid var(--gold);border-radius:999px;color:var(--gold2)}
+    .teacher-card{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:24px;padding:24px}
+    .teacher-card h3{margin:0 0 8px;color:var(--gold2);font-size:28px}.teacher-card p{margin:6px 0;color:#eef3ee}
+    section{padding:34px 0}.section-title{text-align:center;margin-bottom:22px}
+    .section-title h2{margin:0;color:var(--gold2);font-size:clamp(30px,5vw,44px)}.section-title p{margin:6px 0;color:var(--muted)}
+    .course-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .course{background:var(--paper);color:var(--ink);border-radius:20px;overflow:hidden;border:1px solid rgba(239,199,104,.65);display:flex;flex-direction:column;box-shadow:0 14px 28px rgba(0,0,0,.14)}
+    .course .visual{height:118px;background:linear-gradient(135deg,rgba(6,52,40,.18),rgba(239,199,104,.18)),repeating-linear-gradient(0deg,transparent 0 18px,rgba(23,57,44,.08) 19px 20px),repeating-linear-gradient(90deg,transparent 0 18px,rgba(23,57,44,.08) 19px 20px)}
+    .course .body{padding:18px;display:flex;flex-direction:column;flex:1}.course h3{margin:0 0 8px;font-size:24px}
+    .course ul{margin:0 0 18px;padding-left:20px;flex:1}.course li{margin:4px 0}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .panel{background:var(--paper);color:var(--ink);border-radius:22px;padding:24px;border:1px solid rgba(239,199,104,.55)}
+    .panel h3{margin:0 0 10px;font-size:28px}.panel ul{margin:0;padding-left:20px}.panel li{margin:6px 0}
+    .quote{background:linear-gradient(180deg,#f6f0e4,#e9dfce);color:#203a31;text-align:center;padding:32px 20px}
+    .quote strong{font-size:clamp(26px,4.5vw,40px)}.quote span{display:block;margin-top:8px}
+    footer{padding:28px 0 40px}.footer-row{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;color:var(--muted)}
+    @media(max-width:950px){.course-grid{grid-template-columns:repeat(2,1fr)}.hero-grid{grid-template-columns:1fr}.nav{display:none}}
+    @media(max-width:640px){.course-grid,.info-grid{grid-template-columns:1fr}.topbar{padding:10px 0;align-items:flex-start}.hero{padding-top:36px}.course .visual{height:90px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div class="brand">Joy Go Platform<small>以棋會友・樂在其中</small></div>
+    <nav class="nav">
+      <a href="#courses">課程資訊</a><a href="#teacher">指導棋</a><a href="#lesson">線上教學</a><a href="#signup">聯絡我們</a>
+    </nav>
+    <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">返回平台</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">圍棋，讓生活更美好</div>
+        <h1>課程資訊</h1>
+        <p>從入門到高段，找到適合你的學習方式。一起學棋、下棋、交朋友，讓每一次落子都成為新的開始。</p>
+        <div class="chips"><span class="chip">專業指導</span><span class="chip">系統教學</span><span class="chip">彈性學習</span><span class="chip">歡迎加入</span></div>
+      </div>
+      <aside class="teacher-card" id="teacher">
+        <h3>朱華堂老師</h3>
+        <p><strong>圍棋七段</strong></p>
+        <p>1985 年起從事圍棋教學，曾任多所學校社團指導老師，並擔任應昌期基金會講師。</p>
+        <p>教學經驗豐富，重視實戰理解、棋形效率與整體方向感。</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="courses">
+    <div class="wrap">
+      <div class="section-title"><h2>課程介紹</h2><p>適合不同程度，開啟你的圍棋旅程</p></div>
+      <div class="course-grid">
+        <article class="course"><div class="visual"></div><div class="body"><h3>1 對 1 指導棋</h3><ul><li>依個人棋力量身指導</li><li>針對弱點加強</li><li>提升實戰能力</li></ul><a class="btn primary" href="#signup">了解詳情</a></div></article>
+        <article class="course"><div class="visual"></div><div class="body"><h3>多人指導棋</h3><ul><li>2～5 人小班教學</li><li>互相觀摩、共同進步</li><li>氣氛輕鬆有趣</li></ul><a class="btn primary" href="#signup">了解詳情</a></div></article>
+        <article class="course" id="lesson"><div class="visual"></div><div class="body"><h3>線上團體課</h3><ul><li>在家也能學圍棋</li><li>Google Meet 線上教學</li><li>時間彈性</li></ul><a class="btn primary" href="#signup">了解詳情</a></div></article>
+        <article class="course"><div class="visual"></div><div class="body"><h3>成人高段班</h3><ul><li>適合四段～六段</li><li>布局、中盤、官子</li><li>提升戰略與實戰思維</li></ul><a class="btn primary" href="#signup">了解詳情</a></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap info-grid">
+      <div class="panel"><h3>為什麼選擇 Joy Go？</h3><ul><li>經驗豐富的專業師資</li><li>彈性學習方式（線上／實體）</li><li>適合不同棋力與年齡層</li><li>友善、重視交流的學習環境</li><li>結合實戰與棋局檢討</li></ul></div>
+      <div class="panel"><h3>上課方式</h3><ul><li>實體課程：Joy Go Club</li><li>Google Meet 線上課程</li><li>1 對 1 或多人課程皆可</li><li>可依需求安排上課時間</li></ul></div>
+    </div>
+  </section>
+
+  <section id="signup">
+    <div class="wrap">
+      <div class="panel">
+        <h3>報名方式</h3>
+        <ul><li>加入 Joy Go 官方 LINE 詢問</li><li>由專人協助確認課程與時間</li><li>正式上課資訊依最新公告為準</li></ul>
+        <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn primary" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">立即報名／聯絡我們</a>
+          <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">返回 Joy Go Platform</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote"><div class="wrap"><strong>平常心・深奧幽玄・棋外有禪</strong><span>Joy Go Platform｜讓圍棋走進生活</span></div></section>
+</main>
+
+<footer><div class="wrap footer-row"><div>Joy Go Platform｜課程公開資訊頁</div><a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">返回 Joy Go Platform</a></div></footer>
+</body>
+</html>
