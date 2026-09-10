@@ -1,90 +1,66 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Joy Go 每週活動</title>
-  <meta name="description" content="Joy Go Platform 每週固定活動與特別活動預告。" />
+  <meta name="description" content="Joy Go Platform 每週固定棋聚、名局欣賞與棋友交流。">
   <style>
     :root{
-      --bg:#062d21;
-      --bg2:#0a3a2b;
-      --gold:#e5bf63;
-      --gold2:#f4d98d;
-      --cream:#f7f1e3;
-      --text:#f9f7f0;
-      --muted:#d8dfd7;
-      --line:rgba(229,191,99,.35);
-      --card:rgba(255,255,255,.06);
+      --deep:#063428; --deep2:#0a4736; --gold:#efc768; --gold2:#f7dd9a;
+      --cream:#f7f2e7; --text:#fffdf7; --muted:#d9e3dc;
+      --line:rgba(239,199,104,.42); --card:rgba(255,255,255,.055);
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top right, rgba(229,191,99,.08), transparent 35%),
-        linear-gradient(180deg,var(--bg2),var(--bg));
-      line-height:1.6;
+      background:radial-gradient(circle at 90% 5%, rgba(239,199,104,.09), transparent 28%),
+                 linear-gradient(180deg,var(--deep2),var(--deep));
+      color:var(--text); line-height:1.65;
     }
-    .wrap{max-width:1100px;margin:auto;padding:0 18px}
-    header{
-      position:sticky;top:0;z-index:10;
-      background:rgba(6,45,33,.92);
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--line);
-    }
-    .topbar{
-      min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px;
-    }
-    .brand{font-weight:800;font-size:clamp(22px,4vw,34px);color:var(--gold2)}
-    .brand small{display:block;font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.08em}
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;
-      min-height:46px;padding:0 18px;border-radius:999px;text-decoration:none;font-weight:800;
-      border:1px solid var(--gold);color:var(--gold2);background:rgba(255,255,255,.03);
-    }
-    .btn.primary{background:linear-gradient(180deg,#f1cf79,#d9aa47);color:#183426;border:none}
-    .hero{padding:46px 0 28px;border-bottom:1px solid var(--line)}
-    .hero h1{margin:0 0 10px;font-size:clamp(34px,7vw,64px);line-height:1.12;color:var(--cream)}
-    .hero p{margin:0;color:var(--muted);font-size:clamp(16px,2.7vw,21px)}
-    .tag{display:inline-block;margin-top:18px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;color:var(--gold2)}
-    section{padding:30px 0}
-    h2{margin:0 0 18px;color:var(--gold2);font-size:clamp(26px,4vw,36px)}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-    .card{
-      background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;
-      box-shadow:0 12px 30px rgba(0,0,0,.12);
-    }
-    .day{font-size:15px;color:var(--gold2);font-weight:800}
-    .card h3{margin:5px 0 10px;font-size:clamp(23px,3vw,30px)}
-    .meta{color:var(--muted);margin:4px 0}
-    .desc{margin:14px 0 18px;color:#eef3ee}
-    .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .notice{
-      background:linear-gradient(135deg,rgba(229,191,99,.14),rgba(255,255,255,.04));
-      border:1px solid var(--line);border-radius:22px;padding:22px
-    }
-    .notice strong{color:var(--gold2);font-size:22px}
-    footer{
-      border-top:1px solid var(--line);padding:28px 0 42px;color:var(--muted)
-    }
-    .footer-row{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
-    @media(max-width:720px){
+    .wrap{max-width:1120px;margin:auto;padding:0 20px}
+    header{position:sticky;top:0;z-index:20;background:rgba(6,52,40,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .topbar{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{font-size:clamp(24px,4.2vw,36px);font-weight:900;color:var(--gold2)}
+    .brand small{display:block;color:var(--muted);font-size:12px;font-weight:500;letter-spacing:.08em}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;border-radius:999px;border:1px solid var(--gold);text-decoration:none;color:var(--gold2);font-weight:800;background:rgba(255,255,255,.025)}
+    .btn.primary{background:linear-gradient(180deg,#f6d77f,#daa848);color:#17392c;border:none}
+    .hero{padding:56px 0 34px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(6,52,40,.88),rgba(6,52,40,.58)),radial-gradient(circle at 80% 45%, rgba(239,199,104,.12), transparent 26%)}
+    .eyebrow{color:var(--gold2);font-weight:800;margin-bottom:10px}
+    .hero h1{margin:0 0 12px;font-size:clamp(40px,8vw,72px);line-height:1.08;color:var(--cream)}
+    .hero p{margin:0;max-width:760px;color:#edf3ee;font-size:clamp(17px,2.7vw,22px)}
+    .tag{display:inline-block;margin-top:20px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);color:var(--gold2)}
+    section{padding:34px 0}
+    .section-title{text-align:center;margin-bottom:22px}
+    .section-title h2{margin:0;color:var(--gold2);font-size:clamp(28px,4.7vw,42px)}
+    .section-title p{margin:6px 0 0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 14px 30px rgba(0,0,0,.12);display:flex;flex-direction:column}
+    .day{color:var(--gold2);font-weight:900;font-size:18px}
+    .time{color:var(--cream);font-weight:700;margin-top:2px}
+    .card h3{margin:12px 0 8px;font-size:clamp(24px,3.1vw,31px);line-height:1.25}
+    .desc{color:#eef4ef;margin:6px 0 18px;flex:1}
+    .special{margin-top:4px;background:linear-gradient(135deg,rgba(239,199,104,.14),rgba(255,255,255,.035));border:1px solid var(--line);border-radius:22px;padding:24px}
+    .special h3{margin:0 0 8px;color:var(--gold2);font-size:26px}
+    .quote{padding:30px 0;background:linear-gradient(180deg,#f5efe2,#e8dfcd);color:#203a31;text-align:center;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06)}
+    .quote strong{display:block;font-size:clamp(25px,4vw,38px);font-weight:900}
+    .quote span{display:block;margin-top:8px;font-size:17px}
+    footer{padding:28px 0 42px}
+    .footer-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted)}
+    @media(max-width:820px){
       .grid{grid-template-columns:1fr}
+      .hero{padding-top:38px}
       .topbar{align-items:flex-start;padding:12px 0}
       .topbar .btn{min-height:42px;padding:0 14px}
-      .hero{padding-top:34px}
     }
   </style>
 </head>
 <body>
 <header>
   <div class="wrap topbar">
-    <div class="brand">Joy Go Platform
-      <small>每週活動｜以棋會友・樂在其中</small>
-    </div>
+    <div class="brand">Joy Go Platform<small>以棋會友・樂在其中</small></div>
     <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">返回平台</a>
   </div>
 </header>
@@ -92,44 +68,42 @@
 <main>
   <section class="hero">
     <div class="wrap">
+      <div class="eyebrow">歡迎加入</div>
       <h1>Joy Go 每週活動</h1>
-      <p>固定活動不寫日期，棋友每週都能直接查看；只有特別活動需要另外更新。</p>
-      <span class="tag">每週固定棋聚・線上交流・特別活動預告</span>
+      <p>每週都有精彩棋聚、名局欣賞與棋友交流，一起學棋、下棋、聊天，享受圍棋的樂趣。</p>
+      <span class="tag">每週固定棋聚・線上交流・精彩活動</span>
     </div>
   </section>
 
   <section>
     <div class="wrap">
-      <h2>固定每週活動</h2>
+      <div class="section-title">
+        <h2>固定每週活動</h2>
+        <p>線上相聚・以棋會友・歡迎一起來</p>
+      </div>
       <div class="grid">
         <article class="card">
-          <div class="day">每週三｜20:00–22:00</div>
+          <div class="day">每週三</div>
+          <div class="time">20:00–22:00</div>
           <h3>自由對弈・高手交流</h3>
-          <p class="meta">地點：Joy Go Platform 線上</p>
-          <p class="desc">自由約棋、實戰交流，歡迎棋友一起上線切磋。</p>
-          <div class="actions">
-            <a class="btn primary" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">立即進入下棋</a>
-          </div>
+          <p class="desc">與棋友自由對局、交流棋藝，輕鬆切磋，在實戰中一起成長。</p>
+          <a class="btn primary" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">立即進入下棋</a>
         </article>
 
         <article class="card">
-          <div class="day">每週五｜20:00</div>
+          <div class="day">每週五</div>
+          <div class="time">20:00</div>
           <h3>名局欣賞</h3>
-          <p class="meta">內容：精彩棋譜、高手實戰、棋局欣賞</p>
-          <p class="desc">一起看名局、聊棋理，從高手對局中學習方向感與棋形。</p>
-          <div class="actions">
-            <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">前往 Joy Go</a>
-          </div>
+          <p class="desc">一起欣賞好棋、聊棋理，從高手對局中學習方向感與棋形觀念。</p>
+          <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">前往 Joy Go</a>
         </article>
 
         <article class="card">
-          <div class="day">每週六｜20:00–22:00</div>
+          <div class="day">每週六</div>
+          <div class="time">20:00–22:00</div>
           <h3>Joy Go 圍棋派對</h3>
-          <p class="meta">內容：聊天、約棋、棋友交流</p>
-          <p class="desc">輕鬆聊天、談古論今，也可以現場約棋，認識更多棋友。</p>
-          <div class="actions">
-            <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">進入平台</a>
-          </div>
+          <p class="desc">輕鬆聊天、談棋論局、認識棋友，讓下棋不只是對局，更是一種交流樂趣。</p>
+          <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">進入平台</a>
         </article>
       </div>
     </div>
@@ -137,19 +111,24 @@
 
   <section>
     <div class="wrap">
-      <h2>特別活動預告</h2>
-      <div class="notice">
-        <strong>近期比賽／講座／AI 挑戰賽</strong>
-        <p>這一區只在有特別活動時更新。正式日期、資格、賽制、費用與報名方式可在此公布。</p>
-        <a class="btn primary" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">前往 Joy Go Platform</a>
+      <div class="special">
+        <h3>特別活動預告</h3>
+        <p>比賽、講座、AI 挑戰賽等特別活動，將不定期在此更新。歡迎持續關注 Joy Go Platform。</p>
       </div>
+    </div>
+  </section>
+
+  <section class="quote">
+    <div class="wrap">
+      <strong>平常心・深奧幽玄・棋外有禪</strong>
+      <span>更多課程資訊與活動公告，請持續關注 Joy Go Platform。</span>
     </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap footer-row">
-    <div>Joy Go Platform｜棋不問年齡，只要心懷熱愛，落子處處皆是新的開始。</div>
+    <div>Joy Go Platform｜讓圍棋走進生活</div>
     <a class="btn" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/">返回 Joy Go Platform</a>
   </div>
 </footer>
