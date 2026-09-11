@@ -203,7 +203,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5e｜iPad 旋轉穩定版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5f｜iPad 旋轉穩定修正版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -443,7 +443,7 @@ function activate(slot){
   });
   renderTabs();
   renderCurrent()
-}const chosen=live.find(b=>b.slot_no===slot)||live[0];activeSlot=chosen.slot_no;live.forEach(b=>ensureFrame(b).classList.toggle('active',b.slot_no===activeSlot));renderTabs();renderCurrent();setTimeout(()=>refitActiveBoard(false),80)}
+}
 function clearTeacherControl(){document.querySelectorAll('.board-frame').forEach(f=>f.remove());$("tabs").innerHTML='';$("controlbar").style.display='none';$("frames").innerHTML='<div class="empty">✅ 本場棋局已結束，棋盤與標籤已自動清除；棋譜紀錄仍保留。</div>'}
 function removeEndedFrames(){boards.filter(b=>b.room_status==='ended').forEach(b=>document.getElementById('frame-'+b.slot_no)?.remove())}
 function renderCurrent(){const b=boards.find(x=>x.slot_no===activeSlot);if(!b)return;$("controlbar").style.display='flex';$("currentInfo").textContent=`第 ${b.slot_no} 盤｜${b.student_name} ${b.student_rank||''}｜${tabLabel(b)}｜房號 ${b.room_code}`;$("autoNext").checked=!!b.auto_next}
