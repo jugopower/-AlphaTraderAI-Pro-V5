@@ -124,7 +124,7 @@ header h1{font-size:20px;margin:0;flex:1;color:var(--gold2);text-shadow:0 1px 0 
 .current{font-weight:800;flex:1;color:var(--gold2)}
 .board-frame{
   width:100%;
-  height:940px;
+  height:900px;
   border:1px solid rgba(213,173,85,.45);
   border-radius:14px;
   background:#0b221a;
@@ -139,24 +139,8 @@ header h1{font-size:20px;margin:0;flex:1;color:var(--gold2);text-shadow:0 1px 0 
 }
 .session-chip:hover{border-color:var(--gold);color:var(--gold2)}
 .small{font-size:12px;color:var(--muted)}
-
-/* Beta 2.9.5c：避免 iPad 內嵌棋盤下方「主要操作」被 iframe 截斷 */
-@media (min-width:901px) and (max-width:1366px) and (orientation:landscape){
-  .board-frame{height:1100px}
-}
-@media (min-width:768px) and (max-width:1100px) and (orientation:portrait){
-  .board-frame{height:1040px}
-}
-@media(max-width:900px){
-  .formgrid{grid-template-columns:1fr 1fr}
-  .board-frame{height:980px}
-}
-@media(max-width:560px){
-  .formgrid{grid-template-columns:1fr}
-  .tab{min-width:132px}
-  .board-frame{height:820px}
-  header h1{font-size:17px}
-}
+@media(max-width:900px){.formgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.formgrid{grid-template-columns:1fr}.tab{min-width:132px}header h1{font-size:17px}}
 </style>
 
 <style id="joygoGuidanceSecurity290">
@@ -213,7 +197,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5c｜SAI 身分切換＋iPad 完整操作區｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5d｜iPad 旋轉自動重排版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -385,11 +369,64 @@ function normalizeBoards(rows){
 }
 
 function renderTabs(){const live=activeBoards();$("tabs").innerHTML=live.map(b=>`<button class="tab ${b.slot_no===activeSlot?'active':''} ${b.tab_status==='waiting_teacher'?'wait-teacher':''}" data-slot="${b.slot_no}"><div class="tab-name">${esc(b.student_name)} ${esc(b.student_rank||'')}</div><div class="tab-meta">${tabLabel(b)}｜${b.handicap?`讓${b.handicap}子`:'分先'}｜${esc(b.room_code)}</div></button>`).join('');document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>activate(Number(t.dataset.slot)))}
+
+function fitBoardFrame(f){
+  if(!f || !f.contentWindow) return;
+  try{
+    // 讓內嵌 index.html 在 iPad 轉向後重新跑自己的 responsive / resize 邏輯
+    f.contentWindow.dispatchEvent(new Event('resize'));
+    const doc=f.contentDocument;
+    if(!doc) return;
+    const h=Math.max(
+      doc.documentElement?.scrollHeight||0,
+      doc.body?.scrollHeight||0,
+      760
+    );
+    f.style.height=(h+24)+'px';
+  }catch(e){
+    // 同源失敗時保留安全高度，不影響棋局功能
+    f.style.height=(window.innerWidth>window.innerHeight?'920px':'980px');
+  }
+}
+
+function refitActiveBoard(keepPosition=true){
+  const f=document.querySelector('.board-frame.active');
+  if(!f) return;
+  const top=keepPosition ? f.getBoundingClientRect().top + window.scrollY : null;
+
+  // iPad Safari 旋轉不是一次完成，分三次重新量測最穩定
+  [80,260,650].forEach(ms=>setTimeout(()=>{
+    fitBoardFrame(f);
+    if(ms===650 && keepPosition && top!==null){
+      const headerH=document.querySelector('header')?.offsetHeight||0;
+      const controls=document.getElementById('controlbar');
+      const target=(controls?.getBoundingClientRect().top||f.getBoundingClientRect().top)+window.scrollY-headerH-10;
+      window.scrollTo({top:Math.max(0,target),behavior:'auto'});
+    }
+  },ms));
+}
+
+let joygoRotateTimer=null;
+function handleGuidanceViewportChange(){
+  clearTimeout(joygoRotateTimer);
+  joygoRotateTimer=setTimeout(()=>refitActiveBoard(true),120);
+}
+window.addEventListener('orientationchange',handleGuidanceViewportChange,{passive:true});
+window.addEventListener('resize',handleGuidanceViewportChange,{passive:true});
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',handleGuidanceViewportChange,{passive:true});
+}
+
 function ensureFrame(b){let f=document.getElementById('frame-'+b.slot_no);if(!f){const e=$("frames").querySelector('.empty');if(e)e.remove();f=document.createElement('iframe');f.id='frame-'+b.slot_no;f.className='board-frame';
 f.referrerPolicy='no-referrer';
 f.setAttribute('allow','clipboard-write');
-f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=294`;$("frames").appendChild(f)}if(!f.getAttribute('src'))f.src=f.dataset.src;return f}
-function activate(slot){const live=activeBoards();if(!live.length){clearTeacherControl();return}const chosen=live.find(b=>b.slot_no===slot)||live[0];activeSlot=chosen.slot_no;live.forEach(b=>ensureFrame(b).classList.toggle('active',b.slot_no===activeSlot));renderTabs();renderCurrent()}
+f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295d`;
+f.addEventListener('load',()=>{ setTimeout(()=>fitBoardFrame(f),80); setTimeout(()=>fitBoardFrame(f),350); });
+$("frames").appendChild(f)}
+if(!f.getAttribute('src'))f.src=f.dataset.src;
+setTimeout(()=>fitBoardFrame(f),60);
+return f}
+function activate(slot){const live=activeBoards();if(!live.length){clearTeacherControl();return}const chosen=live.find(b=>b.slot_no===slot)||live[0];activeSlot=chosen.slot_no;live.forEach(b=>ensureFrame(b).classList.toggle('active',b.slot_no===activeSlot));renderTabs();renderCurrent();setTimeout(()=>refitActiveBoard(false),80)}
 function clearTeacherControl(){document.querySelectorAll('.board-frame').forEach(f=>f.remove());$("tabs").innerHTML='';$("controlbar").style.display='none';$("frames").innerHTML='<div class="empty">✅ 本場棋局已結束，棋盤與標籤已自動清除；棋譜紀錄仍保留。</div>'}
 function removeEndedFrames(){boards.filter(b=>b.room_status==='ended').forEach(b=>document.getElementById('frame-'+b.slot_no)?.remove())}
 function renderCurrent(){const b=boards.find(x=>x.slot_no===activeSlot);if(!b)return;$("controlbar").style.display='flex';$("currentInfo").textContent=`第 ${b.slot_no} 盤｜${b.student_name} ${b.student_rank||''}｜${tabLabel(b)}｜房號 ${b.room_code}`;$("autoNext").checked=!!b.auto_next}
