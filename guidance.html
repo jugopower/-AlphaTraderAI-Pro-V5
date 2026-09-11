@@ -122,7 +122,14 @@ header h1{font-size:20px;margin:0;flex:1;color:var(--gold2);text-shadow:0 1px 0 
   background:#0d2b21;border:1px solid #356450;border-radius:12px;margin-bottom:10px
 }
 .current{font-weight:800;flex:1;color:var(--gold2)}
-.board-frame{width:100%;height:760px;border:1px solid rgba(213,173,85,.45);border-radius:14px;background:#0b221a;display:none}
+.board-frame{
+  width:100%;
+  height:940px;
+  border:1px solid rgba(213,173,85,.45);
+  border-radius:14px;
+  background:#0b221a;
+  display:none
+}
 .board-frame.active{display:block}
 .empty{padding:36px;text-align:center;color:var(--muted)}
 .session-list{display:flex;gap:8px;flex-wrap:wrap}
@@ -132,8 +139,24 @@ header h1{font-size:20px;margin:0;flex:1;color:var(--gold2);text-shadow:0 1px 0 
 }
 .session-chip:hover{border-color:var(--gold);color:var(--gold2)}
 .small{font-size:12px;color:var(--muted)}
-@media(max-width:900px){.formgrid{grid-template-columns:1fr 1fr}.board-frame{height:700px}}
-@media(max-width:560px){.formgrid{grid-template-columns:1fr}.tab{min-width:132px}.board-frame{height:650px}header h1{font-size:17px}}
+
+/* Beta 2.9.5c：避免 iPad 內嵌棋盤下方「主要操作」被 iframe 截斷 */
+@media (min-width:901px) and (max-width:1366px) and (orientation:landscape){
+  .board-frame{height:1100px}
+}
+@media (min-width:768px) and (max-width:1100px) and (orientation:portrait){
+  .board-frame{height:1040px}
+}
+@media(max-width:900px){
+  .formgrid{grid-template-columns:1fr 1fr}
+  .board-frame{height:980px}
+}
+@media(max-width:560px){
+  .formgrid{grid-template-columns:1fr}
+  .tab{min-width:132px}
+  .board-frame{height:820px}
+  header h1{font-size:17px}
+}
 </style>
 
 <style id="joygoGuidanceSecurity290">
@@ -190,7 +213,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5b｜朱老師／棋王 SAI 身分切換｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5c｜SAI 身分切換＋iPad 完整操作區｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
