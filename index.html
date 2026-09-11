@@ -1,4 +1,4 @@
-<!-- Joy Go Platform Beta 3.4.8c｜手機真人對弈棋盤觸控保險版 -->
+<!-- Beta 3.3.12zk｜iPad 橫式棋盤底部安全修正版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -33,14 +33,6 @@
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
-<meta name="joygo-reconnect-version" content="3.4.3b">
-<meta name="joygo-ready-start-version" content="3.4.8b">
-<meta name="joygo-ready-start-version" content="3.4.8">
-<meta name="joygo-room-rank-version" content="3.4.4c">
-<meta name="joygo-auto-spectator-version" content="3.4.5">
-<meta name="joygo-classic-delete-version" content="3.4.7a">
-<meta name="joygo-classic-ui-version" content="3.4.7a">
-<meta name="joygo-ready-mobile-version" content="3.4.8c">
 
 <meta name="app-version" content="20260807-JoyGo-V1.0-Beta1">
 <!-- Joy Go Platform V1.0 Beta 1.6b.6 Famous Game One-Tap Playback Flow -->
@@ -535,14 +527,6 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 .photo-reference-view{height:min(38vh,300px);overflow:hidden;border-radius:10px;background:#000;display:flex;align-items:center;justify-content:center;touch-action:none}.photo-reference img{display:block;max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;will-change:transform;pointer-events:none}
 .photo-reference-actions{display:flex;gap:8px;margin-top:8px}.photo-reference-actions button{flex:1}
 @media(max-width:700px){.photo-import-workspace{grid-template-columns:1fr}.photo-reference{width:min(58vw,300px);left:8px;bottom:calc(10px + env(safe-area-inset-bottom))}}
-
-
-
-.clock-rank{
-  color:#f2d36b;
-  font-weight:900;
-  text-shadow:0 0 5px rgba(242,211,107,.18);
-}
 
 </style>
 
@@ -2539,104 +2523,6 @@ body.spectator-viewing #statusText{font-weight:800}
 </style>
 
 
-
-<style id="joygoClassic347CleanStyle">
-#classicGameModal .modal{
-  width:min(980px,96vw);
-}
-.classic-clean-title{
-  margin:0 0 3px;
-  font-size:clamp(22px,3vw,30px);
-}
-.classic-clean-subtitle{
-  color:var(--muted);
-  font-size:13px;
-  margin:0 0 12px;
-}
-.classic-section-title{
-  font-weight:900;
-  color:#f1d28a;
-  font-size:16px;
-  margin:14px 0 6px;
-  padding-top:10px;
-  border-top:1px solid #ffffff14;
-}
-.classic-primary-actions{
-  margin-top:10px;
-}
-.classic-primary-actions button{
-  min-height:46px;
-}
-.classic-local-manage{
-  border:1px solid #ffffff16;
-  border-radius:12px;
-  background:#0c0806;
-  margin:6px 0 10px;
-  overflow:hidden;
-}
-.classic-local-manage summary{
-  cursor:pointer;
-  padding:10px 12px;
-  color:#d7c6a8;
-  font-weight:800;
-  user-select:none;
-}
-.classic-local-manage[open] summary{
-  border-bottom:1px solid #ffffff12;
-}
-.classic-manage-actions{
-  margin:0;
-  padding:10px;
-}
-.classic-clean-note{
-  margin:4px 0 10px;
-  color:#bda98a;
-  font-size:12px;
-}
-.classic-clean-tip{
-  opacity:.9;
-}
-#onlineClassicPanel{
-  margin-top:12px;
-}
-#onlineClassicPanel .online-classic-title{
-  font-size:17px;
-}
-#onlineClassicPanel .online-classic-sub{
-  margin-top:2px;
-}
-@media(max-width:700px){
-  .classic-primary-actions{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-  }
-  .classic-primary-actions button{
-    min-width:0;
-    width:100%;
-  }
-  .classic-manage-actions{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-  }
-  .classic-manage-actions button{
-    min-width:0;
-  }
-  #classicClearUserDbBtn{
-    grid-column:1 / -1;
-  }
-}
-@media(max-width:480px){
-  .classic-primary-actions,
-  .classic-manage-actions{
-    grid-template-columns:1fr;
-  }
-  #classicClearUserDbBtn{
-    grid-column:auto;
-  }
-}
-</style>
-
 <style id="classicGameDatabase16bStyle">
 .classic-db-filters{
   display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr;gap:8px;margin:10px 0 12px
@@ -2974,22 +2860,6 @@ body.spectator-viewing #statusText{font-weight:800}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style id="joygoReadyStart348Style">
-/* Beta 3.4.8a：準備開賽移至棋盤主畫面 */
-.online-ready-box{margin-top:10px;padding:10px;border:1px solid #6c4b2c;border-radius:12px;background:#0c0806}
-.online-ready-title{font-weight:900;color:#efc45f;margin-bottom:7px;text-align:center}
-.online-ready-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
-.online-ready-chip{padding:8px;border:1px solid #5b4028;border-radius:9px;background:#17100c;text-align:center;color:#c9b696;font-size:12px;font-weight:800}
-.online-ready-chip.ready{border-color:#4f8e5e;background:#102016;color:#c9f2d1}
-#onlineReadyBtn,#mainOnlineReadyBtn{width:100%;min-height:44px;font-weight:900}
-#onlineReadyBtn[disabled],#mainOnlineReadyBtn[disabled]{opacity:.58}
-#mainOnlineReadyBox{display:none;margin:0 0 8px;padding:9px;border:2px solid #b88732;border-radius:12px;background:linear-gradient(180deg,#20160d,#100b08);box-shadow:0 4px 16px #0008}
-#mainOnlineReadyBox .online-ready-title{font-size:14px}
-#mainOnlineReadyBtn{background:linear-gradient(135deg,#ffd970,#e4aa2d);color:#241407;border:0;border-radius:10px}
-@media(max-width:700px){#mainOnlineReadyBox{margin-bottom:6px;padding:7px}.online-ready-grid{gap:5px;margin-bottom:6px}.online-ready-chip{padding:6px 4px;font-size:11px}#mainOnlineReadyBtn{min-height:40px}}
-.online-ready-note{margin-top:7px;text-align:center;color:#bba98c;font-size:11px;line-height:1.45}
-</style>
 
 <style id="memberLogin170Style">
 .member-chip{
@@ -7205,57 +7075,41 @@ body.jg-online-mode #jgUSpeedPanel{
 <meta name="twitter:description" content="">
 
 
-<!-- Beta 3.3.12zl｜iPad 橫式棋盤底部安全修正：改由 resizeBoard 保留 10px 安全高度，保持落子座標一致 -->
-
-
-
-<style id="joygoBeta348bMobileReadyFix">
-/* Beta 3.4.8b：手機準備開賽按鈕可點擊修正
-   手機只保留真正的按鈕，避免準備狀態盒被舊版固定高度裁切。 */
-@media (max-width:700px), (orientation:portrait) and (max-width:900px){
-  #mainOnlineReadyBox{
-    width:100%!important;
-    min-height:0!important;
-    height:auto!important;
-    margin:4px 0!important;
-    padding:0!important;
-    border:0!important;
-    background:transparent!important;
-    overflow:visible!important;
-    position:relative!important;
-    z-index:80!important;
-    pointer-events:auto!important;
+<!-- Beta 3.3.12zk｜iPad 橫式棋盤底部安全修正：僅調整棋盤，不動右側棋鐘與功能鍵 -->
+<style id="beta3312zk-ipad-landscape-board-safe-bottom">
+/*
+  iPad landscape only
+  - 修正 9x9 / 13x13 / 19x19 放大時棋盤下緣與座標被裁切
+  - 不修改 .app 欄寬、.right、棋鐘或右側功能鍵
+  - 直式與手機維持原版
+*/
+@media (orientation: landscape) and (min-width: 900px) and (pointer: coarse) {
+  .board-wrap {
+    /* 保留少量上下安全邊界，避免 Safari 橫式 viewport 四捨五入裁掉最下緣 */
+    padding-top: 6px !important;
+    padding-right: 6px !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    padding-left: 6px !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
-  #mainOnlineReadyBox .online-ready-title,
-  #mainOnlineReadyBox .online-ready-grid,
-  #mainOnlineReadyBox .online-ready-note{
-    display:none!important;
-  }
-  #mainOnlineReadyBtn{
-    display:block!important;
-    width:100%!important;
-    min-height:50px!important;
-    height:50px!important;
-    margin:0!important;
-    padding:8px 12px!important;
-    border:1px solid #d5a443!important;
-    border-radius:12px!important;
-    background:linear-gradient(135deg,#ffd970,#e4aa2d)!important;
-    color:#241407!important;
-    font-size:18px!important;
-    font-weight:900!important;
-    line-height:1.1!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-    touch-action:manipulation!important;
-    -webkit-user-select:none!important;
-    user-select:none!important;
-    position:relative!important;
-    z-index:81!important;
-  }
-  #mainOnlineReadyBtn[disabled]{
-    opacity:.62!important;
+
+  #board,
+  #goBoard,
+  .board,
+  .go-board,
+  .board-canvas,
+  .board-wrap canvas {
+    aspect-ratio: 1 / 1 !important;
+    width: min(
+      calc(100% - 12px),
+      calc(100dvh - 128px - env(safe-area-inset-bottom))
+    ) !important;
+    height: auto !important;
+    max-width: calc(100% - 12px) !important;
+    max-height: calc(100dvh - 128px - env(safe-area-inset-bottom)) !important;
+    margin: 0 auto 4px auto !important;
+    flex: 0 0 auto !important;
   }
 }
 </style>
@@ -7434,15 +7288,6 @@ body.jg-online-mode #jgUSpeedPanel{
       <button id="playBtn" class="primary">▶</button>
       <button id="nextBtn">▶</button>
       <button id="lastBtn">⏭</button>
-    </div>
-    <div id="mainOnlineReadyBox" class="online-ready-box" style="display:none" aria-live="polite">
-      <div class="online-ready-title">⚔️ 準備開賽</div>
-      <div class="online-ready-grid">
-        <div id="mainOnlineBlackReady" class="online-ready-chip">⚫ 黑方：等待</div>
-        <div id="mainOnlineWhiteReady" class="online-ready-chip">⚪ 白方：等待</div>
-      </div>
-      <button id="mainOnlineReadyBtn" class="action" type="button">準備開賽</button>
-      <div id="mainOnlineReadyNote" class="online-ready-note">正式比賽與升降賽須雙方準備完成後才會開鐘。</div>
     </div>
     <div class="game-action-row" id="gameActionRow">
       <button id="undoGameBtn">悔棋</button>
@@ -7654,15 +7499,6 @@ body.jg-online-mode #jgUSpeedPanel{
     <div class="online-player-row"><span>棋盤</span><b id="onlineRoomBoardSize">19 路</b></div>
     <div class="online-player-row"><span>目前手數</span><b id="onlineMoveCount">0</b></div>
     <div class="online-player-row"><span>輪到</span><b id="onlineTurnText">黑方</b></div>
-    <div id="onlineReadyBox" class="online-ready-box" style="display:none">
-      <div class="online-ready-title">⚔️ 準備開賽</div>
-      <div class="online-ready-grid">
-        <div id="onlineBlackReady" class="online-ready-chip">⚫ 黑方：等待</div>
-        <div id="onlineWhiteReady" class="online-ready-chip">⚪ 白方：等待</div>
-      </div>
-      <button id="onlineReadyBtn" class="action" type="button">準備開賽</button>
-      <div id="onlineReadyNote" class="online-ready-note">升降賽與正式比賽須雙方準備完成後才能落子；友誼賽可直接開始。</div>
-    </div>
     <button id="onlineCopyCodeBtn" class="secondary" type="button" style="width:100%;margin-top:10px">複製房間號碼</button>
     <button id="onlineLeaveBtn" class="secondary" type="button" style="width:100%;margin-top:8px">離開真人對弈</button>
     <button id="onlineClearEndedBtn" class="action" type="button" style="width:100%;margin-top:8px;display:none">🧹 清除本局並回大廳</button>
@@ -7673,8 +7509,8 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="spectatorModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="spectatorModal">✕</button>
-  <h2>👁 Beta 3.4.5｜真人棋局自動觀戰</h2>
-  <p class="spectator-note">真人對局會自動出現在觀戰大廳，不需棋手另外按轉播。觀戰者直接從大廳選擇棋局觀看；觀戰只同步棋步，不呼叫 KataGo，因此不增加 AI 分析負擔。大廳先顯示最近 8 盤。</p>
+  <h2>👁 Beta 1.5b｜多盤觀戰大廳</h2>
+  <p class="spectator-note">每位棋手可建立自己的轉播房間；觀戰者從大廳選擇棋局觀看。觀戰只同步棋步，不呼叫 KataGo，因此不增加 AI 分析負擔。測試版大廳先顯示最多 8 盤。</p>
 
   <div class="spectator-room-row">
     <label>我的房間名稱
@@ -7893,8 +7729,12 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <div id="classicGameModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicGameModal">✕</button>
-  <h2 class="classic-clean-title">🏛️ Joy Go 名局館</h2>
-  <div class="classic-clean-subtitle">收藏、搜尋、觀看與分享精彩棋局</div>
+  <h2>🏛️ Beta 1.6b.7b｜名局雙重保存修正版</h2>
+  <p class="classic-library-note">
+    本版加入「棋手、賽事、日期、結果、分類」資料欄位與篩選。
+    內建 3 盤仍明確標示為功能測試棋譜；真正歷史名局請由朱老師提供或指定合法 SGF 來源後匯入。
+  </p>
+
 
   <div id="classicNowPlaying" class="classic-now-playing">
     <span class="classic-now-label">目前棋局</span>
@@ -7902,22 +7742,14 @@ body.jg-online-mode #jgUSpeedPanel{
     <span id="classicNowMeta">可選擇「載入」或「一鍵播放」</span>
   </div>
 
-  <div class="classic-db-actions classic-primary-actions">
+  <div class="classic-db-actions">
     <button class="action" id="classicAddOfficialBtn">＋ 加入正式名局 SGF</button>
-    <button class="secondary" id="classicImportSgfBtn">📂 開啟 SGF（不保存）</button>
+    <button class="secondary" id="classicImportSgfBtn">📂 單次開啟 SGF</button>
+    <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
+<button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
+<input id="classicRestoreFile" type="file" accept=".json,application/json" hidden>
+<button class="secondary" id="classicClearUserDbBtn">清除全部已保存名局</button>
   </div>
-
-  <details class="classic-local-manage">
-    <summary>⚙️ 本機名局管理</summary>
-    <div class="classic-db-actions classic-manage-actions">
-      <button class="secondary" id="classicBackupBtn">⬇︎ 備份名局</button>
-      <button class="secondary" id="classicRestoreBtn">⬆︎ 還原備份</button>
-      <input id="classicRestoreFile" type="file" accept=".json,application/json" hidden>
-      <button class="secondary" id="classicClearUserDbBtn">清除本機名局</button>
-    </div>
-  </details>
-
-  <div class="classic-section-title">📚 我的正式名局</div>
 
   <div class="classic-db-filters">
     <label>搜尋
@@ -7944,23 +7776,26 @@ body.jg-online-mode #jgUSpeedPanel{
   </div>
 
   <div id="classicGameCount" class="classic-db-count"></div>
-<div class="classic-db-note classic-clean-note">
-重要棋譜建議定期使用「備份名局」保存。
+<div class="classic-db-note" style="margin:6px 0 10px;color:#c9b28c;font-size:12px">
+正式 SGF 採 IndexedDB＋瀏覽器備援雙重保存；儲存後立即驗證。私密瀏覽結束仍可能被系統清除，重要棋譜請使用「備份名局」。
 </div>
   <div id="classicGameList" class="classic-game-list"></div>
 
-
+  <div class="classic-library-tip">
+    「一鍵播放」會自動從第 1 手開始播放；「載入」則停在第 0 手，方便先看棋局資料。載入後仍可使用第一手、上一手、播放／暫停、下一手、最後一手、指定手數與棋號顯示。
+    您自己加入的正式名局會保存在這台裝置的瀏覽器資料中。
+  </div>
 </div></div>
 
 <div id="classicImportModal" class="modal-backdrop"><div class="modal">
   <button class="close" data-close="classicImportModal">✕</button>
   <h2>＋ 加入正式名局 SGF</h2>
-  <p class="classic-library-note">先選擇 SGF，再確認棋手、日期、賽事與結果；已有資料會自動帶入。</p>
+  <p class="classic-library-note">先選 SGF，再補上資料。Beta 1.6b.2 已加強 iPad／Safari 的 SGF 讀取流程；選檔後會立即顯示讀取狀態，並檢查內容是否為有效 SGF。若 SGF 內已有棋手、日期、賽事、結果，系統會嘗試自動帶入。</p>
 
   <div class="classic-import-file">
     <input id="classicOfficialFile" type="file">
     <div id="classicOfficialFileName" style="margin-top:6px">尚未選擇 SGF</div>
-    <div style="margin-top:5px;font-size:12px;color:var(--muted)">可從 iPad「檔案」選擇 .sgf 棋譜。</div>
+    <div style="margin-top:5px;font-size:12px;color:var(--muted)">支援 iPad「檔案」中的 .sgf；選取後請等候約 1 秒完成讀取。</div>
   </div>
 
   <div class="classic-import-form" style="margin-top:12px">
@@ -9156,86 +8991,6 @@ function spectatorSelectRoom(id){
   if($('spectatorRoomLabel'))$('spectatorRoomLabel').textContent=spectatorCurrentGameId;
   return spectatorCurrentGameId;
 }
-
-let onlineAutoSpectatorLastHash="";
-let onlineAutoSpectatorLastGameId="";
-
-function onlineAutoSpectatorGameId(room){
-  return room?.room_code ? `ROOM-${String(room.room_code).toUpperCase()}` : "";
-}
-
-async function onlineAutoSpectatorPublish(room){
-  // Beta 3.4.5：真人棋局自動出現在觀戰大廳。
-  // 僅由黑方發布，避免黑白雙方重複覆寫同一盤。
-  if(!room||!memberSession?.user||!memberSupabase)return;
-  if(room.black_id!==memberSession.user.id)return;
-  if(!["playing","ended"].includes(room.status))return;
-
-  const gameId=onlineAutoSpectatorGameId(room);
-  if(!gameId)return;
-
-  const payload={
-    game_id:gameId,
-    broadcaster_id:`online-${room.black_id}`,
-    board_size:Number(room.board_size||state.size||19),
-    moves:(state.moves||[]).map(m=>({
-      c:m.c,
-      x:Number(m.x),
-      y:Number(m.y),
-      pass:!!m.pass
-    })),
-    setup_b:[],
-    setup_w:[],
-    index:Number(state.index||0),
-    black_name:String(room.black_name||"黑方"),
-    white_name:String(room.white_name||"白方"),
-    status:room.status==="ended"?"ended":"playing"
-  };
-
-  const hash=JSON.stringify([
-    payload.game_id,
-    payload.status,
-    payload.index,
-    payload.moves,
-    payload.black_name,
-    payload.white_name
-  ]);
-
-  if(hash===onlineAutoSpectatorLastHash && gameId===onlineAutoSpectatorLastGameId)return;
-
-  try{
-    const r=await spectatorFetch("/spectator/publish",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
-    });
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    onlineAutoSpectatorLastHash=hash;
-    onlineAutoSpectatorLastGameId=gameId;
-  }catch(e){
-    // 自動觀戰失敗不能影響真人下棋。
-    console.warn("auto spectator publish",e);
-  }
-}
-
-async function onlineAutoSpectatorStop(room){
-  if(!room||!memberSession?.user||room.black_id!==memberSession.user.id)return;
-  const gameId=onlineAutoSpectatorGameId(room);
-  if(!gameId)return;
-  try{
-    await spectatorFetch("/spectator/stop",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        game_id:gameId,
-        broadcaster_id:`online-${room.black_id}`
-      })
-    });
-  }catch(_){}
-  onlineAutoSpectatorLastHash="";
-  onlineAutoSpectatorLastGameId="";
-}
-
 async function spectatorFetch(path,options={}){
   const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),7000);
   try{return await fetch(spectatorApiBase()+path,{cache:'no-store',signal:ctl.signal,...options})}finally{clearTimeout(timer)}
@@ -9625,7 +9380,7 @@ function renderClassicGameLibrary(){
     $("classicGameCount").textContent=`目前顯示 ${games.length} 盤｜已保存正式棋譜 ${officialCount} 盤`;
   }
   if(!games.length){
-    box.innerHTML='<div class="classic-db-empty">目前沒有本機名局。</div>';
+    box.innerHTML='<div class="classic-db-empty">目前沒有棋譜。請按「加入正式名局」匯入 SGF；儲存後下次開啟仍會保留。</div>';
     return;
   }
   games.forEach(g=>box.appendChild(classicGameCard(g)));
@@ -9644,21 +9399,6 @@ async function openClassicGameLibrary(){
 }
 function loadClassicGame(game,autoPlay=false){
   classicStopPlayback();
-
-  // Beta 3.3.12zp：載入名局前，完整停止人機 AI／棋鐘，避免背景請求回來覆寫棋盤。
-  try{
-    if(state.humanMode){
-      stopGameClock?.();
-      state.aiRequestToken++;
-      setAiThinking?.(false);
-      state.humanMode=false;
-      state.clockPausedForReplay=false;
-      state.hintLoading=false;
-      state.hintPoints=[];
-      state.hintBadPoint=null;
-      resetBoardInputGuard?.();
-    }
-  }catch(_){ }
 
   const ok=loadSGFText(game.sgf,(game.title||"名局")+".sgf");
   if(!ok)return;
@@ -9936,7 +9676,6 @@ let memberSupabase=null;
 let memberSession=null;
 let onlineLastPassMove=0;
 let onlineClockTimer=null;
-let onlineReconnectProtectUntil=0;
 let onlineTimeoutClaimed=false;
 let onlineLastResult="";
 let memberAccess={role:"visitor",status:"active",expiresAt:null,label:"訪客",displayName:"",rankCode:"UNRATED",rankLabel:"未設定",rankSort:0,staffRole:"none"};
@@ -10021,7 +9760,7 @@ async function memberInitClient(showMessage=false){
 function memberDisplayName(user){
   return memberAccess.displayName||user?.user_metadata?.display_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"會員";
 }
-// Beta 3.2.8-F：首頁在線人數改用 Supabase Presence，與真人弈廳共用 joygo-lobby-v21
+// Beta 3.2.8-F：首頁在線人數改用 Supabase Presence，與真人弈廳共用 joygo-lobby-v1
 let joygoGlobalPresenceChannel=null;
 window.joygoPresenceOnlineCount=null;
 function joygoGlobalPresenceRender(){
@@ -10042,7 +9781,7 @@ async function joygoGlobalPresenceStart(){
     if(joygoGlobalPresenceChannel){
       try{await memberSupabase.removeChannel(joygoGlobalPresenceChannel)}catch(_){}
     }
-    joygoGlobalPresenceChannel=memberSupabase.channel('joygo-lobby-v21',{config:{presence:{key:memberSession.user.id}}})
+    joygoGlobalPresenceChannel=memberSupabase.channel('joygo-lobby-v1',{config:{presence:{key:memberSession.user.id}}})
       .on('presence',{event:'sync'},joygoGlobalPresenceRender)
       .on('presence',{event:'join'},joygoGlobalPresenceRender)
       .on('presence',{event:'leave'},joygoGlobalPresenceRender)
@@ -10484,13 +10223,13 @@ function onlineResultText(result){
 }
 function onlineClockValues(){
   const r=state.onlineRoom;if(!r)return null;
-  const elapsed=onlineReadyToPlay(r)&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
+  const elapsed=r.status==="playing"&&r.turn_started_at?Math.max(0,Date.now()-new Date(r.turn_started_at).getTime()):0;
   const periodMs=Number(r.byo_seconds||30)*1000;
   const one=color=>{
     let main=Number(color==="B"?r.black_main_ms:r.white_main_ms)||0;
     let periods=Number(color==="B"?r.black_periods_left:r.white_periods_left)||0;
     let byo=Number(r.byo_seconds||30);
-    if(onlineReadyToPlay(r)&&r.turn===color){
+    if(r.status==="playing"&&r.turn===color){
       if(elapsed<main)main-=elapsed;
       else{const overtime=Math.max(0,elapsed-main);main=0;const used=Math.floor(overtime/periodMs);periods=Math.max(0,periods-used);byo=periods>0?Math.max(0,(periodMs-(overtime%periodMs))/1000):0;}
     }
@@ -10503,14 +10242,8 @@ function startOnlineClockUI(){
   onlineClockTimer=setInterval(async()=>{
     if(!state.onlineMode||!state.onlineRoom){clearInterval(onlineClockTimer);onlineClockTimer=null;return}
     updateClockUI();const v=onlineClockValues(),r=state.onlineRoom,active=v?.[r.turn];
-    if(onlineReadyToPlay(r)&&Date.now()>=onlineReconnectProtectUntil&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
-      onlineTimeoutClaimed=true;
-      const {data,error}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
-      if(error){
-        onlineTimeoutClaimed=false;
-        console.warn("timeout claim",error);
-        return;
-      }
+    if(r.status==="playing"&&active&&active.main<=0&&active.periods<=0&&!onlineTimeoutClaimed){
+      onlineTimeoutClaimed=true;const {data}=await memberSupabase.rpc("joygo_claim_timeout",{p_room_id:r.id});
       if(data){state.onlineRoom=onlineRpcRow(data);await onlineSyncRoom()}
     }
   },250);
@@ -10532,124 +10265,18 @@ async function openOnlineLobby(){
   if(!await onlineReady())return;
   onlineRenderRoom();openModal("onlineModal");
 }
-
-function onlineDisplayNameWithRank(name,rank,fallback){
-  const n=String(name||fallback||"棋友").trim();
-  const r=String(rank||"").trim();
-  if(!r||r==="未設定")return n;
-  if(n.endsWith(r))return n;
-  return `${n} ${r}`;
-}
-async function onlineLoadRoomRanks(room){
-  if(!room||!memberSupabase)return room;
-  try{
-    let loaded=false;
-
-    if(room.id){
-      const {data,error}=await memberSupabase.rpc("joygo_get_room_player_ranks_v344",{p_room_id:room.id});
-      if(!error){
-        const row=Array.isArray(data)?data[0]:data;
-        if(row){
-          room.black_rank_label=row.black_rank_label||"未設定";
-          room.white_rank_label=row.white_rank_label||"未設定";
-          loaded=true;
-        }
-      }
-    }
-
-    // Beta 3.4.4a fallback:
-    // If the RPC returns nothing on some mobile/session path, fetch only the two players' profiles.
-    if(!loaded){
-      const ids=[room.black_id,room.white_id].filter(Boolean);
-      if(ids.length){
-        const {data:profiles,error:pe}=await memberSupabase
-          .from("profiles")
-          .select("id,rank_label")
-          .in("id",ids);
-        if(!pe&&Array.isArray(profiles)){
-          const map=new Map(profiles.map(p=>[p.id,p.rank_label||"未設定"]));
-          room.black_rank_label=map.get(room.black_id)||room.black_rank_label||"未設定";
-          room.white_rank_label=map.get(room.white_id)||room.white_rank_label||"未設定";
-        }
-      }
-    }
-  }catch(e){
-    console.warn("room rank load",e);
-  }
-  return room;
-}
-function onlineMatchType(room){return String(room?.match_type||"friendly").toLowerCase()}
-function onlineForcedReady(room){
-  const t=onlineMatchType(room);
-  const adminAssigned=!!(room?.black_id&&room?.white_id&&!room?.host_id&&!room?.guest_id);
-  return t==="rating"||t==="tournament"||t==="formal"||t==="swiss"||t==="competition"
-    ||!!room?.tournament_code||!!room?.swiss_pairing_id||!!room?.tournament_pairing_id||adminAssigned;
-}
-function onlineBothReady(room){return !!(room?.black_ready&&room?.white_ready)}
-function onlineReadyToPlay(room){
-  if(!room||room.status!=="playing")return false;
-  return !onlineForcedReady(room)||onlineBothReady(room);
-}
-async function onlineMarkReady(){
-  const r=state.onlineRoom;
-  if(!state.onlineMode||!r||!memberSupabase||!memberSession?.user)return;
-  if(r.status==="ended"){toast("這盤棋已經結束");return}
-  if(state.onlineColor!=="B"&&state.onlineColor!=="W"){toast("只有本局棋手可以準備開賽");return}
-  const readyBtns=[$("onlineReadyBtn"),$("mainOnlineReadyBtn")].filter(Boolean);
-  readyBtns.forEach(btn=>{btn.disabled=true;btn.textContent="正在確認…"});
-  onlineSetStatus("正在送出準備狀態…");
-  try{
-    const {data,error}=await memberSupabase.rpc("joygo_set_room_ready_v1",{p_room_id:r.id});
-    if(error)throw error;
-    const row=onlineRpcRow(data);if(row)state.onlineRoom=row;
-    await onlineSyncRoom();
-    if(onlineBothReady(state.onlineRoom)){toast("✅ 雙方準備完成，正式開賽");closeModal("onlineModal")}
-    else toast("✅ 已準備，等待對手");
-  }catch(e){
-    onlineSetStatus("準備開賽失敗："+(e?.message||e),"bad");
-  }finally{
-    readyBtns.forEach(btn=>btn.disabled=false);
-    onlineRenderRoom();
-  }
-}
-
 function onlineRenderRoom(){
   const r=state.onlineRoom,active=!!r;
   if($("onlineLobbyPanel"))$("onlineLobbyPanel").style.display=active?"none":"grid";
   if($("onlineRoomPanel"))$("onlineRoomPanel").style.display=active?"block":"none";
   if(!active)return;
   $("onlineRoomCode").textContent=r.room_code||"——";
-  $("onlineBlackName").textContent=onlineDisplayNameWithRank(r.black_name,r.black_rank_label,"黑方");
-  $("onlineWhiteName").textContent=onlineDisplayNameWithRank(r.white_name,r.white_rank_label,"等待加入");
+  $("onlineBlackName").textContent=r.black_name||"黑方";
+  $("onlineWhiteName").textContent=r.white_name||"等待加入";
   $("onlineMoveCount").textContent=String(r.move_count||0);
-  const hasBoth=!!(r.black_id&&r.white_id);
-  const forced=onlineForcedReady(r),bothReady=onlineBothReady(r),readyPlay=onlineReadyToPlay(r);
-  $("onlineTurnText").textContent=r.status==="ended"?"對局結束":(!hasBoth?"等待對手":(!readyPlay&&forced?"等待雙方準備":(r.turn==="B"?"黑方":"白方")));
+  $("onlineTurnText").textContent=r.status==="waiting"?"等待白方加入":(r.status==="ended"?"對局結束":(r.turn==="B"?"黑方":"白方"));
   if($("onlineRoomBoardSize"))$("onlineRoomBoardSize").textContent=String(r.board_size||19)+" 路";
-  if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="ended"?"已結束":(!hasBoth?"等待加入":(!readyPlay&&forced?"等待準備":"對弈中"));
-  const readyBox=$("onlineReadyBox"),readyBtn=$("onlineReadyBtn");
-  const showReady=hasBoth&&r.status!=="ended"&&forced;
-  if(readyBox)readyBox.style.display=showReady?"block":"none";
-  if($("onlineBlackReady")){$("onlineBlackReady").classList.toggle("ready",!!r.black_ready);$("onlineBlackReady").textContent="⚫ 黑方："+(r.black_ready?"已準備":"等待")}
-  if($("onlineWhiteReady")){ $("onlineWhiteReady").classList.toggle("ready",!!r.white_ready);$("onlineWhiteReady").textContent="⚪ 白方："+(r.white_ready?"已準備":"等待")}
-  if(readyBtn&&showReady){
-    const mine=state.onlineColor==="B"?!!r.black_ready:state.onlineColor==="W"?!!r.white_ready:false;
-    readyBtn.disabled=mine||!state.onlineColor;
-    readyBtn.textContent=mine?(bothReady?"✅ 雙方已準備":"✅ 我已準備｜等待對手"):"準備開賽";
-  }
-  if($("onlineReadyNote"))$("onlineReadyNote").textContent=forced?"本局須雙方按「準備開賽」後才會開鐘並允許落子。":"友誼賽可直接開始。";
-
-  // Beta 3.4.8a：正式比賽進入棋盤後，準備按鈕直接顯示於主畫面。
-  const mainReadyBox=$("mainOnlineReadyBox"),mainReadyBtn=$("mainOnlineReadyBtn");
-  if(mainReadyBox)mainReadyBox.style.display=(state.onlineMode&&showReady&&!bothReady)?"block":"none";
-  if($("mainOnlineBlackReady")){ $("mainOnlineBlackReady").classList.toggle("ready",!!r.black_ready); $("mainOnlineBlackReady").textContent="⚫ 黑方："+(r.black_ready?"已準備":"等待"); }
-  if($("mainOnlineWhiteReady")){ $("mainOnlineWhiteReady").classList.toggle("ready",!!r.white_ready); $("mainOnlineWhiteReady").textContent="⚪ 白方："+(r.white_ready?"已準備":"等待"); }
-  if(mainReadyBtn&&showReady){
-    const mainMine=state.onlineColor==="B"?!!r.black_ready:state.onlineColor==="W"?!!r.white_ready:false;
-    mainReadyBtn.disabled=mainMine||!state.onlineColor;
-    mainReadyBtn.textContent=mainMine?(bothReady?"✅ 雙方已準備":"✅ 我已準備｜等待對手"):"準備開賽";
-  }
-  if($("mainOnlineReadyNote"))$("mainOnlineReadyNote").textContent="本局須雙方按「準備開賽」後才會開鐘並允許落子。";
+  if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent=r.status==="waiting"?"等待加入":(r.status==="playing"?"對弈中":"已結束");
   if($("onlineClearEndedBtn"))$("onlineClearEndedBtn").style.display=r.status==="ended"?"block":"none";
 }
 async function onlineUnsubscribe(){
@@ -10673,7 +10300,6 @@ async function onlineSyncRoom(){
       memberSupabase.from("online_moves").select("move_no,color,x,y,is_pass").eq("room_id",roomId).order("move_no")
     ]);
     if(roomError)throw roomError;if(movesError)throw movesError;
-    await onlineLoadRoomRanks(room);
     state.onlineRoom=room;
     state.onlineColor=room.black_id===memberSession.user.id?"B":(room.white_id===memberSession.user.id?"W":"");
     state.onlineMode=true;state.casualMode=false;state.humanMode=false;state.teachingMode=false;state.trialMode=false;state.spectatorMode=false;
@@ -10682,28 +10308,14 @@ async function onlineSyncRoom(){
     state.index=state.moves.length;state.turn=room.turn||((state.moves.length%2)?"W":"B");
     state.setupB=[];state.setupW=[];state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";
     state.gameEnded=room.status==="ended";
-    if(room.status==="ended"){
-      try{localStorage.removeItem("joygo-online-room-code")}catch(_){}
-      onlineReconnectProtectUntil=0;
-    }
-    const blackNameOnly=String(room.black_name||"黑方");
-    const whiteNameOnly=String(room.white_name||"等待加入");
-    $("blackName").textContent=onlineDisplayNameWithRank(room.black_name,room.black_rank_label,"黑方")+(state.onlineColor==="B"?"（我）":"");
-    $("whiteName").textContent=onlineDisplayNameWithRank(room.white_name,room.white_rank_label,"等待加入")+(state.onlineColor==="W"?"（我）":"");
-    $("blackClockName").textContent="黑方｜"+blackNameOnly+(state.onlineColor==="B"?"（我）":"");
-    $("whiteClockName").textContent="白方｜"+whiteNameOnly+(state.onlineColor==="W"?"（我）":"");
+    $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
+    $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
+    $("blackClockName").textContent="黑方｜"+(room.black_name||"等待加入")+(state.onlineColor==="B"?"（我）":"");
+    $("whiteClockName").textContent="白方｜"+(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
     onlineRenderRoom();syncUI();
     startOnlineClockUI();
-    onlineAutoSpectatorPublish(room);
-    const readyPlay=onlineReadyToPlay(room);
-    const myTurn=readyPlay&&room.turn===state.onlineColor;
-    const hasBoth=!!(room.black_id&&room.white_id);
-    let statusMsg="";
-    if(room.status==="ended")statusMsg="🏁 對局已結束。";
-    else if(!hasBoth)statusMsg="房間已建立，等待另一位棋友進入。";
-    else if(onlineForcedReady(room)&&!onlineBothReady(room))statusMsg="⚔️ 雙方請按「準備開賽」；雙方完成後才會開鐘。";
-    else statusMsg=myTurn?"✅ 輪到您落子。":"等待對手落子。";
-    onlineSetStatus(statusMsg,myTurn?"ok":"");
+    const myTurn=room.status==="playing"&&room.turn===state.onlineColor;
+    onlineSetStatus(room.status==="waiting"?"房間已建立，請將六碼房號交給另一位棋友。":(myTurn?"✅ 輪到您落子。":"🏁 對局已結束。"),myTurn?"ok":"");
     const lastMove=(moves||[]).at(-1);
     if(lastMove?.is_pass&&Number(lastMove.move_no)!==onlineLastPassMove){
       onlineLastPassMove=Number(lastMove.move_no);
@@ -10747,21 +10359,14 @@ async function onlineResumeRoom(){
   if(!await onlineReady())return;
   const code=onlineNormalizeCode($("onlineJoinCode").value||localStorage.getItem("joygo-online-room-code"));
   if(code.length!==6){onlineSetStatus("這台裝置沒有上次房間紀錄。","bad");return}
-  onlineSetStatus("正在恢復原棋局與棋鐘…");
-  const {data,error}=await memberSupabase.rpc("joygo_resume_room_v343b",{p_code:code});
+  const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:code});
   const room=onlineRpcRow(data);
   if(error||!room){onlineSetStatus("無法重新進入："+(error?.message||"找不到您的房間"),"bad");return}
-  onlineReconnectProtectUntil=Date.now()+5000;
   await onlineEnterRoom(room);
-  onlineSetStatus("✅ 已恢復原棋局；棋鐘已重新同步。","ok");
 }
 async function onlinePlayAt(x,y,isPass=false){
   const r=state.onlineRoom;if(!state.onlineMode||!r||state.onlineSyncing)return;
-  if(!onlineReadyToPlay(r)){
-    if(onlineForcedReady(r)&&r.black_id&&r.white_id)toast("請雙方先按「準備開賽」");
-    else toast("等待另一位棋友加入");
-    return
-  }
+  if(r.status!=="playing"){toast("等待另一位棋友加入");return}
   if(r.turn!==state.onlineColor){toast("尚未輪到您");return}
   if(!isPass){
     const current=positionAtMove(state.index).board,prev=state.index>0?positionAtMove(state.index-1).board:null;
@@ -10872,7 +10477,6 @@ async function onlineResign(){
   }
 }
 async function onlineClearEndedRoom(){
-  if(state.onlineRoom)await onlineAutoSpectatorStop(state.onlineRoom);
   const r=state.onlineRoom;
   if(!r||r.status!=="ended"){toast("棋局尚未結束，不能清除。");return}
   if(!confirm("確定清除這一局？棋步會從真人大廳移除；如要保存，請先儲存 SGF。"))return;
@@ -10890,8 +10494,6 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("onlineCreateBtn")?.addEventListener("click",onlineCreateRoom);
   $("onlineJoinBtn")?.addEventListener("click",()=>onlineJoinRoom($("onlineJoinCode").value));
   $("onlineResumeBtn")?.addEventListener("click",onlineResumeRoom);
-  $("onlineReadyBtn")?.addEventListener("click",onlineMarkReady);
-  $("mainOnlineReadyBtn")?.addEventListener("click",onlineMarkReady);
   $("onlineCopyCodeBtn")?.addEventListener("click",async()=>{const c=state.onlineRoom?.room_code||"";try{await navigator.clipboard.writeText(c);toast("房間號碼已複製") }catch(_){prompt("請複製房間號碼：",c)}});
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
   $("onlineClearEndedBtn")?.addEventListener("click",onlineClearEndedRoom);
@@ -10963,7 +10565,7 @@ async function onlineLobbyTrackPresence(){
 async function onlineLobbyConnectPresence(){
   if(!memberSupabase||!memberSession?.user)return;
   if(onlineLobbyPresenceChannel){try{await memberSupabase.removeChannel(onlineLobbyPresenceChannel)}catch(_){}}
-  onlineLobbyPresenceChannel=memberSupabase.channel("joygo-lobby-v21",{config:{presence:{key:memberSession.user.id}}})
+  onlineLobbyPresenceChannel=memberSupabase.channel("joygo-lobby-v1",{config:{presence:{key:memberSession.user.id}}})
     .on("presence",{event:"sync"},onlineLobbyRenderFriends)
     .on("presence",{event:"join"},onlineLobbyRenderFriends)
     .on("presence",{event:"leave"},onlineLobbyRenderFriends)
@@ -11861,31 +11463,13 @@ let ctx=canvas.getContext("2d",{alpha:false});
 function resizeBoard(force=false){
   const wrap=canvas.parentElement;
   if(!wrap)return false;
-
-  // Beta 3.3.12zn：iPad 多次直橫旋轉穩定版。
-  // 關鍵：棋盤大小同時受「容器」與「目前真正可視視窗」限制，
-  // 不再只相信旋轉瞬間可能尚未更新完成的 parent.height。
   const parent=wrap.getBoundingClientRect();
-  const vv=window.visualViewport;
-  const vw=Math.max(320,Math.floor(vv?.width||window.innerWidth||document.documentElement.clientWidth||320));
-  const vh=Math.max(320,Math.floor(vv?.height||window.innerHeight||document.documentElement.clientHeight||320));
+  const vw=Math.max(320,window.innerWidth||document.documentElement.clientWidth||320);
+  const vh=Math.max(320,window.innerHeight||document.documentElement.clientHeight||320);
   const fallback=Math.floor(Math.min(vw*0.88,vh*0.76));
-
-  // 實際可見範圍：避免 Safari 旋轉後沿用舊高度，造成 canvas 超出畫面而被裁切。
-  const visibleRight=Math.max(0,vw-Math.max(0,parent.left));
-  const visibleBottom=Math.max(0,vh-Math.max(0,parent.top));
-  const wrapW=parent.width>80?parent.width:visibleRight;
-  const wrapH=parent.height>80?parent.height:visibleBottom;
-
-  const edgeGap=8;
-  const ipadLandscape=!!(window.matchMedia && window.matchMedia("(orientation: landscape) and (pointer: coarse) and (min-width: 700px)").matches);
-  // 橫式多留一點底部安全距離，避免 Safari 底部工具列/安全區吃到最後一線。
-  const safeBottom=ipadLandscape?Math.max(18,Math.min(34,Math.round(vh*0.025))):8;
-
-  const availableW=Math.floor(Math.max(0,Math.min(wrapW,visibleRight)-edgeGap));
-  const availableH=Math.floor(Math.max(0,Math.min(wrapH,visibleBottom)-edgeGap-safeBottom));
-  const rawCss=Math.min(availableW||fallback,availableH||fallback);
-  const css=Math.max(260,Math.floor(rawCss));
+  const availableW=parent.width>80?Math.floor(parent.width-8):fallback;
+  const availableH=parent.height>80?Math.floor(parent.height-8):fallback;
+  const css=Math.max(260,Math.floor(Math.min(availableW,availableH)));
   const oldCss=canvas._cssSize||0;
 
   state.boardCssSize=css;
@@ -11893,10 +11477,7 @@ function resizeBoard(force=false){
   canvas.style.setProperty("--board-size",css+"px");
   canvas.style.setProperty("width",css+"px","important");
   canvas.style.setProperty("height",css+"px","important");
-  canvas.style.setProperty("max-width",css+"px","important");
-  canvas.style.setProperty("max-height",css+"px","important");
   canvas.style.setProperty("display","block","important");
-  canvas.style.setProperty("flex","0 0 auto","important");
 
   const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
   const px=Math.max(260,Math.floor(css*dpr));
@@ -12499,23 +12080,19 @@ syncHumanSettings();
 
 
 async function requestCloudAnalysisWithRetry(options={}){
-  // Beta 3.3.12zo：人機對弈防「假當機」。
-  // 人機落子時不再做 45~70 秒的三次長等待；最多兩次，且總等待時間大幅縮短。
-  const humanFast=!!state.humanMode && !state.teachingMode && !state.trialMode;
-  const maxRetries=humanFast?2:3;
+  const maxRetries=3;
   let lastErr=null;
   for(let attempt=1;attempt<=maxRetries;attempt++){
     try{
       state.katagoRetryCount=attempt-1;
       if(attempt>1){
         toast(`KataGo 重新連線中（${attempt-1}/${maxRetries-1}）`);
-        await new Promise(r=>setTimeout(r,humanFast?900:(attempt===2?3500:5000)));
+        await new Promise(r=>setTimeout(r,attempt===2?3500:5000));
       }
-      const requested=Math.max(3,Number(options.timeoutSeconds||0));
-      const timeoutSeconds=humanFast
-        ? Math.min(requested||22,attempt===1?22:28)
-        : Math.max(requested,attempt===1?45:70);
-      const result=await requestCloudAnalysis({...options,timeoutSeconds});
+      const result=await requestCloudAnalysis({
+        ...options,
+        timeoutSeconds:Math.max(Number(options.timeoutSeconds||0),attempt===1?45:70)
+      });
       state.katagoRetryCount=0;
       return result;
     }catch(err){
@@ -12570,16 +12147,8 @@ function updateClockUI(){
     for(const [c,timeId,byoId,boxId] of data){
       const v=values[c],inByo=v.main<=0;
       $(timeId).textContent=formatClock(inByo?v.byo:v.main);
-      const rankLabel=c==="B"
-        ? (state.onlineRoom.black_rank_label||"未設定")
-        : (state.onlineRoom.white_rank_label||"未設定");
-      const rankHtml=rankLabel&&rankLabel!=="未設定"
-        ? `<span class="clock-rank">${rankLabel}</span>｜`
-        : "";
-      $(byoId).innerHTML=inByo
-        ? `${rankHtml}讀秒 ${Math.ceil(v.byo)}秒｜剩餘 ${v.periods} 次`
-        : `${rankHtml}讀秒 ${state.onlineRoom.byo_seconds||30}秒 × ${state.onlineRoom.byo_periods||3}次`;
-      const box=$(boxId);box.classList.toggle('active',onlineReadyToPlay(state.onlineRoom)&&state.onlineRoom.turn===c);box.classList.toggle('danger',inByo&&v.byo<=10);
+      $(byoId).textContent=inByo?`伺服器讀秒 ${Math.ceil(v.byo)}秒｜剩餘 ${v.periods} 次`:`網路同步｜讀秒 ${state.onlineRoom.byo_seconds||30}秒 × ${state.onlineRoom.byo_periods||3}次`;
+      const box=$(boxId);box.classList.toggle('active',state.onlineRoom.status==="playing"&&state.onlineRoom.turn===c);box.classList.toggle('danger',inByo&&v.byo<=10);
     }
     $("clockSoundIcon").textContent=state.sound?'🔊':'🔇';return;
   }
@@ -12662,7 +12231,6 @@ function completeTurnClock(color){
 
 let aiThinkingStartedAt=0;
 let aiThinkingTimer=null;
-let aiThinkingWatchdog=null;
 function updateAiThinkingStatus(){
   const sub=$("aiThinkingSub");
   if(!sub||!state.aiThinking)return;
@@ -12673,21 +12241,11 @@ function setAiThinking(show){
   state.aiThinking=!!show;
   const el=$("aiThinkingOverlay");
   if(aiThinkingTimer){clearInterval(aiThinkingTimer);aiThinkingTimer=null;}
-  if(aiThinkingWatchdog){clearTimeout(aiThinkingWatchdog);aiThinkingWatchdog=null;}
   if(show){
     aiThinkingStartedAt=performance.now();
     if(el)el.hidden=false;
     updateAiThinkingStatus();
     aiThinkingTimer=setInterval(updateAiThinkingStatus,200);
-    // 最後一道保險：任何異常都不能把棋盤永久鎖在「AI 思考中」。
-    aiThinkingWatchdog=setTimeout(()=>{
-      if(!state.aiThinking)return;
-      console.warn("KataGo watchdog：解除長時間 AI 鎖定");
-      state.aiRequestToken++;
-      setAiThinking(false);
-      toast("KataGo 回應過久，已解除鎖定，可繼續操作");
-      try{drawBoard(state.currentSnapshot||activateSnapshot(state.index));}catch(_){}
-    },35000);
   }else{
     if(el)el.hidden=true;
     const sub=$("aiThinkingSub");
@@ -13613,19 +13171,6 @@ $("byoTime").addEventListener("change",()=>{$("customByoWrap").hidden=$("byoTime
 
 $("startHumanBtn").onclick=()=>{
   if(state.onlineMode){toast("請先離開真人對弈房間");return;}
-  // Beta 3.3.12zp：開始人機前，完整停止名局播放，避免兩個模式同時改 state/index/moves。
-  try{
-    state.playing=false;
-    if(state.timer){clearInterval(state.timer);state.timer=null;}
-    const playBtn=$("playBtn");
-    if(playBtn)playBtn.textContent="▶";
-    hideFamousGameInfo?.();
-    document.body.classList.remove("jg-classic-playback");
-    const commentary=$("jgSmartCommentary");
-    commentary?.classList.remove("show","jg-u-editing","jg-has-comment","jg-empty-admin");
-    $("jgSmartCommentEditor")?.classList.remove("open");
-    sessionStorage.removeItem("joygo-classic-current");
-  }catch(_){ }
   state.size=Number($("gameSize").value);state.moves=[];state.index=0;state.gameInfo={};state.blackCaptures=0;state.whiteCaptures=0;state.koHash=null;state.actions=[];state.replayCache=[];state.illegalCount=0;state.lastCapture=0;state.captureEvents=[];state.currentSnapshot=null;state.renderedHash="";state.rendererVerified=false;state.trialMode=false;state.trialBackup=null;state.trialBaseIndex=0;state.trialOriginalMovesJSON="";state.trialBranches={A:null,B:null,C:null};state.trialBranchBaseKey="";state.humanMode=true; state.teachingMode=false; state.teachingMarks=[]; state.teachingComment=""; state.teachingSequence=[]; state.teachingShowNumbers=false; state.teachingAnswerMode=false; state.teachingInteractionMode="edit"; state.teachingFirstPlayer="B"; state.teachingNext="B"; state.variationBackup=null;
   state.casualMode=false;
   state.handicap=Number($("handicapCount").value||0);
@@ -14060,50 +13605,6 @@ if(window.PointerEvent){
     handleBoardInput({clientX:t.clientX,clientY:t.clientY,cancelable:true,preventDefault:()=>e.preventDefault()});
   },{passive:false});
 }
-// Joy Go Beta 3.4.8c：手機真人對弈棋盤觸控保險
-// 部分 Android / 內嵌瀏覽器雖支援 PointerEvent，但 canvas 的 pointerup 可能不穩定。
-// 以 document capture 監聽 touchend；只有在最近沒有成功收到 pointerup 時才補送一次棋盤輸入，
-// 並且只接受實際落在 canvas 範圍內的觸碰，避免重複落子或誤觸其他按鈕。
-let joygoLastBoardPointerHandledAt=0;
-let joygoLastBoardPointerHandledX=0;
-let joygoLastBoardPointerHandledY=0;
-
-// 包住既有 pointerup：記錄確實已處理的觸碰。
-if(window.PointerEvent){
-  canvas.addEventListener('pointerup',e=>{
-    if(e.pointerType==='touch' || e.pointerType==='pen'){
-      joygoLastBoardPointerHandledAt=Date.now();
-      joygoLastBoardPointerHandledX=e.clientX;
-      joygoLastBoardPointerHandledY=e.clientY;
-    }
-  },{capture:true,passive:true});
-}
-
-document.addEventListener('touchend',e=>{
-  try{
-    if(!state.onlineMode)return;
-    if(state.spectatorMode||state.scoringMode)return;
-    const t=e.changedTouches&&e.changedTouches[0];
-    if(!t)return;
-    const r=canvas.getBoundingClientRect();
-    if(t.clientX<r.left||t.clientX>r.right||t.clientY<r.top||t.clientY>r.bottom)return;
-
-    // 若 pointerup 剛剛已經處理同一次觸碰，就不重送。
-    const dt=Date.now()-joygoLastBoardPointerHandledAt;
-    const d=Math.hypot(t.clientX-joygoLastBoardPointerHandledX,t.clientY-joygoLastBoardPointerHandledY);
-    if(dt>=0 && dt<420 && d<28)return;
-
-    if(e.cancelable)e.preventDefault();
-    resetBoardInputGuard();
-    handleBoardInput({
-      clientX:t.clientX,clientY:t.clientY,cancelable:true,
-      preventDefault:()=>{try{e.preventDefault()}catch(_){}}
-    });
-  }catch(err){
-    try{toast('手機落子觸控失敗：'+(err?.message||err))}catch(_){}
-  }
-},{capture:true,passive:false});
-
 // Build028.1.12：切換方向、分頁或返回頁面時清除殘留觸控鎖，避免下一次試下無法落子或誤判重複。
 window.addEventListener('orientationchange',()=>{joygoClearPendingMove();resetBoardInputGuard()},{passive:true});
 window.addEventListener('pageshow',resetBoardInputGuard,{passive:true});
@@ -14208,47 +13709,29 @@ document.addEventListener("visibilitychange",()=>{
   if(!document.hidden)setTimeout(()=>forceBoardRebuild("visible"),100);
 },{passive:true});
 window.addEventListener("orientationchange",()=>{
-  // Safari/iPad 旋轉時 viewport 可能分數次才穩定；每次都重新量「可視視窗」。
-  [80,220,480,800,1200].forEach((ms,i)=>setTimeout(()=>{
-    requestAnimationFrame(()=>forceBoardRebuild("orientation-stable-"+(i+1)));
-  },ms));
+  setTimeout(()=>forceBoardRebuild("orientation-1"),180);
+  setTimeout(()=>forceBoardRebuild("orientation-2"),520);
 },{passive:true});
 window.addEventListener("load",()=>setTimeout(()=>forceBoardRebuild("load"),120),{once:true});
 
-// Beta 3.3.12zo：iPad 旋轉刷新防回授迴圈。
-// visualViewport 在 Safari 會因 canvas / 工具列尺寸改變連續觸發 resize；
-// 若每次都 forceBoardRebuild + syncUI，長時間人機對弈後可能看起來像整頁當機。
+// V1.0 Beta 1.1: robust iPad rotation refresh.
 let beta11RotateTimer=0;
-let beta11RotateBusy=false;
-let beta11LastVW=0,beta11LastVH=0;
-function beta11RefreshAfterRotation(reason='rotation'){
+function beta11RefreshAfterRotation(){
   clearTimeout(beta11RotateTimer);
-  beta11RotateTimer=setTimeout(()=>{
-    if(beta11RotateBusy)return;
-    beta11RotateBusy=true;
+  const run=()=>{
     try{
-      const vv=window.visualViewport;
-      const w=Math.round(vv?.width||window.innerWidth||document.documentElement.clientWidth||0);
-      const h=Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0);
-      document.documentElement.style.setProperty('--joygo-vw',w+'px');
-      document.documentElement.style.setProperty('--joygo-vh',h+'px');
-      forceBoardRebuild('beta11-'+reason);
-      // KataGo 思考中只重畫棋盤，不跑整套 syncUI，避免 UI / viewport 互相觸發。
-      if(!state.aiThinking)syncUI();
-      beta11LastVW=w;beta11LastVH=h;
+      document.documentElement.style.setProperty('--joygo-vw',(window.innerWidth||document.documentElement.clientWidth)+'px');
+      document.documentElement.style.setProperty('--joygo-vh',(window.innerHeight||document.documentElement.clientHeight)+'px');
+      forceBoardRebuild('beta11-rotation');
+      syncUI();
     }catch(e){console.warn('beta11 rotation refresh',e)}
-    finally{setTimeout(()=>{beta11RotateBusy=false},80)}
-  },120);
+  };
+  [60,220,520,900].forEach(ms=>setTimeout(run,ms));
 }
-window.addEventListener('orientationchange',()=>beta11RefreshAfterRotation('orientation'),{passive:true});
-window.addEventListener('resize',()=>beta11RefreshAfterRotation('window-resize'),{passive:true});
+window.addEventListener('orientationchange',beta11RefreshAfterRotation,{passive:true});
+window.addEventListener('resize',()=>{clearTimeout(beta11RotateTimer);beta11RotateTimer=setTimeout(beta11RefreshAfterRotation,100)},{passive:true});
 if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',()=>{
-    const w=Math.round(visualViewport.width||0),h=Math.round(visualViewport.height||0);
-    // 只有真正方向/視窗尺寸變化才重建；1~2px Safari 抖動直接忽略。
-    if(Math.abs(w-beta11LastVW)<=2 && Math.abs(h-beta11LastVH)<=2)return;
-    beta11RefreshAfterRotation('visual-viewport');
-  },{passive:true});
+  window.visualViewport.addEventListener('resize',()=>{clearTimeout(beta11RotateTimer);beta11RotateTimer=setTimeout(beta11RefreshAfterRotation,100)},{passive:true});
 }
 
 
@@ -14395,10 +13878,9 @@ window.addEventListener("DOMContentLoaded",()=>{
     if(!window.memberSupabase&&!memberSupabase){if(tries<30)setTimeout(enter,250);return}
     try{
       if(!await onlineReady()){if(tries<30)setTimeout(enter,300);return}
-      const {data,error}=await memberSupabase.rpc("joygo_resume_room_v343b",{p_code:clean});
+      const {data,error}=await memberSupabase.rpc("joygo_resume_room",{p_code:clean});
       const room=onlineRpcRow(data);
       if(error||!room){toast("無法進入配對棋局："+(error?.message||"找不到房間"));return}
-      onlineReconnectProtectUntil=Date.now()+5000;
       await onlineEnterRoom(room);
       setTimeout(()=>{closeModal("onlineModal");toast("⚔️ 已進入真人棋局")},220);
       try{history.replaceState({},"",location.pathname)}catch(_){}
@@ -15055,15 +14537,6 @@ document.addEventListener("click",(ev)=>{
     return memberAccess?.role==="admin";
   }
 
-  function syncOnlineClassicAdminFilterVisibility(){
-    const wrap=$jg("onlineClassicAdminFilterWrap");
-    const filter=$jg("onlineClassicAdminFilter");
-    const isAdmin=canPublishOnlineClassic();
-    if(wrap)wrap.style.display=isAdmin?"block":"none";
-    if(filter && !isAdmin)filter.value="published";
-    return isAdmin;
-  }
-
   function ensureOnlineClassicUI(){
     const modal=$jg("classicGameModal")?.querySelector(".modal");
     if(!modal || $jg("onlineClassicPanel")) return;
@@ -15075,21 +14548,11 @@ document.addEventListener("click",(ev)=>{
       <div class="online-classic-head">
         <div>
           <div class="online-classic-title">🌐 Joy Go 線上名局館</div>
-          <div class="online-classic-sub">棋友可直接觀看、播放與分享。</div>
+          <div class="online-classic-sub">發布一次，棋友即可在任何裝置直接觀看與播放。</div>
         </div>
         <div class="online-classic-actions">
           <button type="button" class="secondary" id="onlineClassicRefreshBtn">重新整理</button>
         </div>
-      </div>
-      <div id="onlineClassicAdminFilterWrap" style="display:none;margin:8px 0 10px">
-        <label style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span style="font-weight:800">主管理員檢視</span>
-          <select id="onlineClassicAdminFilter">
-            <option value="published">上架中</option>
-            <option value="unpublished">已下架</option>
-            <option value="all">全部</option>
-          </select>
-        </label>
       </div>
       <div id="onlineClassicStatus" class="online-classic-status">讀取中…</div>
       <div id="onlineClassicList"></div>
@@ -15100,17 +14563,6 @@ document.addEventListener("click",(ev)=>{
     else modal.insertBefore(panel,modal.children[2]||null);
 
     $jg("onlineClassicRefreshBtn")?.addEventListener("click",fetchOnlineClassicGames);
-
-    const adminWrap=$jg("onlineClassicAdminFilterWrap");
-    const adminFilter=$jg("onlineClassicAdminFilter");
-    syncOnlineClassicAdminFilterVisibility();
-    if(adminFilter){
-      try{adminFilter.value=sessionStorage.getItem("joygo-online-classic-filter")||"published"}catch{}
-      adminFilter.addEventListener("change",()=>{
-        try{sessionStorage.setItem("joygo-online-classic-filter",adminFilter.value)}catch{}
-        fetchOnlineClassicGames();
-      });
-    }
 
     const player=document.querySelector(".player");
     if(player && !$jg("onlineClassicExplanation")){
@@ -15150,7 +14602,6 @@ document.addEventListener("click",(ev)=>{
 
   function renderOnlineClassicGames(){
     ensureOnlineClassicUI();
-    syncOnlineClassicAdminFilterVisibility();
     const list=$jg("onlineClassicList");
     const status=$jg("onlineClassicStatus");
     if(!list)return;
@@ -15170,13 +14621,7 @@ document.addEventListener("click",(ev)=>{
       const info=document.createElement("div");
       const title=document.createElement("div");
       title.className="online-classic-card-title";
-      title.textContent=game.title+" ";
-      const stateBadge=document.createElement("span");
-      stateBadge.textContent=row.is_published===false?"已下架":"上架中";
-      stateBadge.style.cssText=row.is_published===false
-        ?"display:inline-block;padding:2px 7px;border:1px solid #9b3d3d;border-radius:999px;color:#ff9b9b;font-size:12px;font-weight:800"
-        :"display:inline-block;padding:2px 7px;border:1px solid #2e7d4f;border-radius:999px;color:#7fe0a3;font-size:12px;font-weight:800";
-      title.appendChild(stateBadge);
+      title.textContent=game.title;
       const meta=document.createElement("div");
       meta.className="online-classic-card-meta";
       meta.textContent=`${game.black||"黑方"} vs ${game.white||"白方"}｜${game.event||"未填賽事"}｜${game.date||"未填日期"}${game.result?`｜${game.result}`:""}`;
@@ -15212,19 +14657,11 @@ document.addEventListener("click",(ev)=>{
       actions.append(view,play,share);
 
       if(canPublishOnlineClassic()){
-        if(row.is_published===false){
-          const hardDel=document.createElement("button");
-          hardDel.className="danger";
-          hardDel.textContent="永久刪除";
-          hardDel.onclick=()=>deleteOnlineClassicPermanent(row);
-          actions.appendChild(hardDel);
-        }else{
-          const del=document.createElement("button");
-          del.className="danger";
-          del.textContent="下架";
-          del.onclick=()=>unpublishOnlineClassic(row);
-          actions.appendChild(del);
-        }
+        const del=document.createElement("button");
+        del.className="danger";
+        del.textContent="下架";
+        del.onclick=()=>unpublishOnlineClassic(row);
+        actions.appendChild(del);
       }
 
       card.append(info,actions);
@@ -15234,7 +14671,6 @@ document.addEventListener("click",(ev)=>{
 
   async function fetchOnlineClassicGames(){
     ensureOnlineClassicUI();
-    syncOnlineClassicAdminFilterVisibility();
     const status=$jg("onlineClassicStatus");
     if(status)status.textContent="正在讀取線上名局…";
 
@@ -15244,29 +14680,11 @@ document.addEventListener("click",(ev)=>{
     }
 
     try{
-      const isAdmin=canPublishOnlineClassic();
-      const filter=$jg("onlineClassicAdminFilter")?.value||"published";
-
-      let data=null;
-      let error=null;
-
-      if(isAdmin){
-        const res=await memberSupabase.rpc(
-          "joygo_admin_list_classic_games_v346d",
-          {p_filter:filter}
-        );
-        data=res.data;
-        error=res.error;
-      }else{
-        const res=await memberSupabase
-          .from(ONLINE_TABLE)
-          .select("id,title,black_player,white_player,event_name,game_date,result,category,note,commentary,sgf_text,is_published,created_at,updated_at,published_at")
-          .eq("is_published",true)
-          .order("updated_at",{ascending:false});
-        data=res.data;
-        error=res.error;
-      }
-
+      const {data,error}=await memberSupabase
+        .from(ONLINE_TABLE)
+        .select("id,title,black_player,white_player,event_name,game_date,result,category,note,commentary,sgf_text,is_published,created_at,updated_at")
+        .eq("is_published",true)
+        .order("published_at",{ascending:false});
       if(error)throw error;
       onlineClassicCache=Array.isArray(data)?data:[];
       renderOnlineClassicGames();
@@ -15340,56 +14758,15 @@ document.addEventListener("click",(ev)=>{
   async function unpublishOnlineClassic(row){
     if(!canPublishOnlineClassic())return;
     if(!confirm(`確定下架「${row.title||"這盤名局"}」？`))return;
-
     try{
-      const {data,error}=await memberSupabase.rpc(
-        "joygo_admin_unpublish_classic_game_v346c",
-        {p_game_id:row.id}
-      );
+      const {error}=await memberSupabase.from(ONLINE_TABLE)
+        .update({is_published:false,updated_at:new Date().toISOString()})
+        .eq("id",row.id);
       if(error)throw error;
-
-      const result=Array.isArray(data)?data[0]:data;
-      toast(result?.message||("已下架："+(row.title||"名局")));
-
-      const adminFilter=$jg("onlineClassicAdminFilter");
-      if(adminFilter && canPublishOnlineClassic()){
-        adminFilter.value="unpublished";
-        try{sessionStorage.setItem("joygo-online-classic-filter","unpublished")}catch{}
-      }
-
+      toast("已下架："+(row.title||"名局"));
       await fetchOnlineClassicGames();
     }catch(err){
-      console.error("unpublish classic:",err);
       toast("下架失敗："+(err?.message||String(err)));
-    }
-  }
-
-  async function deleteOnlineClassicPermanent(row){
-    if(!canPublishOnlineClassic())return;
-    if(!row?.id)return;
-
-    const name=row.title||"這盤名局";
-
-    if(!confirm(`⚠️ 永久刪除「${name}」？\n\n此動作會從 Supabase 永久移除，無法復原。`))return;
-
-    const typed=prompt(`第二次確認：請輸入 DELETE 才會永久刪除「${name}」`);
-    if(typed!=="DELETE"){
-      toast("已取消永久刪除");
-      return;
-    }
-
-    try{
-      const {data,error}=await memberSupabase.rpc("joygo_admin_delete_classic_game_v346",{
-        p_game_id:row.id
-      });
-      if(error)throw error;
-
-      const ok=Array.isArray(data)?data[0]:data;
-      toast(ok?.message||("已永久刪除："+name));
-      await fetchOnlineClassicGames();
-    }catch(err){
-      console.error(err);
-      toast("永久刪除失敗："+(err?.message||String(err)));
     }
   }
 
@@ -15423,21 +14800,6 @@ document.addEventListener("click",(ev)=>{
   }
 
   /* 在本機名局卡片加「發布線上」 */
-  function syncClassicPublishButtons(){
-    const isAdmin=canPublishOnlineClassic();
-    document.querySelectorAll(".online-classic-publish").forEach(btn=>{
-      btn.style.display=isAdmin?"":"none";
-      btn.disabled=!isAdmin;
-    });
-    return isAdmin;
-  }
-
-  function scheduleClassicPublishButtonSync(){
-    [0,250,700,1500].forEach(ms=>{
-      setTimeout(()=>syncClassicPublishButtons(),ms);
-    });
-  }
-
   function installClassicCardPublisher(){
     if(window.__jgOnlineClassicCardPatched)return;
     if(typeof classicGameCard!=="function")return;
@@ -15446,23 +14808,16 @@ document.addEventListener("click",(ev)=>{
     const original=classicGameCard;
     classicGameCard=function(game){
       const card=original(game);
-
-      if(game?.source==="official"){
+      if(game?.source==="official" && canPublishOnlineClassic()){
         const actions=card.querySelector(".classic-game-actions");
-        if(actions && !actions.querySelector(".online-classic-publish")){
+        if(actions){
           const pub=document.createElement("button");
           pub.className="secondary online-classic-publish";
           pub.textContent="🌐 發布線上";
-          pub.style.display=canPublishOnlineClassic()?"":"none";
-          pub.disabled=!canPublishOnlineClassic();
           pub.onclick=()=>publishOnlineClassic(game);
           actions.insertBefore(pub,actions.firstChild);
         }
-
-        // 權限可能比名局卡片稍晚完成載入，延遲再次同步。
-        scheduleClassicPublishButtonSync();
       }
-
       return card;
     };
   }
@@ -15477,7 +14832,6 @@ document.addEventListener("click",(ev)=>{
       ensureOnlineClassicUI();
       installClassicCardPublisher();
       const result=await original.apply(this,arguments);
-      scheduleClassicPublishButtonSync();
       fetchOnlineClassicGames();
       return result;
     };
@@ -15487,7 +14841,6 @@ document.addEventListener("click",(ev)=>{
     ensureOnlineClassicUI();
     installClassicCardPublisher();
     installOpenHook();
-    scheduleClassicPublishButtonSync();
     setTimeout(openDeepLinkedClassic,700);
   }
 
@@ -15499,7 +14852,6 @@ document.addEventListener("click",(ev)=>{
     ensureOnlineClassicUI();
     installClassicCardPublisher();
     installOpenHook();
-    scheduleClassicPublishButtonSync();
   },{passive:true});
 })();
 </script>
@@ -16841,17 +16193,47 @@ function patch(){
 })();
 </script>
 
-<script id="joygo-beta343b-marker">
-console.info("Joy Go Beta 3.4.3b｜斷線重連棋鐘保護｜底本 Beta 3.3.12zl");
-</script>
-<script id="joygo-beta344-marker">
-console.info("Joy Go Beta 3.4.4c｜棋力金色醒目版｜不擠壓版面｜保留 Beta 3.4.3b 與 3.3.12zl");
-</script>
-<script id="joygo-beta345-marker">
-console.info("Joy Go Beta 3.4.5｜真人棋局自動觀戰｜保留 3.4.4c、3.4.3b、3.3.12zl");
-</script>
-<script id="joygo-beta346-marker">
-console.info("Joy Go Beta 3.4.7a｜名局館文字再精簡｜縮短空白提示、移除播放說明｜保留 3.4.7 全部功能");
+
+<!-- Joy Go Beta 3.3.12zm｜多人指導棋 iframe 防彈窗 + iPad 橫式穩定修正 -->
+<style id="joygo-guidance-embed-modal-hardlock">
+/* 指導棋 iframe 內只允許棋盤與必要對局 UI；會員/管理/名局等彈窗永遠不得出現 */
+html[data-joygo-guidance="1"] body.guidance-embed-mode .modal-backdrop:not(#onlineModal),
+body.guidance-embed-mode #memberModal,
+body.guidance-embed-mode #rankAdminModal,
+body.guidance-embed-mode #classicGameModal {
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  opacity:0 !important;
+}
+</style>
+<script id="joygo-guidance-embed-modal-hardlock-js">
+(()=>{
+  const isGuidance=()=>{
+    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
+  };
+  if(!isGuidance()) return;
+  const closeForeignModals=()=>{
+    document.documentElement.setAttribute('data-joygo-guidance','1');
+    document.body?.classList.add('guidance-embed-mode');
+    document.querySelectorAll('.modal-backdrop').forEach(m=>{
+      if(m.id==='onlineModal') return;
+      m.classList.remove('open','show','active');
+      m.style.setProperty('display','none','important');
+      m.style.setProperty('visibility','hidden','important');
+      m.style.setProperty('pointer-events','none','important');
+    });
+  };
+  const boot=()=>{
+    closeForeignModals();
+    const mo=new MutationObserver(closeForeignModals);
+    mo.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class','style']});
+    window.addEventListener('pageshow',closeForeignModals);
+    window.addEventListener('resize',()=>requestAnimationFrame(()=>{closeForeignModals();try{resizeBoard?.()}catch(_){}}),{passive:true});
+    window.addEventListener('orientationchange',()=>setTimeout(()=>{closeForeignModals();try{resizeBoard?.()}catch(_){}},250),{passive:true});
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+})();
 </script>
 </body>
 </html>
