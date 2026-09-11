@@ -16213,26 +16213,46 @@ body.guidance-embed-mode #classicGameModal {
     try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
   };
   if(!isGuidance()) return;
+
   const closeForeignModals=()=>{
     document.documentElement.setAttribute('data-joygo-guidance','1');
-    document.body?.classList.add('guidance-embed-mode');
+    if(document.body) document.body.classList.add('guidance-embed-mode');
     document.querySelectorAll('.modal-backdrop').forEach(m=>{
       if(m.id==='onlineModal') return;
       m.classList.remove('open','show','active');
-      m.style.setProperty('display','none','important');
-      m.style.setProperty('visibility','hidden','important');
-      m.style.setProperty('pointer-events','none','important');
     });
   };
+
   const boot=()=>{
     closeForeignModals();
-    const mo=new MutationObserver(closeForeignModals);
-    mo.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class','style']});
-    window.addEventListener('pageshow',closeForeignModals);
-    window.addEventListener('resize',()=>requestAnimationFrame(()=>{closeForeignModals();try{resizeBoard?.()}catch(_){}}),{passive:true});
-    window.addEventListener('orientationchange',()=>setTimeout(()=>{closeForeignModals();try{resizeBoard?.()}catch(_){}},250),{passive:true});
+
+    /* 重要：不再監看 style/class MutationObserver。
+       舊版會因自己修改 style 又觸發 observer，造成 iPad 主執行緒迴圈而卡死。 */
+    try{
+      const originalOpenModal=window.openModal;
+      if(typeof originalOpenModal==='function'){
+        window.openModal=function(id){
+          if(isGuidance() && id!=='onlineModal') return;
+          return originalOpenModal.apply(this,arguments);
+        };
+      }
+    }catch(_){}
+
+    window.addEventListener('pageshow',closeForeignModals,{passive:true});
+    let resizeTimer=0;
+    const settle=()=>{
+      clearTimeout(resizeTimer);
+      resizeTimer=setTimeout(()=>{
+        closeForeignModals();
+        try{ if(typeof resizeBoard==='function') resizeBoard(); }catch(_){}
+      },180);
+    };
+    window.addEventListener('resize',settle,{passive:true});
+    window.addEventListener('orientationchange',settle,{passive:true});
   };
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
 })();
 </script>
 </body>
