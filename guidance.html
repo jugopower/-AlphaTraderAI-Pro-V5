@@ -141,11 +141,8 @@ header h1{font-size:20px;margin:0;flex:1;color:var(--gold2);text-shadow:0 1px 0 
 .small{font-size:12px;color:var(--muted)}
 @media(max-width:900px){.formgrid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.formgrid{grid-template-columns:1fr}.tab{min-width:132px}header h1{font-size:17px}}
-@media (min-width:700px) and (orientation:portrait){
-  .board-frame{height:1080px}
-}
-@media (min-width:700px) and (orientation:landscape){
-  .board-frame{height:1040px}
+@media (min-width:700px){
+  .board-frame{height:1120px}
 }
 </style>
 
@@ -203,7 +200,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5f｜iPad 旋轉穩定修正版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5g｜iPad 無重載穩定版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -377,40 +374,9 @@ function normalizeBoards(rows){
 function renderTabs(){const live=activeBoards();$("tabs").innerHTML=live.map(b=>`<button class="tab ${b.slot_no===activeSlot?'active':''} ${b.tab_status==='waiting_teacher'?'wait-teacher':''}" data-slot="${b.slot_no}"><div class="tab-name">${esc(b.student_name)} ${esc(b.student_rank||'')}</div><div class="tab-meta">${tabLabel(b)}｜${b.handicap?`讓${b.handicap}子`:'分先'}｜${esc(b.room_code)}</div></button>`).join('');document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>activate(Number(t.dataset.slot)))}
 
 
-let joygoLastOrientation = window.innerWidth > window.innerHeight ? "landscape" : "portrait";
-let joygoRotateTimer = null;
-
-function reloadGuidanceFrame(f){
-  if(!f) return;
-  const base = f.dataset.src || f.getAttribute("src") || "";
-  if(!base) return;
-  const u = new URL(base, location.href);
-  u.searchParams.set("gv","295e");
-  u.searchParams.set("rot", String(Date.now()));
-  f.dataset.needsReload = "0";
-  f.src = u.href;
-}
-
-function handleGuidanceOrientation(){
-  clearTimeout(joygoRotateTimer);
-  joygoRotateTimer = setTimeout(()=>{
-    const now = window.innerWidth > window.innerHeight ? "landscape" : "portrait";
-    if(now === joygoLastOrientation) return;
-    joygoLastOrientation = now;
-
-    // 不再對內嵌棋盤強制 dispatch resize，也不自動捲動畫面。
-    // 旋轉後只重新載入目前這一盤，讓 index.html 以新方向乾淨初始化。
-    document.querySelectorAll(".board-frame").forEach(f=>{
-      f.dataset.needsReload = "1";
-    });
-    const active = document.querySelector(".board-frame.active");
-    if(active) reloadGuidanceFrame(active);
-  },420);
-}
-
-window.addEventListener("orientationchange", handleGuidanceOrientation, {passive:true});
-window.addEventListener("resize", handleGuidanceOrientation, {passive:true});
-
+/* Beta 2.9.5g
+   iPad 旋轉時不再由 guidance.html 重新載入 iframe。
+   讓 index.html 自己處理瀏覽器原生 resize，避免多次閃爍、棋盤變形與觸控失準。 */
 function ensureFrame(b){
   let f=document.getElementById('frame-'+b.slot_no);
   if(!f){
@@ -421,8 +387,8 @@ function ensureFrame(b){
     f.className='board-frame';
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295e`;
-    f.dataset.needsReload="0";
+    f.setAttribute('scrolling','no');
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295g`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;
@@ -435,11 +401,7 @@ function activate(slot){
   activeSlot=chosen.slot_no;
   live.forEach(b=>{
     const f=ensureFrame(b);
-    const active=b.slot_no===activeSlot;
-    f.classList.toggle('active',active);
-    if(active && f.dataset.needsReload==="1"){
-      reloadGuidanceFrame(f);
-    }
+    f.classList.toggle('active',b.slot_no===activeSlot);
   });
   renderTabs();
   renderCurrent()
