@@ -208,7 +208,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
     max-height:790px !important;
   }
 }
-/* Beta 2.9.5j｜iPad 直式：縮掉 iframe 內多餘高度，讓棋盤上移、底部六鍵完整可按 */
+/* Beta 2.9.5k｜iPad 直式：保留緊湊高度；橫轉直後由 index 3.3.12zq 強制恢復棋盤尺寸 */
 @media (orientation: portrait) and (min-width: 700px) and (pointer: coarse){
   .board-frame{
     height:1068px !important;
@@ -222,7 +222,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5j｜iPad 直式緊湊版＋功能鍵完整｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5k｜iPad 橫轉直棋盤恢復版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -430,7 +430,7 @@ function ensureFrame(b){
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
     f.setAttribute('scrolling','no');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295j`;
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295k`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;

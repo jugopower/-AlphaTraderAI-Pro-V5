@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zp｜iPad 直式空白縮減＋功能鍵安全修正版 -->
+<!-- Beta 3.3.12zq｜iPad 指導棋橫轉直棋盤恢復修正版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -7151,9 +7151,13 @@ body.jg-online-mode #jgUSpeedPanel{
     grid-column:1!important;
     grid-row:1!important;
     width:100%!important;
-    height:auto!important;
-    min-height:0!important;
-    max-height:none!important;
+    /* Beta 3.3.12zq：直式時給棋盤容器明確正方形高度。
+       避免橫式轉直式後，resizeBoard() 讀到 auto-height 的舊小高度，
+       將棋盤鎖在 260～320px。 */
+    height:min(calc(100vw - 12px),930px)!important;
+    min-height:min(calc(100vw - 12px),930px)!important;
+    max-height:min(calc(100vw - 12px),930px)!important;
+    aspect-ratio:1 / 1!important;
     padding:0!important;
     margin:0!important;
     display:flex!important;
@@ -16543,5 +16547,44 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
 })();
 </script>
 
+
+<script id="joygo-guidance-portrait-3312zq-settle">
+/* Beta 3.3.12zq：iPad 指導棋由橫式轉回直式後，等版面穩定再重算棋盤。
+   不重載 iframe、不改棋局狀態，只做一次延遲重繪。 */
+(()=>{
+  let timer=0;
+  const isGuidancePortrait=()=>{
+    try{
+      return document.documentElement.getAttribute('data-joygo-guidance')==='1' &&
+             window.innerHeight > window.innerWidth;
+    }catch(_){ return false; }
+  };
+  const settle=()=>{
+    clearTimeout(timer);
+    timer=setTimeout(()=>{
+      if(!isGuidancePortrait()) return;
+      try{
+        const wrap=document.querySelector('.board-wrap');
+        if(wrap){
+          const target=Math.min(Math.max(0,window.innerWidth-12),930);
+          if(target>300){
+            wrap.style.setProperty('height',target+'px','important');
+            wrap.style.setProperty('min-height',target+'px','important');
+            wrap.style.setProperty('max-height',target+'px','important');
+          }
+        }
+        if(typeof window.forceBoardRebuild==='function') window.forceBoardRebuild('guidance-portrait-rotation');
+        else if(typeof window.resizeBoard==='function'){
+          window.resizeBoard(true);
+          if(typeof window.drawBoard==='function') window.drawBoard(window.state?.currentSnapshot||window.activateSnapshot?.(window.state?.index||0));
+        }
+      }catch(e){ console.warn('guidance portrait settle skipped',e); }
+    },360);
+  };
+  window.addEventListener('orientationchange',settle,{passive:true});
+  window.addEventListener('resize',settle,{passive:true});
+  window.addEventListener('pageshow',settle,{passive:true});
+})();
+</script>
 </body>
 </html>
