@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zt｜iPad 多次旋轉穩定＋直式落子確認鎖定版 -->
+<!-- Beta 3.3.12zw｜iPad 直式確定落子按鍵固定顯示版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -16899,6 +16899,108 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
   window.addEventListener('resize',()=>scheduleSettle(180),{passive:true});
   window.visualViewport?.addEventListener('resize',()=>scheduleSettle(180),{passive:true});
   window.addEventListener('pageshow',()=>{placeConfirm(); redrawStable(); hardUnlockBoard();},{passive:true});
+})();
+</script>
+
+
+<!-- Beta 3.3.12zw｜iPad 直式「確定落子／取消」固定顯示 -->
+<style id="joygo-guidance-3312zw-portrait-confirm-final">
+/*
+   iPad 直式 guidance_embed：
+   舊版 docking 程式會把 moveConfirmBar 固定留在 rightTools。
+   rightTools 在直式版會改變排版，因此不要再搬 DOM；
+   只要在「有待確認落子」時，把確認列固定浮在 iframe 視窗底部。
+*/
+@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]),
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]){
+    display:grid !important;
+    position:fixed !important;
+    left:50% !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:calc(18px + env(safe-area-inset-bottom)) !important;
+    transform:translateX(-50%) !important;
+    width:min(92vw,760px) !important;
+    max-width:760px !important;
+    grid-template-columns:minmax(0,1fr) minmax(150px,.72fr) minmax(110px,.52fr) !important;
+    align-items:center !important;
+    gap:8px !important;
+    margin:0 !important;
+    padding:10px !important;
+    z-index:99999 !important;
+    pointer-events:auto !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    overflow:visible !important;
+    border:1px solid #d5a443 !important;
+    border-radius:14px !important;
+    background:#17100ef5 !important;
+    box-shadow:0 10px 30px #000c !important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]) #moveConfirmText,
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]) #moveConfirmText{
+    grid-column:auto !important;
+    min-width:0 !important;
+    width:auto !important;
+    text-align:left !important;
+    font-size:14px !important;
+    line-height:1.35 !important;
+    padding:0 4px !important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]) #moveConfirmOk,
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]) #moveConfirmCancel,
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]) #moveConfirmOk,
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]) #moveConfirmCancel{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+    width:100% !important;
+    min-height:46px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-size:15px !important;
+  }
+}
+</style>
+<script id="joygo-guidance-3312zw-portrait-confirm-final-js">
+(()=>{
+  function isGuidance(){
+    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
+  }
+  if(!isGuidance()) return;
+
+  function repairConfirmBar(){
+    const bar=document.getElementById('moveConfirmBar');
+    const ok=document.getElementById('moveConfirmOk');
+    const cancel=document.getElementById('moveConfirmCancel');
+    if(!bar) return;
+    bar.classList.add('jg-confirm-docked');
+    if(ok){ ok.hidden=false; ok.style.pointerEvents='auto'; }
+    if(cancel){ cancel.hidden=false; cancel.style.pointerEvents='auto'; }
+  }
+
+  /* pending move 顯示後，再補一次，避免舊 docking CSS/JS 搶掉顯示狀態 */
+  const oldShow=window.joygoShowPendingMove;
+  if(typeof oldShow==='function'){
+    window.joygoShowPendingMove=function(...args){
+      const r=oldShow.apply(this,args);
+      repairConfirmBar();
+      requestAnimationFrame(repairConfirmBar);
+      setTimeout(repairConfirmBar,60);
+      return r;
+    };
+  }
+
+  document.addEventListener('pointerup',(e)=>{
+    if(e.target.closest?.('#board,.board-wrap')) setTimeout(repairConfirmBar,30);
+  },true);
+  window.addEventListener('orientationchange',()=>setTimeout(repairConfirmBar,350),{passive:true});
+  window.addEventListener('pageshow',repairConfirmBar,{passive:true});
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',repairConfirmBar,{once:true});
+  else repairConfirmBar();
 })();
 </script>
 
