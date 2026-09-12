@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zw｜iPad 直式確定落子按鍵固定顯示版 -->
+<!-- Beta 3.3.12zx｜真人對局斷線自動重連＋iPad 直式確定落子穩定版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -31,6 +31,7 @@
 <meta name="joygo-rating-auto-version" content="3.3.2">
 <meta name="joygo-beta333-version" content="3.3.3">
 <meta name="joygo-move-confirm-version" content="3.3.5b">
+<meta name="joygo-online-reconnect-version" content="3.3.12zx">
 <meta name="joygo-rating-normal-result-version" content="3.3.6">
 <meta name="joygo-resign-rating-version" content="3.3.6a">
 <meta name="joygo-mobile-ui-version" content="3.3.11a">
@@ -17001,6 +17002,173 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
   window.addEventListener('pageshow',repairConfirmBar,{passive:true});
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',repairConfirmBar,{once:true});
   else repairConfirmBar();
+})();
+</script>
+
+
+<!-- Beta 3.3.12zx｜真人對局斷線自動重連（手機 / iPad / 筆電 / 桌機共用） -->
+<script id="joygo-online-reconnect-3312zx">
+(()=>{
+  /*
+     目的：
+     1. Supabase Realtime CHANNEL_ERROR / TIMED_OUT / CLOSED 後自動重訂閱。
+     2. Safari / Chrome 從背景回前景、pageshow、focus、網路恢復時，自動重新同步棋局。
+     3. 每次重連前先移除舊 channel，避免雙重訂閱造成重複同步。
+     4. 重連完成後一定從資料庫重抓 room + moves，因此不靠記憶體中的舊棋盤狀態。
+  */
+  if(typeof onlineSubscribe!=='function' || typeof onlineSyncRoom!=='function') return;
+
+  let reconnectTimer=0;
+  let reconnectRunning=false;
+  let subscribeEpoch=0;
+  let healthTimer=0;
+  let lastVisibleAt=Date.now();
+
+  const safeStatus=(text,kind='')=>{
+    try{ if(typeof onlineSetStatus==='function') onlineSetStatus(text,kind); }catch(_){ }
+  };
+  const activeRoomId=()=>{
+    try{return state?.onlineMode && state?.onlineRoom?.id ? state.onlineRoom.id : null}catch(_){return null}
+  };
+  const channelLooksJoined=()=>{
+    try{
+      const ch=state?.onlineChannel;
+      if(!ch) return false;
+      const st=String(ch.state||'').toLowerCase();
+      return st==='joined' || st==='subscribed';
+    }catch(_){return false}
+  };
+
+  function clearReconnectTimer(){
+    if(reconnectTimer){clearTimeout(reconnectTimer);reconnectTimer=0;}
+  }
+
+  function scheduleReconnect(reason='連線恢復',delay=450){
+    const roomId=activeRoomId();
+    if(!roomId) return;
+    clearReconnectTimer();
+    reconnectTimer=setTimeout(()=>doReconnect(reason),Math.max(120,delay));
+  }
+
+  async function ensureMemberSession(){
+    try{
+      if(!memberSupabase) return false;
+      const {data,error}=await memberSupabase.auth.getSession();
+      if(error) throw error;
+      if(data?.session){ memberSession=data.session; return true; }
+    }catch(e){
+      console.warn('[JoyGo reconnect] session check failed',e);
+    }
+    return !!memberSession?.user;
+  }
+
+  async function doReconnect(reason='重新連線'){
+    const roomId=activeRoomId();
+    if(!roomId || reconnectRunning) return;
+    if(document.hidden){ scheduleReconnect(reason,1000); return; }
+    if(typeof navigator!=='undefined' && navigator.onLine===false){
+      safeStatus('📡 網路中斷，恢復後會自動重新連線…','bad');
+      scheduleReconnect('等待網路恢復',1800);
+      return;
+    }
+
+    reconnectRunning=true;
+    clearReconnectTimer();
+    safeStatus('🔄 重新連線中…');
+    try{
+      const ok=await ensureMemberSession();
+      if(!ok) throw new Error('會員登入狀態已失效');
+
+      /* 強制建立全新的 Realtime 訂閱。onlineSubscribe 內會先 remove 舊 channel。 */
+      await onlineSubscribe(roomId);
+
+      /* Realtime 尚在握手時也先用 HTTPS 從資料庫恢復棋盤，避免畫面卡在舊手數。 */
+      await onlineSyncRoom();
+      safeStatus('✅ 已恢復連線並同步最新棋局。','ok');
+    }catch(e){
+      console.warn('[JoyGo reconnect] failed',reason,e);
+      safeStatus('⚠️ 重新連線失敗，系統會再試一次。','bad');
+      scheduleReconnect('自動重試',1800);
+    }finally{
+      reconnectRunning=false;
+    }
+  }
+
+  /* 取代原訂閱函式：完整處理 Supabase channel 狀態。 */
+  onlineSubscribe=async function(roomId){
+    const myEpoch=++subscribeEpoch;
+    try{ await onlineUnsubscribe(); }catch(_){ }
+    if(!memberSupabase || !roomId || myEpoch!==subscribeEpoch) return;
+
+    const ch=memberSupabase.channel('joygo-online-'+roomId)
+      .on('postgres_changes',{event:'*',schema:'public',table:'online_rooms',filter:'id=eq.'+roomId},()=>onlineSyncRoom())
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'online_moves',filter:'room_id=eq.'+roomId},()=>onlineSyncRoom());
+
+    state.onlineChannel=ch;
+    ch.subscribe(status=>{
+      if(myEpoch!==subscribeEpoch) return; // 舊 channel 關閉事件不觸發新一輪重連
+      if(status==='SUBSCRIBED'){
+        safeStatus('✅ 即時連線成功，等待棋步。','ok');
+        setTimeout(()=>{ if(activeRoomId()===roomId) onlineSyncRoom(); },80);
+      }else if(status==='CHANNEL_ERROR' || status==='TIMED_OUT'){
+        safeStatus('⚠️ 即時連線中斷，正在自動恢復…','bad');
+        scheduleReconnect(status,700);
+      }else if(status==='CLOSED'){
+        /* 只有目前仍在此房間時才重連；離開房間時 activeRoomId() 會很快變空。 */
+        if(activeRoomId()===roomId){
+          safeStatus('🔄 即時連線已關閉，正在重新連線…');
+          scheduleReconnect(status,900);
+        }
+      }
+    });
+  };
+
+  function foregroundRepair(reason){
+    if(!activeRoomId()) return;
+    lastVisibleAt=Date.now();
+    /* Safari 從背景回來時 websocket 可能表面仍是 joined，仍強制重訂閱最可靠。 */
+    scheduleReconnect(reason,document.hidden?1000:300);
+  }
+
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden) foregroundRepair('回到前景');
+  },{passive:true});
+  window.addEventListener('pageshow',()=>foregroundRepair('頁面恢復'),{passive:true});
+  window.addEventListener('focus',()=>foregroundRepair('視窗重新取得焦點'),{passive:true});
+  window.addEventListener('online',()=>foregroundRepair('網路恢復'),{passive:true});
+  window.addEventListener('offline',()=>{
+    if(activeRoomId()) safeStatus('📡 網路中斷，恢復後會自動重新連線…','bad');
+  },{passive:true});
+
+  /* 低頻健康檢查：不輪詢棋步，只在 channel 明顯不健康時重建；正常時順便用 HTTPS 校正一次棋局。 */
+  healthTimer=setInterval(()=>{
+    const roomId=activeRoomId();
+    if(!roomId || document.hidden) return;
+    if(!channelLooksJoined()) scheduleReconnect('連線健康檢查',250);
+    else {
+      try{ onlineSyncRoom(); }catch(_){ }
+    }
+  },30000);
+
+  /* 避免離開真人房間後，已排程的重連又把人拉回去。 */
+  if(typeof onlineLeaveRoom==='function'){
+    const oldLeave=onlineLeaveRoom;
+    onlineLeaveRoom=async function(...args){
+      clearReconnectTimer();
+      ++subscribeEpoch;
+      return await oldLeave.apply(this,args);
+    };
+  }
+  if(typeof onlineClearEndedRoom==='function'){
+    const oldClear=onlineClearEndedRoom;
+    onlineClearEndedRoom=async function(...args){
+      clearReconnectTimer();
+      ++subscribeEpoch;
+      return await oldClear.apply(this,args);
+    };
+  }
+
+  console.info('Joy Go Beta 3.3.12zx online reconnect ready');
 })();
 </script>
 
