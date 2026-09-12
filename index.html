@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zx｜真人對局斷線自動重連＋iPad 直式確定落子穩定版 -->
+<!-- Beta 3.3.12zxa｜iPad 直式落子確認可操作修正版＋真人對局自動重連 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -17172,5 +17172,100 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
 })();
 </script>
 
+
+
+<!-- Beta 3.3.12zxa｜iPad 直式落子確認可操作修正版 -->
+<style id="joygo-guidance-3312zxa-confirm-body-layer">
+@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
+  html[data-joygo-guidance="1"] body > #moveConfirmBar:not([hidden]),
+  body.guidance-embed-mode > #moveConfirmBar:not([hidden]){
+    display:grid!important;
+    position:fixed!important;
+    left:50%!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:calc(18px + env(safe-area-inset-bottom))!important;
+    transform:translateX(-50%)!important;
+    width:min(92vw,760px)!important;
+    max-width:760px!important;
+    grid-template-columns:minmax(0,1fr) minmax(150px,.72fr) minmax(110px,.52fr)!important;
+    align-items:center!important;
+    gap:8px!important;
+    margin:0!important;
+    padding:10px!important;
+    z-index:2147483000!important;
+    pointer-events:auto!important;
+    visibility:visible!important;
+    opacity:1!important;
+    overflow:visible!important;
+    border:1px solid #d5a443!important;
+    border-radius:14px!important;
+    background:#17100ef8!important;
+    box-shadow:0 10px 30px #000c!important;
+  }
+  body > #moveConfirmBar:not([hidden]) #moveConfirmText{
+    min-width:0!important;width:auto!important;text-align:left!important;font-size:14px!important;
+  }
+  body > #moveConfirmBar:not([hidden]) #moveConfirmOk,
+  body > #moveConfirmBar:not([hidden]) #moveConfirmCancel{
+    display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+    touch-action:manipulation!important;width:100%!important;min-height:48px!important;
+    align-items:center!important;justify-content:center!important;font-size:15px!important;
+  }
+}
+</style>
+<script id="joygo-guidance-3312zxa-confirm-body-layer-js">
+(()=>{
+  function isGuidancePortrait(){
+    try{
+      return new URLSearchParams(location.search).get('guidance_embed')==='1' &&
+             matchMedia('(orientation:portrait) and (min-width:700px) and (pointer:coarse)').matches;
+    }catch(_){ return false; }
+  }
+  function bar(){ return document.getElementById('moveConfirmBar'); }
+  function marker(){ return document.getElementById('moveConfirmMarker'); }
+  function moveBarToBody(){
+    const b=bar(); if(!b || !isGuidancePortrait()) return;
+    if(b.parentNode!==document.body) document.body.appendChild(b);
+    b.classList.remove('jg-confirm-docked');
+  }
+  function showBarIfPending(){
+    const b=bar(),m=marker(); if(!b || !m || !isGuidancePortrait()) return;
+    moveBarToBody();
+    if(!m.hidden){
+      b.hidden=false;
+      b.style.removeProperty('display');
+      b.style.pointerEvents='auto';
+      const ok=document.getElementById('moveConfirmOk');
+      const cancel=document.getElementById('moveConfirmCancel');
+      if(ok){ok.hidden=false;ok.disabled=false;ok.style.pointerEvents='auto';}
+      if(cancel){cancel.hidden=false;cancel.disabled=false;cancel.style.pointerEvents='auto';}
+    }
+  }
+  function repair(){ moveBarToBody(); showBarIfPending(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',repair,{once:true});
+  else repair();
+  window.addEventListener('pageshow',repair,{passive:true});
+  window.addEventListener('orientationchange',()=>setTimeout(repair,350),{passive:true});
+  window.addEventListener('resize',()=>setTimeout(repair,180),{passive:true});
+  const mo=new MutationObserver((list)=>{
+    for(const rec of list){
+      if(rec.type==='attributes' && (rec.target===marker() || rec.target===bar())){
+        showBarIfPending();
+        break;
+      }
+    }
+  });
+  const attachObserver=()=>{
+    const m=marker(),b=bar();
+    if(m)mo.observe(m,{attributes:true,attributeFilter:['hidden']});
+    if(b)mo.observe(b,{attributes:true,attributeFilter:['hidden']});
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',attachObserver,{once:true}); else attachObserver();
+  document.addEventListener('pointerup',(e)=>{
+    if(e.target?.id==='board' || e.target?.closest?.('.board-wrap')) setTimeout(showBarIfPending,20);
+  },true);
+})();
+</script>
 </body>
 </html>
