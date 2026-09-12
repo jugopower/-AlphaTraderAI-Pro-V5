@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zr｜直式落子確認恢復＋橫式棋盤放大版 -->
+<!-- Beta 3.3.12zt｜iPad 多次旋轉穩定＋直式落子確認鎖定版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -13400,9 +13400,13 @@ function resetBoardInputGuard(){
   boardPointerStart=null;
 }
 function boardInputPointFromEvent(e){
+  if(document.documentElement.classList.contains("jg-rotation-lock")) return null;
   const rect=canvas.getBoundingClientRect();
   if(!rect.width||!rect.height)return null;
-  const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
+  // 旋轉過程若 canvas 還不是正方形，先拒絕落子，避免觸控座標與棋盤重繪不同步。
+  if(Math.abs(rect.width-rect.height)>2)return null;
+  // 一律以「目前畫面真正顯示尺寸」換算，不再使用旋轉前可能殘留的 _cssSize。
+  const css=Math.min(rect.width,rect.height);
   // 將 Safari／iPad 實際顯示座標，換算回 drawBoard 使用的正方形 CSS 座標。
   const localX=(e.clientX-rect.left)*(css/rect.width);
   const localY=(e.clientY-rect.top)*(css/rect.height);
@@ -13809,6 +13813,7 @@ setConnectorStatus("warn",getApiSettings().url?"Build024.3 已載入 API，請�
 
 let layoutTimer=0;
 function scheduleLayoutRefresh(delay=160){
+  if(document.documentElement.classList.contains("jg-rotation-lock")) return;
   clearTimeout(layoutTimer);
   layoutTimer=setTimeout(()=>{
     if(state.isSliderDragging)return;
@@ -16511,6 +16516,7 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
   if(!isGuidance()) return;
 
   function dockConfirmToggle(){
+    if(window.innerHeight > window.innerWidth) return;
     const wrap=document.getElementById("moveConfirmToggleWrap");
     const right=document.querySelector(".right");
     if(!wrap || !right) return;
@@ -16549,42 +16555,8 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
 </script>
 
 
-<script id="joygo-guidance-portrait-3312zq-settle">
-/* Beta 3.3.12zq：iPad 指導棋由橫式轉回直式後，等版面穩定再重算棋盤。
-   不重載 iframe、不改棋局狀態，只做一次延遲重繪。 */
-(()=>{
-  let timer=0;
-  const isGuidancePortrait=()=>{
-    try{
-      return document.documentElement.getAttribute('data-joygo-guidance')==='1' &&
-             window.innerHeight > window.innerWidth;
-    }catch(_){ return false; }
-  };
-  const settle=()=>{
-    clearTimeout(timer);
-    timer=setTimeout(()=>{
-      if(!isGuidancePortrait()) return;
-      try{
-        const wrap=document.querySelector('.board-wrap');
-        if(wrap){
-          const target=Math.min(Math.max(0,window.innerWidth-12),930);
-          if(target>300){
-            wrap.style.setProperty('height',target+'px','important');
-            wrap.style.setProperty('min-height',target+'px','important');
-            wrap.style.setProperty('max-height',target+'px','important');
-          }
-        }
-        if(typeof window.forceBoardRebuild==='function') window.forceBoardRebuild('guidance-portrait-rotation');
-        else if(typeof window.resizeBoard==='function'){
-          window.resizeBoard(true);
-          if(typeof window.drawBoard==='function') window.drawBoard(window.state?.currentSnapshot||window.activateSnapshot?.(window.state?.index||0));
-        }
-      }catch(e){ console.warn('guidance portrait settle skipped',e); }
-    },360);
-  };
-  window.addEventListener('orientationchange',settle,{passive:true});
-  window.addEventListener('pageshow',settle,{passive:true});
-})();
+<script id="joygo-guidance-portrait-3312zq-settle-disabled">
+/* Beta 3.3.12zt：停用舊版旋轉後強寫棋盤高度，避免多次直橫切換後累積錯位。 */
 </script>
 
 
@@ -16734,6 +16706,204 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
   else settle(80);
   window.addEventListener('pageshow',()=>settle(120),{passive:true});
   window.addEventListener('orientationchange',()=>settle(380),{passive:true});
+})();
+</script>
+
+
+
+<!-- Beta 3.3.12zt｜iPad 多次旋轉穩定＋直式落子確認鎖定 -->
+<style id="joygo-guidance-3312zt-rotation-final">
+/* 旋轉尚未穩定時暫停棋盤觸控，防止「點下去棋子跳到別處」。 */
+html.jg-rotation-lock[data-joygo-guidance="1"] #board,
+html.jg-rotation-lock body.guidance-embed-mode #board{
+  pointer-events:none !important;
+  touch-action:none !important;
+}
+
+/* 直式：落子確認一定放在主要操作區，且不受右欄 display 狀態影響。 */
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] #moveConfirmToggleWrap,
+  body.guidance-embed-mode #moveConfirmToggleWrap{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    position:static !important;
+    inset:auto !important;
+    transform:none !important;
+    width:100% !important;
+    height:auto !important;
+    margin:0 0 8px 0 !important;
+    padding:0 !important;
+    z-index:30 !important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmToggleBtn,
+  body.guidance-embed-mode #moveConfirmToggleBtn{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+    width:100% !important;
+    height:44px !important;
+    min-height:44px !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  html[data-joygo-guidance="1"] .player,
+  body.guidance-embed-mode .player{
+    display:block !important;
+    overflow:visible !important;
+  }
+}
+
+/* 橫式：保留右側功能列；棋盤只由 resizeBoard 依穩定後容器尺寸決定，不再額外硬塞尺寸。 */
+@media (orientation:landscape) and (min-width:900px){
+  html[data-joygo-guidance="1"] .app,
+  body.guidance-embed-mode .app{
+    grid-template-rows:minmax(0,1fr) !important;
+  }
+  html[data-joygo-guidance="1"] .player,
+  body.guidance-embed-mode .player{
+    display:none !important;
+    height:0 !important;
+    min-height:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+    border:0 !important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap,
+  body.guidance-embed-mode .board-wrap{
+    grid-row:1 !important;
+    min-height:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+  }
+}
+</style>
+<script id="joygo-guidance-3312zt-rotation-final-js">
+(()=>{
+  const isGuidance=()=>{
+    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
+  };
+  if(!isGuidance()) return;
+
+  let token=0, lastOrientation='';
+  const orientationNow=()=>window.innerHeight>window.innerWidth?'portrait':'landscape';
+  const viewportNow=()=>{
+    const vv=window.visualViewport;
+    return {
+      w:Math.round(vv?.width||window.innerWidth||0),
+      h:Math.round(vv?.height||window.innerHeight||0)
+    };
+  };
+
+  function placeConfirm(){
+    const wrap=document.getElementById('moveConfirmToggleWrap');
+    const btn=document.getElementById('moveConfirmToggleBtn');
+    if(!wrap||!btn)return;
+    const portrait=orientationNow()==='portrait';
+    const player=document.querySelector('.player');
+    const row=document.getElementById('gameActionRow');
+    const right=document.getElementById('rightTools')||document.querySelector('.right');
+
+    if(portrait){
+      if(row?.parentNode) row.parentNode.insertBefore(wrap,row);
+      else if(player) player.prepend(wrap);
+      ['display','visibility','opacity','pointer-events','position','width','height','margin','inset','transform'].forEach(k=>wrap.style.removeProperty(k));
+      wrap.style.setProperty('display','block','important');
+      wrap.style.setProperty('visibility','visible','important');
+      wrap.style.setProperty('opacity','1','important');
+      wrap.style.setProperty('pointer-events','auto','important');
+      wrap.style.setProperty('position','static','important');
+      wrap.style.setProperty('width','100%','important');
+      wrap.style.setProperty('margin','0 0 8px 0','important');
+      btn.style.setProperty('display','flex','important');
+      btn.style.setProperty('visibility','visible','important');
+      btn.style.setProperty('opacity','1','important');
+      btn.style.setProperty('pointer-events','auto','important');
+    }else if(right){
+      const clock=right.querySelector('.game-clock-panel');
+      if(clock) clock.insertAdjacentElement('afterend',wrap); else right.prepend(wrap);
+      wrap.style.setProperty('display','block','important');
+      wrap.style.setProperty('position','static','important');
+      wrap.style.setProperty('width','100%','important');
+      wrap.style.setProperty('margin','6px 0','important');
+    }
+    try{ if(typeof joygoUpdateMoveConfirmToggle==='function') joygoUpdateMoveConfirmToggle(); }catch(_){ }
+  }
+
+  function clearOldInlineBoardHeights(){
+    const wrap=document.querySelector('.board-wrap');
+    if(!wrap)return;
+    // 只清掉舊 zq 旋轉修正版寫進去的 inline 高度；目前版面交回 CSS grid + resizeBoard。
+    wrap.style.removeProperty('height');
+    wrap.style.removeProperty('min-height');
+    wrap.style.removeProperty('max-height');
+  }
+
+  function redrawStable(){
+    clearOldInlineBoardHeights();
+    try{ joygoClearPendingMove(); }catch(_){ }
+    try{ resetBoardInputGuard(); }catch(_){ }
+    placeConfirm();
+    try{ resizeBoard(true); }catch(_){ }
+    try{
+      const snap=state.currentSnapshot||activateSnapshot(state.index);
+      drawBoard(snap);
+    }catch(_){ }
+  }
+
+  async function waitViewportStable(myToken){
+    let last=viewportNow(), stable=0;
+    for(let i=0;i<12;i++){
+      await new Promise(r=>setTimeout(r,110));
+      if(myToken!==token)return false;
+      const cur=viewportNow();
+      if(Math.abs(cur.w-last.w)<=1 && Math.abs(cur.h-last.h)<=1) stable++; else stable=0;
+      last=cur;
+      if(stable>=2)return true;
+    }
+    return true;
+  }
+
+  async function settleRotation(){
+    const my=++token;
+    document.documentElement.classList.add('jg-rotation-lock');
+    try{ joygoClearPendingMove(); resetBoardInputGuard(); }catch(_){ }
+    await waitViewportStable(my);
+    if(my!==token)return;
+    lastOrientation=orientationNow();
+    redrawStable();
+    // Safari 有時在方向穩定後還會再修一次 visual viewport；只在尺寸真的變化時補一次。
+    const before=viewportNow();
+    setTimeout(()=>{
+      if(my!==token)return;
+      const after=viewportNow();
+      if(Math.abs(after.w-before.w)>2 || Math.abs(after.h-before.h)>2) redrawStable();
+      placeConfirm();
+      document.documentElement.classList.remove('jg-rotation-lock');
+    },180);
+  }
+
+  const maybeSettle=()=>{
+    const o=orientationNow();
+    if(o!==lastOrientation) settleRotation();
+  };
+
+  lastOrientation=orientationNow();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{placeConfirm(); redrawStable();},{once:true});
+  }else{
+    placeConfirm(); redrawStable();
+  }
+  window.addEventListener('orientationchange',settleRotation,{passive:true});
+  window.addEventListener('resize',maybeSettle,{passive:true});
+  window.visualViewport?.addEventListener('resize',maybeSettle,{passive:true});
+  window.addEventListener('pageshow',()=>{placeConfirm(); redrawStable();},{passive:true});
 })();
 </script>
 
