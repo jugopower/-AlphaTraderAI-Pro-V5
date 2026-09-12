@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zxc｜旋轉殘影清除＋超時通知單次版 -->
+<!-- Beta 3.3.12zxd｜旋轉殘影強制清除＋結束通知不再彈窗版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -10499,7 +10499,7 @@ async function onlineSyncRoom(){
       // 多人指導棋 iframe：結果只用 toast 顯示一次，不再 alert，
       // 避免多盤同步或舊棋局超時時反覆跳出系統彈窗。
       if(!guidanceEmbed){
-        setTimeout(()=>{alert(message);openModal("onlineModal")},120);
+        setTimeout(()=>{try{joygoNotifyOnlineResultOnce(room,message)}catch(_){try{toast(message.replace("\n","："))}catch(__){}}},120);
       }
     }else if(room.status==="ended"&&!room.result){
       toast("🏁 對局已結束，請按「正式數地／計算勝負」並由雙方確認結果");
@@ -17378,6 +17378,131 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
     }catch(_){ }
     return nativeAlert(message);
   };
+})();
+</script>
+
+
+
+<!-- Beta 3.3.12zxd｜iPad 旋轉殘影硬清理＋真人結果通知硬去重 -->
+<style id="joygo-3312zxd-final-hardening">
+/* 舊版 proxy 是旋轉殘影主要來源之一：最終版完全停用。 */
+#jgConfirmProxy{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+/* 確認開關本體永遠只保留原始節點，禁止 fixed / transform 殘留。 */
+#moveConfirmToggleWrap{
+  position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  inset:auto!important;transform:none!important;filter:none!important;opacity:1!important;visibility:visible!important;
+}
+/* guidance 直式待確認時，直接使用原 moveConfirmBar，不再建立代理層。 */
+@media (orientation:portrait) and (pointer:coarse){
+  html[data-joygo-guidance="1"] #moveConfirmBar:not([hidden]),
+  body.guidance-embed-mode #moveConfirmBar:not([hidden]){
+    display:grid!important;position:fixed!important;left:50%!important;right:auto!important;top:auto!important;
+    bottom:calc(18px + env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;
+    width:min(92vw,760px)!important;max-width:760px!important;grid-template-columns:1fr 1fr!important;
+    gap:8px!important;padding:10px!important;margin:0!important;z-index:2147483000!important;
+    visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+    background:#17100ef8!important;border:1px solid #d5a443!important;border-radius:14px!important;
+    box-shadow:0 10px 30px #000c!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar:not([hidden]) #moveConfirmText,
+  body.guidance-embed-mode #moveConfirmBar:not([hidden]) #moveConfirmText{grid-column:1/-1!important;}
+}
+</style>
+<script id="joygo-3312zxd-final-hardening-js">
+(()=>{
+  /* ---------- 對局結果：只用 toast，一律不再用系統 alert，也不再自動重開棋局視窗 ---------- */
+  const resultKey=(room,result,text)=>'joygo:end-notice:'+
+    String(room?.id||room?.room_code||'none')+':'+String(result||room?.result||text||'ended');
+  window.joygoNotifyOnlineResultOnce=function(room,message){
+    const text=String(message||'🏁 對局已結束');
+    const key=resultKey(room,room?.result,text);
+    let seen=false;
+    try{seen=localStorage.getItem(key)==='1'}catch(_){ }
+    if(seen)return false;
+    try{localStorage.setItem(key,'1')}catch(_){ }
+    try{if(typeof toast==='function')toast(text.replace(/\n/g,'：'))}catch(_){ }
+    return true;
+  };
+
+  /* 最後一道攔截：即使舊程式仍呼叫 alert，也絕不再跳系統視窗。 */
+  const previousAlert=window.alert.bind(window);
+  window.alert=function(message){
+    const text=String(message??'');
+    if(/對局結束|超時|時間用盡/.test(text)){
+      try{joygoNotifyOnlineResultOnce(window.state?.onlineRoom||null,text)}catch(_){ }
+      return;
+    }
+    return previousAlert(message);
+  };
+
+  /* 結束棋局同步後，不讓舊程式自動重開 onlineModal。手動點真人功能仍可重新進入大廳。 */
+  if(typeof window.openModal==='function'){
+    const previousOpenModal=window.openModal;
+    window.openModal=function(id){
+      try{
+        if(id==='onlineModal' && window.state?.onlineRoom?.status==='ended') return;
+      }catch(_){ }
+      return previousOpenModal.apply(this,arguments);
+    };
+  }
+
+  /* ---------- 旋轉清場：刪掉所有舊 proxy / 重複確認節點，清除 fixed 殘留 ---------- */
+  let rotateToken=0;
+  function one(id){
+    const list=[...document.querySelectorAll('[id="'+id+'"]')];
+    list.slice(1).forEach(n=>n.remove());
+    return list[0]||null;
+  }
+  function purgeLegacyConfirmArtifacts(){
+    document.querySelectorAll('#jgConfirmProxy').forEach(n=>n.remove());
+    const wrap=one('moveConfirmToggleWrap');
+    const bar=one('moveConfirmBar');
+    one('moveConfirmToggleBtn'); one('moveConfirmOk'); one('moveConfirmCancel'); one('moveConfirmMarker');
+    if(wrap){
+      ['position','left','right','top','bottom','inset','transform','translate','scale','filter','z-index','height','max-height'].forEach(k=>wrap.style.removeProperty(k));
+      wrap.style.setProperty('position','static','important');
+      wrap.style.setProperty('transform','none','important');
+      wrap.style.setProperty('visibility','visible','important');
+      wrap.style.setProperty('opacity','1','important');
+    }
+    if(bar){
+      /* 只清除旋轉後殘留的 transform；hidden 狀態由原落子邏輯控制。 */
+      if(bar.hidden){
+        bar.style.removeProperty('left');bar.style.removeProperty('right');bar.style.removeProperty('top');bar.style.removeProperty('bottom');
+        bar.style.removeProperty('transform');bar.style.removeProperty('opacity');bar.style.removeProperty('visibility');
+      }
+    }
+  }
+  function repaintBoard(){
+    const board=document.getElementById('board');
+    const wrap=document.querySelector('.board-wrap');
+    try{if(typeof joygoClearPendingMove==='function')joygoClearPendingMove()}catch(_){ }
+    try{if(typeof resetBoardInputGuard==='function')resetBoardInputGuard()}catch(_){ }
+    purgeLegacyConfirmArtifacts();
+    if(wrap){wrap.style.setProperty('transform','translateZ(0)');void wrap.offsetHeight;}
+    if(board){board.style.setProperty('transform','translateZ(0)');void board.offsetHeight;}
+    try{if(typeof resizeBoard==='function')resizeBoard(true)}catch(_){ }
+    try{
+      if(typeof drawBoard==='function'){
+        const snap=window.state?.currentSnapshot || (typeof activateSnapshot==='function'?activateSnapshot(window.state?.index||0):null);
+        if(snap)drawBoard(snap); else drawBoard();
+      }
+    }catch(_){ }
+    requestAnimationFrame(()=>{
+      if(wrap)wrap.style.removeProperty('transform');
+      if(board)board.style.removeProperty('transform');
+    });
+  }
+  function settleRotation(){
+    const token=++rotateToken;
+    purgeLegacyConfirmArtifacts();
+    [80,260,620].forEach(ms=>setTimeout(()=>{if(token===rotateToken)repaintBoard()},ms));
+  }
+  window.addEventListener('orientationchange',settleRotation,{passive:true});
+  window.addEventListener('pageshow',()=>setTimeout(repaintBoard,100),{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(repaintBoard,120)},{passive:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(repaintBoard,80),{once:true});
+  else setTimeout(repaintBoard,80);
 })();
 </script>
 
