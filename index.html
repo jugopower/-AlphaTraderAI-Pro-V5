@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zq｜iPad 指導棋橫轉直棋盤恢復修正版 -->
+<!-- Beta 3.3.12zr｜直式落子確認恢復＋橫式棋盤放大版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -16586,5 +16586,143 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
   window.addEventListener('pageshow',settle,{passive:true});
 })();
 </script>
+
+
+<style id="joygo-guidance-3312zr-layout-final">
+/* ============================================================
+   Beta 3.3.12zr｜多人指導棋 iPad 最終版
+   1. 橫式：移除底部空白主要操作區，棋盤吃滿可用高度
+   2. 直式：恢復「落子確認：開/關」，固定在六鍵操作列上方
+   僅 guidance_embed=1 生效，不影響一般平台。
+   ============================================================ */
+
+/* iPad 橫式：player 在指導棋 iframe 內已無實際用途，直接收掉 */
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  html[data-joygo-guidance="1"] .app,
+  body.guidance-embed-mode .app{
+    grid-template-rows:minmax(0,1fr)!important;
+  }
+  html[data-joygo-guidance="1"] .player,
+  body.guidance-embed-mode .player{
+    display:none!important;
+    height:0!important;
+    min-height:0!important;
+    padding:0!important;
+    margin:0!important;
+    border:0!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap,
+  body.guidance-embed-mode .board-wrap{
+    grid-row:1!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    min-height:0!important;
+    padding:2px!important;
+    margin:0!important;
+  }
+  html[data-joygo-guidance="1"] #board,
+  body.guidance-embed-mode #board{
+    width:min(calc(100dvh - 10px),calc(100vw - 190px))!important;
+    height:auto!important;
+    max-height:calc(100dvh - 10px)!important;
+    max-width:calc(100vw - 190px)!important;
+  }
+}
+
+/* iPad 直式：把落子確認拉回可見區，放在六鍵操作列上方 */
+@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
+  html[data-joygo-guidance="1"] #moveConfirmToggleWrap,
+  body.guidance-embed-mode #moveConfirmToggleWrap{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    position:static!important;
+    inset:auto!important;
+    width:100%!important;
+    margin:0 0 6px 0!important;
+    padding:0!important;
+    z-index:40!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmToggleBtn,
+  body.guidance-embed-mode #moveConfirmToggleBtn{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-height:42px!important;
+    height:42px!important;
+    margin:0!important;
+    padding:7px 10px!important;
+    font-size:14px!important;
+    font-weight:900!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+  }
+  html[data-joygo-guidance="1"] .player,
+  body.guidance-embed-mode .player{
+    display:block!important;
+    min-height:159px!important;
+  }
+}
+</style>
+<script id="joygo-guidance-3312zr-layout-final-js">
+(()=>{
+  const isGuidance=()=>{
+    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
+  };
+  if(!isGuidance()) return;
+
+  function placeConfirmToggle(){
+    const wrap=document.getElementById('moveConfirmToggleWrap');
+    const player=document.querySelector('.player');
+    const row=document.getElementById('gameActionRow');
+    const right=document.getElementById('rightTools');
+    if(!wrap) return;
+
+    if(matchMedia('(orientation:portrait) and (min-width:700px)').matches){
+      /* 直式：確認鍵放在六個主要操作鍵上方 */
+      if(row && row.parentNode){
+        row.parentNode.insertBefore(wrap,row);
+      }else if(player){
+        player.prepend(wrap);
+      }
+      wrap.style.setProperty('display','block','important');
+      wrap.style.setProperty('pointer-events','auto','important');
+      wrap.style.setProperty('position','static','important');
+      wrap.style.setProperty('width','100%','important');
+      wrap.style.setProperty('margin','0 0 6px 0','important');
+    }else if(matchMedia('(orientation:landscape) and (min-width:900px)').matches){
+      /* 橫式：仍停靠右側欄，不佔棋盤下方空間 */
+      if(right && wrap.parentNode!==right){
+        const clock=right.querySelector('.game-clock-panel');
+        if(clock) clock.insertAdjacentElement('afterend',wrap);
+        else right.prepend(wrap);
+      }
+      wrap.style.setProperty('display','block','important');
+      wrap.style.setProperty('position','static','important');
+      wrap.style.setProperty('width','100%','important');
+      wrap.style.setProperty('margin','6px 0','important');
+    }
+
+    try{ if(typeof joygoUpdateMoveConfirmToggle==='function') joygoUpdateMoveConfirmToggle(); }catch(_){ }
+  }
+
+  function settle(){
+    placeConfirmToggle();
+    try{ if(typeof resizeBoard==='function') resizeBoard(true); }catch(_){ }
+    try{ if(typeof drawBoard==='function') drawBoard(window.state?.currentSnapshot||window.activateSnapshot?.(window.state?.index||0)); }catch(_){ }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',settle,{once:true});
+  else settle();
+  [120,350,800].forEach(ms=>setTimeout(settle,ms));
+  window.addEventListener('pageshow',settle,{passive:true});
+  window.addEventListener('orientationchange',()=>setTimeout(settle,320),{passive:true});
+  window.addEventListener('resize',()=>setTimeout(settle,180),{passive:true});
+})();
+</script>
+
 </body>
 </html>
