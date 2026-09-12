@@ -17383,7 +17383,7 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
 
 
 
-<!-- Beta 3.3.12zxd｜iPad 旋轉殘影硬清理＋真人結果通知硬去重 -->
+<!-- Beta 3.3.12zxe｜直式確定落子鍵恢復＋旋轉穩定 -->
 <style id="joygo-3312zxd-final-hardening">
 /* 舊版 proxy 是旋轉殘影主要來源之一：最終版完全停用。 */
 #jgConfirmProxy{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
@@ -17503,6 +17503,97 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(repaintBoard,120)},{passive:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(repaintBoard,80),{once:true});
   else setTimeout(repaintBoard,80);
+})();
+</script>
+
+
+
+<!-- Beta 3.3.12zxe｜直式確定落子鍵恢復＋旋轉穩定 -->
+<style id="joygo-3312zxe-portrait-confirm-buttons">
+#jgPortraitConfirmZxe{display:none;}
+@media (orientation:portrait) and (pointer:coarse){
+  #jgPortraitConfirmZxe.show{
+    display:grid!important;
+    position:fixed!important;
+    left:50%!important;
+    bottom:calc(18px + env(safe-area-inset-bottom))!important;
+    transform:translateX(-50%)!important;
+    width:min(92vw,760px)!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:10px!important;
+    z-index:2147483600!important;
+    background:#17100ef8!important;
+    border:1px solid #d5a443!important;
+    border-radius:14px!important;
+    box-shadow:0 10px 30px #000c!important;
+    pointer-events:auto!important;
+  }
+  #jgPortraitConfirmZxe .title{grid-column:1/-1;text-align:center;font-weight:900;color:#ffe3a3;padding:2px 0 4px;}
+  #jgPortraitConfirmZxe button{min-height:52px;border-radius:10px;font-weight:900;font-size:16px;touch-action:manipulation;}
+  #jgPortraitConfirmZxe .ok{background:linear-gradient(135deg,#ffd970,#e4aa2d);color:#1a1008;border:1px solid #f3cf70;}
+  #jgPortraitConfirmZxe .cancel{background:#2b1b14;color:#fff;border:1px solid #7b5639;}
+}
+@media (orientation:landscape){#jgPortraitConfirmZxe{display:none!important;}}
+</style>
+<script id="joygo-3312zxe-portrait-confirm-buttons-js">
+(()=>{
+  const portrait=()=>matchMedia('(orientation:portrait)').matches;
+  function ensure(){
+    let box=document.getElementById('jgPortraitConfirmZxe');
+    if(box)return box;
+    box=document.createElement('div');
+    box.id='jgPortraitConfirmZxe';
+    box.innerHTML='<div class="title">確認落子</div><button class="ok" type="button">✓ 確定落子</button><button class="cancel" type="button">取消</button>';
+    document.body.appendChild(box);
+    box.querySelector('.ok').addEventListener('click',()=>{
+      const b=document.getElementById('moveConfirmOk');
+      if(b)b.click();
+      setTimeout(sync,0);
+    });
+    box.querySelector('.cancel').addEventListener('click',()=>{
+      const b=document.getElementById('moveConfirmCancel');
+      if(b)b.click();
+      setTimeout(sync,0);
+    });
+    return box;
+  }
+  function sync(){
+    const pending=!!window.joygoPendingOnlineMove;
+    const show=portrait() && pending;
+    const box=show?ensure():document.getElementById('jgPortraitConfirmZxe');
+    if(box)box.classList.toggle('show',show);
+  }
+
+  if(typeof window.joygoShowPendingMove==='function'){
+    const oldShow=window.joygoShowPendingMove;
+    window.joygoShowPendingMove=function(){
+      const out=oldShow.apply(this,arguments);
+      requestAnimationFrame(sync);
+      setTimeout(sync,30);
+      return out;
+    };
+  }
+  if(typeof window.joygoClearPendingMove==='function'){
+    const oldClear=window.joygoClearPendingMove;
+    window.joygoClearPendingMove=function(){
+      const out=oldClear.apply(this,arguments);
+      sync();
+      return out;
+    };
+  }
+
+  document.addEventListener('pointerup',e=>{
+    if(e.target?.id==='board'||e.target?.closest?.('.board-wrap'))setTimeout(sync,35);
+  },true);
+  window.addEventListener('orientationchange',()=>{
+    const box=document.getElementById('jgPortraitConfirmZxe');
+    if(box)box.classList.remove('show');
+    setTimeout(sync,420);
+  },{passive:true});
+  window.addEventListener('pageshow',()=>setTimeout(sync,80),{passive:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,50),{once:true});
+  else setTimeout(sync,50);
 })();
 </script>
 
