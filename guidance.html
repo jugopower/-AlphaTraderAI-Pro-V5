@@ -215,7 +215,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5h｜iPad 橫式穩定修正版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.5i｜舊場次自動封存＋單盤載入｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -310,13 +310,33 @@ async function autoSwitchToNewestLiveSession(endedSessionId=null){
   return false;
 }
 
+async function autoCleanupOldSessions(){
+  try{
+    // 自動封存超過 3 小時沒有更新的舊場次；棋局、落子與棋譜都保留。
+    await sb.rpc('joygo_guidance_archive_stale_sessions',{p_stale_hours:3});
+    await sb.rpc('joygo_guidance_cleanup_empty_sessions');
+  }catch(e){
+    console.warn('auto cleanup skipped',e);
+  }
+}
+
 async function loadSessions(){
   const {data,error}=await sb.rpc('joygo_guidance_live_sessions');
   if(error){$("sessions").textContent='讀取失敗：'+error.message;return}
   const rows=(data||[]).filter(s=>Number(s.live_count||0)>0);
-  $("sessions").innerHTML=rows.length
-    ?rows.map(s=>`<button class="session-chip" data-id="${s.session_id}">${esc(s.title)}｜${s.live_count}/${s.student_count}盤進行中</button>`).join('')
+
+  // 防止測試期間大量舊場次塞滿畫面；最多顯示最近 6 場。
+  const visibleRows=rows.slice(0,6);
+
+  $("sessions").innerHTML=visibleRows.length
+    ?visibleRows.map(s=>`<button class="session-chip" data-id="${s.session_id}">${esc(s.title)}｜${s.live_count}/${s.student_count}盤進行中</button>`).join('')
     :'<span class="small">目前沒有進行中的指導棋。</span>';
+
+  if(rows.length>visibleRows.length){
+    $("sessions").insertAdjacentHTML('beforeend',
+      `<span class="small">另有 ${rows.length-visibleRows.length} 場較舊場次已隱藏；可按「清理舊場次」安全封存。</span>`);
+  }
+
   document.querySelectorAll('.session-chip').forEach(b=>b.onclick=()=>openSession(b.dataset.id))
 }
 async function createSession(){
@@ -403,7 +423,7 @@ function ensureFrame(b){
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
     f.setAttribute('scrolling','no');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295h`;
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295i`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;
@@ -414,10 +434,13 @@ function activate(slot){
   if(!live.length){clearTeacherControl();return}
   const chosen=live.find(b=>b.slot_no===slot)||live[0];
   activeSlot=chosen.slot_no;
-  live.forEach(b=>{
-    const f=ensureFrame(b);
-    f.classList.toggle('active',b.slot_no===activeSlot);
-  });
+
+  // 只載入目前正在看的棋盤。
+  // 其他分盤不在背景啟動 index.html，避免舊棋局超時訊息、計時器與彈窗互相干擾。
+  document.querySelectorAll('.board-frame').forEach(f=>f.classList.remove('active'));
+  const activeFrame=ensureFrame(chosen);
+  activeFrame.classList.add('active');
+
   renderTabs();
   renderCurrent()
 }
@@ -653,7 +676,7 @@ async function cleanupOldSessions(){
   notice((a+b)>0?`✅ 已封存 ${a} 個舊場次、清除 ${b} 個 0 盤空場次；棋譜均保留。`:'✅ 目前沒有需要清理的舊場次。','good')
 }
 $("cleanupBtn").onclick=cleanupOldSessions;
-async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session)return notice('請先回 Joy Go Platform 登入主管理員帳號。','bad');me=data.session.user;const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');if(ae)return notice('無法檢查管理權限：'+ae.message,'bad');const a=Array.isArray(access)?access[0]:access;if(!a||a.staff_role==='none')return notice('此頁只開放授權工作人員使用。','bad');await loadProfiles();await loadSessions();syncTeacherIdentityUI();notice('✅ 多人指導棋系統已就緒｜可切換朱老師／棋王 SAI。','good')}catch(e){notice('初始化失敗：'+(e.message||e),'bad')}}
+async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session)return notice('請先回 Joy Go Platform 登入主管理員帳號。','bad');me=data.session.user;const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');if(ae)return notice('無法檢查管理權限：'+ae.message,'bad');const a=Array.isArray(access)?access[0]:access;if(!a||a.staff_role==='none')return notice('此頁只開放授權工作人員使用。','bad');await loadProfiles();await autoCleanupOldSessions();await loadSessions();syncTeacherIdentityUI();notice('✅ 多人指導棋系統已就緒｜舊場次已安全整理。','good')}catch(e){notice('初始化失敗：'+(e.message||e),'bad')}}
 init();setInterval(()=>refreshSession(false),5000);
 </script>
 <script id="joygo-guidance-295h-rotation-scroll-fix">

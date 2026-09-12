@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zk｜iPad 橫式棋盤底部安全修正版 -->
+<!-- Beta 3.3.12zn｜多人指導棋超時彈窗抑制版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -24,6 +24,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
+<meta name="joygo-guidance-timeout-fix-version" content="3.3.12zn">
 <meta name="joygo-stable-reset-version" content="3.3.12zh">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
@@ -10324,7 +10325,20 @@ async function onlineSyncRoom(){
     if(room.status==="ended"&&room.result&&room.result!==onlineLastResult){
       onlineLastResult=room.result;
       const message="🏁 對局結束\n"+onlineResultText(room.result);
-      toast(message.replace("\n","："));setTimeout(()=>{alert(message);openModal("onlineModal")},120);
+      toast(message.replace("\n","："));
+
+      const guidanceEmbed=(()=>{
+        try{
+          return window.self!==window.top &&
+                 new URLSearchParams(location.search).get("guidance_embed")==="1";
+        }catch(_){return false}
+      })();
+
+      // 多人指導棋 iframe：結果只用 toast 顯示一次，不再 alert，
+      // 避免多盤同步或舊棋局超時時反覆跳出系統彈窗。
+      if(!guidanceEmbed){
+        setTimeout(()=>{alert(message);openModal("onlineModal")},120);
+      }
     }else if(room.status==="ended"&&!room.result){
       toast("🏁 對局已結束，請按「正式數地／計算勝負」並由雙方確認結果");
     }
@@ -16255,5 +16269,31 @@ body.guidance-embed-mode #classicGameModal {
   else boot();
 })();
 </script>
+
+<script id="joygo-guidance-alert-once-3312zn">
+(()=>{
+  const isGuidance=()=>{
+    try{return window.self!==window.top && new URLSearchParams(location.search).get("guidance_embed")==="1"}
+    catch(_){return false}
+  };
+  if(!isGuidance()) return;
+
+  const nativeAlert=window.alert.bind(window);
+  const seen=new Set();
+
+  window.alert=(message)=>{
+    const text=String(message??"");
+    if(text.includes("對局結束") || text.includes("超時")){
+      const key=text.replace(/\s+/g," ").trim();
+      if(seen.has(key)) return;
+      seen.add(key);
+      try{ if(typeof toast==="function") toast(key.replace(/\n/g,"：")); }catch(_){}
+      return;
+    }
+    return nativeAlert(message);
+  };
+})();
+</script>
+
 </body>
 </html>
