@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zo｜iPad 橫式落子確認停靠修正版 -->
+<!-- Beta 3.3.12zp｜iPad 直式空白縮減＋功能鍵安全修正版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -7111,6 +7111,162 @@ body.jg-online-mode #jgUSpeedPanel{
     max-height: calc(100dvh - 128px - env(safe-area-inset-bottom)) !important;
     margin: 0 auto 4px auto !important;
     flex: 0 0 auto !important;
+  }
+}
+</style>
+
+
+
+<style id="joygo-guidance-portrait-3312zp">
+/* ============================================================
+   Beta 3.3.12zp｜多人指導棋 iPad 直式緊湊安全版
+   目的：
+   1. 移除棋盤上方不必要的大空白
+   2. 六個主要操作鍵完整顯示且可觸控
+   3. 只作用於 guidance_embed=1 的直式 iframe，不影響一般平台與橫式
+   ============================================================ */
+@media (orientation:portrait) and (min-width:700px){
+  html[data-joygo-guidance="1"],
+  html[data-joygo-guidance="1"] body{
+    height:auto!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+
+  html[data-joygo-guidance="1"] .app{
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto!important;
+    gap:6px!important;
+    padding:5px!important;
+    overflow:visible!important;
+    align-content:start!important;
+  }
+
+  /* 棋盤貼齊工作區上緣，不再垂直置中產生大空白 */
+  html[data-joygo-guidance="1"] .board-wrap{
+    grid-column:1!important;
+    grid-row:1!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+  }
+
+  html[data-joygo-guidance="1"] #board{
+    width:min(calc(100vw - 12px), 930px)!important;
+    height:min(calc(100vw - 12px), 930px)!important;
+    max-width:100%!important;
+    max-height:none!important;
+    flex:0 0 auto!important;
+  }
+
+  /* 直式多人指導棋不需要右側棋鐘欄，避免它佔高度或形成隱形覆蓋層 */
+  html[data-joygo-guidance="1"] .right{
+    display:none!important;
+    pointer-events:none!important;
+  }
+
+  /* 主要操作緊接棋盤，完整兩列六鍵 */
+  html[data-joygo-guidance="1"] .player{
+    grid-column:1!important;
+    grid-row:2!important;
+    position:relative!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:112px!important;
+    margin:0!important;
+    padding:5px 6px calc(7px + env(safe-area-inset-bottom))!important;
+    overflow:visible!important;
+    z-index:20!important;
+    pointer-events:auto!important;
+    contain:none!important;
+  }
+
+  /* 直式 iframe 已有外層頁面標題，這裡拿掉額外「主要操作」標題，節省高度 */
+  html[data-joygo-guidance="1"] .player::before{
+    display:none!important;
+    content:none!important;
+  }
+
+  html[data-joygo-guidance="1"] .move-tools,
+  html[data-joygo-guidance="1"] .controls,
+  html[data-joygo-guidance="1"] .range-row,
+  html[data-joygo-guidance="1"] #trialModeBar,
+  html[data-joygo-guidance="1"] #mobileAiToggle339,
+  html[data-joygo-guidance="1"] #trialModeBtn,
+  html[data-joygo-guidance="1"] #firstChoiceBtn,
+  html[data-joygo-guidance="1"] #secondChoiceBtn,
+  html[data-joygo-guidance="1"] #badMoveBtn,
+  html[data-joygo-guidance="1"] #positionJudgeBtn,
+  html[data-joygo-guidance="1"] #hintToggleBtn{
+    display:none!important;
+  }
+
+  html[data-joygo-guidance="1"] #gameActionRow{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,48px)!important;
+    grid-auto-rows:48px!important;
+    gap:5px!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:101px!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:visible!important;
+    pointer-events:auto!important;
+    position:relative!important;
+    z-index:30!important;
+  }
+
+  html[data-joygo-guidance="1"] #gameActionRow > button{
+    display:none!important;
+    width:100%!important;
+    height:48px!important;
+    min-height:48px!important;
+    margin:0!important;
+    padding:5px 4px!important;
+    border-radius:9px!important;
+    font-size:13px!important;
+    line-height:1.1!important;
+    font-weight:900!important;
+    touch-action:manipulation!important;
+    pointer-events:auto!important;
+    position:relative!important;
+    z-index:31!important;
+  }
+
+  html[data-joygo-guidance="1"] #undoGameBtn,
+  html[data-joygo-guidance="1"] #scoreGameBtn,
+  html[data-joygo-guidance="1"] #calculateResultBtn,
+  html[data-joygo-guidance="1"] #passGameBtn,
+  html[data-joygo-guidance="1"] #resignGameBtn,
+  html[data-joygo-guidance="1"] #saveSgfBtn{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+
+  /* 避免落子確認或其他浮動控制蓋住主要操作鍵 */
+  html[data-joygo-guidance="1"] #moveConfirmToggleWrap{
+    display:none!important;
+    pointer-events:none!important;
+  }
+
+  html[data-joygo-guidance="1"] #scoringModeBar{
+    bottom:calc(116px + env(safe-area-inset-bottom))!important;
+    z-index:50000!important;
   }
 }
 </style>
