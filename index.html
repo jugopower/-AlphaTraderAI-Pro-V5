@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zn｜多人指導棋超時彈窗抑制版 -->
+<!-- Beta 3.3.12zo｜iPad 橫式落子確認停靠修正版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -24,7 +24,7 @@
   upgrade-insecure-requests
 ">
 <meta name="joygo-security-version" content="2.9.0">
-<meta name="joygo-guidance-timeout-fix-version" content="3.3.12zn">
+<meta name="joygo-guidance-timeout-fix-version" content="3.3.12zo">
 <meta name="joygo-stable-reset-version" content="3.3.12zh">
 <meta name="joygo-feature-version" content="3.0-notification-center">
 <meta name="joygo-return-platform-version" content="3.2.9c">
@@ -16292,6 +16292,98 @@ body.guidance-embed-mode #classicGameModal {
     }
     return nativeAlert(message);
   };
+})();
+</script>
+
+
+<style id="joygo-guidance-confirm-dock-3312zo">
+/* Beta 3.3.12zo
+   多人指導棋 iframe + iPad 橫式：
+   將「落子確認：開/關」固定停靠在右側工具欄內，
+   不再使用 fixed 浮動位置，避免遮住 Pass／投降／存檔 SGF。 */
+html[data-joygo-guidance="1"] #moveConfirmToggleWrap,
+body.guidance-embed-mode #moveConfirmToggleWrap{
+  position:static !important;
+  inset:auto !important;
+  right:auto !important;
+  left:auto !important;
+  top:auto !important;
+  bottom:auto !important;
+  transform:none !important;
+  z-index:auto !important;
+  width:100% !important;
+  margin:6px 0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+html[data-joygo-guidance="1"] #moveConfirmToggleBtn,
+body.guidance-embed-mode #moveConfirmToggleBtn{
+  width:100% !important;
+  min-height:42px !important;
+  padding:8px 10px !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  white-space:nowrap !important;
+  font-size:13px !important;
+}
+
+/* iPad 橫式右欄較窄，按鈕再精簡 */
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  html[data-joygo-guidance="1"] #moveConfirmToggleBtn,
+  body.guidance-embed-mode #moveConfirmToggleBtn{
+    min-height:38px !important;
+    font-size:12px !important;
+    padding:6px 7px !important;
+  }
+}
+</style>
+
+<script id="joygo-guidance-confirm-dock-3312zo-js">
+(()=>{
+  const isGuidance=()=>{
+    try{
+      return window.self!==window.top &&
+             new URLSearchParams(location.search).get("guidance_embed")==="1";
+    }catch(_){return false}
+  };
+  if(!isGuidance()) return;
+
+  function dockConfirmToggle(){
+    const wrap=document.getElementById("moveConfirmToggleWrap");
+    const right=document.querySelector(".right");
+    if(!wrap || !right) return;
+
+    /* 優先放在棋鐘後、對局功能鍵前；找不到則放在右欄最下方。 */
+    const clock=right.querySelector(".game-clock-panel");
+    const actionBlock=right.querySelector("#gameActionRow");
+    if(actionBlock && actionBlock.parentNode===right){
+      right.insertBefore(wrap, actionBlock);
+    }else if(clock && clock.parentNode===right){
+      clock.insertAdjacentElement("afterend",wrap);
+    }else if(wrap.parentNode!==right){
+      right.appendChild(wrap);
+    }
+
+    wrap.style.setProperty("position","static","important");
+    wrap.style.setProperty("inset","auto","important");
+    wrap.style.setProperty("width","100%","important");
+    wrap.style.setProperty("margin","6px 0","important");
+  }
+
+  function boot(){
+    dockConfirmToggle();
+    [120,350,800].forEach(ms=>setTimeout(dockConfirmToggle,ms));
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
+  }else{
+    boot();
+  }
+
+  window.addEventListener("pageshow",boot,{passive:true});
+  window.addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
 })();
 </script>
 
