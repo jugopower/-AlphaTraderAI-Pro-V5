@@ -13403,8 +13403,8 @@ function boardInputPointFromEvent(e){
   if(document.documentElement.classList.contains("jg-rotation-lock")) return null;
   const rect=canvas.getBoundingClientRect();
   if(!rect.width||!rect.height)return null;
-  // 旋轉過程若 canvas 還不是正方形，先拒絕落子，避免觸控座標與棋盤重繪不同步。
-  if(Math.abs(rect.width-rect.height)>2)return null;
+  // Beta 3.3.12zv：iPad 橫式時 Safari 可能把 canvas 顯示成 1～數十 px 的非正方形。
+  // 這不是棋盤失效，不再直接拒絕落子；下方會分別依 rect.width / rect.height 正規化座標。
   // 一律以「目前畫面真正顯示尺寸」換算，不再使用旋轉前可能殘留的 _cssSize。
   const css=Math.min(rect.width,rect.height);
   // 將 Safari／iPad 實際顯示座標，換算回 drawBoard 使用的正方形 CSS 座標。
