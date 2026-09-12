@@ -16784,22 +16784,29 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
   }
 }
 </style>
-<script id="joygo-guidance-3312zt-rotation-final-js">
+<script id="joygo-guidance-3312zu-rotation-final-js">
 (()=>{
   const isGuidance=()=>{
     try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
   };
   if(!isGuidance()) return;
 
-  let token=0, lastOrientation='';
+  let settleTimer=0;
+  let safetyTimer=0;
+  let running=false;
+  let queued=false;
+
   const orientationNow=()=>window.innerHeight>window.innerWidth?'portrait':'landscape';
-  const viewportNow=()=>{
-    const vv=window.visualViewport;
-    return {
-      w:Math.round(vv?.width||window.innerWidth||0),
-      h:Math.round(vv?.height||window.innerHeight||0)
-    };
-  };
+
+  function hardUnlockBoard(){
+    document.documentElement.classList.remove('jg-rotation-lock');
+    const board=document.getElementById('board');
+    if(board){
+      board.style.setProperty('pointer-events','auto','important');
+      board.style.setProperty('touch-action','none','important');
+    }
+    clearTimeout(safetyTimer);
+  }
 
   function placeConfirm(){
     const wrap=document.getElementById('moveConfirmToggleWrap');
@@ -16821,10 +16828,6 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
       wrap.style.setProperty('position','static','important');
       wrap.style.setProperty('width','100%','important');
       wrap.style.setProperty('margin','0 0 8px 0','important');
-      btn.style.setProperty('display','flex','important');
-      btn.style.setProperty('visibility','visible','important');
-      btn.style.setProperty('opacity','1','important');
-      btn.style.setProperty('pointer-events','auto','important');
     }else if(right){
       const clock=right.querySelector('.game-clock-panel');
       if(clock) clock.insertAdjacentElement('afterend',wrap); else right.prepend(wrap);
@@ -16833,13 +16836,17 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
       wrap.style.setProperty('width','100%','important');
       wrap.style.setProperty('margin','6px 0','important');
     }
+    btn.style.setProperty('display','flex','important');
+    btn.style.setProperty('visibility','visible','important');
+    btn.style.setProperty('opacity','1','important');
+    btn.style.setProperty('pointer-events','auto','important');
+    btn.style.setProperty('touch-action','manipulation','important');
     try{ if(typeof joygoUpdateMoveConfirmToggle==='function') joygoUpdateMoveConfirmToggle(); }catch(_){ }
   }
 
   function clearOldInlineBoardHeights(){
     const wrap=document.querySelector('.board-wrap');
     if(!wrap)return;
-    // 只清掉舊 zq 旋轉修正版寫進去的 inline 高度；目前版面交回 CSS grid + resizeBoard。
     wrap.style.removeProperty('height');
     wrap.style.removeProperty('min-height');
     wrap.style.removeProperty('max-height');
@@ -16857,53 +16864,41 @@ html.jg-rotation-lock body.guidance-embed-mode #board{
     }catch(_){ }
   }
 
-  async function waitViewportStable(myToken){
-    let last=viewportNow(), stable=0;
-    for(let i=0;i<12;i++){
-      await new Promise(r=>setTimeout(r,110));
-      if(myToken!==token)return false;
-      const cur=viewportNow();
-      if(Math.abs(cur.w-last.w)<=1 && Math.abs(cur.h-last.h)<=1) stable++; else stable=0;
-      last=cur;
-      if(stable>=2)return true;
-    }
-    return true;
-  }
-
-  async function settleRotation(){
-    const my=++token;
+  async function doSettle(){
+    if(running){ queued=true; return; }
+    running=true;
+    queued=false;
     document.documentElement.classList.add('jg-rotation-lock');
-    try{ joygoClearPendingMove(); resetBoardInputGuard(); }catch(_){ }
-    await waitViewportStable(my);
-    if(my!==token)return;
-    lastOrientation=orientationNow();
-    redrawStable();
-    // Safari 有時在方向穩定後還會再修一次 visual viewport；只在尺寸真的變化時補一次。
-    const before=viewportNow();
-    setTimeout(()=>{
-      if(my!==token)return;
-      const after=viewportNow();
-      if(Math.abs(after.w-before.w)>2 || Math.abs(after.h-before.h)>2) redrawStable();
-      placeConfirm();
-      document.documentElement.classList.remove('jg-rotation-lock');
-    },180);
+    clearTimeout(safetyTimer);
+    safetyTimer=setTimeout(hardUnlockBoard,1400); // iPad Safari 保險：絕不永久鎖住棋盤
+    try{
+      try{ joygoClearPendingMove(); resetBoardInputGuard(); }catch(_){ }
+      await new Promise(r=>setTimeout(r,260));
+      redrawStable();
+      await new Promise(r=>setTimeout(r,120));
+      redrawStable();
+    }finally{
+      hardUnlockBoard();
+      running=false;
+      if(queued){ queued=false; scheduleSettle(120); }
+    }
   }
 
-  const maybeSettle=()=>{
-    const o=orientationNow();
-    if(o!==lastOrientation) settleRotation();
-  };
+  function scheduleSettle(delay=180){
+    clearTimeout(settleTimer);
+    settleTimer=setTimeout(doSettle,delay);
+  }
 
-  lastOrientation=orientationNow();
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{placeConfirm(); redrawStable();},{once:true});
+    document.addEventListener('DOMContentLoaded',()=>{placeConfirm(); redrawStable(); hardUnlockBoard();},{once:true});
   }else{
-    placeConfirm(); redrawStable();
+    placeConfirm(); redrawStable(); hardUnlockBoard();
   }
-  window.addEventListener('orientationchange',settleRotation,{passive:true});
-  window.addEventListener('resize',maybeSettle,{passive:true});
-  window.visualViewport?.addEventListener('resize',maybeSettle,{passive:true});
-  window.addEventListener('pageshow',()=>{placeConfirm(); redrawStable();},{passive:true});
+
+  window.addEventListener('orientationchange',()=>scheduleSettle(220),{passive:true});
+  window.addEventListener('resize',()=>scheduleSettle(180),{passive:true});
+  window.visualViewport?.addEventListener('resize',()=>scheduleSettle(180),{passive:true});
+  window.addEventListener('pageshow',()=>{placeConfirm(); redrawStable(); hardUnlockBoard();},{passive:true});
 })();
 </script>
 
