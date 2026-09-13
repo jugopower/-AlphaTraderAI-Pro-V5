@@ -77,7 +77,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解</div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.4a</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -171,6 +171,20 @@ body.share-mode .boardWrap{background:#dfe8dd}
 
   <div class="footerNote">Joy Go Platform｜老師可先編題，學生作答後於指定日期／時間看到正解。</div>
 </div>
+
+<div class="previewOverlay" id="previewOverlay">
+  <div class="previewCard">
+    <h3 id="previewTitle">LINE 圖片預覽</h3>
+    <img id="previewImg" class="previewImg" alt="Joy Go LINE 圖片預覽">
+    <div class="previewActions">
+      <button class="tool primary" id="shareImageBtn">分享圖片</button>
+      <button class="tool gold" id="saveImageBtn">另存圖片</button>
+      <button class="tool" id="closePreviewBtn">關閉</button>
+    </div>
+    <div class="small" style="margin-top:8px">iPad 建議按「分享圖片」→ 選 LINE。若裝置不支援直接分享，請長按上方圖片或按「另存圖片」。</div>
+  </div>
+</div>
+
 
 <script>
 const c=document.getElementById('board'),ctx=c.getContext('2d');
@@ -610,18 +624,6 @@ if(!isShared){answerBoard={...baseStones};draw();renderList();preview();}
 setInterval(()=>{ if(shareMode) updateSharedAnswer(); else preview(); },60000);
 </script>
 
-<div class="previewOverlay" id="previewOverlay">
-  <div class="previewCard">
-    <h3 id="previewTitle">LINE 圖片預覽</h3>
-    <img id="previewImg" class="previewImg" alt="Joy Go LINE 圖片預覽">
-    <div class="previewActions">
-      <button class="tool primary" id="shareImageBtn">分享圖片</button>
-      <button class="tool gold" id="saveImageBtn">另存圖片</button>
-      <button class="tool" id="closePreviewBtn">關閉</button>
-    </div>
-    <div class="small" style="margin-top:8px">iPad 建議按「分享圖片」→ 選 LINE。若裝置不支援直接分享，請長按上方圖片或按「另存圖片」。</div>
-  </div>
-</div>
 
 </body>
 </html>
