@@ -128,9 +128,10 @@ body.share-mode .boardWrap{background:#dfe8dd}
           <button class="tool primary" id="saveBtn">儲存題目</button>
           <button class="tool gold" id="newBtn">新增一題</button>
           <button class="tool" id="previewBtn">學生預覽</button>
-          <button class="tool gold" id="shareBtn">產生 LINE 分享連結</button>
+          <button class="tool gold" id="lineQuestionBtn">輸出 LINE 題目圖</button>
+          <button class="tool gold" id="lineAnswerBtn">輸出 LINE 正解圖</button>
         </div>
-        <div class="small" id="shareHint" style="margin-top:8px">編完題目後按此鍵，複製專屬網址貼到 LINE；棋友不需登入即可看題目。</div>
+        <div class="small" id="shareHint" style="margin-top:8px">建議：白天輸出「題目圖」貼 LINE；到公布時間後輸出「正解圖」貼 LINE。網站入口維持固定短網址。</div>
 
         <div style="height:16px"></div>
         <div class="field"><label>老師 Logo</label><input id="logoInput" type="file" accept="image/*"></div>
@@ -353,7 +354,91 @@ async function makeShareLink(){
     prompt('長按複製這個 LINE 分享連結：',url);
   }
 }
-document.getElementById('shareBtn').onclick=makeShareLink;
+
+
+
+function drawWrappedText(g,text,x,y,maxWidth,lineHeight,maxLines=5){
+  const words=[...(text||'')];
+  let line='', lines=[];
+  for(const ch of words){
+    const test=line+ch;
+    if(g.measureText(test).width>maxWidth && line){
+      lines.push(line); line=ch;
+      if(lines.length>=maxLines) break;
+    }else line=test;
+  }
+  if(lines.length<maxLines && line) lines.push(line);
+  lines.forEach((ln,i)=>g.fillText(ln,x,y+i*lineHeight));
+  return y+lines.length*lineHeight;
+}
+function exportLineCard(showAnswer){
+  const q=formData();
+  const W=1080,H=1440;
+  const oc=document.createElement('canvas'); oc.width=W; oc.height=H;
+  const g=oc.getContext('2d');
+
+  // background
+  const grd=g.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0,'#e7eee7'); grd.addColorStop(1,'#f4ead8');
+  g.fillStyle=grd; g.fillRect(0,0,W,H);
+
+  // header
+  g.fillStyle='#0f4f3b'; g.fillRect(0,0,W,150);
+  g.fillStyle='#ffffff'; g.font='bold 52px sans-serif';
+  g.fillText('Joy Go 每日圍棋測驗',48,72);
+  g.font='30px sans-serif'; g.fillStyle='#e8d9a9';
+  g.fillText(`${q.category}｜${q.title||'每日一題'}`,48,120);
+
+  // prompt
+  g.fillStyle='#234534'; g.font='bold 38px sans-serif';
+  let yy=205;
+  yy=drawWrappedText(g,q.prompt||'請找出最佳手順。',55,yy,970,52,3)+18;
+
+  // board snapshot: temporarily control answer rendering
+  const prevAnswerMode=answerMode;
+  answerMode=!!showAnswer;
+  draw();
+  const boardSize=900, bx=90, by=yy;
+  g.fillStyle='#dfe8dd'; g.fillRect(bx-18,by-18,boardSize+36,boardSize+36);
+  g.drawImage(c,bx,by,boardSize,boardSize);
+  answerMode=prevAnswerMode; draw();
+
+  yy=by+boardSize+50;
+
+  // footer / answer
+  g.fillStyle='#0f4f3b'; g.font='bold 36px sans-serif';
+  if(showAnswer){
+    g.fillText('正解公布',55,yy);
+    yy+=55;
+    g.fillStyle='#273d33'; g.font='30px sans-serif';
+    const moveText=(q.answerMoves||[]).map((m,i)=>`${i+1}${m.color==='black'?'黑':'白'}`).join(' → ');
+    if(moveText){
+      yy=drawWrappedText(g,moveText,55,yy,970,42,3)+12;
+    }
+    g.font='28px sans-serif';
+    yy=drawWrappedText(g,q.explain||'請參考棋盤上的數字手順。',55,yy,970,40,4);
+  }else{
+    g.fillText('今日一題｜先想一想，再看正解',55,yy);
+    yy+=52;
+    g.fillStyle='#4a5b52'; g.font='28px sans-serif';
+    g.fillText(`正解公布：${q.publishDate||''} ${q.publishTime||''}`,55,yy);
+  }
+
+  // bottom brand
+  g.fillStyle='#0f4f3b'; g.fillRect(0,H-105,W,105);
+  g.fillStyle='#ffffff'; g.font='bold 30px sans-serif';
+  g.fillText('朱老師｜Joy Go Platform',45,H-58);
+  g.font='24px sans-serif'; g.fillStyle='#e8d9a9';
+  g.fillText('下棋・學棋・以棋會友',45,H-22);
+
+  const a=document.createElement('a');
+  const kind=showAnswer?'answer':'question';
+  a.download=`JoyGo-${q.category}-${kind}.png`;
+  a.href=oc.toDataURL('image/png');
+  a.click();
+}
+document.getElementById('lineQuestionBtn').onclick=()=>exportLineCard(false);
+document.getElementById('lineAnswerBtn').onclick=()=>exportLineCard(true);
 
 function loadSharedQuestion(){
   const m=location.hash.match(/^#q=(.+)$/);
