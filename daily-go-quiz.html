@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go 每日圍棋測驗</title>
+<style>
+:root{
+  --green:#0f4f3b; --green2:#176a50; --gold:#d9ad54; --cream:#f7f1e6;
+  --ink:#1f2a25; --card:#fffdf8; --line:#d8c9ae; --wood:#d9b06d;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:var(--cream);color:var(--ink)}
+header{background:linear-gradient(135deg,var(--green),#0a3d2f);color:#fff;padding:14px 18px;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px #0002}
+.head{max-width:1200px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:54px;height:54px;border-radius:50%;background:linear-gradient(#fff7d2,#e7c774);border:2px solid #fff;display:grid;place-items:center;color:#153d31;font-weight:900;font-size:26px;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
+h1{font-size:22px;margin:0}.sub{opacity:.82;font-size:13px;margin-top:2px}
+.enter{background:var(--gold);color:#173126;text-decoration:none;font-weight:800;padding:12px 16px;border-radius:12px;white-space:nowrap}
+.wrap{max-width:1200px;margin:18px auto;padding:0 14px 40px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.tab{border:0;border-radius:14px;padding:14px 8px;font-size:18px;font-weight:900;background:#fff;box-shadow:0 2px 8px #0001;color:#30433a}
+.tab.active{background:var(--green);color:white}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 18px #0000000d;overflow:hidden}
+.card h2{margin:0;padding:14px 16px;background:#efe6d5;font-size:18px;border-bottom:1px solid var(--line)}
+.inner{padding:14px}
+.boardWrap{display:flex;justify-content:center;align-items:center;background:#f3eadb;border-radius:14px;padding:10px}
+canvas{display:block;width:min(100%,720px);aspect-ratio:1/1;background:var(--wood);border-radius:8px;touch-action:none}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select,input,textarea{font:inherit}
+button.tool,.pill{border:1px solid #cdbb9a;background:white;border-radius:10px;padding:10px 12px;font-weight:700}
+button.tool.active{background:var(--green);color:white;border-color:var(--green)}
+.primary{background:var(--green)!important;color:white!important;border-color:var(--green)!important}
+.gold{background:var(--gold)!important;color:#1d3328!important;border-color:#c59638!important}
+.danger{background:#8b2e2e!important;color:white!important;border-color:#8b2e2e!important}
+.field{display:grid;gap:6px;margin-bottom:12px}
+label{font-weight:800;font-size:14px;color:#345246}
+input,textarea,select{width:100%;border:1px solid #cdbb9a;border-radius:10px;padding:10px 11px;background:white}
+textarea{min-height:88px;resize:vertical}
+.small{font-size:13px;color:#6c736f}
+.status{padding:10px 12px;border-radius:12px;background:#edf7f2;color:#1d5a44;font-weight:800}
+.answerBox{border:2px dashed #d4b264;border-radius:14px;padding:12px;background:#fffaf0}
+.answerHidden{filter:blur(8px);user-select:none}
+.list{display:grid;gap:8px;max-height:370px;overflow:auto}
+.item{border:1px solid #ded2bc;border-radius:12px;padding:10px;background:white;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.item b{display:block}.badge{font-size:12px;background:#edf3ef;padding:4px 7px;border-radius:999px}
+.footerNote{margin-top:14px;text-align:center;color:#6a726e;font-size:13px}
+@media(max-width:850px){
+ .grid{grid-template-columns:1fr}
+ header{position:static}
+ .head{align-items:flex-start}.enter{padding:10px 12px;font-size:14px}
+ .tabs{grid-template-columns:repeat(2,1fr)}
+ h1{font-size:19px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div class="brand">
+      <div class="logo" id="logoBox">朱</div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解</div></div>
+    </div>
+    <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-cat="死活">死活</button>
+    <button class="tab" data-cat="佈局">佈局</button>
+    <button class="tab" data-cat="中盤">中盤</button>
+    <button class="tab" data-cat="手筋">手筋</button>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h2 id="boardTitle">死活｜題目棋盤</h2>
+      <div class="inner">
+        <div class="row" style="margin-bottom:10px">
+          <select id="sizeSel" style="max-width:120px">
+            <option value="9">9×9</option><option value="13">13×13</option><option value="19" selected>19×19</option>
+          </select>
+          <button class="tool active" data-tool="black">● 黑棋</button>
+          <button class="tool" data-tool="white">○ 白棋</button>
+          <button class="tool" data-tool="circle">○ 標記</button>
+          <button class="tool" data-tool="cross">× 標記</button>
+          <button class="tool" data-tool="triangle">△ 標記</button>
+          <button class="tool" data-tool="erase">橡皮擦</button>
+          <button class="tool" id="undoBtn">上一步</button>
+          <button class="tool danger" id="clearBtn">清空棋盤</button>
+        </div>
+        <div class="boardWrap"><canvas id="board" width="900" height="900"></canvas></div>
+        <div class="small" style="margin-top:8px">點棋盤交叉點即可擺棋或加符號。支援 iPad / iPhone 觸控。</div>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 10px">解答手順編輯</h3>
+        <div class="row" style="margin-bottom:10px">
+          <button class="tool" id="answerModeBtn">切換到解答手順</button>
+          <button class="tool" id="resetAnswerBtn">清除解答手順</button>
+        </div>
+        <div class="status" id="modeStatus">目前：編輯題目棋盤</div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>題目與公布設定</h2>
+      <div class="inner">
+        <div class="field"><label>題目名稱</label><input id="title" value="每日一題"></div>
+        <div class="field"><label>題目說明</label><textarea id="prompt">黑先，請找出最佳手順。</textarea></div>
+        <div class="field"><label>老師解答／講解</label><textarea id="explain" placeholder="例如：黑1扳是要點，白2擋後黑3打吃……"></textarea></div>
+        <div class="field"><label>正解公布日期</label><input id="publishDate" type="date"></div>
+        <div class="field"><label>公布時間</label><input id="publishTime" type="time" value="20:00"></div>
+
+        <div class="row">
+          <button class="tool primary" id="saveBtn">儲存題目</button>
+          <button class="tool gold" id="newBtn">新增一題</button>
+          <button class="tool" id="previewBtn">學生預覽</button>
+        </div>
+
+        <div style="height:16px"></div>
+        <div class="field"><label>老師 Logo</label><input id="logoInput" type="file" accept="image/*"></div>
+        <div class="field"><label>網站入口網址</label><input id="urlInput" value="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/"></div>
+
+        <div style="height:12px"></div>
+        <h3>已建立題目</h3>
+        <div class="list" id="questionList"></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>學生端預覽</h2>
+    <div class="inner">
+      <div id="studentMeta" class="status">尚未載入題目</div>
+      <div style="height:10px"></div>
+      <div class="answerBox">
+        <b>正解：</b>
+        <div id="answerPreview" class="answerHidden">尚未到公布時間，正解將每日定時公開。</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footerNote">Joy Go Platform｜老師可先編題，學生作答後於指定日期／時間看到正解。</div>
+</div>
+
+<script>
+const c=document.getElementById('board'),ctx=c.getContext('2d');
+const sizeSel=document.getElementById('sizeSel');
+let N=19, tool='black', answerMode=false, history=[];
+let baseStones={}, marks={}, answerMoves=[];
+let category='死活', currentId=null;
+
+function key(x,y){return x+','+y}
+function pointFromEvent(e){
+  const r=c.getBoundingClientRect(), sx=c.width/r.width, sy=c.height/r.height;
+  const px=(e.clientX-r.left)*sx, py=(e.clientY-r.top)*sy;
+  const pad=55, step=(c.width-pad*2)/(N-1);
+  const x=Math.round((px-pad)/step), y=Math.round((py-pad)/step);
+  if(x<0||x>=N||y<0||y>=N)return null;
+  const cx=pad+x*step, cy=pad+y*step;
+  if(Math.hypot(px-cx,py-cy)>step*.48)return null;
+  return {x,y};
+}
+function snapshot(){history.push(JSON.stringify({baseStones,marks,answerMoves})); if(history.length>60)history.shift()}
+function undo(){
+  const s=history.pop(); if(!s)return;
+  const o=JSON.parse(s); baseStones=o.baseStones; marks=o.marks; answerMoves=o.answerMoves; draw();
+}
+function starPoints(n){
+  if(n===19)return [3,9,15].flatMap(x=>[3,9,15].map(y=>[x,y]));
+  if(n===13)return [[3,3],[3,9],[6,6],[9,3],[9,9]];
+  return [[2,2],[2,6],[4,4],[6,2],[6,6]];
+}
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle='#d9b06d';ctx.fillRect(0,0,c.width,c.height);
+  const pad=55, step=(c.width-pad*2)/(N-1);
+  ctx.strokeStyle='#553d22';ctx.lineWidth=2;
+  for(let i=0;i<N;i++){
+    const p=pad+i*step;
+    ctx.beginPath();ctx.moveTo(p,pad);ctx.lineTo(p,c.height-pad);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad,p);ctx.lineTo(c.width-pad,p);ctx.stroke();
+  }
+  ctx.fillStyle='#553d22';
+  starPoints(N).forEach(([x,y])=>{ctx.beginPath();ctx.arc(pad+x*step,pad+y*step,7,0,Math.PI*2);ctx.fill()});
+  Object.entries(baseStones).forEach(([k,col])=>{const [x,y]=k.split(',').map(Number);stone(x,y,col,false)});
+  answerMoves.forEach((m,i)=>stone(m.x,m.y,m.color,true,i+1));
+  Object.entries(marks).forEach(([k,m])=>{const [x,y]=k.split(',').map(Number);drawMark(x,y,m)});
+}
+function stone(x,y,col,numbered,num){
+  const pad=55,step=(c.width-pad*2)/(N-1),cx=pad+x*step,cy=pad+y*step,r=step*.43;
+  const g=ctx.createRadialGradient(cx-r*.25,cy-r*.25,r*.1,cx,cy,r);
+  if(col==='black'){g.addColorStop(0,'#555');g.addColorStop(1,'#050505')}else{g.addColorStop(0,'#fff');g.addColorStop(1,'#d9d9d9')}
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#0008';ctx.lineWidth=1.4;ctx.stroke();
+  if(numbered){
+    ctx.fillStyle=col==='black'?'#fff':'#000';ctx.font=`bold ${Math.max(18,r*.9)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(num,cx,cy+1)
+  }
+}
+function drawMark(x,y,m){
+  const pad=55,step=(c.width-pad*2)/(N-1),cx=pad+x*step,cy=pad+y*step,r=step*.25;
+  ctx.save();ctx.lineWidth=4;ctx.strokeStyle='#d71920';ctx.fillStyle='#d71920';ctx.textAlign='center';ctx.textBaseline='middle';
+  if(m==='circle'){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke()}
+  if(m==='cross'){ctx.font=`bold ${r*2.5}px sans-serif`;ctx.fillText('×',cx,cy)}
+  if(m==='triangle'){ctx.beginPath();for(let i=0;i<3;i++){const a=-Math.PI/2+i*2*Math.PI/3,p=[cx+Math.cos(a)*r*1.15,cy+Math.sin(a)*r*1.15];i?ctx.lineTo(...p):ctx.moveTo(...p)}ctx.closePath();ctx.stroke()}
+  ctx.restore()
+}
+c.addEventListener('pointerdown',e=>{
+  const p=pointFromEvent(e); if(!p)return; snapshot();
+  const k=key(p.x,p.y);
+  if(answerMode){
+    if(tool==='erase'){answerMoves=answerMoves.filter(m=>!(m.x===p.x&&m.y===p.y))}
+    else if(tool==='black'||tool==='white'){
+      if(!baseStones[k] && !answerMoves.some(m=>m.x===p.x&&m.y===p.y)){
+        answerMoves.push({x:p.x,y:p.y,color:tool});
+        tool=tool==='black'?'white':'black'; refreshToolButtons();
+      }
+    } else marks[k]=tool;
+  }else{
+    if(tool==='erase'){delete baseStones[k];delete marks[k]}
+    else if(tool==='black'||tool==='white'){baseStones[k]=tool;delete marks[k]}
+    else marks[k]=tool;
+  }
+  draw()
+});
+function refreshToolButtons(){
+  document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));
+}
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;refreshToolButtons()});
+sizeSel.onchange=()=>{snapshot();N=+sizeSel.value;baseStones={};marks={};answerMoves=[];draw()};
+document.getElementById('undoBtn').onclick=undo;
+document.getElementById('clearBtn').onclick=()=>{if(confirm('確定清空整個題目棋盤？')){snapshot();baseStones={};marks={};answerMoves=[];draw()}};
+document.getElementById('resetAnswerBtn').onclick=()=>{snapshot();answerMoves=[];draw()};
+document.getElementById('answerModeBtn').onclick=()=>{
+  answerMode=!answerMode;
+  document.getElementById('answerModeBtn').textContent=answerMode?'回到題目編輯':'切換到解答手順';
+  document.getElementById('modeStatus').textContent=answerMode?'目前：編輯解答手順（落子會自動編號）':'目前：編輯題目棋盤';
+};
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  category=b.dataset.cat;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+  document.getElementById('boardTitle').textContent=category+'｜題目棋盤';
+  renderList()
+});
+
+function todayStr(){return new Date().toISOString().slice(0,10)}
+document.getElementById('publishDate').value=todayStr();
+
+function getQs(){return JSON.parse(localStorage.getItem('joygo_daily_quiz_v1')||'[]')}
+function setQs(q){localStorage.setItem('joygo_daily_quiz_v1',JSON.stringify(q))}
+function formData(){
+ return {
+  id:currentId||Date.now(), category, title:document.getElementById('title').value.trim()||'每日一題',
+  prompt:document.getElementById('prompt').value.trim(), explain:document.getElementById('explain').value.trim(),
+  publishDate:document.getElementById('publishDate').value, publishTime:document.getElementById('publishTime').value||'20:00',
+  size:N, stones:baseStones, marks, answerMoves, updatedAt:Date.now()
+ };
+}
+document.getElementById('saveBtn').onclick=()=>{
+ let qs=getQs(),q=formData(),i=qs.findIndex(x=>x.id===q.id);
+ if(i>=0)qs[i]=q;else qs.unshift(q);setQs(qs);currentId=q.id;renderList();preview(q);alert('題目已儲存');
+};
+document.getElementById('newBtn').onclick=()=>{
+ currentId=null;baseStones={};marks={};answerMoves=[];document.getElementById('title').value='每日一題';
+ document.getElementById('prompt').value='黑先，請找出最佳手順。';document.getElementById('explain').value='';
+ document.getElementById('publishDate').value=todayStr();draw();
+};
+function loadQ(id){
+ const q=getQs().find(x=>x.id===id);if(!q)return;
+ currentId=q.id;category=q.category;N=q.size;sizeSel.value=N;baseStones=q.stones||{};marks=q.marks||{};answerMoves=q.answerMoves||[];
+ document.getElementById('title').value=q.title;document.getElementById('prompt').value=q.prompt;
+ document.getElementById('explain').value=q.explain;document.getElementById('publishDate').value=q.publishDate;
+ document.getElementById('publishTime').value=q.publishTime;
+ document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.cat===category));
+ document.getElementById('boardTitle').textContent=category+'｜題目棋盤';draw();preview(q);renderList();
+}
+function delQ(id){if(!confirm('刪除這一題？'))return;setQs(getQs().filter(x=>x.id!==id));if(currentId===id)currentId=null;renderList()}
+function renderList(){
+ const list=document.getElementById('questionList');list.innerHTML='';
+ const qs=getQs().filter(q=>q.category===category);
+ if(!qs.length){list.innerHTML='<div class="small">這個分類尚未建立題目。</div>';return}
+ qs.forEach(q=>{
+  const d=document.createElement('div');d.className='item';
+  const left=document.createElement('div');left.innerHTML=`<b>${escapeHtml(q.title)}</b><span class="badge">${q.publishDate} ${q.publishTime}</span>`;
+  const right=document.createElement('div');right.className='row';
+  const e=document.createElement('button');e.className='tool';e.textContent='編輯';e.onclick=()=>loadQ(q.id);
+  const x=document.createElement('button');x.className='tool danger';x.textContent='刪除';x.onclick=()=>delQ(q.id);
+  right.append(e,x);d.append(left,right);list.append(d);
+ })
+}
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function published(q){
+ const t=new Date(q.publishDate+'T'+(q.publishTime||'20:00')+':00');
+ return Date.now()>=t.getTime()
+}
+function preview(q=formData()){
+ document.getElementById('studentMeta').textContent=`${q.category}｜${q.title}｜${q.prompt}`;
+ const a=document.getElementById('answerPreview');
+ const moves=(q.answerMoves||[]).map((m,i)=>`${i+1}.${m.color==='black'?'黑':'白'}(${m.x+1},${m.y+1})`).join(' → ');
+ a.textContent=(moves?moves+'　':'')+(q.explain||'老師尚未輸入文字講解。');
+ a.classList.toggle('answerHidden',!published(q));
+ if(!published(q))a.textContent=`尚未到公布時間：${q.publishDate} ${q.publishTime} 將公開正解。`;
+}
+document.getElementById('previewBtn').onclick=()=>preview();
+
+document.getElementById('urlInput').onchange=e=>{document.getElementById('platformLink').href=e.target.value;localStorage.setItem('joygo_platform_url',e.target.value)}
+const savedUrl=localStorage.getItem('joygo_platform_url');if(savedUrl){document.getElementById('urlInput').value=savedUrl;document.getElementById('platformLink').href=savedUrl}
+document.getElementById('logoInput').onchange=e=>{
+ const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{localStorage.setItem('joygo_teacher_logo',r.result);showLogo(r.result)};r.readAsDataURL(f)
+};
+function showLogo(src){document.getElementById('logoBox').innerHTML=`<img src="${src}" alt="老師 Logo">`}
+const logo=localStorage.getItem('joygo_teacher_logo');if(logo)showLogo(logo);
+
+draw();renderList();preview();
+setInterval(()=>preview(),60000);
+</script>
+</body>
+</html>
