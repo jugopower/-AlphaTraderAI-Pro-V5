@@ -61,6 +61,15 @@ body.share-mode .boardWrap{background:#dfe8dd}
  .tabs{grid-template-columns:repeat(2,1fr)}
  h1{font-size:19px}
 }
+
+.previewOverlay{position:fixed;inset:0;background:#0009;display:none;z-index:9999;padding:18px;overflow:auto}
+.previewOverlay.show{display:block}
+.previewCard{max-width:760px;margin:0 auto;background:#f7f4ea;border-radius:18px;padding:14px;box-shadow:0 12px 40px #0006}
+.previewCard h3{margin:4px 0 10px;color:#173f31}
+.previewImg{width:100%;height:auto;display:block;border-radius:12px;border:1px solid #c9b98f;background:#fff}
+.previewActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.previewActions button{flex:1 1 180px}
+
 </style>
 </head>
 <body>
@@ -96,6 +105,10 @@ body.share-mode .boardWrap{background:#dfe8dd}
           <button class="tool" data-tool="circle">○ 標記</button>
           <button class="tool" data-tool="cross">× 標記</button>
           <button class="tool" data-tool="triangle">△ 標記</button>
+          <button class="tool" data-tool="A">A</button>
+          <button class="tool" data-tool="B">B</button>
+          <button class="tool" data-tool="C">C</button>
+          <button class="tool" data-tool="D">D</button>
           <button class="tool" data-tool="erase">橡皮擦</button>
           <button class="tool" id="undoBtn">上一步</button>
           <button class="tool danger" id="clearBtn">清空棋盤</button>
@@ -103,7 +116,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
         <div id="shareQuestionText" class="status" style="display:none;margin-bottom:10px"></div>
         <div class="boardWrap"><canvas id="board" width="900" height="900"></canvas></div>
         <div id="shareAnswerText" class="answerBox" style="display:none;margin-top:10px"></div>
-        <div class="small editorOnly" style="margin-top:8px">點棋盤交叉點即可擺棋或加符號。支援 iPad / iPhone 觸控。</div>
+        <div class="small editorOnly" style="margin-top:8px">點棋盤交叉點即可擺棋、○ × △ 或 A／B／C／D。解答手順依圍棋規則自動提子。支援 iPad / iPhone 觸控。</div>
 
         <div class="editorOnly" style="height:14px"></div>
         <h3 class="editorOnly" style="margin:0 0 10px">解答手順編輯</h3>
@@ -164,6 +177,7 @@ const c=document.getElementById('board'),ctx=c.getContext('2d');
 const sizeSel=document.getElementById('sizeSel');
 let N=19, tool='black', answerMode=false, history=[];
 let baseStones={}, marks={}, answerMoves=[];
+let answerBoard={};
 let category='死活', currentId=null;
 let shareMode=false, sharedQuestion=null;
 
@@ -178,10 +192,10 @@ function pointFromEvent(e){
   if(Math.hypot(px-cx,py-cy)>step*.48)return null;
   return {x,y};
 }
-function snapshot(){history.push(JSON.stringify({baseStones,marks,answerMoves})); if(history.length>60)history.shift()}
+function snapshot(){history.push(JSON.stringify({baseStones,marks,answerMoves,answerBoard})); if(history.length>60)history.shift()}
 function undo(){
   const s=history.pop(); if(!s)return;
-  const o=JSON.parse(s); baseStones=o.baseStones; marks=o.marks; answerMoves=o.answerMoves; draw();
+  const o=JSON.parse(s); baseStones=o.baseStones||{}; marks=o.marks||{}; answerMoves=o.answerMoves||[]; answerBoard=o.answerBoard||simulateAnswerBoard(); draw();
 }
 function starPoints(n){
   if(n===19)return [3,9,15].flatMap(x=>[3,9,15].map(y=>[x,y]));
@@ -200,9 +214,15 @@ function draw(){
   }
   ctx.fillStyle='#553d22';
   starPoints(N).forEach(([x,y])=>{ctx.beginPath();ctx.arc(pad+x*step,pad+y*step,7,0,Math.PI*2);ctx.fill()});
-  Object.entries(baseStones).forEach(([k,col])=>{const [x,y]=k.split(',').map(Number);stone(x,y,col,false)});
   const showSolution = answerMode || (shareMode && sharedQuestion && published(sharedQuestion));
-  if(showSolution) answerMoves.forEach((m,i)=>stone(m.x,m.y,m.color,true,i+1));
+  const boardToDraw = showSolution ? (Object.keys(answerBoard||{}).length ? answerBoard : simulateAnswerBoard()) : baseStones;
+  Object.entries(boardToDraw).forEach(([k,col])=>{const [x,y]=k.split(',').map(Number);stone(x,y,col,false)});
+  if(showSolution){
+    answerMoves.forEach((m,i)=>{
+      const k=key(m.x,m.y);
+      if(boardToDraw[k]) drawMoveNumber(m.x,m.y,boardToDraw[k],i+1);
+    });
+  }
   Object.entries(marks).forEach(([k,m])=>{const [x,y]=k.split(',').map(Number);drawMark(x,y,m)});
 }
 function stone(x,y,col,numbered,num){
@@ -215,12 +235,73 @@ function stone(x,y,col,numbered,num){
     ctx.fillStyle=col==='black'?'#fff':'#000';ctx.font=`bold ${Math.max(18,r*.9)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(num,cx,cy+1)
   }
 }
+
+function drawMoveNumber(x,y,col,num){
+  const pad=55,step=(c.width-pad*2)/(N-1),cx=pad+x*step,cy=pad+y*step,r=step*.43;
+  ctx.fillStyle=col==='black'?'#fff':'#000';
+  ctx.font=`bold ${Math.max(18,r*.82)}px sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(num,cx,cy+1);
+}
+
+function neighbors(x,y){
+  return [[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([a,b])=>a>=0&&a<N&&b>=0&&b<N);
+}
+function groupAndLiberties(board,x,y){
+  const col=board[key(x,y)];
+  if(!col) return {group:[],libs:new Set()};
+  const stack=[[x,y]], seen=new Set(), group=[], libs=new Set();
+  while(stack.length){
+    const [cx,cy]=stack.pop(), kk=key(cx,cy);
+    if(seen.has(kk)) continue;
+    seen.add(kk); group.push([cx,cy]);
+    neighbors(cx,cy).forEach(([nx,ny])=>{
+      const nk=key(nx,ny), v=board[nk];
+      if(!v) libs.add(nk);
+      else if(v===col && !seen.has(nk)) stack.push([nx,ny]);
+    });
+  }
+  return {group,libs};
+}
+function playMoveOnBoard(board,x,y,col){
+  const k=key(x,y);
+  if(board[k]) return {ok:false,board,captured:[]};
+  const nb={...board}; nb[k]=col;
+  const opp=col==='black'?'white':'black';
+  const captured=[];
+  neighbors(x,y).forEach(([nx,ny])=>{
+    if(nb[key(nx,ny)]===opp){
+      const g=groupAndLiberties(nb,nx,ny);
+      if(g.libs.size===0){
+        g.group.forEach(([gx,gy])=>{delete nb[key(gx,gy)];captured.push([gx,gy])});
+      }
+    }
+  });
+  const self=groupAndLiberties(nb,x,y);
+  if(self.libs.size===0) return {ok:false,board,captured:[]}; // suicide not allowed
+  return {ok:true,board:nb,captured};
+}
+function simulateAnswerBoard(){
+  let b={...baseStones};
+  for(const m of answerMoves){
+    const r=playMoveOnBoard(b,m.x,m.y,m.color);
+    if(r.ok) b=r.board;
+  }
+  return b;
+}
+
 function drawMark(x,y,m){
   const pad=55,step=(c.width-pad*2)/(N-1),cx=pad+x*step,cy=pad+y*step,r=step*.25;
   ctx.save();ctx.lineWidth=4;ctx.strokeStyle='#d71920';ctx.fillStyle='#d71920';ctx.textAlign='center';ctx.textBaseline='middle';
   if(m==='circle'){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke()}
   if(m==='cross'){ctx.font=`bold ${r*2.5}px sans-serif`;ctx.fillText('×',cx,cy)}
   if(m==='triangle'){ctx.beginPath();for(let i=0;i<3;i++){const a=-Math.PI/2+i*2*Math.PI/3,p=[cx+Math.cos(a)*r*1.15,cy+Math.sin(a)*r*1.15];i?ctx.lineTo(...p):ctx.moveTo(...p)}ctx.closePath();ctx.stroke()}
+  if(['A','B','C','D'].includes(m)){
+    ctx.font=`bold ${Math.max(22,r*2.2)}px sans-serif`;
+    ctx.lineWidth=6; ctx.strokeStyle='#fff';
+    ctx.strokeText(m,cx,cy+1);
+    ctx.fillStyle='#c81920'; ctx.fillText(m,cx,cy+1);
+  }
   ctx.restore()
 }
 c.addEventListener('pointerdown',e=>{
@@ -228,11 +309,23 @@ c.addEventListener('pointerdown',e=>{
   const p=pointFromEvent(e); if(!p)return; snapshot();
   const k=key(p.x,p.y);
   if(answerMode){
-    if(tool==='erase'){answerMoves=answerMoves.filter(m=>!(m.x===p.x&&m.y===p.y))}
+    if(tool==='erase'){
+      // remove the most recent matching answer move, then rebuild the board
+      for(let i=answerMoves.length-1;i>=0;i--){
+        if(answerMoves[i].x===p.x&&answerMoves[i].y===p.y){answerMoves.splice(i,1);break}
+      }
+      answerBoard=simulateAnswerBoard();
+    }
     else if(tool==='black'||tool==='white'){
-      if(!baseStones[k] && !answerMoves.some(m=>m.x===p.x&&m.y===p.y)){
-        answerMoves.push({x:p.x,y:p.y,color:tool});
+      const current=Object.keys(answerBoard||{}).length ? answerBoard : simulateAnswerBoard();
+      const r=playMoveOnBoard(current,p.x,p.y,tool);
+      if(r.ok){
+        answerMoves.push({x:p.x,y:p.y,color:tool,captured:r.captured});
+        answerBoard=r.board;
         tool=tool==='black'?'white':'black'; refreshToolButtons();
+      }else{
+        history.pop();
+        alert('這一手不能下：交叉點已有棋子，或是自殺手。');
       }
     } else marks[k]=tool;
   }else{
@@ -246,12 +339,13 @@ function refreshToolButtons(){
   document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));
 }
 document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;refreshToolButtons()});
-sizeSel.onchange=()=>{snapshot();N=+sizeSel.value;baseStones={};marks={};answerMoves=[];draw()};
+sizeSel.onchange=()=>{snapshot();N=+sizeSel.value;baseStones={};marks={};answerMoves=[];answerBoard={};draw()};
 document.getElementById('undoBtn').onclick=undo;
-document.getElementById('clearBtn').onclick=()=>{if(confirm('確定清空整個題目棋盤？')){snapshot();baseStones={};marks={};answerMoves=[];draw()}};
-document.getElementById('resetAnswerBtn').onclick=()=>{snapshot();answerMoves=[];draw()};
+document.getElementById('clearBtn').onclick=()=>{if(confirm('確定清空整個題目棋盤？')){snapshot();baseStones={};marks={};answerMoves=[];answerBoard={};draw()}};
+document.getElementById('resetAnswerBtn').onclick=()=>{snapshot();answerMoves=[];answerBoard={...baseStones};draw()};
 document.getElementById('answerModeBtn').onclick=()=>{
   answerMode=!answerMode;
+  if(answerMode) answerBoard=simulateAnswerBoard();
   document.getElementById('answerModeBtn').textContent=answerMode?'回到題目編輯':'切換到解答手順';
   document.getElementById('modeStatus').textContent=answerMode?'目前：編輯解答手順（落子會自動編號）':'目前：編輯題目棋盤';
 };
@@ -280,13 +374,13 @@ document.getElementById('saveBtn').onclick=()=>{
  if(i>=0)qs[i]=q;else qs.unshift(q);setQs(qs);currentId=q.id;renderList();preview(q);alert('題目已儲存');
 };
 document.getElementById('newBtn').onclick=()=>{
- currentId=null;baseStones={};marks={};answerMoves=[];document.getElementById('title').value='每日一題';
+ currentId=null;baseStones={};marks={};answerMoves=[];answerBoard={};document.getElementById('title').value='每日一題';
  document.getElementById('prompt').value='黑先，請找出最佳手順。';document.getElementById('explain').value='';
  document.getElementById('publishDate').value=todayStr();draw();
 };
 function loadQ(id){
  const q=getQs().find(x=>x.id===id);if(!q)return;
- currentId=q.id;category=q.category;N=q.size;sizeSel.value=N;baseStones=q.stones||{};marks=q.marks||{};answerMoves=q.answerMoves||[];
+ currentId=q.id;category=q.category;N=q.size;sizeSel.value=N;baseStones=q.stones||{};marks=q.marks||{};answerMoves=q.answerMoves||[];answerBoard=simulateAnswerBoard();
  document.getElementById('title').value=q.title;document.getElementById('prompt').value=q.prompt;
  document.getElementById('explain').value=q.explain;document.getElementById('publishDate').value=q.publishDate;
  document.getElementById('publishTime').value=q.publishTime;
@@ -371,30 +465,33 @@ function drawWrappedText(g,text,x,y,maxWidth,lineHeight,maxLines=5){
   lines.forEach((ln,i)=>g.fillText(ln,x,y+i*lineHeight));
   return y+lines.length*lineHeight;
 }
-function exportLineCard(showAnswer){
+
+let currentShareBlob=null;
+let currentShareFilename='JoyGo.png';
+
+function canvasToBlob(canvas){
+  return new Promise(resolve=>canvas.toBlob(resolve,'image/png',1));
+}
+async function exportLineCard(showAnswer){
   const q=formData();
   const W=1080,H=1440;
   const oc=document.createElement('canvas'); oc.width=W; oc.height=H;
   const g=oc.getContext('2d');
 
-  // background
   const grd=g.createLinearGradient(0,0,0,H);
   grd.addColorStop(0,'#e7eee7'); grd.addColorStop(1,'#f4ead8');
   g.fillStyle=grd; g.fillRect(0,0,W,H);
 
-  // header
   g.fillStyle='#0f4f3b'; g.fillRect(0,0,W,150);
   g.fillStyle='#ffffff'; g.font='bold 52px sans-serif';
   g.fillText('Joy Go 每日圍棋測驗',48,72);
   g.font='30px sans-serif'; g.fillStyle='#e8d9a9';
   g.fillText(`${q.category}｜${q.title||'每日一題'}`,48,120);
 
-  // prompt
   g.fillStyle='#234534'; g.font='bold 38px sans-serif';
   let yy=205;
   yy=drawWrappedText(g,q.prompt||'請找出最佳手順。',55,yy,970,52,3)+18;
 
-  // board snapshot: temporarily control answer rendering
   const prevAnswerMode=answerMode;
   answerMode=!!showAnswer;
   draw();
@@ -405,7 +502,6 @@ function exportLineCard(showAnswer){
 
   yy=by+boardSize+50;
 
-  // footer / answer
   g.fillStyle='#0f4f3b'; g.font='bold 36px sans-serif';
   if(showAnswer){
     g.fillText('正解公布',55,yy);
@@ -424,21 +520,57 @@ function exportLineCard(showAnswer){
     g.fillText(`正解公布：${q.publishDate||''} ${q.publishTime||''}`,55,yy);
   }
 
-  // bottom brand
   g.fillStyle='#0f4f3b'; g.fillRect(0,H-105,W,105);
   g.fillStyle='#ffffff'; g.font='bold 30px sans-serif';
   g.fillText('朱老師｜Joy Go Platform',45,H-58);
   g.font='24px sans-serif'; g.fillStyle='#e8d9a9';
   g.fillText('下棋・學棋・以棋會友',45,H-22);
 
-  const a=document.createElement('a');
-  const kind=showAnswer?'answer':'question';
-  a.download=`JoyGo-${q.category}-${kind}.png`;
-  a.href=oc.toDataURL('image/png');
-  a.click();
+  const dataUrl=oc.toDataURL('image/png');
+  const img=document.getElementById('previewImg');
+  img.src=dataUrl;
+  document.getElementById('previewTitle').textContent=showAnswer?'LINE 正解圖預覽':'LINE 題目圖預覽';
+  currentShareBlob=await canvasToBlob(oc);
+  currentShareFilename=`JoyGo-${q.category}-${showAnswer?'answer':'question'}.png`;
+  document.getElementById('previewOverlay').classList.add('show');
 }
+
 document.getElementById('lineQuestionBtn').onclick=()=>exportLineCard(false);
 document.getElementById('lineAnswerBtn').onclick=()=>exportLineCard(true);
+
+document.getElementById('closePreviewBtn').onclick=()=>{
+  document.getElementById('previewOverlay').classList.remove('show');
+};
+
+document.getElementById('saveImageBtn').onclick=()=>{
+  const img=document.getElementById('previewImg');
+  const a=document.createElement('a');
+  a.href=img.src;
+  a.download=currentShareFilename;
+  a.click();
+};
+
+document.getElementById('shareImageBtn').onclick=async()=>{
+  try{
+    if(!currentShareBlob) throw new Error('no blob');
+    const file=new File([currentShareBlob],currentShareFilename,{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title:'Joy Go 每日圍棋測驗',
+        text:'Joy Go 每日一題'
+      });
+    }else if(navigator.share){
+      await navigator.share({title:'Joy Go 每日圍棋測驗',text:'請長按圖片分享至 LINE'});
+    }else{
+      alert('此瀏覽器不支援直接分享。請長按上方圖片，選「分享」→ LINE。');
+    }
+  }catch(e){
+    if(e && e.name==='AbortError') return;
+    alert('若沒有跳出分享選單，請長按上方圖片，再選「分享」→ LINE。');
+  }
+};
+
 
 function loadSharedQuestion(){
   const m=location.hash.match(/^#q=(.+)$/);
@@ -449,7 +581,7 @@ function loadSharedQuestion(){
     document.body.classList.add('share-mode');
     category=q.category||'每日一題';
     N=+q.size||19; sizeSel.value=N;
-    baseStones=q.stones||{}; marks=q.marks||{}; answerMoves=q.answerMoves||[];
+    baseStones=q.stones||{}; marks=q.marks||{}; answerMoves=q.answerMoves||[]; answerBoard=simulateAnswerBoard();
     document.getElementById('boardTitle').textContent=`${category}｜${q.title||'每日一題'}`;
     document.getElementById('shareQuestionText').style.display='block';
     document.getElementById('shareQuestionText').textContent=q.prompt||'請找出最佳手順。';
@@ -474,8 +606,22 @@ function updateSharedAnswer(){
 }
 
 const isShared=loadSharedQuestion();
-if(!isShared){draw();renderList();preview();}
+if(!isShared){answerBoard={...baseStones};draw();renderList();preview();}
 setInterval(()=>{ if(shareMode) updateSharedAnswer(); else preview(); },60000);
 </script>
+
+<div class="previewOverlay" id="previewOverlay">
+  <div class="previewCard">
+    <h3 id="previewTitle">LINE 圖片預覽</h3>
+    <img id="previewImg" class="previewImg" alt="Joy Go LINE 圖片預覽">
+    <div class="previewActions">
+      <button class="tool primary" id="shareImageBtn">分享圖片</button>
+      <button class="tool gold" id="saveImageBtn">另存圖片</button>
+      <button class="tool" id="closePreviewBtn">關閉</button>
+    </div>
+    <div class="small" style="margin-top:8px">iPad 建議按「分享圖片」→ 選 LINE。若裝置不支援直接分享，請長按上方圖片或按「另存圖片」。</div>
+  </div>
+</div>
+
 </body>
 </html>
