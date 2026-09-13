@@ -6,8 +6,8 @@
 <title>Joy Go 每日圍棋測驗</title>
 <style>
 :root{
-  --green:#0f4f3b; --green2:#176a50; --gold:#d9ad54; --cream:#f7f1e6;
-  --ink:#1f2a25; --card:#fffdf8; --line:#d8c9ae; --wood:#d9b06d;
+  --green:#0f4f3b; --green2:#176a50; --gold:#d9ad54; --cream:#e7eee7;
+  --ink:#1f2a25; --card:#eef3ec; --line:#b9c8ba; --wood:#d9b06d;
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:var(--cream);color:var(--ink)}
@@ -20,33 +20,40 @@ h1{font-size:22px;margin:0}.sub{opacity:.82;font-size:13px;margin-top:2px}
 .enter{background:var(--gold);color:#173126;text-decoration:none;font-weight:800;padding:12px 16px;border-radius:12px;white-space:nowrap}
 .wrap{max-width:1200px;margin:18px auto;padding:0 14px 40px}
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
-.tab{border:0;border-radius:14px;padding:14px 8px;font-size:18px;font-weight:900;background:#fff;box-shadow:0 2px 8px #0001;color:#30433a}
+.tab{border:1px solid #b7c8b9;border-radius:14px;padding:14px 8px;font-size:18px;font-weight:900;background:#d9e7da;box-shadow:0 2px 8px #0001;color:#244737}
 .tab.active{background:var(--green);color:white}
 .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 18px #0000000d;overflow:hidden}
-.card h2{margin:0;padding:14px 16px;background:#efe6d5;font-size:18px;border-bottom:1px solid var(--line)}
+.card h2{margin:0;padding:14px 16px;background:#d6e2d5;font-size:18px;border-bottom:1px solid var(--line);color:#234534}
 .inner{padding:14px}
-.boardWrap{display:flex;justify-content:center;align-items:center;background:#f3eadb;border-radius:14px;padding:10px}
+.boardWrap{display:flex;justify-content:center;align-items:center;background:#dfe8dd;border-radius:14px;padding:10px}
 canvas{display:block;width:min(100%,720px);aspect-ratio:1/1;background:var(--wood);border-radius:8px;touch-action:none}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 button,select,input,textarea{font:inherit}
-button.tool,.pill{border:1px solid #cdbb9a;background:white;border-radius:10px;padding:10px 12px;font-weight:700}
+button.tool,.pill{border:1px solid #aebfae;background:#edf3ea;border-radius:10px;padding:10px 12px;font-weight:700;color:#21503c}
 button.tool.active{background:var(--green);color:white;border-color:var(--green)}
 .primary{background:var(--green)!important;color:white!important;border-color:var(--green)!important}
 .gold{background:var(--gold)!important;color:#1d3328!important;border-color:#c59638!important}
 .danger{background:#8b2e2e!important;color:white!important;border-color:#8b2e2e!important}
 .field{display:grid;gap:6px;margin-bottom:12px}
 label{font-weight:800;font-size:14px;color:#345246}
-input,textarea,select{width:100%;border:1px solid #cdbb9a;border-radius:10px;padding:10px 11px;background:white}
+input,textarea,select{width:100%;border:1px solid #aebfae;border-radius:10px;padding:10px 11px;background:#f7faf4;color:#243c31}
 textarea{min-height:88px;resize:vertical}
 .small{font-size:13px;color:#6c736f}
 .status{padding:10px 12px;border-radius:12px;background:#edf7f2;color:#1d5a44;font-weight:800}
-.answerBox{border:2px dashed #d4b264;border-radius:14px;padding:12px;background:#fffaf0}
+.answerBox{border:2px dashed #caa95e;border-radius:14px;padding:12px;background:#f2edda}
 .answerHidden{filter:blur(8px);user-select:none}
 .list{display:grid;gap:8px;max-height:370px;overflow:auto}
-.item{border:1px solid #ded2bc;border-radius:12px;padding:10px;background:white;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.item{border:1px solid #b9c8ba;border-radius:12px;padding:10px;background:#f3f7f1;display:flex;justify-content:space-between;gap:8px;align-items:center}
 .item b{display:block}.badge{font-size:12px;background:#edf3ef;padding:4px 7px;border-radius:999px}
-.footerNote{margin-top:14px;text-align:center;color:#6a726e;font-size:13px}
+.footerNote{margin-top:14px;text-align:center;color:#53665a;font-size:13px}
+.shareBanner{display:none;margin-bottom:14px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,#dce9dc,#f0e7c9);border:1px solid #b6c7b7;font-weight:800;color:#214936}
+body.share-mode .tabs, body.share-mode .grid aside, body.share-mode .editorTools, body.share-mode .editorOnly, body.share-mode .footerNote{display:none!important}
+body.share-mode .grid{grid-template-columns:1fr}
+body.share-mode .shareBanner{display:block}
+body.share-mode .card{max-width:900px;margin:auto}
+body.share-mode #boardTitle{background:#d6e2d5}
+body.share-mode .boardWrap{background:#dfe8dd}
 @media(max-width:850px){
  .grid{grid-template-columns:1fr}
  header{position:static}
@@ -75,11 +82,12 @@ textarea{min-height:88px;resize:vertical}
     <button class="tab" data-cat="手筋">手筋</button>
   </div>
 
+  <div class="shareBanner" id="shareBanner">Joy Go 每日一題｜先看題目，正解依老師設定時間自動公布。</div>
   <div class="grid">
     <section class="card">
       <h2 id="boardTitle">死活｜題目棋盤</h2>
       <div class="inner">
-        <div class="row" style="margin-bottom:10px">
+        <div class="row editorTools" style="margin-bottom:10px">
           <select id="sizeSel" style="max-width:120px">
             <option value="9">9×9</option><option value="13">13×13</option><option value="19" selected>19×19</option>
           </select>
@@ -92,16 +100,18 @@ textarea{min-height:88px;resize:vertical}
           <button class="tool" id="undoBtn">上一步</button>
           <button class="tool danger" id="clearBtn">清空棋盤</button>
         </div>
+        <div id="shareQuestionText" class="status" style="display:none;margin-bottom:10px"></div>
         <div class="boardWrap"><canvas id="board" width="900" height="900"></canvas></div>
-        <div class="small" style="margin-top:8px">點棋盤交叉點即可擺棋或加符號。支援 iPad / iPhone 觸控。</div>
+        <div id="shareAnswerText" class="answerBox" style="display:none;margin-top:10px"></div>
+        <div class="small editorOnly" style="margin-top:8px">點棋盤交叉點即可擺棋或加符號。支援 iPad / iPhone 觸控。</div>
 
-        <div style="height:14px"></div>
-        <h3 style="margin:0 0 10px">解答手順編輯</h3>
-        <div class="row" style="margin-bottom:10px">
+        <div class="editorOnly" style="height:14px"></div>
+        <h3 class="editorOnly" style="margin:0 0 10px">解答手順編輯</h3>
+        <div class="row editorOnly" style="margin-bottom:10px">
           <button class="tool" id="answerModeBtn">切換到解答手順</button>
           <button class="tool" id="resetAnswerBtn">清除解答手順</button>
         </div>
-        <div class="status" id="modeStatus">目前：編輯題目棋盤</div>
+        <div class="status editorOnly" id="modeStatus">目前：編輯題目棋盤</div>
       </div>
     </section>
 
@@ -118,7 +128,9 @@ textarea{min-height:88px;resize:vertical}
           <button class="tool primary" id="saveBtn">儲存題目</button>
           <button class="tool gold" id="newBtn">新增一題</button>
           <button class="tool" id="previewBtn">學生預覽</button>
+          <button class="tool gold" id="shareBtn">產生 LINE 分享連結</button>
         </div>
+        <div class="small" id="shareHint" style="margin-top:8px">編完題目後按此鍵，複製專屬網址貼到 LINE；棋友不需登入即可看題目。</div>
 
         <div style="height:16px"></div>
         <div class="field"><label>老師 Logo</label><input id="logoInput" type="file" accept="image/*"></div>
@@ -152,6 +164,7 @@ const sizeSel=document.getElementById('sizeSel');
 let N=19, tool='black', answerMode=false, history=[];
 let baseStones={}, marks={}, answerMoves=[];
 let category='死活', currentId=null;
+let shareMode=false, sharedQuestion=null;
 
 function key(x,y){return x+','+y}
 function pointFromEvent(e){
@@ -187,7 +200,8 @@ function draw(){
   ctx.fillStyle='#553d22';
   starPoints(N).forEach(([x,y])=>{ctx.beginPath();ctx.arc(pad+x*step,pad+y*step,7,0,Math.PI*2);ctx.fill()});
   Object.entries(baseStones).forEach(([k,col])=>{const [x,y]=k.split(',').map(Number);stone(x,y,col,false)});
-  answerMoves.forEach((m,i)=>stone(m.x,m.y,m.color,true,i+1));
+  const showSolution = answerMode || (shareMode && sharedQuestion && published(sharedQuestion));
+  if(showSolution) answerMoves.forEach((m,i)=>stone(m.x,m.y,m.color,true,i+1));
   Object.entries(marks).forEach(([k,m])=>{const [x,y]=k.split(',').map(Number);drawMark(x,y,m)});
 }
 function stone(x,y,col,numbered,num){
@@ -209,6 +223,7 @@ function drawMark(x,y,m){
   ctx.restore()
 }
 c.addEventListener('pointerdown',e=>{
+  if(shareMode)return;
   const p=pointFromEvent(e); if(!p)return; snapshot();
   const k=key(p.x,p.y);
   if(answerMode){
@@ -315,8 +330,67 @@ document.getElementById('logoInput').onchange=e=>{
 function showLogo(src){document.getElementById('logoBox').innerHTML=`<img src="${src}" alt="老師 Logo">`}
 const logo=localStorage.getItem('joygo_teacher_logo');if(logo)showLogo(logo);
 
-draw();renderList();preview();
-setInterval(()=>preview(),60000);
+
+function encodeShare(obj){
+  const bytes=new TextEncoder().encode(JSON.stringify(obj));
+  let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b));
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function decodeShare(str){
+  str=str.replace(/-/g,'+').replace(/_/g,'/');
+  while(str.length%4)str+='=';
+  const bin=atob(str), bytes=Uint8Array.from(bin,ch=>ch.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function makeShareLink(){
+  const q=formData();
+  const base=location.href.split('#')[0];
+  const url=base+'#q='+encodeShare(q);
+  try{
+    await navigator.clipboard.writeText(url);
+    alert('LINE 分享連結已複製！\n\n到 LINE 對話框「貼上」即可。');
+  }catch(e){
+    prompt('長按複製這個 LINE 分享連結：',url);
+  }
+}
+document.getElementById('shareBtn').onclick=makeShareLink;
+
+function loadSharedQuestion(){
+  const m=location.hash.match(/^#q=(.+)$/);
+  if(!m)return false;
+  try{
+    const q=decodeShare(m[1]);
+    shareMode=true; sharedQuestion=q;
+    document.body.classList.add('share-mode');
+    category=q.category||'每日一題';
+    N=+q.size||19; sizeSel.value=N;
+    baseStones=q.stones||{}; marks=q.marks||{}; answerMoves=q.answerMoves||[];
+    document.getElementById('boardTitle').textContent=`${category}｜${q.title||'每日一題'}`;
+    document.getElementById('shareQuestionText').style.display='block';
+    document.getElementById('shareQuestionText').textContent=q.prompt||'請找出最佳手順。';
+    updateSharedAnswer();
+    draw();
+    return true;
+  }catch(e){
+    console.error(e); return false;
+  }
+}
+function updateSharedAnswer(){
+  if(!shareMode||!sharedQuestion)return;
+  const box=document.getElementById('shareAnswerText');
+  box.style.display='block';
+  if(published(sharedQuestion)){
+    const moves=(sharedQuestion.answerMoves||[]).map((m,i)=>`${i+1}.${m.color==='black'?'黑':'白'}`).join(' → ');
+    box.innerHTML='<b>今日正解已公布：</b><br>'+(moves?moves+'<br>':'')+escapeHtml(sharedQuestion.explain||'請參考棋盤上的數字手順。');
+  }else{
+    box.innerHTML='<b>正解尚未公布</b><br>'+escapeHtml(`${sharedQuestion.publishDate} ${sharedQuestion.publishTime} 公開`);
+  }
+  draw();
+}
+
+const isShared=loadSharedQuestion();
+if(!isShared){draw();renderList();preview();}
+setInterval(()=>{ if(shareMode) updateSharedAnswer(); else preview(); },60000);
 </script>
 </body>
 </html>
