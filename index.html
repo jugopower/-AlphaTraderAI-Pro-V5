@@ -10482,13 +10482,21 @@ async function onlineSyncRoom(){
     let guidanceSetupB=[];
     let displayOnlineMoves=rawOnlineMoves;
     if(guidanceHandicap>=2){
+      /* 指導棋資料庫把開局讓子也存成 online_moves。
+         這些是「設定子」不是正式手順，所以固定把前 N 筆非 Pass 棋子拆成 setupB。
+         不再依賴 color 字串格式，避免 B / black / 小寫差異讓拆分失敗。 */
       const head=rawOnlineMoves.slice(0,guidanceHandicap);
-      const valid=head.length===guidanceHandicap && head.every(m=>m && m.color==="B" && !m.is_pass && Number.isFinite(Number(m.x)) && Number.isFinite(Number(m.y)));
+      const valid=head.length===guidanceHandicap && head.every(m=>m && !m.is_pass && Number.isFinite(Number(m.x)) && Number.isFinite(Number(m.y)));
       if(valid){
         guidanceSetupB=head.map(m=>({x:Number(m.x),y:Number(m.y)}));
         displayOnlineMoves=rawOnlineMoves.slice(guidanceHandicap);
+      }else{
+        /* 後端若日後不再把讓子寫進 online_moves，仍用標準讓子點顯示，
+           但不吃掉真正棋步。 */
+        guidanceSetupB=handicapPoints(Number(room.board_size||19),guidanceHandicap);
       }
     }
+    state.handicap=guidanceHandicap;
     state.moves=displayOnlineMoves.map(m=>m.is_pass?{c:m.color,pass:true}:{c:m.color,x:Number(m.x),y:Number(m.y)});
     state.index=state.moves.length;state.turn=room.turn||((state.moves.length%2)?"W":"B");
     state.setupB=guidanceSetupB;state.setupW=[];state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";
@@ -16778,7 +16786,7 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
 
 
 <style id="joygo-guidance-3312zu-landscape-fit">
-/* Beta 3.3.12zv｜多人指導棋根因修正版：
+/* Beta 3.3.12zx｜多人指導棋根因修正版：
    以 iframe 實際可用高度限制棋盤，19 路底部與操作列都必須完整顯示。 */
 @media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
   html[data-joygo-guidance="1"],
@@ -17030,6 +17038,68 @@ body.guidance-embed-mode #moveConfirmCancel{
   window.addEventListener('orientationchange',()=>setTimeout(boot,350),{passive:true});
 })();
 </script>
+
+
+<style id="joygo-guidance-3312zx-layout-final">
+/* Beta 3.3.12zx｜多人指導棋版面最終收斂：
+   - 直式棋盤靠上，六鍵緊接棋盤，不留大塊黑色空白。
+   - 橫式保留完整棋盤＋底部功能列，不裁切。
+   - 確認列在兩個方向都固定可見於功能列上方。 */
+@media (orientation:portrait) and (pointer:coarse){
+  html[data-joygo-guidance="1"],
+  html[data-joygo-guidance="1"] body,
+  body.guidance-embed-mode{height:auto!important;min-height:0!important;overflow:visible!important;}
+  html[data-joygo-guidance="1"] .app,
+  body.guidance-embed-mode .app{
+    height:auto!important;min-height:0!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto 118px!important;
+    align-content:start!important;overflow:visible!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap,
+  body.guidance-embed-mode .board-wrap{
+    height:auto!important;min-height:0!important;max-height:none!important;
+    align-items:flex-start!important;justify-content:center!important;overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] #board,
+  body.guidance-embed-mode #board{
+    width:min(calc(100vw - 14px),930px)!important;
+    height:min(calc(100vw - 14px),930px)!important;
+    max-width:100%!important;max-height:none!important;margin:0 auto!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked,
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked{
+    position:fixed!important;left:8px!important;right:8px!important;
+    bottom:126px!important;width:auto!important;z-index:60000!important;
+  }
+}
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  html[data-joygo-guidance="1"],html[data-joygo-guidance="1"] body,body.guidance-embed-mode{
+    height:100%!important;min-height:0!important;overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .app,body.guidance-embed-mode .app{
+    height:100%!important;min-height:0!important;
+    grid-template-rows:minmax(0,1fr) 118px!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap,body.guidance-embed-mode .board-wrap{
+    min-height:0!important;height:auto!important;max-height:none!important;
+    align-items:center!important;justify-content:center!important;overflow:hidden!important;padding:4px!important;
+  }
+  html[data-joygo-guidance="1"] .player,body.guidance-embed-mode .player{
+    height:118px!important;min-height:118px!important;max-height:118px!important;overflow:visible!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow,body.guidance-embed-mode #gameActionRow{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-template-rows:48px 48px!important;height:102px!important;min-height:102px!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked,
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked{
+    position:fixed!important;right:10px!important;left:auto!important;bottom:128px!important;
+    width:245px!important;z-index:60000!important;
+  }
+}
+</style>
 
 </body>
 </html>
