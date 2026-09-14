@@ -12674,6 +12674,7 @@ function joygoClearPendingMove(){
   const bar=$("moveConfirmBar"),marker=$("moveConfirmMarker");
   if(bar)bar.hidden=true;
   if(marker)marker.hidden=true;
+  try{ if(typeof window.joygoGuidanceHideDedicatedConfirm==="function") window.joygoGuidanceHideDedicatedConfirm(); }catch(_){}
 }
 
 
@@ -12742,6 +12743,10 @@ function joygoShowPendingMove(x,y,point,mode){
     bar.hidden=false;
     try{ if(typeof window.joygoGuidanceShowConfirmOverlay==="function") window.joygoGuidanceShowConfirmOverlay(); }catch(_){}
   }
+  try{
+    if(typeof window.joygoGuidanceShowDedicatedConfirm==="function")
+      window.joygoGuidanceShowDedicatedConfirm(`${color==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`);
+  }catch(_){}
 }
 
 
@@ -15920,6 +15925,79 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   addEventListener('pageshow',()=>setTimeout(bind,60),{passive:true});
   addEventListener('orientationchange',()=>setTimeout(()=>{portrait()?bind():restoreLandscape()},300),{passive:true});
+})();
+</script>
+
+
+<style id="joygo-guidance-297h-dedicated-confirm">
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] .player{height:auto!important;max-height:none!important;overflow:visible!important;}
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmDock{
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    width:100%;
+    box-sizing:border-box;
+    margin:0 0 8px 0;
+    padding:10px;
+    border:1px solid #8b6338;
+    border-radius:14px;
+    background:#1b120d;
+    color:#ffe7a0;
+    z-index:50;
+  }
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmDock.show{display:grid!important;}
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmText{grid-column:1/-1;text-align:center;font-weight:900;font-size:15px;}
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmOk,
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmCancel{
+    min-height:50px!important;
+    font-size:16px!important;
+    font-weight:900!important;
+    border-radius:12px!important;
+  }
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmOk{background:#f4bf3d!important;color:#23160a!important;border:1px solid #d49a21!important;}
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmCancel{background:#2a1b14!important;color:#fff!important;border:1px solid #6f4a33!important;}
+}
+</style>
+<script id="joygo-guidance-297h-dedicated-confirm-js">
+(()=>{
+  const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
+  if(!isGuidance())return;
+  const portrait=()=>window.innerHeight>=window.innerWidth;
+  function ensureDock(){
+    let dock=document.getElementById('jgGuidanceConfirmDock');
+    const player=document.querySelector('.player');
+    if(!player)return null;
+    if(!dock){
+      dock=document.createElement('div');
+      dock.id='jgGuidanceConfirmDock';
+      dock.innerHTML='<div id="jgGuidanceConfirmText">確認落子</div><button id="jgGuidanceConfirmOk" type="button">✓ 確定落子</button><button id="jgGuidanceConfirmCancel" type="button">取消</button>';
+      player.insertBefore(dock, player.firstChild);
+      document.getElementById('jgGuidanceConfirmOk').addEventListener('click',async()=>{
+        dock.classList.remove('show');
+        try{await joygoConfirmPendingMove();}catch(e){try{toast('落子失敗：'+(e?.message||e))}catch(_){}}
+      });
+      document.getElementById('jgGuidanceConfirmCancel').addEventListener('click',()=>{
+        dock.classList.remove('show');
+        try{joygoClearPendingMove();}catch(_){}
+        try{toast('已取消落子')}catch(_){}
+      });
+    }
+    return dock;
+  }
+  window.joygoGuidanceShowDedicatedConfirm=function(text){
+    if(!portrait())return;
+    const dock=ensureDock(); if(!dock)return;
+    const t=document.getElementById('jgGuidanceConfirmText');
+    if(t)t.textContent=text||'是否確定落子？';
+    dock.classList.add('show');
+  };
+  window.joygoGuidanceHideDedicatedConfirm=function(){
+    document.getElementById('jgGuidanceConfirmDock')?.classList.remove('show');
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureDock,{once:true});else ensureDock();
+  addEventListener('pageshow',()=>setTimeout(ensureDock,50),{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(()=>{ensureDock(); if(!portrait()) window.joygoGuidanceHideDedicatedConfirm();},250),{passive:true});
 })();
 </script>
 
