@@ -1,3 +1,4 @@
+<!-- Beta 3.3.12zu｜多人指導棋 iPad 橫式完整棋盤修正版 -->
 <!-- Beta 3.3.12zt｜多人指導棋公開轉播觀戰入口版 -->
 <!-- Beta 3.3.12zr｜iPad 指導棋直式落子確認鍵修正版 -->
 <!doctype html>
@@ -16750,6 +16751,107 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
   window.addEventListener('pageshow',settle,{passive:true});
   window.addEventListener('orientationchange',settle,{passive:true});
   window.addEventListener('resize',settle,{passive:true});
+})();
+</script>
+
+
+<style id="joygo-guidance-3312zu-landscape-fit">
+/* Beta 3.3.12zu｜只修多人指導棋 iPad 橫式：
+   以 iframe 實際可用高度限制棋盤，19 路底部與操作列都必須完整顯示。 */
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  html[data-joygo-guidance="1"],
+  html[data-joygo-guidance="1"] body,
+  body.guidance-embed-mode{
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .app,
+  body.guidance-embed-mode .app{
+    height:100%!important;
+    min-height:0!important;
+    grid-template-rows:minmax(0,1fr) 58px!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap,
+  body.guidance-embed-mode .board-wrap{
+    min-height:0!important;
+    max-height:none!important;
+    overflow:hidden!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:6px!important;
+  }
+  html[data-joygo-guidance="1"] #board,
+  body.guidance-embed-mode #board{
+    max-width:100%!important;
+    max-height:100%!important;
+    margin:auto!important;
+  }
+}
+</style>
+<script id="joygo-guidance-3312zu-landscape-fit-js">
+(()=>{
+  const isGuidance=()=>{try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
+  if(!isGuidance())return;
+  let timer=0;
+  function realViewportHeight(){
+    const vals=[window.visualViewport?.height, document.documentElement?.clientHeight, window.innerHeight]
+      .map(Number).filter(v=>Number.isFinite(v)&&v>200);
+    return vals.length?Math.floor(Math.min(...vals)):600;
+  }
+  function fitLandscape(){
+    if(!(window.innerWidth>window.innerHeight))return;
+    const app=document.querySelector('.app');
+    const wrap=document.querySelector('.board-wrap');
+    const canvas=document.getElementById('board');
+    if(!app||!wrap||!canvas)return;
+    const vh=realViewportHeight();
+    document.documentElement.style.setProperty('height',vh+'px','important');
+    document.body.style.setProperty('height',vh+'px','important');
+    app.style.setProperty('height',vh+'px','important');
+    app.style.setProperty('min-height','0','important');
+    app.style.setProperty('grid-template-rows','minmax(0,1fr) 58px','important');
+    // 先讓 Grid 完成，再以真正 board-wrap 高度重算棋盤。
+    requestAnimationFrame(()=>{
+      const r=wrap.getBoundingClientRect();
+      const safeW=Math.max(260,Math.floor(r.width-16));
+      const safeH=Math.max(260,Math.floor(Math.min(r.height, vh-66)-16));
+      const size=Math.max(260,Math.min(safeW,safeH));
+      wrap.style.setProperty('min-height','0','important');
+      wrap.style.setProperty('overflow','hidden','important');
+      try{
+        if(typeof resizeBoard==='function') resizeBoard(true);
+        if(typeof drawBoard==='function') drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+      }catch(_){ }
+      // Safari 旋轉後偶爾仍保留上一方向的 canvas CSS；最後再以安全尺寸封頂。
+      canvas.style.setProperty('width',size+'px','important');
+      canvas.style.setProperty('height',size+'px','important');
+      canvas.style.setProperty('max-width',size+'px','important');
+      canvas.style.setProperty('max-height',size+'px','important');
+      try{
+        const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
+        if(typeof state!=='undefined') state.boardCssSize=size;
+        canvas._cssSize=size;
+        canvas._dpr=dpr;
+        const px=Math.max(260,Math.floor(size*dpr));
+        if(canvas.width!==px||canvas.height!==px){
+          canvas.width=px; canvas.height=px;
+          if(typeof ctx!=='undefined'){
+            ctx=canvas.getContext('2d',{alpha:false});
+            ctx?.setTransform(dpr,0,0,dpr,0,0);
+          }
+        }
+        if(typeof drawBoard==='function') drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+      }catch(_){ }
+    });
+  }
+  function schedule(delay=120){clearTimeout(timer);timer=setTimeout(fitLandscape,delay)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>schedule(60),{once:true}); else schedule(60);
+  window.addEventListener('pageshow',()=>schedule(80),{passive:true});
+  window.addEventListener('orientationchange',()=>{schedule(180);schedule(500)}, {passive:true});
+  window.addEventListener('resize',()=>schedule(180),{passive:true});
+  window.visualViewport?.addEventListener('resize',()=>schedule(120),{passive:true});
 })();
 </script>
 
