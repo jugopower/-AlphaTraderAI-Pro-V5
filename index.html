@@ -15870,5 +15870,84 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
 })();
 </script>
 
+
+
+<style id="joygo-guidance-297d-portrait-confirm-force">
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed{
+    position:fixed!important;
+    left:12px!important;
+    right:12px!important;
+    bottom:calc(126px + env(safe-area-inset-bottom))!important;
+    top:auto!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:0!important;
+    z-index:2147483000!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:9px!important;
+    pointer-events:auto!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed:not([hidden]){
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmOk,
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmCancel{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    min-height:48px!important;
+    font-size:16px!important;
+  }
+}
+</style>
+<script id="joygo-guidance-297d-portrait-confirm-force-js">
+(()=>{
+  const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
+  if(!isGuidance()) return;
+  const isPortrait=()=>window.innerHeight>=window.innerWidth;
+  function forcePortraitConfirm(){
+    if(!isPortrait()) return;
+    const b=document.getElementById('moveConfirmBar');
+    if(!b) return;
+    if(b.parentElement!==document.body) document.body.appendChild(b);
+    b.classList.remove('jg-confirm-docked');
+    b.classList.add('jg-portrait-fixed');
+    b.hidden=false;
+    b.style.setProperty('display','grid','important');
+    b.style.setProperty('visibility','visible','important');
+    b.style.setProperty('opacity','1','important');
+    const ok=document.getElementById('moveConfirmOk');
+    const cancel=document.getElementById('moveConfirmCancel');
+    if(ok){ok.hidden=false;ok.style.setProperty('display','block','important');}
+    if(cancel){cancel.hidden=false;cancel.style.setProperty('display','block','important');}
+  }
+  function install(){
+    const base=window.joygoShowPendingMove || (typeof joygoShowPendingMove==='function'?joygoShowPendingMove:null);
+    if(typeof base==='function'&&!base.__guidance297d){
+      const wrapped=function(){
+        const out=base.apply(this,arguments);
+        if(isPortrait()){
+          forcePortraitConfirm();
+          setTimeout(forcePortraitConfirm,0);
+          setTimeout(forcePortraitConfirm,40);
+        }
+        return out;
+      };
+      wrapped.__guidance297d=true;
+      window.joygoShowPendingMove=wrapped;
+      try{joygoShowPendingMove=wrapped}catch(_){ }
+    }
+    try{ if(typeof joygoBindMoveConfirmControls==='function') joygoBindMoveConfirmControls(); }catch(_){ }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true}); else install();
+  window.addEventListener('pageshow',install,{passive:true});
+})();
+</script>
+
 </body>
 </html>
