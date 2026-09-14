@@ -227,9 +227,21 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 .broadcast-status.on{color:#c9f0d9;border-color:#2d835c;background:#113a2b}
 @media(max-width:700px){.broadcast-status{width:100%;text-align:center}}
 </style>
+
+<style id="joygo-guidance-296a-ipad-final-rotation">
+/* Beta 2.9.6a：橫式 iframe 不再強制 610px 最小高度，讓內頁以真實可用高度重算棋盤。 */
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  .board-frame{
+    height:calc(100dvh - 205px)!important;
+    min-height:520px!important;
+    max-height:760px!important;
+  }
+}
+</style>
+
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6｜公開轉播觀戰版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6a｜公開轉播＋iPad直橫修正版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -437,7 +449,7 @@ function ensureFrame(b){
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
     f.setAttribute('scrolling','no');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=296`;
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=296a`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;

@@ -1,4 +1,4 @@
-<!-- Beta 3.3.12zs｜多人指導棋公開轉播觀戰入口版 -->
+<!-- Beta 3.3.12zt｜多人指導棋公開轉播觀戰入口版 -->
 <!-- Beta 3.3.12zr｜iPad 指導棋直式落子確認鍵修正版 -->
 <!doctype html>
 <html lang="zh-Hant">
@@ -16635,5 +16635,123 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
   window.addEventListener('pageshow',()=>setTimeout(openFromQuery,500),{passive:true});
 })();
 </script>
+
+
+<style id="joygo-guidance-3312zt-rotation-confirm-final">
+/* Beta 3.3.12zt｜多人指導棋 iPad 最終直橫切換修正
+   1) 直式：確認列不能被隱藏的右欄吃掉，固定顯示在六鍵上方。
+   2) 橫式：棋盤尺寸改以 iframe 真實可用高度重算，不再依 100dvh，避免底部被裁切。 */
+@media (orientation:portrait) and (pointer:coarse){
+  html[data-joygo-guidance="1"] .right,
+  body.guidance-embed-mode .right{
+    display:contents!important;
+    pointer-events:none!important;
+  }
+  html[data-joygo-guidance="1"] .right > *:not(#moveConfirmBar),
+  body.guidance-embed-mode .right > *:not(#moveConfirmBar){
+    display:none!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked,
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked{
+    position:fixed!important;
+    left:8px!important;
+    right:8px!important;
+    top:auto!important;
+    bottom:calc(116px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:0!important;
+    transform:none!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    padding:8px!important;
+    z-index:50020!important;
+    pointer-events:auto!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked[hidden],
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked[hidden]{
+    display:none!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]),
+  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]){
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar #moveConfirmOk,
+  html[data-joygo-guidance="1"] #moveConfirmBar #moveConfirmCancel,
+  body.guidance-embed-mode #moveConfirmBar #moveConfirmOk,
+  body.guidance-embed-mode #moveConfirmBar #moveConfirmCancel{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    min-height:46px!important;
+    font-size:15px!important;
+  }
+}
+
+@media (orientation:landscape) and (pointer:coarse){
+  html[data-joygo-guidance="1"],
+  html[data-joygo-guidance="1"] body,
+  body.guidance-embed-mode{
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .app,
+  body.guidance-embed-mode .app{
+    height:100%!important;
+    min-height:0!important;
+    grid-template-rows:minmax(0,1fr) 58px!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap,
+  body.guidance-embed-mode .board-wrap{
+    min-height:0!important;
+    max-height:none!important;
+    overflow:hidden!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+}
+</style>
+<script id="joygo-guidance-3312zt-rotation-confirm-final-js">
+(()=>{
+  const isGuidance=()=>{
+    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
+  };
+  if(!isGuidance())return;
+  let t=0;
+  function settle(){
+    clearTimeout(t);
+    t=setTimeout(()=>{
+      try{
+        const portrait=window.innerHeight>window.innerWidth;
+        const wrap=document.querySelector('.board-wrap');
+        const app=document.querySelector('.app');
+        if(!portrait && wrap){
+          const h=Math.max(280,Math.floor(window.innerHeight-66));
+          if(app){
+            app.style.setProperty('height',window.innerHeight+'px','important');
+            app.style.setProperty('min-height','0','important');
+          }
+          wrap.style.setProperty('height',h+'px','important');
+          wrap.style.setProperty('min-height','0','important');
+          wrap.style.setProperty('max-height',h+'px','important');
+        }
+        if(typeof window.forceBoardRebuild==='function')window.forceBoardRebuild('guidance-3312zt-rotate');
+        else if(typeof window.resizeBoard==='function')window.resizeBoard(true);
+      }catch(e){console.warn('3312zt settle skipped',e)}
+    }, portraitDelay());
+  }
+  function portraitDelay(){return window.innerHeight>window.innerWidth?360:260}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',settle,{once:true}); else settle();
+  window.addEventListener('pageshow',settle,{passive:true});
+  window.addEventListener('orientationchange',settle,{passive:true});
+  window.addEventListener('resize',settle,{passive:true});
+})();
+</script>
+
 </body>
 </html>
