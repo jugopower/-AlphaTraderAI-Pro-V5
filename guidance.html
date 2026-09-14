@@ -251,9 +251,20 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 }
 </style>
 
+
+<style id="joygo-guidance-296c-frame-root-fix">
+/* Beta 2.9.6c：外層 iframe 只負責提供穩定工作區；不再用單一 620px 套所有方向。 */
+@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
+  .board-frame{height:1068px!important;min-height:1068px!important;max-height:1068px!important;overflow:hidden!important;}
+}
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  .board-frame{height:680px!important;min-height:680px!important;max-height:680px!important;overflow:hidden!important;}
+}
+</style>
+
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6b｜公開轉播＋iPad橫式完整棋盤版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6d｜公開轉播＋讓子棋號＋功能鍵＋落子確認鎖定版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -461,7 +472,7 @@ function ensureFrame(b){
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
     f.setAttribute('scrolling','no');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=296b`;
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&guidance_handicap=${encodeURIComponent(Number(b.handicap||0))}&gv=296d`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;

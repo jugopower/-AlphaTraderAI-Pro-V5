@@ -10467,9 +10467,31 @@ async function onlineSyncRoom(){
     state.onlineColor=room.black_id===memberSession.user.id?"B":(room.white_id===memberSession.user.id?"W":"");
     state.onlineMode=true;state.casualMode=false;state.humanMode=false;state.teachingMode=false;state.trialMode=false;state.spectatorMode=false;
     state.size=Number(room.board_size||19);state.komi=Number(room.komi||7.5);
-    state.moves=(moves||[]).map(m=>m.is_pass?{c:m.color,pass:true}:{c:m.color,x:Number(m.x),y:Number(m.y)});
+
+    /* Beta 3.3.12zv：多人指導棋讓子根因修正。
+       後端目前會把讓子點也寫入 online_moves，因此若直接當 moves 讀入，
+       讓子會被誤當第 1、2、3...手顯示棋號。
+       guidance.html 會用 guidance_handicap 傳入讓子數；這裡只在指導棋 iframe 中，
+       將最前面的 N 顆黑棋還原為 setupB（AB），真正對局手順才從 1 開始。 */
+    let rawOnlineMoves=(moves||[]);
+    let guidanceHandicap=0;
+    try{
+      const qp=new URLSearchParams(location.search);
+      if(window.self!==window.top && qp.get("guidance_embed")==="1") guidanceHandicap=Math.max(0,Number(qp.get("guidance_handicap")||0));
+    }catch(_){guidanceHandicap=0}
+    let guidanceSetupB=[];
+    let displayOnlineMoves=rawOnlineMoves;
+    if(guidanceHandicap>=2){
+      const head=rawOnlineMoves.slice(0,guidanceHandicap);
+      const valid=head.length===guidanceHandicap && head.every(m=>m && m.color==="B" && !m.is_pass && Number.isFinite(Number(m.x)) && Number.isFinite(Number(m.y)));
+      if(valid){
+        guidanceSetupB=head.map(m=>({x:Number(m.x),y:Number(m.y)}));
+        displayOnlineMoves=rawOnlineMoves.slice(guidanceHandicap);
+      }
+    }
+    state.moves=displayOnlineMoves.map(m=>m.is_pass?{c:m.color,pass:true}:{c:m.color,x:Number(m.x),y:Number(m.y)});
     state.index=state.moves.length;state.turn=room.turn||((state.moves.length%2)?"W":"B");
-    state.setupB=[];state.setupW=[];state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";
+    state.setupB=guidanceSetupB;state.setupW=[];state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";
     state.gameEnded=room.status==="ended";
     $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
     $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
@@ -16756,7 +16778,7 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
 
 
 <style id="joygo-guidance-3312zu-landscape-fit">
-/* Beta 3.3.12zu｜只修多人指導棋 iPad 橫式：
+/* Beta 3.3.12zv｜多人指導棋根因修正版：
    以 iframe 實際可用高度限制棋盤，19 路底部與操作列都必須完整顯示。 */
 @media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
   html[data-joygo-guidance="1"],
@@ -16852,6 +16874,160 @@ body.guidance-embed-mode #moveConfirmToggleBtn{
   window.addEventListener('orientationchange',()=>{schedule(180);schedule(500)}, {passive:true});
   window.addEventListener('resize',()=>schedule(180),{passive:true});
   window.visualViewport?.addEventListener('resize',()=>schedule(120),{passive:true});
+})();
+</script>
+
+
+
+<style id="joygo-guidance-3312zv-root-layout-fix">
+/* Beta 3.3.12zv｜根因修正：
+   過去多個版本對 .player / #gameActionRow 疊加互相衝突，直式最後只剩第一列三鍵。
+   這裡以最後一層、只限 guidance iframe 的規則統一收斂，不再靠前面版本互相覆蓋。 */
+@media (orientation:portrait) and (pointer:coarse){
+  html[data-joygo-guidance="1"],
+  html[data-joygo-guidance="1"] body,
+  body.guidance-embed-mode{
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .app,
+  body.guidance-embed-mode .app{
+    height:100%!important;
+    min-height:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr) 118px!important;
+    gap:6px!important;
+    padding:5px!important;
+    overflow:hidden!important;
+  }
+  html[data-joygo-guidance="1"] .board-wrap,
+  body.guidance-embed-mode .board-wrap{
+    grid-column:1!important;grid-row:1!important;
+    min-height:0!important;height:auto!important;max-height:none!important;
+    overflow:hidden!important;align-items:center!important;justify-content:center!important;
+  }
+  html[data-joygo-guidance="1"] .player,
+  body.guidance-embed-mode .player{
+    grid-column:1!important;grid-row:2!important;
+    display:block!important;
+    height:118px!important;min-height:118px!important;max-height:118px!important;
+    padding:6px!important;overflow:visible!important;
+    position:relative!important;z-index:20!important;
+  }
+  html[data-joygo-guidance="1"] .player .move-tools,
+  html[data-joygo-guidance="1"] .player .controls,
+  html[data-joygo-guidance="1"] .player .range-row,
+  html[data-joygo-guidance="1"] .player #trialModeBar,
+  body.guidance-embed-mode .player .move-tools,
+  body.guidance-embed-mode .player .controls,
+  body.guidance-embed-mode .player .range-row,
+  body.guidance-embed-mode .player #trialModeBar{display:none!important;}
+  html[data-joygo-guidance="1"] #gameActionRow,
+  body.guidance-embed-mode #gameActionRow{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-template-rows:48px 48px!important;
+    grid-auto-rows:48px!important;
+    gap:6px!important;
+    width:100%!important;height:102px!important;min-height:102px!important;
+    margin:0!important;padding:0!important;overflow:visible!important;
+  }
+  html[data-joygo-guidance="1"] #gameActionRow > button,
+  body.guidance-embed-mode #gameActionRow > button{
+    min-width:0!important;width:100%!important;
+    height:48px!important;min-height:48px!important;max-height:48px!important;
+    margin:0!important;padding:5px 4px!important;
+    display:none!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+    font-size:13px!important;
+  }
+  html[data-joygo-guidance="1"] #undoGameBtn,
+  html[data-joygo-guidance="1"] #scoreGameBtn,
+  html[data-joygo-guidance="1"] #calculateResultBtn,
+  html[data-joygo-guidance="1"] #passGameBtn,
+  html[data-joygo-guidance="1"] #resignGameBtn,
+  html[data-joygo-guidance="1"] #saveSgfBtn,
+  body.guidance-embed-mode #undoGameBtn,
+  body.guidance-embed-mode #scoreGameBtn,
+  body.guidance-embed-mode #calculateResultBtn,
+  body.guidance-embed-mode #passGameBtn,
+  body.guidance-embed-mode #resignGameBtn,
+  body.guidance-embed-mode #saveSgfBtn{display:block!important;}
+}
+</style>
+
+
+<style id="joygo-guidance-confirm-lock-3312zw">
+/* Beta 3.3.12zw｜多人指導棋落子確認最終鎖定
+   只作用 guidance iframe：每次點棋盤先預覽，必須按「確定落子」才送出。 */
+html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]),
+body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]){
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+html[data-joygo-guidance="1"] #moveConfirmOk,
+html[data-joygo-guidance="1"] #moveConfirmCancel,
+body.guidance-embed-mode #moveConfirmOk,
+body.guidance-embed-mode #moveConfirmCancel{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+</style>
+<script id="joygo-guidance-confirm-lock-3312zw-js">
+(()=>{
+  const isGuidance=()=>{
+    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
+  };
+  if(!isGuidance())return;
+
+  function forceConfirmOn(){
+    try{ joygoMoveConfirmEnabled=true; }catch(_){}
+    try{ localStorage.setItem('joygo_move_confirm_enabled','1'); }catch(_){}
+    try{ if(typeof joygoBindMoveConfirmControls==='function') joygoBindMoveConfirmControls(); }catch(_){}
+    try{ if(typeof joygoUpdateMoveConfirmToggle==='function') joygoUpdateMoveConfirmToggle(); }catch(_){}
+  }
+
+  /* 指導棋不允許把落子確認關掉。 */
+  try{
+    const oldToggle=window.joygoToggleMoveConfirm;
+    window.joygoToggleMoveConfirm=function(){
+      forceConfirmOn();
+      try{ if(typeof toast==='function') toast('多人指導棋：落子確認固定開啟'); }catch(_){}
+      return;
+    };
+  }catch(_){}
+
+  /* 即使舊版 localStorage 曾存成「關」，指導棋每次落子仍強制走 pending → 確定 → onlinePlayAt。 */
+  try{
+    const previousShow=window.joygoShowPendingMove;
+    if(typeof previousShow==='function'){
+      window.joygoShowPendingMove=function(x,y,point,mode){
+        if(mode==='online') forceConfirmOn();
+        return previousShow.call(this,x,y,point,mode);
+      };
+    }
+  }catch(_){}
+
+  function boot(){
+    forceConfirmOn();
+    const ok=document.getElementById('moveConfirmOk');
+    const cancel=document.getElementById('moveConfirmCancel');
+    if(ok){ok.hidden=false; ok.style.pointerEvents='auto';}
+    if(cancel){cancel.hidden=false; cancel.style.pointerEvents='auto';}
+    /* bar 本身仍保持 hidden，直到棋盤被點擊，避免空白狀態一直佔位。 */
+    const bar=document.getElementById('moveConfirmBar');
+    if(bar && !window.joygoPendingOnlineMove) bar.hidden=true;
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+  window.addEventListener('pageshow',boot,{passive:true});
+  window.addEventListener('orientationchange',()=>setTimeout(boot,350),{passive:true});
 })();
 </script>
 
