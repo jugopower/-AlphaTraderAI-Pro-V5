@@ -220,9 +220,16 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
   .card:has(.board-frame.active){overflow:visible!important;}
 }
 </style>
+
+<style id="joygo-guidance-296-broadcast-style">
+.broadcast-btn.on{background:linear-gradient(180deg,#2aa36f,#15734c)!important;color:#fff!important;border-color:#58c792!important}
+.broadcast-status{font-size:13px;font-weight:800;color:#d9d2bd;padding:6px 8px;border-radius:999px;border:1px solid #477B65;background:#102C22}
+.broadcast-status.on{color:#c9f0d9;border-color:#2d835c;background:#113a2b}
+@media(max-width:700px){.broadcast-status{width:100%;text-align:center}}
+</style>
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">1 對 1～1 對 5 線上指導棋</div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6｜公開轉播觀戰版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -236,9 +243,9 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 <label>基本時間(分) <input id="mainMin" type="number" value="20" min="0" style="width:80px"></label><label>讀秒(秒) <input id="byoSec" type="number" value="30" min="5" style="width:76px"></label><label>次數 <input id="byoPeriods" type="number" value="3" min="1" style="width:60px"></label></div>
 <div id="studentRows" class="formgrid"></div>
 <div id="teacherIdentityNote" class="notice good" style="margin-top:12px">目前身分：朱老師｜可開 1 對 1～1 對 5</div>
-<div class="toolbar" style="margin-top:12px"><button id="createBtn" class="btn green">建立指導棋</button><span class="small">老師執白，學生執黑；可設定分先或讓子。</span></div></div></section>
-<section class="card"><h2>進行中的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:10px"><button id="cleanupBtn" class="btn ghost">清理舊場次</button><span class="small">顯示近期進行中的指導棋。</span></div><div id="sessions" class="session-list">讀取中…</div></div></section>
-<section class="card"><h2>老師書籤總控</h2><div class="body"><div class="tabs-wrap"><div id="tabs" class="tabs"></div></div><div id="controlbar" class="controlbar" style="display:none"><div id="currentInfo" class="current">—</div><label><input type="checkbox" id="autoNext" checked> 自動下一盤</label><button id="nextBtn" class="btn gold">下一盤 🔴</button><button id="copyBtn" class="btn ghost">複製學生連結</button><button id="refreshBtn" class="btn ghost">重新整理</button><button id="endBtn" class="btn red">結束整場</button></div><div id="frames"><div class="empty">請先建立或開啟一場指導棋。</div></div></div></section>
+<div class="toolbar" style="margin-top:12px"><button id="createBtn" class="btn green">建立指導棋</button><span class="small">老師固定執白；學生執黑。讓 2～9 子會自動放置標準讓子。</span></div></div></section>
+<section class="card"><h2>進行中的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:10px"><button id="cleanupBtn" class="btn ghost">清理舊場次</button><span class="small">只顯示真正近期進行中的場次；舊測試場次只封存、不刪棋譜。</span></div><div id="sessions" class="session-list">讀取中…</div></div></section>
+<section class="card"><h2>老師書籤總控</h2><div class="body"><div class="tabs-wrap"><div id="tabs" class="tabs"></div></div><div id="controlbar" class="controlbar" style="display:none"><div id="currentInfo" class="current">—</div><label><input type="checkbox" id="autoNext" checked> 自動下一盤</label><button id="nextBtn" class="btn gold">下一盤 🔴</button><button id="copyBtn" class="btn ghost">複製學生連結</button><button id="refreshBtn" class="btn ghost">重新整理</button><button id="broadcastBtn" class="btn ghost broadcast-btn" type="button">👁 開放觀戰</button><button id="watchLobbyBtn" class="btn ghost" type="button">🎥 觀戰大廳</button><span id="broadcastStatus" class="broadcast-status">觀戰：關閉</span><button id="endBtn" class="btn red">結束整場</button></div><div id="frames"><div class="empty">請先建立或開啟一場指導棋。</div></div></div></section>
 </div>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
@@ -430,7 +437,7 @@ function ensureFrame(b){
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
     f.setAttribute('scrolling','no');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=295l`;
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&gv=296`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;
@@ -458,6 +465,100 @@ function nextWaitingTeacher(){const o=activeBoards().sort((a,b)=>a.slot_no-b.slo
 $("nextBtn").onclick=nextWaitingTeacher;$("refreshBtn").onclick=()=>refreshSession(true);$("copyBtn").onclick=async()=>{const b=boards.find(x=>x.slot_no===activeSlot);if(!b)return;const u=new URL('index.html',location.href);u.searchParams.set('room',b.room_code);const text=`Joy Go 指導棋｜${b.student_name}\n房號：${b.room_code}\n${u.href}`;try{await navigator.clipboard.writeText(text);notice('✅ 學生連結已複製','good')}catch{prompt('請複製學生連結：',text)}};
 $("autoNext").onchange=async e=>{if(!currentSession)return;const {error}=await sb.rpc('joygo_guidance_set_auto_next',{p_session_id:currentSession,p_enabled:e.target.checked});if(error)notice('設定失敗：'+error.message,'bad');else boards.forEach(b=>b.auto_next=e.target.checked)};
 
+
+
+/* Beta 2.9.6｜多人指導棋公開轉播：直接把各分盤同步到既有觀戰大廳。 */
+const GUIDANCE_SPECTATOR_API='https://alphatrader-katago-server-v2.onrender.com';
+let guidanceBroadcastTimer=null;
+let guidanceBroadcasting=false;
+let guidanceBroadcastHash=new Map();
+
+function guidanceBroadcasterId(){
+  let id=localStorage.getItem('joygo-guidance-broadcaster-id');
+  if(!id){id='gd-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);localStorage.setItem('joygo-guidance-broadcaster-id',id)}
+  return id;
+}
+function guidanceGameId(b){
+  const who=String(b?.student_name||'棋友').trim().replace(/\s+/g,'-');
+  const code=String(b?.room_code||b?.slot_no||'').trim();
+  return (`指導棋-${who}-${code}`).slice(0,40);
+}
+function guidanceTeacherName(b){
+  const t=String(b?.title||'');
+  return t.includes('SAI')?'棋王 SAI':'朱老師';
+}
+function guidanceHandicapPoints(size,count){
+  size=Number(size||19); count=Number(count||0); if(count<2)return [];
+  const low=size>=13?3:2, high=size-1-low, mid=(size-1)/2;
+  const pts=[[high,low],[low,high],[high,high],[low,low],[low,mid],[high,mid],[mid,low],[mid,high],[mid,mid]];
+  const order={2:[0,1],3:[0,1,2],4:[0,1,2,3],5:[0,1,2,3,8],6:[0,1,2,3,4,5],7:[0,1,2,3,4,5,8],8:[0,1,2,3,4,5,6,7],9:[0,1,2,3,4,5,6,7,8]}[Math.min(9,count)]||[];
+  return order.map(i=>({x:pts[i][0],y:pts[i][1]}));
+}
+async function guidanceFetch(path,options={}){
+  const ctl=new AbortController(); const timer=setTimeout(()=>ctl.abort(),7000);
+  try{return await fetch(GUIDANCE_SPECTATOR_API+path,{cache:'no-store',signal:ctl.signal,...options})}finally{clearTimeout(timer)}
+}
+async function guidanceBoardPayload(b){
+  const {data:room,error:re}=await sb.from('online_rooms').select('*').eq('room_code',b.room_code).maybeSingle();
+  if(re)throw re; if(!room)return null;
+  const {data:moves,error:me}=await sb.from('online_moves').select('move_no,color,x,y,is_pass').eq('room_id',room.id).order('move_no');
+  if(me)throw me;
+  const boardSize=Number(room.board_size||19);
+  const handicap=Number(b.handicap||room.handicap||0);
+  return {
+    game_id:guidanceGameId(b), broadcaster_id:guidanceBroadcasterId(), board_size:boardSize,
+    moves:(moves||[]).map(m=>({c:m.color,x:Number(m.x||0),y:Number(m.y||0),pass:!!m.is_pass})),
+    setup_b:guidanceHandicapPoints(boardSize,handicap), setup_w:[], index:(moves||[]).length,
+    black_name:b.student_name||room.black_name||'學生', white_name:guidanceTeacherName(b),
+    status:room.status==='ended'?'ended':'playing'
+  };
+}
+async function guidancePublishBoard(b,force=false){
+  const payload=await guidanceBoardPayload(b); if(!payload)return;
+  const hash=JSON.stringify([payload.moves,payload.setup_b,payload.index,payload.status,payload.black_name,payload.white_name]);
+  if(!force && guidanceBroadcastHash.get(payload.game_id)===hash)return;
+  const r=await guidanceFetch('/spectator/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  guidanceBroadcastHash.set(payload.game_id,hash);
+}
+async function guidancePublishAll(force=false){
+  if(!guidanceBroadcasting)return;
+  const live=activeBoards();
+  await Promise.allSettled(live.map(b=>guidancePublishBoard(b,force)));
+  const st=$('broadcastStatus'); if(st){st.textContent=`📡 轉播中：${live.length} 盤`;st.classList.add('on')}
+}
+async function guidanceStopAll(){
+  clearInterval(guidanceBroadcastTimer); guidanceBroadcastTimer=null;
+  const list=activeBoards().length?activeBoards():boards;
+  await Promise.allSettled(list.map(b=>guidanceFetch('/spectator/stop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game_id:guidanceGameId(b),broadcaster_id:guidanceBroadcasterId()})})));
+  guidanceBroadcastHash.clear();
+}
+function guidanceSyncBroadcastUI(){
+  const btn=$('broadcastBtn'),st=$('broadcastStatus');
+  if(btn){btn.classList.toggle('on',guidanceBroadcasting);btn.textContent=guidanceBroadcasting?'⏹ 停止觀戰':'👁 開放觀戰'}
+  if(st && !guidanceBroadcasting){st.textContent='觀戰：關閉';st.classList.remove('on')}
+}
+async function toggleGuidanceBroadcast(){
+  if(!currentSession)return notice('請先建立或開啟一場指導棋。','bad');
+  if(guidanceBroadcasting){
+    guidanceBroadcasting=false; localStorage.removeItem('joygo-guidance-broadcast-session');
+    await guidanceStopAll(); guidanceSyncBroadcastUI(); notice('✅ 已停止公開觀戰。','good'); return;
+  }
+  guidanceBroadcasting=true; localStorage.setItem('joygo-guidance-broadcast-session',String(currentSession)); guidanceSyncBroadcastUI();
+  notice('正在開啟公開觀戰…');
+  try{
+    await guidancePublishAll(true);
+    clearInterval(guidanceBroadcastTimer); guidanceBroadcastTimer=setInterval(()=>guidancePublishAll(false).catch(()=>{}),1500);
+    notice(`✅ 已開放觀戰｜${activeBoards().length} 盤同步到觀戰大廳。`,'good');
+  }catch(e){
+    guidanceBroadcasting=false; localStorage.removeItem('joygo-guidance-broadcast-session'); guidanceSyncBroadcastUI();
+    notice('開放觀戰失敗：'+(e.message||e),'bad');
+  }
+}
+$('broadcastBtn').onclick=toggleGuidanceBroadcast;
+$('watchLobbyBtn').onclick=()=>window.open('index.html?spectator=1','_blank','noopener');
+window.addEventListener('beforeunload',()=>{ if(guidanceBroadcasting) localStorage.setItem('joygo-guidance-broadcast-session',String(currentSession||'')); });
+
 async function getAuthoritativeSessionState(){
   if(!currentSession)return null;
   const {data,error}=await sb.rpc('joygo_guidance_session_state',{
@@ -476,7 +577,7 @@ async function confirmSessionReallyEnded(){
   return Number(s.live_count||0)===0;
 }
 
-$("endBtn").onclick=async()=>{if(!currentSession||!confirm('確定結束整場指導棋？棋局與棋譜不會刪除。'))return;const {error}=await sb.rpc('joygo_guidance_end_session',{p_session_id:currentSession});if(error)return notice('結束失敗：'+error.message,'bad');notice('✅ 本場指導棋已標示結束。','good');await loadSessions();await refreshSession(true)};
+$("endBtn").onclick=async()=>{if(!currentSession||!confirm('確定結束整場指導棋？棋局與棋譜不會刪除。'))return;if(guidanceBroadcasting){guidanceBroadcasting=false;localStorage.removeItem('joygo-guidance-broadcast-session');await guidanceStopAll();guidanceSyncBroadcastUI();}const {error}=await sb.rpc('joygo_guidance_end_session',{p_session_id:currentSession});if(error)return notice('結束失敗：'+error.message,'bad');notice('✅ 本場指導棋已標示結束。','good');await loadSessions();await refreshSession(true)};
 async function refreshSession(manual=false){
   if(!currentSession)return;
 
@@ -579,6 +680,9 @@ async function refreshSession(manual=false){
 async function subscribeRooms(){if(roomChannel){try{await sb.removeChannel(roomChannel)}catch{}}roomChannel=sb.channel('joygo-guidance-'+currentSession).on('postgres_changes',{event:'*',schema:'public',table:'online_rooms'},()=>refreshSession(false)).subscribe()}
 async function openSession(id,fromAutoSwitch=false){
   currentSession=id;
+  const savedBroadcastSession=localStorage.getItem('joygo-guidance-broadcast-session');
+  guidanceBroadcasting=String(savedBroadcastSession||'')===String(id);
+  guidanceSyncBroadcastUI();
 
   const {data,error}=await sb.rpc(
     'joygo_guidance_get_session',
@@ -668,6 +772,11 @@ async function openSession(id,fromAutoSwitch=false){
   await subscribeRooms();
 
   notice(`✅ 已開啟 ${boards[0].title}，進行中 ${live.length} 盤。`,'good');
+  if(guidanceBroadcasting){
+    clearInterval(guidanceBroadcastTimer);
+    guidancePublishAll(true).catch(()=>{});
+    guidanceBroadcastTimer=setInterval(()=>guidancePublishAll(false).catch(()=>{}),1500);
+  }
   return true;
 }
 
