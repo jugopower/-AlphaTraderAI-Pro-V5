@@ -15567,146 +15567,102 @@ function patch(){
 
 
 
-<style id="joygo-guidance-3313-clean-layout">
-/* Joy Go 3.3.13 / Guidance 2.9.7 — single guidance layout controller.
-   No legacy guidance orientation CSS is allowed below this block. */
-html[data-joygo-guidance="1"],html[data-joygo-guidance="1"] body{
-  margin:0!important;width:100%!important;height:100%!important;min-height:0!important;
-  overflow:hidden!important;background:#0b0806!important;
-}
-html[data-joygo-guidance="1"] .left,
-html[data-joygo-guidance="1"] .move-tools,
-html[data-joygo-guidance="1"] .controls,
-html[data-joygo-guidance="1"] .range-row,
-html[data-joygo-guidance="1"] #trialModeBar,
-html[data-joygo-guidance="1"] #redrawBtn,
-html[data-joygo-guidance="1"] #aiHintPanel,
-html[data-joygo-guidance="1"] #apiInspectorToggle,
-html[data-joygo-guidance="1"] #apiInspectorPanel,
-html[data-joygo-guidance="1"] #teachQuickBar,
-html[data-joygo-guidance="1"] #teachBarToggle,
-html[data-joygo-guidance="1"] .member-chip,
-html[data-joygo-guidance="1"] #memberChip{display:none!important}
-html[data-joygo-guidance="1"] .app{box-sizing:border-box!important;width:100%!important;max-width:none!important;margin:0!important;}
-html[data-joygo-guidance="1"] .board-wrap{box-sizing:border-box!important;min-width:0!important;min-height:0!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;padding:4px!important;}
-html[data-joygo-guidance="1"] #board{display:block!important;margin:0 auto!important;max-width:none!important;max-height:none!important;}
-html[data-joygo-guidance="1"] #gameActionRow>button{visibility:visible!important;opacity:1!important;pointer-events:auto!important;}
-html[data-joygo-guidance="1"] #undoGameBtn,
-html[data-joygo-guidance="1"] #scoreGameBtn,
-html[data-joygo-guidance="1"] #calculateResultBtn,
-html[data-joygo-guidance="1"] #passGameBtn,
-html[data-joygo-guidance="1"] #resignGameBtn,
-html[data-joygo-guidance="1"] #saveSgfBtn{display:block!important}
-html[data-joygo-guidance="1"] #moveConfirmBar{box-sizing:border-box!important;transform:none!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;z-index:200!important;}
+<style id="joygo-guidance-3313a-clean-layout">
+/* Guidance 2.9.7a — single stable guidance layout + reliable move confirmation. */
+html[data-joygo-guidance="1"],html[data-joygo-guidance="1"] body{margin:0!important;width:100%!important;height:100%!important;min-height:0!important;overflow:hidden!important;background:#0b0806!important}
+html[data-joygo-guidance="1"] .left,html[data-joygo-guidance="1"] .move-tools,html[data-joygo-guidance="1"] .controls,html[data-joygo-guidance="1"] .range-row,html[data-joygo-guidance="1"] #trialModeBar,html[data-joygo-guidance="1"] #redrawBtn,html[data-joygo-guidance="1"] #aiHintPanel,html[data-joygo-guidance="1"] #apiInspectorToggle,html[data-joygo-guidance="1"] #apiInspectorPanel,html[data-joygo-guidance="1"] #teachQuickBar,html[data-joygo-guidance="1"] #teachBarToggle,html[data-joygo-guidance="1"] .member-chip,html[data-joygo-guidance="1"] #memberChip{display:none!important}
+html[data-joygo-guidance="1"] .app{box-sizing:border-box!important;width:100%!important;max-width:none!important;margin:0!important}
+html[data-joygo-guidance="1"] .board-wrap{box-sizing:border-box!important;min-width:0!important;min-height:0!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;padding:4px!important}
+html[data-joygo-guidance="1"] #board{display:block!important;margin:0 auto!important;max-width:none!important;max-height:none!important}
+html[data-joygo-guidance="1"] #gameActionRow>button{visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+html[data-joygo-guidance="1"] #undoGameBtn,html[data-joygo-guidance="1"] #scoreGameBtn,html[data-joygo-guidance="1"] #calculateResultBtn,html[data-joygo-guidance="1"] #passGameBtn,html[data-joygo-guidance="1"] #resignGameBtn,html[data-joygo-guidance="1"] #saveSgfBtn{display:block!important}
+html[data-joygo-guidance="1"] #moveConfirmBar{box-sizing:border-box!important;transform:none!important;left:auto!important;right:auto!important;top:auto!important;z-index:50050!important;background:#17100e!important;border:1px solid #d5a443!important;border-radius:12px!important;padding:7px!important}
 html[data-joygo-guidance="1"] #moveConfirmBar[hidden]{display:none!important}
-html[data-joygo-guidance="1"] #moveConfirmBar:not([hidden]){display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;}
-html[data-joygo-guidance="1"] #moveConfirmText{grid-column:1/-1!important;min-width:0!important;width:100%!important;text-align:left!important;}
-html[data-joygo-guidance="1"] #moveConfirmOk,html[data-joygo-guidance="1"] #moveConfirmCancel{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;min-height:44px!important;}
-
+html[data-joygo-guidance="1"] #moveConfirmBar:not([hidden]){display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+html[data-joygo-guidance="1"] #moveConfirmText{grid-column:1/-1!important;min-width:0!important;width:100%!important;text-align:left!important}
+html[data-joygo-guidance="1"] #moveConfirmOk,html[data-joygo-guidance="1"] #moveConfirmCancel{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;min-height:44px!important}
 @media (orientation:portrait){
-  html[data-joygo-guidance="1"] .app{height:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:5px!important;padding:5px!important;overflow:hidden!important;}
-  html[data-joygo-guidance="1"] .board-wrap{flex:0 0 auto!important;width:100%!important;height:auto!important;max-height:none!important;}
-  html[data-joygo-guidance="1"] .right{display:none!important;}
-  html[data-joygo-guidance="1"] .player{display:block!important;flex:0 0 auto!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;padding:5px!important;margin:0!important;overflow:visible!important;box-sizing:border-box!important;}
-  html[data-joygo-guidance="1"] #gameActionRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:48px 48px!important;gap:5px!important;width:100%!important;height:101px!important;min-height:101px!important;padding:0!important;margin:0!important;}
-  html[data-joygo-guidance="1"] #gameActionRow>button{height:48px!important;min-height:48px!important;max-height:48px!important;padding:5px 4px!important;font-size:13px!important;}
-  html[data-joygo-guidance="1"] #moveConfirmBar{position:static!important;width:100%!important;margin:0 0 5px!important;padding:7px!important;}
+ html[data-joygo-guidance="1"] .app{height:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:5px!important;padding:5px!important;overflow:hidden!important}
+ html[data-joygo-guidance="1"] .board-wrap{flex:1 1 auto!important;width:100%!important;height:auto!important;max-height:none!important}
+ html[data-joygo-guidance="1"] .right{display:none!important}
+ html[data-joygo-guidance="1"] .player{display:block!important;flex:0 0 106px!important;width:100%!important;height:106px!important;min-height:106px!important;max-height:106px!important;padding:0 5px 5px!important;margin:0!important;overflow:visible!important;box-sizing:border-box!important}
+ html[data-joygo-guidance="1"] #gameActionRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:48px 48px!important;gap:5px!important;width:100%!important;height:101px!important;min-height:101px!important;padding:0!important;margin:0!important}
+ html[data-joygo-guidance="1"] #gameActionRow>button{height:48px!important;min-height:48px!important;max-height:48px!important;padding:5px 4px!important;font-size:13px!important}
+ /* Confirmation floats immediately above the two-row action bar so it can never be pushed off-screen. */
+ html[data-joygo-guidance="1"] #moveConfirmBar{position:fixed!important;left:8px!important;right:8px!important;bottom:112px!important;width:auto!important;margin:0!important}
 }
 @media (orientation:landscape){
-  html[data-joygo-guidance="1"] .app{height:100%!important;min-height:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) 238px!important;grid-template-rows:minmax(0,1fr)!important;gap:6px!important;padding:5px!important;overflow:hidden!important;}
-  html[data-joygo-guidance="1"] .board-wrap{grid-column:1!important;grid-row:1!important;width:100%!important;height:100%!important;align-items:center!important;}
-  html[data-joygo-guidance="1"] .right{display:flex!important;grid-column:2!important;grid-row:1!important;width:238px!important;height:100%!important;min-height:0!important;overflow:auto!important;flex-direction:column!important;box-sizing:border-box!important;}
-  html[data-joygo-guidance="1"] .player{display:none!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important;}
-  html[data-joygo-guidance="1"] #moveConfirmBar{position:static!important;width:100%!important;margin:6px 0!important;padding:7px!important;}
-  html[data-joygo-guidance="1"] .compact-action-panel{display:grid!important;}
+ html[data-joygo-guidance="1"] .app{height:100%!important;min-height:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) 238px!important;grid-template-rows:minmax(0,1fr)!important;gap:6px!important;padding:5px!important;overflow:hidden!important}
+ html[data-joygo-guidance="1"] .board-wrap{grid-column:1!important;grid-row:1!important;width:100%!important;height:100%!important;align-items:center!important}
+ html[data-joygo-guidance="1"] .right{display:flex!important;grid-column:2!important;grid-row:1!important;width:238px!important;height:100%!important;min-height:0!important;overflow:auto!important;flex-direction:column!important;box-sizing:border-box!important}
+ html[data-joygo-guidance="1"] .player{display:none!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important}
+ html[data-joygo-guidance="1"] #moveConfirmBar{position:static!important;width:100%!important;margin:6px 0!important}
+ html[data-joygo-guidance="1"] .compact-action-panel{display:grid!important}
 }
 </style>
-<script id="joygo-guidance-3313-clean-controller">
+<script id="joygo-guidance-3313a-clean-controller">
 (()=>{
-  const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
-  if(!isGuidance())return;
-  document.documentElement.setAttribute('data-joygo-guidance','1');
-  let timer=0, ro=null;
-  const portrait=()=>window.innerHeight>=window.innerWidth;
-  const forceConfirm=()=>{
-    try{joygoMoveConfirmEnabled=true}catch(_){ }
-    try{localStorage.setItem('joygo_move_confirm_enabled','1')}catch(_){ }
-    try{if(typeof joygoUpdateMoveConfirmToggle==='function')joygoUpdateMoveConfirmToggle()}catch(_){ }
-  };
-  function placeConfirmBar(){
-    const bar=document.getElementById('moveConfirmBar'); if(!bar)return;
-    bar.classList.remove('jg-confirm-docked');
-    if(portrait()){
-      const row=document.getElementById('gameActionRow'), player=document.querySelector('.player');
-      if(player && bar.parentElement!==player) player.insertBefore(bar,row||player.firstChild);
-    }else{
-      const right=document.querySelector('.right');
-      const toggle=document.getElementById('moveConfirmToggleWrap');
-      if(right && bar.parentElement!==right){
-        if(toggle && toggle.parentElement===right) toggle.insertAdjacentElement('afterend',bar); else right.appendChild(bar);
-      }
-    }
-  }
-  function closeForeignModals(){
-    document.body?.classList.add('guidance-embed-mode');
-    document.querySelectorAll('.modal-backdrop').forEach(m=>{if(m.id!=='onlineModal')m.classList.remove('open','show','active')});
-  }
-  function fitNow(){
-    const wrap=document.querySelector('.board-wrap'), canvas=document.getElementById('board'), app=document.querySelector('.app');
-    if(!wrap||!canvas||!app)return;
-    forceConfirm();placeConfirmBar();closeForeignModals();
-    ['width','height','max-width','max-height'].forEach(k=>canvas.style.removeProperty(k));
-    const p=portrait();
-    let size=300;
-    if(p){
-      const player=document.querySelector('.player');
-      const actionH=Math.max(106,Math.ceil(player?.getBoundingClientRect().height||106));
-      const availW=Math.max(280,window.innerWidth-12);
-      const availH=Math.max(280,window.innerHeight-actionH-16);
-      size=Math.floor(Math.min(availW,availH));
-      wrap.style.setProperty('height',size+8+'px','important');
-      wrap.style.setProperty('flex-basis',size+8+'px','important');
-    }else{
-      wrap.style.removeProperty('flex-basis');
-      wrap.style.setProperty('height','100%','important');
-      const r=wrap.getBoundingClientRect();
-      size=Math.floor(Math.min(Math.max(280,r.width-10),Math.max(280,r.height-10)));
-    }
-    size=Math.max(280,size);
-    canvas.style.setProperty('width',size+'px','important');
-    canvas.style.setProperty('height',size+'px','important');
-    canvas.style.setProperty('max-width',size+'px','important');
-    canvas.style.setProperty('max-height',size+'px','important');
-    try{
-      const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
-      if(typeof state!=='undefined')state.boardCssSize=size;
-      canvas._cssSize=size;canvas._dpr=dpr;
-      const px=Math.max(280,Math.floor(size*dpr));
-      if(canvas.width!==px||canvas.height!==px){canvas.width=px;canvas.height=px;ctx=canvas.getContext('2d',{alpha:false});ctx?.setTransform(dpr,0,0,dpr,0,0)}
-      if(typeof drawBoard==='function')drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-    }catch(_){try{resizeBoard(true)}catch(__){}}
-  }
-  function schedule(ms=120){clearTimeout(timer);timer=setTimeout(()=>requestAnimationFrame(fitNow),ms)}
-  function boot(){
-    document.body?.classList.add('guidance-embed-mode');forceConfirm();placeConfirmBar();closeForeignModals();
-    try{
-      const originalOpen=window.openModal;
-      if(typeof originalOpen==='function')window.openModal=function(id){if(isGuidance()&&id!=='onlineModal')return;return originalOpen.apply(this,arguments)};
-    }catch(_){ }
-    try{
-      const oldToggle=window.joygoToggleMoveConfirm;
-      window.joygoToggleMoveConfirm=function(){forceConfirm();try{toast('多人指導棋：落子確認固定開啟')}catch(_){}};
-      const oldShow=window.joygoShowPendingMove;
-      if(typeof oldShow==='function')window.joygoShowPendingMove=function(...args){forceConfirm();placeConfirmBar();const ret=oldShow.apply(this,args);schedule(10);return ret};
-    }catch(_){ }
-    schedule(40);schedule(350);
-    window.addEventListener('orientationchange',()=>{schedule(180);schedule(520)},{passive:true});
-    window.addEventListener('resize',()=>schedule(180),{passive:true});
-    window.addEventListener('pageshow',()=>schedule(100),{passive:true});
-    if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>schedule(160),{passive:true});
-    try{ro=new ResizeObserver(()=>schedule(90));ro.observe(document.querySelector('.app'))}catch(_){ }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
+ if(!isGuidance())return;
+ document.documentElement.setAttribute('data-joygo-guidance','1');
+ let timer=0,ro=null;
+ const portrait=()=>window.innerHeight>=window.innerWidth;
+ function loadConfirmPref(){
+   try{const v=localStorage.getItem('joygo_move_confirm_enabled'); if(v===null){joygoMoveConfirmEnabled=true;localStorage.setItem('joygo_move_confirm_enabled','1')} else joygoMoveConfirmEnabled=(v!=='0')}catch(_){joygoMoveConfirmEnabled=true}
+ }
+ function refreshToggle(){
+   const wrap=document.getElementById('moveConfirmToggleWrap'),btn=document.getElementById('moveConfirmToggleBtn');
+   if(wrap)wrap.style.display='block';
+   if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent='落子確認：'+(joygoMoveConfirmEnabled?'開':'關');btn.title='點此切換落子確認'}
+ }
+ function setConfirm(v){joygoMoveConfirmEnabled=!!v;try{localStorage.setItem('joygo_move_confirm_enabled',joygoMoveConfirmEnabled?'1':'0')}catch(_){};joygoClearPendingMove();refreshToggle();try{toast('落子確認：'+(joygoMoveConfirmEnabled?'開':'關'))}catch(_){}}
+ function placeConfirmBar(){
+   const bar=document.getElementById('moveConfirmBar'); if(!bar)return;
+   bar.classList.remove('jg-confirm-docked');
+   if(!portrait()){
+     const right=document.querySelector('.right'),toggle=document.getElementById('moveConfirmToggleWrap');
+     if(right&&bar.parentElement!==right){if(toggle&&toggle.parentElement===right)toggle.insertAdjacentElement('afterend',bar);else right.appendChild(bar)}
+   }else{
+     /* Fixed-position CSS handles portrait placement; keep it under body to avoid hidden parent rules. */
+     if(bar.parentElement!==document.body)document.body.appendChild(bar);
+   }
+ }
+ function closeForeignModals(){document.body?.classList.add('guidance-embed-mode');document.querySelectorAll('.modal-backdrop').forEach(m=>{if(m.id!=='onlineModal')m.classList.remove('open','show','active')})}
+ function fitNow(){
+   const wrap=document.querySelector('.board-wrap'),canvas=document.getElementById('board'),app=document.querySelector('.app'); if(!wrap||!canvas||!app)return;
+   placeConfirmBar();closeForeignModals();refreshToggle();
+   ['width','height','max-width','max-height'].forEach(k=>canvas.style.removeProperty(k));
+   let size=300;
+   if(portrait()){
+     const availW=Math.max(280,window.innerWidth-12),availH=Math.max(280,window.innerHeight-118);
+     size=Math.floor(Math.min(availW,availH));
+   }else{
+     const r=wrap.getBoundingClientRect(); size=Math.floor(Math.min(Math.max(280,r.width-10),Math.max(280,r.height-10)));
+   }
+   size=Math.max(280,size); canvas.style.setProperty('width',size+'px','important');canvas.style.setProperty('height',size+'px','important');canvas.style.setProperty('max-width',size+'px','important');canvas.style.setProperty('max-height',size+'px','important');
+   try{const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);state.boardCssSize=size;canvas._cssSize=size;canvas._dpr=dpr;const px=Math.max(280,Math.floor(size*dpr));if(canvas.width!==px||canvas.height!==px){canvas.width=px;canvas.height=px;ctx=canvas.getContext('2d',{alpha:false});ctx?.setTransform(dpr,0,0,dpr,0,0)}drawBoard(state.currentSnapshot||activateSnapshot(state.index))}catch(_){try{resizeBoard(true)}catch(__){}}
+ }
+ function schedule(ms=120){clearTimeout(timer);timer=setTimeout(()=>requestAnimationFrame(fitNow),ms)}
+ function boot(){
+   document.body?.classList.add('guidance-embed-mode');loadConfirmPref();placeConfirmBar();closeForeignModals();refreshToggle();
+   /* Replace the online-mode fixed switch with a real user switch in guidance. */
+   window.joygoToggleMoveConfirm=function(){setConfirm(!joygoMoveConfirmEnabled)};
+   window.joygoUpdateMoveConfirmToggle=refreshToggle;
+   const btn=document.getElementById('moveConfirmToggleBtn'); if(btn){btn.disabled=false;btn.onclick=(e)=>{e.preventDefault();e.stopPropagation();setConfirm(!joygoMoveConfirmEnabled)}}
+   /* Online board input always calls joygoShowPendingMove; when switch is off, send immediately. */
+   const baseShow=window.joygoShowPendingMove;
+   if(typeof baseShow==='function'&&!baseShow.__guidance297a){
+     const wrapped=function(x,y,point,mode){if(mode==='online'&&!joygoMoveConfirmEnabled){joygoClearPendingMove();onlinePlayAt(x,y,false);return}return baseShow.apply(this,arguments)};wrapped.__guidance297a=true;window.joygoShowPendingMove=wrapped;
+   }
+   try{joygoBindMoveConfirmControls()}catch(_){ }
+   schedule(40);setTimeout(()=>schedule(40),300);
+   try{ro=new ResizeObserver(()=>schedule(80));ro.observe(document.documentElement)}catch(_){ }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ window.addEventListener('pageshow',()=>{loadConfirmPref();refreshToggle();schedule(80)},{passive:true});
+ window.addEventListener('orientationchange',()=>{joygoClearPendingMove();schedule(180);schedule(520)},{passive:true});
+ window.addEventListener('resize',()=>schedule(120),{passive:true});
+ window.visualViewport?.addEventListener('resize',()=>schedule(100),{passive:true});
 })();
 </script>
 
