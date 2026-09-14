@@ -199,27 +199,7 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 </style>
 
 
-<style id="joygo-guidance-295h-ipad-rotation-fix">
-/* iPad 橫式：iframe 高度跟著目前視窗，不再固定 1120px，避免旋轉後停在棋盤中段 */
-@media (orientation: landscape) and (min-width: 900px) and (pointer: coarse){
-  .board-frame{
-    height:calc(100dvh - 210px) !important;
-    min-height:610px !important;
-    max-height:790px !important;
-  }
-}
-/* Beta 2.9.5L｜iPad 直式落子確認鍵修正版；搭配 index 3.3.12zr */
-@media (orientation: portrait) and (min-width: 700px) and (pointer: coarse){
-  .board-frame{
-    height:1068px !important;
-    min-height:1068px !important;
-    max-height:1068px !important;
-    overflow:hidden !important;
-  }
-  #frames{overflow:visible!important;}
-  .card:has(.board-frame.active){overflow:visible!important;}
-}
-</style>
+
 
 <style id="joygo-guidance-296-broadcast-style">
 .broadcast-btn.on{background:linear-gradient(180deg,#2aa36f,#15734c)!important;color:#fff!important;border-color:#58c792!important}
@@ -228,50 +208,15 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 @media(max-width:700px){.broadcast-status{width:100%;text-align:center}}
 </style>
 
-<style id="joygo-guidance-296a-ipad-final-rotation">
-/* Beta 2.9.6a：橫式 iframe 不再強制 610px 最小高度，讓內頁以真實可用高度重算棋盤。 */
-@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
-  .board-frame{
-    height:calc(100dvh - 205px)!important;
-    min-height:520px!important;
-    max-height:760px!important;
-  }
-}
-</style>
-
-<style id="joygo-guidance-296b-landscape-frame-safe">
-/* Beta 2.9.6b：iPad 橫式 iframe 用穩定高度，讓內頁完整顯示 19 路棋盤與底部操作列。 */
-@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
-  .board-frame{
-    height:620px!important;
-    min-height:620px!important;
-    max-height:620px!important;
-    overflow:hidden!important;
-  }
-}
-</style>
 
 
-<style id="joygo-guidance-296c-frame-root-fix">
-/* Beta 2.9.6c：外層 iframe 只負責提供穩定工作區；不再用單一 620px 套所有方向。 */
-@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
-  .board-frame{height:1068px!important;min-height:1068px!important;max-height:1068px!important;overflow:hidden!important;}
-}
-@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
-  .board-frame{height:680px!important;min-height:680px!important;max-height:680px!important;overflow:hidden!important;}
-}
-</style>
 
 
-<style id="joygo-guidance-296e-frame-final">
-/* Beta 2.9.6e：外層 iframe 只給足工作區高度，不再把內頁裁掉。 */
-@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
-  .board-frame{height:1065px!important;min-height:1065px!important;max-height:1065px!important;overflow:hidden!important;}
-}
-@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
-  .board-frame{height:820px!important;min-height:820px!important;max-height:820px!important;overflow:hidden!important;}
-}
-</style>
+
+
+
+
+
 
 
 <style id="joygo-guidance-296f-frame-authoritative">
@@ -283,9 +228,20 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
   .board-frame{height:760px!important;min-height:760px!important;max-height:760px!important;overflow:hidden!important}
 }
 </style>
+
+<style id="joygo-guidance-297-single-frame">
+/* 2.9.7：外層只提供 iframe 工作區，不再參與內層棋盤縮放。 */
+@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
+  .board-frame{height:1110px!important;min-height:1110px!important;max-height:1110px!important;overflow:hidden!important;}
+}
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  .board-frame{height:720px!important;min-height:720px!important;max-height:720px!important;overflow:hidden!important;}
+}
+</style>
+
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6f｜讓子無棋號＋旋轉穩定＋落子確認版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.7｜iPad 穩定重整版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -493,7 +449,7 @@ function ensureFrame(b){
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
     f.setAttribute('scrolling','no');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&guidance_handicap=${encodeURIComponent(Number(b.handicap||0))}&gv=296f`;
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&guidance_handicap=${encodeURIComponent(Number(b.handicap||0))}&gv=297`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;

@@ -2938,200 +2938,7 @@ body.spectator-viewing #statusText{font-weight:800}
 }
 </style>
 
-<style id="joygoGuidanceEmbed275Style">
-/* ============================================================
-   Joy Go Beta 2.7.5 - 指導棋專用棋盤模式
-   只在 iframe + ?guidance_embed=1 啟用。
-   一般 Joy Go 主平台完全不受影響。
-   ============================================================ */
-body.guidance-embed-mode{
-  overflow:hidden!important;
-  background:#0b0806!important;
-}
 
-/* 隱藏主平台導覽與浮動工具 */
-body.guidance-embed-mode #topbar,
-body.guidance-embed-mode #memberChip,
-body.guidance-embed-mode #infoCollapseBtn,
-body.guidance-embed-mode #famousGameInfoBar,
-body.guidance-embed-mode #joygoLiveMonitor,
-body.guidance-embed-mode #joygoBetaExit,
-body.guidance-embed-mode #teachQuickBar,
-body.guidance-embed-mode #teachBarToggle,
-body.guidance-embed-mode #apiInspectorToggle,
-body.guidance-embed-mode #apiInspectorPanel,
-body.guidance-embed-mode #photoReferencePanel{
-  display:none!important;
-}
-
-/* 指導棋版面：左側只留姓名，中間最大棋盤，右側只留計時 */
-body.guidance-embed-mode .app{
-  height:100dvh!important;
-  grid-template-columns:150px minmax(0,1fr) 245px!important;
-  grid-template-rows:minmax(0,1fr) 58px!important;
-  gap:4px!important;
-  padding:4px!important;
-}
-
-body.guidance-embed-mode .left{
-  grid-column:1!important;
-  grid-row:1 / span 2!important;
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:center!important;
-  gap:8px!important;
-  padding:8px!important;
-  overflow:hidden!important;
-}
-body.guidance-embed-mode .left .brand,
-body.guidance-embed-mode .left .stats{
-  display:none!important;
-}
-body.guidance-embed-mode .left .card{
-  display:block!important;
-  margin:0!important;
-  padding:12px 8px!important;
-  border-radius:12px!important;
-}
-body.guidance-embed-mode .left .player-name{
-  font-size:14px!important;
-  gap:6px!important;
-}
-body.guidance-embed-mode .left .player-name b{
-  font-size:15px!important;
-  max-width:88px!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-}
-
-/* 棋盤最大化 */
-body.guidance-embed-mode .board-wrap{
-  grid-column:2!important;
-  grid-row:1!important;
-  height:auto!important;
-  max-height:none!important;
-  min-height:0!important;
-  border-radius:12px!important;
-}
-body.guidance-embed-mode #board{
-  width:min(calc(100dvh - 72px),calc(100vw - 410px))!important;
-  height:min(calc(100dvh - 72px),calc(100vw - 410px))!important;
-  max-width:100%!important;
-  max-height:100%!important;
-}
-
-/* 右側只留雙方計時 */
-body.guidance-embed-mode .right{
-  grid-column:3!important;
-  grid-row:1 / span 2!important;
-  min-width:245px!important;
-  max-width:245px!important;
-  padding:6px!important;
-  overflow:hidden!important;
-  justify-content:center!important;
-}
-body.guidance-embed-mode #redrawBtn,
-body.guidance-embed-mode #aiHintPanel{
-  display:none!important;
-}
-body.guidance-embed-mode #gameClockPanel{
-  display:grid!important;
-  gap:8px!important;
-}
-
-/* 底部只留對局必要操作 */
-body.guidance-embed-mode .player{
-  grid-column:2!important;
-  grid-row:2!important;
-  height:58px!important;
-  min-height:58px!important;
-  padding:5px!important;
-  display:block!important;
-  overflow:hidden!important;
-}
-body.guidance-embed-mode .move-tools,
-body.guidance-embed-mode .controls,
-body.guidance-embed-mode #trialModeBar{
-  display:none!important;
-}
-body.guidance-embed-mode #gameActionRow{
-  display:grid!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  gap:5px!important;
-  height:100%!important;
-}
-body.guidance-embed-mode #gameActionRow > button{
-  display:none!important;
-  min-height:44px!important;
-  padding:6px 8px!important;
-  border-radius:10px!important;
-  font-size:13px!important;
-  font-weight:900!important;
-}
-body.guidance-embed-mode #undoGameBtn,
-body.guidance-embed-mode #scoreGameBtn,
-body.guidance-embed-mode #passGameBtn,
-body.guidance-embed-mode #resignGameBtn,
-body.guidance-embed-mode #saveSgfBtn{
-  display:block!important;
-}
-body.guidance-embed-mode #resignGameBtn{
-  background:#371416!important;
-  border-color:#9b4b50!important;
-}
-body.guidance-embed-mode #saveSgfBtn{
-  background:#15301d!important;
-  border-color:#548661!important;
-}
-
-/* iPad 直式／較窄 iframe：姓名改上方，計時改下方，不讓棋盤被擠小 */
-@media (max-width:820px){
-  body.guidance-embed-mode .app{
-    grid-template-columns:minmax(0,1fr)!important;
-    grid-template-rows:62px minmax(0,1fr) 100px 58px!important;
-  }
-  body.guidance-embed-mode .left{
-    grid-column:1!important;
-    grid-row:1!important;
-    flex-direction:row!important;
-    padding:4px!important;
-  }
-  body.guidance-embed-mode .left .card{flex:1!important;padding:7px!important}
-  body.guidance-embed-mode .left .player-name b{max-width:none!important}
-  body.guidance-embed-mode .board-wrap{
-    grid-column:1!important;
-    grid-row:2!important;
-  }
-  body.guidance-embed-mode .right{
-    grid-column:1!important;
-    grid-row:3!important;
-    min-width:0!important;
-    max-width:none!important;
-    width:100%!important;
-    padding:4px!important;
-  }
-  body.guidance-embed-mode #gameClockPanel{
-    grid-template-columns:1fr 1fr!important;
-  }
-  body.guidance-embed-mode .player{
-    grid-column:1!important;
-    grid-row:4!important;
-  }
-  body.guidance-embed-mode #board{
-    width:min(calc(100vw - 16px),calc(100dvh - 230px))!important;
-    height:min(calc(100vw - 16px),calc(100dvh - 230px))!important;
-  }
-}
-
-/* 極窄畫面時仍保留五個必要按鈕 */
-@media (max-width:560px){
-  body.guidance-embed-mode #gameActionRow > button{
-    font-size:11px!important;
-    padding:4px!important;
-  }
-}
-</style>
 
 
 <script id="joygoGuidance276HeadBoot">
@@ -3144,519 +2951,19 @@ body.guidance-embed-mode #saveSgfBtn{
 </script>
 
 
-<style id="joygoGuidance276Layout">
-/* Beta 2.7.6：iPad 指導棋專用穩定版面 */
-html[data-joygo-guidance="1"],
-html[data-joygo-guidance="1"] body{
-  margin:0!important;
-  width:100%!important;
-  height:100%!important;
-  overflow:hidden!important;
-  background:#0b0806!important;
-}
-
-/* 所有主平台／浮動入口在指導棋 iframe 隱藏 */
-html[data-joygo-guidance="1"] #joygoBetaGate,
-html[data-joygo-guidance="1"] #joygoBetaExit,
-html[data-joygo-guidance="1"] #joygoLiveMonitor,
-html[data-joygo-guidance="1"] #infoCollapseBtn,
-html[data-joygo-guidance="1"] #teachQuickBar,
-html[data-joygo-guidance="1"] #teachBarToggle,
-html[data-joygo-guidance="1"] #apiInspectorToggle,
-html[data-joygo-guidance="1"] #apiInspectorPanel,
-html[data-joygo-guidance="1"] .member-chip,
-html[data-joygo-guidance="1"] #memberChip,
-html[data-joygo-guidance="1"] .left{
-  display:none!important;
-}
-
-/* 主結構：棋盤 + 右側計時；底部完整功能列 */
-html[data-joygo-guidance="1"] .app{
-  width:100%!important;
-  height:100dvh!important;
-  padding:5px!important;
-  gap:5px!important;
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) 205px!important;
-  grid-template-rows:minmax(0,1fr) 68px!important;
-  overflow:hidden!important;
-}
-
-html[data-joygo-guidance="1"] .board-wrap{
-  grid-column:1!important;
-  grid-row:1!important;
-  width:100%!important;
-  height:100%!important;
-  min-width:0!important;
-  min-height:0!important;
-  padding:0!important;
-  margin:0!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  overflow:hidden!important;
-  border-radius:12px!important;
-}
-
-html[data-joygo-guidance="1"] #board{
-  width:min(calc(100dvh - 88px),calc(100vw - 225px))!important;
-  height:min(calc(100dvh - 88px),calc(100vw - 225px))!important;
-  max-width:100%!important;
-  max-height:100%!important;
-}
-
-/* 計時器固定右側，上下排列 */
-html[data-joygo-guidance="1"] .right{
-  display:flex!important;
-  grid-column:2!important;
-  grid-row:1!important;
-  position:static!important;
-  width:205px!important;
-  min-width:205px!important;
-  max-width:205px!important;
-  height:100%!important;
-  padding:7px!important;
-  margin:0!important;
-  overflow:hidden!important;
-  flex-direction:column!important;
-  justify-content:center!important;
-  background:linear-gradient(180deg,#14100d,#090706)!important;
-  border:1px solid #5b4028!important;
-  border-radius:12px!important;
-}
-
-html[data-joygo-guidance="1"] .right > .tool,
-html[data-joygo-guidance="1"] .right > .ai-hint-panel,
-html[data-joygo-guidance="1"] #redrawBtn,
-html[data-joygo-guidance="1"] #aiHintPanel{
-  display:none!important;
-}
-
-html[data-joygo-guidance="1"] #gameClockPanel{
-  position:static!important;
-  inset:auto!important;
-  transform:none!important;
-  display:flex!important;
-  flex-direction:column!important;
-  width:100%!important;
-  min-width:0!important;
-  height:auto!important;
-  padding:7px!important;
-  gap:9px!important;
-  margin:0!important;
-  pointer-events:none!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  border:0!important;
-}
-
-html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
-  display:grid!important;
-  grid-template-columns:28px 1fr!important;
-  grid-template-rows:auto auto auto!important;
-  column-gap:8px!important;
-  align-items:center!important;
-  width:100%!important;
-  min-height:112px!important;
-  padding:10px 8px!important;
-  border-radius:13px!important;
-}
-
-html[data-joygo-guidance="1"] #gameClockPanel .clock-stone{
-  grid-column:1!important;
-  grid-row:1 / span 2!important;
-  width:25px!important;
-  height:25px!important;
-}
-html[data-joygo-guidance="1"] #gameClockPanel .clock-name{
-  grid-column:2!important;
-  grid-row:1!important;
-  font-size:13px!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
-  grid-column:2!important;
-  grid-row:2!important;
-  font-size:30px!important;
-  line-height:1!important;
-}
-html[data-joygo-guidance="1"] #gameClockPanel .clock-byo{
-  grid-column:1 / span 2!important;
-  grid-row:3!important;
-  font-size:10px!important;
-  margin-top:6px!important;
-}
-html[data-joygo-guidance="1"] #clockSoundIcon{
-  display:none!important;
-}
-
-/* 底部只顯示必要功能鍵，完整可見 */
-html[data-joygo-guidance="1"] .player{
-  display:block!important;
-  grid-column:1 / span 2!important;
-  grid-row:2!important;
-  width:100%!important;
-  height:68px!important;
-  min-height:68px!important;
-  padding:7px!important;
-  margin:0!important;
-  overflow:visible!important;
-  background:linear-gradient(180deg,#17100c,#0e0907)!important;
-  border:1px solid #5b4028!important;
-  border-radius:12px!important;
-}
-
-html[data-joygo-guidance="1"] .move-tools,
-html[data-joygo-guidance="1"] .controls,
-html[data-joygo-guidance="1"] .range-row,
-html[data-joygo-guidance="1"] #trialModeBar{
-  display:none!important;
-}
-
-html[data-joygo-guidance="1"] #gameActionRow{
-  display:grid!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  grid-template-rows:1fr!important;
-  gap:7px!important;
-  width:100%!important;
-  height:52px!important;
-  padding:0!important;
-  margin:0!important;
-}
-
-html[data-joygo-guidance="1"] #gameActionRow > button{
-  display:none!important;
-  width:100%!important;
-  height:52px!important;
-  min-height:52px!important;
-  margin:0!important;
-  padding:6px 8px!important;
-  border-radius:10px!important;
-  font-size:14px!important;
-  font-weight:900!important;
-  line-height:1.1!important;
-}
-
-html[data-joygo-guidance="1"] #undoGameBtn,
-html[data-joygo-guidance="1"] #scoreGameBtn,
-html[data-joygo-guidance="1"] #passGameBtn,
-html[data-joygo-guidance="1"] #resignGameBtn,
-html[data-joygo-guidance="1"] #saveSgfBtn{
-  display:block!important;
-}
-
-html[data-joygo-guidance="1"] #scoreGameBtn{
-  background:linear-gradient(135deg,#d9a72e,#f0c34f)!important;
-  color:#201407!important;
-}
-html[data-joygo-guidance="1"] #resignGameBtn{
-  background:#3b1518!important;
-  border-color:#a95359!important;
-}
-html[data-joygo-guidance="1"] #saveSgfBtn{
-  background:#15331e!important;
-  border-color:#5c9668!important;
-}
-
-/* 數地模式開啟時，浮在功能列上方，不會被裁掉 */
-html[data-joygo-guidance="1"] #scoringModeBar{
-  position:fixed!important;
-  left:12px!important;
-  right:12px!important;
-  bottom:78px!important;
-  z-index:50000!important;
-  max-height:170px!important;
-  overflow:auto!important;
-  border-radius:12px!important;
-  box-shadow:0 10px 30px #000a!important;
-}
-
-/* iPad 較窄 iframe：右側時鐘仍維持，不改成下方橫列 */
-@media (max-width:760px){
-  html[data-joygo-guidance="1"] .app{
-    grid-template-columns:minmax(0,1fr) 165px!important;
-  }
-  html[data-joygo-guidance="1"] .right{
-    width:165px!important;
-    min-width:165px!important;
-    max-width:165px!important;
-    padding:5px!important;
-  }
-  html[data-joygo-guidance="1"] #board{
-    width:min(calc(100dvh - 88px),calc(100vw - 185px))!important;
-    height:min(calc(100dvh - 88px),calc(100vw - 185px))!important;
-  }
-  html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
-    font-size:24px!important;
-  }
-  html[data-joygo-guidance="1"] #gameActionRow > button{
-    font-size:12px!important;
-    padding:4px!important;
-  }
-}
-</style>
 
 
-<style id="joygoGuidance282SafePolish">
-/* Beta 2.8.2 穩定恢復版
-   原則：不搬 DOM、不監聽 resize、不觸發 resize、不改棋局核心。
-   只用 CSS 微調既有 2.7.6 穩定版面。 */
-
-html[data-joygo-guidance="1"] .right{
-  justify-content:flex-start!important;
-  padding-top:8px!important;
-}
-
-/* 黑白棋鐘同寬、同高，從右欄頂端開始 */
-html[data-joygo-guidance="1"] #gameClockPanel{
-  margin-top:0!important;
-  gap:8px!important;
-}
-html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
-  min-height:108px!important;
-  height:108px!important;
-  box-sizing:border-box!important;
-}
-html[data-joygo-guidance="1"] #gameClockPanel .clock-time{
-  font-size:27px!important;
-}
-
-/* 原本底部功能鍵保留，避免任何功能消失 */
-html[data-joygo-guidance="1"] .player{
-  display:block!important;
-  overflow:visible!important;
-}
-html[data-joygo-guidance="1"] #gameActionRow{
-  display:grid!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  gap:7px!important;
-}
-html[data-joygo-guidance="1"] #gameActionRow > button{
-  min-height:50px!important;
-  height:50px!important;
-  font-size:13px!important;
-}
-html[data-joygo-guidance="1"] #undoGameBtn,
-html[data-joygo-guidance="1"] #scoreGameBtn,
-html[data-joygo-guidance="1"] #passGameBtn,
-html[data-joygo-guidance="1"] #resignGameBtn,
-html[data-joygo-guidance="1"] #saveSgfBtn{
-  display:block!important;
-}
-
-/* 座標開關放在原本 move-tools 右側，不搬移元素 */
-html[data-joygo-guidance="1"] #coordToggleBtn{
-  display:block!important;
-}
-
-/* iPad 直式：回到穩定的上下結構，功能鍵完整顯示 */
-@media (orientation:portrait){
-  html[data-joygo-guidance="1"] .app{
-    height:auto!important;
-    min-height:100dvh!important;
-    grid-template-columns:1fr!important;
-    grid-template-rows:minmax(520px,1fr) 118px!important;
-    gap:8px!important;
-    padding:8px!important;
-  }
-  html[data-joygo-guidance="1"] .board-wrap{
-    grid-column:1!important;
-    grid-row:1!important;
-    min-height:520px!important;
-    height:auto!important;
-  }
-  html[data-joygo-guidance="1"] .right{
-    display:none!important;
-  }
-  html[data-joygo-guidance="1"] .player{
-    grid-column:1!important;
-    grid-row:2!important;
-    min-height:118px!important;
-    height:auto!important;
-  }
-  html[data-joygo-guidance="1"] #gameActionRow{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    grid-auto-rows:48px!important;
-  }
-  html[data-joygo-guidance="1"] #gameActionRow > button{
-    min-height:48px!important;
-    height:48px!important;
-  }
-}
-</style>
 
 
-<style id="joygoGuidance283SafeTune">
-/* ============================================================
-   Beta 2.8.3 安全微調版
-   只改 CSS：不搬 DOM、不改棋局 JS、不監聽 resize。
-   ============================================================ */
-
-/* 指導棋內嵌模式：不要顯示重複的返回平台／試下／全螢幕 */
-html[data-joygo-guidance="1"] #landscapeBackPlatformBtn,
-html[data-joygo-guidance="1"] #compactFullscreenBtn,
-html[data-joygo-guidance="1"] #trialModeBtn,
-html[data-joygo-guidance="1"] #landscapePlatformCloseBtn{
-  display:none!important;
-}
-
-/* 橫式：棋鐘從右欄頂端開始，和棋盤上方視覺對齊 */
-@media (orientation:landscape) and (min-width:901px){
-  html[data-joygo-guidance="1"] .right{
-    justify-content:flex-start!important;
-    padding-top:8px!important;
-  }
-  html[data-joygo-guidance="1"] #gameClockPanel{
-    margin-top:0!important;
-    width:100%!important;
-    gap:8px!important;
-  }
-  html[data-joygo-guidance="1"] #gameClockPanel .clock-side{
-    width:100%!important;
-    min-height:104px!important;
-    height:104px!important;
-    box-sizing:border-box!important;
-  }
-
-  /* 右側只保留必要對局操作 */
-  html[data-joygo-guidance="1"] .compact-action-panel{
-    margin-top:2px!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:7px!important;
-    padding:8px!important;
-  }
-  html[data-joygo-guidance="1"] .compact-action-panel #undoGameBtn{
-    grid-column:1!important;
-  }
-  html[data-joygo-guidance="1"] .compact-action-panel #scoreGameBtn{
-    grid-column:2!important;
-  }
-  html[data-joygo-guidance="1"] .compact-action-panel #passGameBtn{
-    grid-column:1!important;
-  }
-  html[data-joygo-guidance="1"] .compact-action-panel #resignGameBtn{
-    grid-column:2!important;
-  }
-  html[data-joygo-guidance="1"] .compact-action-panel #saveSgfBtn{
-    grid-column:1 / -1!important;
-  }
-  html[data-joygo-guidance="1"] .compact-action-panel button{
-    min-height:42px!important;
-    height:42px!important;
-    font-size:12px!important;
-  }
-}
-
-/* 直式：保留原本穩定功能列，按鈕完整、間距一致 */
-@media (orientation:portrait){
-  html[data-joygo-guidance="1"] .player{
-    display:block!important;
-    min-height:118px!important;
-    height:auto!important;
-    padding:7px!important;
-    overflow:visible!important;
-  }
-  html[data-joygo-guidance="1"] #gameActionRow{
-    display:grid!important;
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    gap:7px!important;
-  }
-  html[data-joygo-guidance="1"] #gameActionRow > button{
-    min-height:48px!important;
-    height:48px!important;
-    margin:0!important;
-    font-size:13px!important;
-  }
-  html[data-joygo-guidance="1"] #undoGameBtn,
-  html[data-joygo-guidance="1"] #scoreGameBtn,
-  html[data-joygo-guidance="1"] #passGameBtn,
-  html[data-joygo-guidance="1"] #resignGameBtn,
-  html[data-joygo-guidance="1"] #saveSgfBtn{
-    display:block!important;
-  }
-}
-
-/* 座標按鈕永遠保留，不碰其事件功能 */
-html[data-joygo-guidance="1"] #coordToggleBtn{
-  visibility:visible!important;
-  opacity:1!important;
-}
-</style>
 
 
-<style id="joygoGuidance284RequiredActions">
-/* Beta 2.8.4：補齊必要功能鍵 */
-#calculateResultBtn{
-  background:linear-gradient(135deg,#7d5bd6,#53389e)!important;
-  border-color:#9d85e2!important;
-  color:#fff!important;
-  font-weight:900!important;
-}
-
-/* 橫式：六個必要功能鍵一排 */
-html[data-joygo-guidance="1"] #gameActionRow{
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
-}
-html[data-joygo-guidance="1"] #calculateResultBtn{
-  display:block!important;
-}
-
-/* 若仍使用右側 compact action panel，也顯示計算勝負 */
-@media (orientation:landscape) and (min-width:901px){
-  html[data-joygo-guidance="1"] .compact-action-panel #calculateResultBtn{
-    display:block!important;
-    grid-column:1 / -1!important;
-    min-height:42px!important;
-    height:42px!important;
-  }
-}
-
-/* 直式：六鍵剛好 3欄 x 2列 */
-@media (orientation:portrait){
-  html[data-joygo-guidance="1"] #gameActionRow{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  }
-  html[data-joygo-guidance="1"] #calculateResultBtn{
-    display:block!important;
-  }
-}
-</style>
 
 
-<style id="joygoGuidance287RequiredActions">
-/* Beta 2.8.7：計算勝負必須可見 */
-html[data-joygo-guidance="1"] #calculateResultBtn{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  background:linear-gradient(135deg,#7d5bd6,#53389e)!important;
-  border-color:#9d85e2!important;
-  color:#fff!important;
-  font-weight:900!important;
-}
 
-/* 橫式右側快捷面板：計算勝負整列顯示 */
-@media (orientation:landscape) and (min-width:901px){
-  html[data-joygo-guidance="1"] .compact-action-panel #calculateResultBtn{
-    display:block!important;
-    grid-column:1 / -1!important;
-    min-height:42px!important;
-    height:42px!important;
-  }
-}
 
-/* 底部原始功能列若顯示，六項全部保留 */
-html[data-joygo-guidance="1"] #gameActionRow{
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
-}
-@media (orientation:portrait){
-  html[data-joygo-guidance="1"] #gameActionRow{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  }
-}
-</style>
+
+
+
 
 
 <style id="joygoSecurity290Style">
@@ -7119,163 +6426,7 @@ body.jg-online-mode #jgUSpeedPanel{
 
 
 
-<style id="joygo-guidance-portrait-3312zp">
-/* ============================================================
-   Beta 3.3.12zp｜多人指導棋 iPad 直式緊湊安全版
-   目的：
-   1. 移除棋盤上方不必要的大空白
-   2. 六個主要操作鍵完整顯示且可觸控
-   3. 只作用於 guidance_embed=1 的直式 iframe，不影響一般平台與橫式
-   ============================================================ */
-@media (orientation:portrait) and (min-width:700px){
-  html[data-joygo-guidance="1"],
-  html[data-joygo-guidance="1"] body{
-    height:auto!important;
-    min-height:0!important;
-    overflow:hidden!important;
-  }
 
-  html[data-joygo-guidance="1"] .app{
-    width:100%!important;
-    height:auto!important;
-    min-height:0!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    grid-template-rows:auto auto!important;
-    gap:6px!important;
-    padding:5px!important;
-    overflow:visible!important;
-    align-content:start!important;
-  }
-
-  /* 棋盤貼齊工作區上緣，不再垂直置中產生大空白 */
-  html[data-joygo-guidance="1"] .board-wrap{
-    grid-column:1!important;
-    grid-row:1!important;
-    width:100%!important;
-    /* Beta 3.3.12zq：直式時給棋盤容器明確正方形高度。
-       避免橫式轉直式後，resizeBoard() 讀到 auto-height 的舊小高度，
-       將棋盤鎖在 260～320px。 */
-    height:min(calc(100vw - 12px),930px)!important;
-    min-height:min(calc(100vw - 12px),930px)!important;
-    max-height:min(calc(100vw - 12px),930px)!important;
-    aspect-ratio:1 / 1!important;
-    padding:0!important;
-    margin:0!important;
-    display:flex!important;
-    align-items:flex-start!important;
-    justify-content:center!important;
-    overflow:hidden!important;
-  }
-
-  html[data-joygo-guidance="1"] #board{
-    width:min(calc(100vw - 12px), 930px)!important;
-    height:min(calc(100vw - 12px), 930px)!important;
-    max-width:100%!important;
-    max-height:none!important;
-    flex:0 0 auto!important;
-  }
-
-  /* 直式多人指導棋不需要右側棋鐘欄，避免它佔高度或形成隱形覆蓋層 */
-  html[data-joygo-guidance="1"] .right{
-    display:none!important;
-    pointer-events:none!important;
-  }
-
-  /* 主要操作緊接棋盤，完整兩列六鍵 */
-  html[data-joygo-guidance="1"] .player{
-    grid-column:1!important;
-    grid-row:2!important;
-    position:relative!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:112px!important;
-    margin:0!important;
-    padding:5px 6px calc(7px + env(safe-area-inset-bottom))!important;
-    overflow:visible!important;
-    z-index:20!important;
-    pointer-events:auto!important;
-    contain:none!important;
-  }
-
-  /* 直式 iframe 已有外層頁面標題，這裡拿掉額外「主要操作」標題，節省高度 */
-  html[data-joygo-guidance="1"] .player::before{
-    display:none!important;
-    content:none!important;
-  }
-
-  html[data-joygo-guidance="1"] .move-tools,
-  html[data-joygo-guidance="1"] .controls,
-  html[data-joygo-guidance="1"] .range-row,
-  html[data-joygo-guidance="1"] #trialModeBar,
-  html[data-joygo-guidance="1"] #mobileAiToggle339,
-  html[data-joygo-guidance="1"] #trialModeBtn,
-  html[data-joygo-guidance="1"] #firstChoiceBtn,
-  html[data-joygo-guidance="1"] #secondChoiceBtn,
-  html[data-joygo-guidance="1"] #badMoveBtn,
-  html[data-joygo-guidance="1"] #positionJudgeBtn,
-  html[data-joygo-guidance="1"] #hintToggleBtn{
-    display:none!important;
-  }
-
-  html[data-joygo-guidance="1"] #gameActionRow{
-    display:grid!important;
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    grid-template-rows:repeat(2,48px)!important;
-    grid-auto-rows:48px!important;
-    gap:5px!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:101px!important;
-    padding:0!important;
-    margin:0!important;
-    overflow:visible!important;
-    pointer-events:auto!important;
-    position:relative!important;
-    z-index:30!important;
-  }
-
-  html[data-joygo-guidance="1"] #gameActionRow > button{
-    display:none!important;
-    width:100%!important;
-    height:48px!important;
-    min-height:48px!important;
-    margin:0!important;
-    padding:5px 4px!important;
-    border-radius:9px!important;
-    font-size:13px!important;
-    line-height:1.1!important;
-    font-weight:900!important;
-    touch-action:manipulation!important;
-    pointer-events:auto!important;
-    position:relative!important;
-    z-index:31!important;
-  }
-
-  html[data-joygo-guidance="1"] #undoGameBtn,
-  html[data-joygo-guidance="1"] #scoreGameBtn,
-  html[data-joygo-guidance="1"] #calculateResultBtn,
-  html[data-joygo-guidance="1"] #passGameBtn,
-  html[data-joygo-guidance="1"] #resignGameBtn,
-  html[data-joygo-guidance="1"] #saveSgfBtn{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-  }
-
-  /* 避免落子確認或其他浮動控制蓋住主要操作鍵 */
-  html[data-joygo-guidance="1"] #moveConfirmToggleWrap{
-    display:none!important;
-    pointer-events:none!important;
-  }
-
-  html[data-joygo-guidance="1"] #scoringModeBar{
-    bottom:calc(116px + env(safe-area-inset-bottom))!important;
-    z-index:50000!important;
-  }
-}
-</style>
 
 </head>
 <body>
@@ -7285,18 +6436,7 @@ body.jg-online-mode #jgUSpeedPanel{
 <div id="joygoSecurityBadge" hidden aria-hidden="true"></div>
 
 
-<script id="joygoGuidanceEmbed275Boot">
-(()=>{
-  try{
-    const p=new URLSearchParams(location.search);
-    const embedded=(window.self!==window.top) && p.get("guidance_embed")==="1";
-    if(embedded){
-      document.body.classList.add("guidance-embed-mode");
-      document.documentElement.classList.add("guidance-embed-mode");
-    }
-  }catch(_){}
-})();
-</script>
+
 
 <div id="joygoBetaGate" role="dialog" aria-modal="true" aria-label="Joy Go Platform V1.0 Beta 測試者入口">
   <div class="jg-card">
@@ -10468,7 +9608,7 @@ async function onlineSyncRoom(){
     state.onlineMode=true;state.casualMode=false;state.humanMode=false;state.teachingMode=false;state.trialMode=false;state.spectatorMode=false;
     state.size=Number(room.board_size||19);state.komi=Number(room.komi||7.5);
 
-    /* Beta 3.3.12zy：多人指導棋讓子棋號根因修正。
+    /* Beta 3.3.13：多人指導棋讓子棋號根因修正。
        不再只依賴 guidance_handicap 參數；即使 iframe 是舊頁、旋轉後快取舊 src，
        也會從 online_moves 自動辨識「開局連續黑棋且位於標準讓子點」並轉回 setupB。 */
     const rawOnlineMoves=(moves||[]);
@@ -14111,42 +13251,10 @@ window.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 
-<script id="joygoGuidanceEmbed275Guard">
-document.addEventListener("DOMContentLoaded",()=>{
-  if(!document.body.classList.contains("guidance-embed-mode"))return;
-  document.querySelectorAll(".modal-backdrop").forEach(m=>{
-    if(m.id!=="onlineModal") m.classList.remove("show","open","active");
-  });
-});
-</script>
 
 
-<script id="joygoGuidance276Guard">
-(()=>{
-  function apply(){
-    try{
-      const q=new URLSearchParams(location.search);
-      if(!(window.self!==window.top && q.get("guidance_embed")==="1"))return;
-      document.documentElement.setAttribute("data-joygo-guidance","1");
-      document.body.classList.add("guidance-embed-mode");
-      const hide=[".left",".move-tools",".controls",".range-row","#trialModeBar",
-                  "#redrawBtn","#aiHintPanel","#apiInspectorToggle","#apiInspectorPanel",
-                  "#teachQuickBar","#teachBarToggle",".member-chip","#memberChip"];
-      hide.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.style.setProperty("display","none","important")));
-      const row=document.getElementById("gameActionRow");
-      if(row) row.style.setProperty("display","grid","important");
-      ["undoGameBtn","scoreGameBtn","calculateResultBtn","passGameBtn","resignGameBtn","saveSgfBtn"].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.style.setProperty("display","block","important");
-      });
-    }catch(_){}
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",apply,{once:true});
-  else apply();
-  setTimeout(apply,250);
-  setTimeout(apply,1000);
-})();
-</script>
+
+
 
 
 <script id="joygoSecurity290Boot">
@@ -16415,421 +15523,27 @@ function patch(){
 
 
 <!-- Joy Go Beta 3.3.12zm｜多人指導棋 iframe 防彈窗 + iPad 橫式穩定修正 -->
-<style id="joygo-guidance-embed-modal-hardlock">
-/* 指導棋 iframe 內只允許棋盤與必要對局 UI；會員/管理/名局等彈窗永遠不得出現 */
-html[data-joygo-guidance="1"] body.guidance-embed-mode .modal-backdrop:not(#onlineModal),
-body.guidance-embed-mode #memberModal,
-body.guidance-embed-mode #rankAdminModal,
-body.guidance-embed-mode #classicGameModal {
-  display:none !important;
-  visibility:hidden !important;
-  pointer-events:none !important;
-  opacity:0 !important;
-}
-</style>
-<script id="joygo-guidance-embed-modal-hardlock-js">
-(()=>{
-  const isGuidance=()=>{
-    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
-  };
-  if(!isGuidance()) return;
-
-  const closeForeignModals=()=>{
-    document.documentElement.setAttribute('data-joygo-guidance','1');
-    if(document.body) document.body.classList.add('guidance-embed-mode');
-    document.querySelectorAll('.modal-backdrop').forEach(m=>{
-      if(m.id==='onlineModal') return;
-      m.classList.remove('open','show','active');
-    });
-  };
-
-  const boot=()=>{
-    closeForeignModals();
-
-    /* 重要：不再監看 style/class MutationObserver。
-       舊版會因自己修改 style 又觸發 observer，造成 iPad 主執行緒迴圈而卡死。 */
-    try{
-      const originalOpenModal=window.openModal;
-      if(typeof originalOpenModal==='function'){
-        window.openModal=function(id){
-          if(isGuidance() && id!=='onlineModal') return;
-          return originalOpenModal.apply(this,arguments);
-        };
-      }
-    }catch(_){}
-
-    window.addEventListener('pageshow',closeForeignModals,{passive:true});
-    let resizeTimer=0;
-    const settle=()=>{
-      clearTimeout(resizeTimer);
-      resizeTimer=setTimeout(()=>{
-        closeForeignModals();
-        try{ if(typeof resizeBoard==='function') resizeBoard(); }catch(_){}
-      },180);
-    };
-    window.addEventListener('resize',settle,{passive:true});
-    window.addEventListener('orientationchange',settle,{passive:true});
-  };
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
-  else boot();
-})();
-</script>
-
-<script id="joygo-guidance-alert-once-3312zn">
-(()=>{
-  const isGuidance=()=>{
-    try{return window.self!==window.top && new URLSearchParams(location.search).get("guidance_embed")==="1"}
-    catch(_){return false}
-  };
-  if(!isGuidance()) return;
-
-  const nativeAlert=window.alert.bind(window);
-  const seen=new Set();
-
-  window.alert=(message)=>{
-    const text=String(message??"");
-    if(text.includes("對局結束") || text.includes("超時")){
-      const key=text.replace(/\s+/g," ").trim();
-      if(seen.has(key)) return;
-      seen.add(key);
-      try{ if(typeof toast==="function") toast(key.replace(/\n/g,"：")); }catch(_){}
-      return;
-    }
-    return nativeAlert(message);
-  };
-})();
-</script>
 
 
-<style id="joygo-guidance-confirm-dock-3312zo">
-/* Beta 3.3.12zo
-   多人指導棋 iframe + iPad 橫式：
-   將「落子確認：開/關」固定停靠在右側工具欄內，
-   不再使用 fixed 浮動位置，避免遮住 Pass／投降／存檔 SGF。 */
-html[data-joygo-guidance="1"] #moveConfirmToggleWrap,
-body.guidance-embed-mode #moveConfirmToggleWrap{
-  position:static !important;
-  inset:auto !important;
-  right:auto !important;
-  left:auto !important;
-  top:auto !important;
-  bottom:auto !important;
-  transform:none !important;
-  z-index:auto !important;
-  width:100% !important;
-  margin:6px 0 !important;
-  padding:0 !important;
-  box-sizing:border-box !important;
-}
-
-html[data-joygo-guidance="1"] #moveConfirmToggleBtn,
-body.guidance-embed-mode #moveConfirmToggleBtn{
-  width:100% !important;
-  min-height:42px !important;
-  padding:8px 10px !important;
-  margin:0 !important;
-  box-sizing:border-box !important;
-  white-space:nowrap !important;
-  font-size:13px !important;
-}
-
-/* iPad 橫式右欄較窄，按鈕再精簡 */
-@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
-  html[data-joygo-guidance="1"] #moveConfirmToggleBtn,
-  body.guidance-embed-mode #moveConfirmToggleBtn{
-    min-height:38px !important;
-    font-size:12px !important;
-    padding:6px 7px !important;
-  }
-}
-</style>
-
-<script id="joygo-guidance-confirm-dock-3312zo-js">
-(()=>{
-  const isGuidance=()=>{
-    try{
-      return window.self!==window.top &&
-             new URLSearchParams(location.search).get("guidance_embed")==="1";
-    }catch(_){return false}
-  };
-  if(!isGuidance()) return;
-
-  function dockConfirmToggle(){
-    const wrap=document.getElementById("moveConfirmToggleWrap");
-    const right=document.querySelector(".right");
-    if(!wrap || !right) return;
-
-    /* 優先放在棋鐘後、對局功能鍵前；找不到則放在右欄最下方。 */
-    const clock=right.querySelector(".game-clock-panel");
-    const actionBlock=right.querySelector("#gameActionRow");
-    if(actionBlock && actionBlock.parentNode===right){
-      right.insertBefore(wrap, actionBlock);
-    }else if(clock && clock.parentNode===right){
-      clock.insertAdjacentElement("afterend",wrap);
-    }else if(wrap.parentNode!==right){
-      right.appendChild(wrap);
-    }
-
-    wrap.style.setProperty("position","static","important");
-    wrap.style.setProperty("inset","auto","important");
-    wrap.style.setProperty("width","100%","important");
-    wrap.style.setProperty("margin","6px 0","important");
-  }
-
-  function boot(){
-    dockConfirmToggle();
-    [120,350,800].forEach(ms=>setTimeout(dockConfirmToggle,ms));
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",boot,{once:true});
-  }else{
-    boot();
-  }
-
-  window.addEventListener("pageshow",boot,{passive:true});
-  window.addEventListener("orientationchange",()=>setTimeout(boot,320),{passive:true});
-})();
-</script>
 
 
-<style id="joygo-guidance-ipad-portrait-confirm-zr">
-/* Beta 3.3.12zr｜多人指導棋 iPad 直式：確定/取消列必須可見 */
-@media (orientation:portrait) and (pointer:coarse){
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked,
-  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked{
-    width:calc(100% - 16px)!important;
-    max-width:none!important;
-    margin:8px auto!important;
-    grid-template-columns:1fr 1fr!important;
-    position:relative!important;
-    inset:auto!important;
-    transform:none!important;
-    z-index:30!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked #moveConfirmOk,
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked #moveConfirmCancel,
-  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked #moveConfirmOk,
-  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked #moveConfirmCancel{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-    min-height:46px!important;
-    font-size:15px!important;
-  }
-}
-</style>
 
 
-<script id="joygo-guidance-spectator-deeplink-3312zs">
-(()=>{
-  let tried=false;
-  function openFromQuery(){
-    if(tried)return;
-    try{
-      const p=new URLSearchParams(location.search);
-      if(p.get('spectator')!=='1')return;
-      const btn=document.getElementById('spectatorBtn');
-      if(!btn)return;
-      tried=true;
-      setTimeout(()=>btn.click(),250);
-    }catch(_){}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setTimeout(openFromQuery,900)},{once:true});
-  else setTimeout(openFromQuery,900);
-  window.addEventListener('pageshow',()=>setTimeout(openFromQuery,500),{passive:true});
-})();
-</script>
 
 
-<style id="joygo-guidance-3312zt-rotation-confirm-final">
-/* Beta 3.3.12zt｜多人指導棋 iPad 最終直橫切換修正
-   1) 直式：確認列不能被隱藏的右欄吃掉，固定顯示在六鍵上方。
-   2) 橫式：棋盤尺寸改以 iframe 真實可用高度重算，不再依 100dvh，避免底部被裁切。 */
-@media (orientation:portrait) and (pointer:coarse){
-  html[data-joygo-guidance="1"] .right,
-  body.guidance-embed-mode .right{
-    display:contents!important;
-    pointer-events:none!important;
-  }
-  html[data-joygo-guidance="1"] .right > *:not(#moveConfirmBar),
-  body.guidance-embed-mode .right > *:not(#moveConfirmBar){
-    display:none!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked,
-  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked{
-    position:fixed!important;
-    left:8px!important;
-    right:8px!important;
-    top:auto!important;
-    bottom:calc(116px + env(safe-area-inset-bottom))!important;
-    width:auto!important;
-    max-width:none!important;
-    margin:0!important;
-    transform:none!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:7px!important;
-    padding:8px!important;
-    z-index:50020!important;
-    pointer-events:auto!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked[hidden],
-  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked[hidden]{
-    display:none!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]),
-  body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]){
-    display:grid!important;
-    visibility:visible!important;
-    opacity:1!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar #moveConfirmOk,
-  html[data-joygo-guidance="1"] #moveConfirmBar #moveConfirmCancel,
-  body.guidance-embed-mode #moveConfirmBar #moveConfirmOk,
-  body.guidance-embed-mode #moveConfirmBar #moveConfirmCancel{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-    min-height:46px!important;
-    font-size:15px!important;
-  }
-}
 
-@media (orientation:landscape) and (pointer:coarse){
-  html[data-joygo-guidance="1"],
-  html[data-joygo-guidance="1"] body,
-  body.guidance-embed-mode{
-    height:100%!important;
-    min-height:0!important;
-    overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .app,
-  body.guidance-embed-mode .app{
-    height:100%!important;
-    min-height:0!important;
-    grid-template-rows:minmax(0,1fr) 58px!important;
-    overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .board-wrap,
-  body.guidance-embed-mode .board-wrap{
-    min-height:0!important;
-    max-height:none!important;
-    overflow:hidden!important;
-    align-items:center!important;
-    justify-content:center!important;
-  }
-}
-</style>
-<style id="joygo-guidance-3312zu-landscape-fit">
-/* Beta 3.3.12zx｜多人指導棋根因修正版：
-   以 iframe 實際可用高度限制棋盤，19 路底部與操作列都必須完整顯示。 */
-@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
-  html[data-joygo-guidance="1"],
-  html[data-joygo-guidance="1"] body,
-  body.guidance-embed-mode{
-    height:100%!important;
-    min-height:0!important;
-    overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .app,
-  body.guidance-embed-mode .app{
-    height:100%!important;
-    min-height:0!important;
-    grid-template-rows:minmax(0,1fr) 58px!important;
-    overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .board-wrap,
-  body.guidance-embed-mode .board-wrap{
-    min-height:0!important;
-    max-height:none!important;
-    overflow:hidden!important;
-    align-items:center!important;
-    justify-content:center!important;
-    padding:6px!important;
-  }
-  html[data-joygo-guidance="1"] #board,
-  body.guidance-embed-mode #board{
-    max-width:100%!important;
-    max-height:100%!important;
-    margin:auto!important;
-  }
-}
-</style>
-<style id="joygo-guidance-confirm-lock-3312zw">
-/* Beta 3.3.12zw｜多人指導棋落子確認最終鎖定
-   只作用 guidance iframe：每次點棋盤先預覽，必須按「確定落子」才送出。 */
-html[data-joygo-guidance="1"] #moveConfirmBar.jg-confirm-docked:not([hidden]),
-body.guidance-embed-mode #moveConfirmBar.jg-confirm-docked:not([hidden]){
-  display:grid!important;
-  visibility:visible!important;
-  opacity:1!important;
-  pointer-events:auto!important;
-}
-html[data-joygo-guidance="1"] #moveConfirmOk,
-html[data-joygo-guidance="1"] #moveConfirmCancel,
-body.guidance-embed-mode #moveConfirmOk,
-body.guidance-embed-mode #moveConfirmCancel{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  pointer-events:auto!important;
-}
-</style>
-<script id="joygo-guidance-confirm-lock-3312zw-js">
-(()=>{
-  const isGuidance=()=>{
-    try{return window.self!==window.top && new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}
-  };
-  if(!isGuidance())return;
 
-  function forceConfirmOn(){
-    try{ joygoMoveConfirmEnabled=true; }catch(_){}
-    try{ localStorage.setItem('joygo_move_confirm_enabled','1'); }catch(_){}
-    try{ if(typeof joygoBindMoveConfirmControls==='function') joygoBindMoveConfirmControls(); }catch(_){}
-    try{ if(typeof joygoUpdateMoveConfirmToggle==='function') joygoUpdateMoveConfirmToggle(); }catch(_){}
-  }
 
-  /* 指導棋不允許把落子確認關掉。 */
-  try{
-    const oldToggle=window.joygoToggleMoveConfirm;
-    window.joygoToggleMoveConfirm=function(){
-      forceConfirmOn();
-      try{ if(typeof toast==='function') toast('多人指導棋：落子確認固定開啟'); }catch(_){}
-      return;
-    };
-  }catch(_){}
 
-  /* 即使舊版 localStorage 曾存成「關」，指導棋每次落子仍強制走 pending → 確定 → onlinePlayAt。 */
-  try{
-    const previousShow=window.joygoShowPendingMove;
-    if(typeof previousShow==='function'){
-      window.joygoShowPendingMove=function(x,y,point,mode){
-        if(mode==='online') forceConfirmOn();
-        return previousShow.call(this,x,y,point,mode);
-      };
-    }
-  }catch(_){}
 
-  function boot(){
-    forceConfirmOn();
-    const ok=document.getElementById('moveConfirmOk');
-    const cancel=document.getElementById('moveConfirmCancel');
-    if(ok){ok.hidden=false; ok.style.pointerEvents='auto';}
-    if(cancel){cancel.hidden=false; cancel.style.pointerEvents='auto';}
-    /* bar 本身仍保持 hidden，直到棋盤被點擊，避免空白狀態一直佔位。 */
-    const bar=document.getElementById('moveConfirmBar');
-    if(bar && !window.joygoPendingOnlineMove) bar.hidden=true;
-  }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
-  else boot();
-  window.addEventListener('pageshow',boot,{passive:true});
-  window.addEventListener('orientationchange',()=>setTimeout(boot,350),{passive:true});
-})();
-</script>
+
+
+
+
+
+
+
 
 
 <script id="joygo-online-end-alert-guard-3312zw">
@@ -16849,122 +15563,150 @@ body.guidance-embed-mode #moveConfirmCancel{
 })();
 </script>
 
-<style id="joygo-guidance-3312zy-single-layout">
-/* Beta 3.3.12zy｜多人指導棋單一版面規則
-   橫式：功能鍵已在右欄，底部 player 完全隱藏，不再殘留「主要操作」空框。
-   直式：六鍵回到底部 3x2；棋盤與按鍵緊接，不留大塊空白。 */
-html[data-joygo-guidance="1"] .player::before,
-body.guidance-embed-mode .player::before{display:none!important;content:none!important}
 
-@media (orientation:landscape) and (pointer:coarse){
-  html[data-joygo-guidance="1"],html[data-joygo-guidance="1"] body,body.guidance-embed-mode{
-    width:100%!important;height:100%!important;min-height:0!important;overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .app,body.guidance-embed-mode .app{
-    width:100%!important;height:100%!important;min-height:0!important;
-    display:grid!important;grid-template-columns:minmax(0,1fr) 230px!important;grid-template-rows:minmax(0,1fr)!important;
-    gap:5px!important;padding:5px!important;overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .board-wrap,body.guidance-embed-mode .board-wrap{
-    grid-column:1!important;grid-row:1!important;width:100%!important;height:100%!important;min-height:0!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;padding:4px!important;
-  }
-  html[data-joygo-guidance="1"] .right,body.guidance-embed-mode .right{
-    grid-column:2!important;grid-row:1!important;width:230px!important;height:100%!important;min-height:0!important;overflow:auto!important;
-  }
-  html[data-joygo-guidance="1"] .player,body.guidance-embed-mode .player{
-    display:none!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] #board,body.guidance-embed-mode #board{
-    max-width:100%!important;max-height:100%!important;margin:auto!important;
-  }
+
+
+
+<style id="joygo-guidance-3313-clean-layout">
+/* Joy Go 3.3.13 / Guidance 2.9.7 — single guidance layout controller.
+   No legacy guidance orientation CSS is allowed below this block. */
+html[data-joygo-guidance="1"],html[data-joygo-guidance="1"] body{
+  margin:0!important;width:100%!important;height:100%!important;min-height:0!important;
+  overflow:hidden!important;background:#0b0806!important;
 }
+html[data-joygo-guidance="1"] .left,
+html[data-joygo-guidance="1"] .move-tools,
+html[data-joygo-guidance="1"] .controls,
+html[data-joygo-guidance="1"] .range-row,
+html[data-joygo-guidance="1"] #trialModeBar,
+html[data-joygo-guidance="1"] #redrawBtn,
+html[data-joygo-guidance="1"] #aiHintPanel,
+html[data-joygo-guidance="1"] #apiInspectorToggle,
+html[data-joygo-guidance="1"] #apiInspectorPanel,
+html[data-joygo-guidance="1"] #teachQuickBar,
+html[data-joygo-guidance="1"] #teachBarToggle,
+html[data-joygo-guidance="1"] .member-chip,
+html[data-joygo-guidance="1"] #memberChip{display:none!important}
+html[data-joygo-guidance="1"] .app{box-sizing:border-box!important;width:100%!important;max-width:none!important;margin:0!important;}
+html[data-joygo-guidance="1"] .board-wrap{box-sizing:border-box!important;min-width:0!important;min-height:0!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;padding:4px!important;}
+html[data-joygo-guidance="1"] #board{display:block!important;margin:0 auto!important;max-width:none!important;max-height:none!important;}
+html[data-joygo-guidance="1"] #gameActionRow>button{visibility:visible!important;opacity:1!important;pointer-events:auto!important;}
+html[data-joygo-guidance="1"] #undoGameBtn,
+html[data-joygo-guidance="1"] #scoreGameBtn,
+html[data-joygo-guidance="1"] #calculateResultBtn,
+html[data-joygo-guidance="1"] #passGameBtn,
+html[data-joygo-guidance="1"] #resignGameBtn,
+html[data-joygo-guidance="1"] #saveSgfBtn{display:block!important}
+html[data-joygo-guidance="1"] #moveConfirmBar{box-sizing:border-box!important;transform:none!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;z-index:200!important;}
+html[data-joygo-guidance="1"] #moveConfirmBar[hidden]{display:none!important}
+html[data-joygo-guidance="1"] #moveConfirmBar:not([hidden]){display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;}
+html[data-joygo-guidance="1"] #moveConfirmText{grid-column:1/-1!important;min-width:0!important;width:100%!important;text-align:left!important;}
+html[data-joygo-guidance="1"] #moveConfirmOk,html[data-joygo-guidance="1"] #moveConfirmCancel{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;min-height:44px!important;}
 
-@media (orientation:portrait) and (pointer:coarse){
-  html[data-joygo-guidance="1"],html[data-joygo-guidance="1"] body,body.guidance-embed-mode{
-    width:100%!important;height:100%!important;min-height:0!important;overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .app,body.guidance-embed-mode .app{
-    width:100%!important;height:100%!important;min-height:0!important;
-    display:grid!important;grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) 112px!important;
-    gap:5px!important;padding:5px!important;overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] .board-wrap,body.guidance-embed-mode .board-wrap{
-    grid-column:1!important;grid-row:1!important;width:100%!important;height:100%!important;min-height:0!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;padding:3px!important;
-  }
-  html[data-joygo-guidance="1"] .right,body.guidance-embed-mode .right{display:none!important}
-  html[data-joygo-guidance="1"] .player,body.guidance-embed-mode .player{
-    grid-column:1!important;grid-row:2!important;display:block!important;height:112px!important;min-height:112px!important;max-height:112px!important;
-    margin:0!important;padding:4px!important;overflow:hidden!important;border:0!important;
-  }
-  html[data-joygo-guidance="1"] .player .move-tools,
-  html[data-joygo-guidance="1"] .player .controls,
-  html[data-joygo-guidance="1"] .player .range-row,
-  html[data-joygo-guidance="1"] .player #trialModeBar,
-  body.guidance-embed-mode .player .move-tools,
-  body.guidance-embed-mode .player .controls,
-  body.guidance-embed-mode .player .range-row,
-  body.guidance-embed-mode .player #trialModeBar{display:none!important}
-  html[data-joygo-guidance="1"] #gameActionRow,body.guidance-embed-mode #gameActionRow{
-    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:48px 48px!important;
-    gap:5px!important;width:100%!important;height:101px!important;min-height:101px!important;margin:0!important;padding:0!important;overflow:hidden!important;
-  }
-  html[data-joygo-guidance="1"] #gameActionRow > button,body.guidance-embed-mode #gameActionRow > button{display:none!important}
-  html[data-joygo-guidance="1"] #undoGameBtn,
-  html[data-joygo-guidance="1"] #scoreGameBtn,
-  html[data-joygo-guidance="1"] #calculateResultBtn,
-  html[data-joygo-guidance="1"] #passGameBtn,
-  html[data-joygo-guidance="1"] #resignGameBtn,
-  html[data-joygo-guidance="1"] #saveSgfBtn,
-  body.guidance-embed-mode #undoGameBtn,
-  body.guidance-embed-mode #scoreGameBtn,
-  body.guidance-embed-mode #calculateResultBtn,
-  body.guidance-embed-mode #passGameBtn,
-  body.guidance-embed-mode #resignGameBtn,
-  body.guidance-embed-mode #saveSgfBtn{
-    display:block!important;width:100%!important;height:48px!important;min-height:48px!important;margin:0!important;padding:4px!important;
-    visibility:visible!important;opacity:1!important;pointer-events:auto!important;font-size:13px!important;
-  }
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] .app{height:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:5px!important;padding:5px!important;overflow:hidden!important;}
+  html[data-joygo-guidance="1"] .board-wrap{flex:0 0 auto!important;width:100%!important;height:auto!important;max-height:none!important;}
+  html[data-joygo-guidance="1"] .right{display:none!important;}
+  html[data-joygo-guidance="1"] .player{display:block!important;flex:0 0 auto!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;padding:5px!important;margin:0!important;overflow:visible!important;box-sizing:border-box!important;}
+  html[data-joygo-guidance="1"] #gameActionRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:48px 48px!important;gap:5px!important;width:100%!important;height:101px!important;min-height:101px!important;padding:0!important;margin:0!important;}
+  html[data-joygo-guidance="1"] #gameActionRow>button{height:48px!important;min-height:48px!important;max-height:48px!important;padding:5px 4px!important;font-size:13px!important;}
+  html[data-joygo-guidance="1"] #moveConfirmBar{position:static!important;width:100%!important;margin:0 0 5px!important;padding:7px!important;}
+}
+@media (orientation:landscape){
+  html[data-joygo-guidance="1"] .app{height:100%!important;min-height:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) 238px!important;grid-template-rows:minmax(0,1fr)!important;gap:6px!important;padding:5px!important;overflow:hidden!important;}
+  html[data-joygo-guidance="1"] .board-wrap{grid-column:1!important;grid-row:1!important;width:100%!important;height:100%!important;align-items:center!important;}
+  html[data-joygo-guidance="1"] .right{display:flex!important;grid-column:2!important;grid-row:1!important;width:238px!important;height:100%!important;min-height:0!important;overflow:auto!important;flex-direction:column!important;box-sizing:border-box!important;}
+  html[data-joygo-guidance="1"] .player{display:none!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important;}
+  html[data-joygo-guidance="1"] #moveConfirmBar{position:static!important;width:100%!important;margin:6px 0!important;padding:7px!important;}
+  html[data-joygo-guidance="1"] .compact-action-panel{display:grid!important;}
 }
 </style>
-<script id="joygo-guidance-3312zy-single-fit">
+<script id="joygo-guidance-3313-clean-controller">
 (()=>{
   const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
   if(!isGuidance())return;
-  let timer=0;
-  function fit(){
-    clearTimeout(timer);
-    timer=setTimeout(()=>{
-      const wrap=document.querySelector('.board-wrap'), canvas=document.getElementById('board');
-      if(!wrap||!canvas)return;
-      const portrait=innerHeight>=innerWidth;
-      /* 清除舊版本旋轉時留下的 inline 尺寸，避免轉數次後沿用上一方向。 */
-      ['width','height','max-width','max-height'].forEach(p=>canvas.style.removeProperty(p));
-      wrap.style.removeProperty('height');wrap.style.removeProperty('max-height');wrap.style.removeProperty('min-height');
-      requestAnimationFrame(()=>{
-        const r=wrap.getBoundingClientRect();
-        const size=Math.max(260,Math.floor(Math.min(r.width-8,r.height-8)));
-        canvas.style.setProperty('width',size+'px','important');
-        canvas.style.setProperty('height',size+'px','important');
-        canvas.style.setProperty('max-width',size+'px','important');
-        canvas.style.setProperty('max-height',size+'px','important');
-        try{
-          const dpr=Math.min(Math.max(devicePixelRatio||1,1),2);
-          state.boardCssSize=size;canvas._cssSize=size;canvas._dpr=dpr;
-          const px=Math.max(260,Math.floor(size*dpr));
-          if(canvas.width!==px||canvas.height!==px){canvas.width=px;canvas.height=px;ctx=canvas.getContext('2d',{alpha:false});ctx.setTransform(dpr,0,0,dpr,0,0)}
-          drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-        }catch(_){try{resizeBoard(true)}catch(__){}}
-      });
-    },160);
+  document.documentElement.setAttribute('data-joygo-guidance','1');
+  let timer=0, ro=null;
+  const portrait=()=>window.innerHeight>=window.innerWidth;
+  const forceConfirm=()=>{
+    try{joygoMoveConfirmEnabled=true}catch(_){ }
+    try{localStorage.setItem('joygo_move_confirm_enabled','1')}catch(_){ }
+    try{if(typeof joygoUpdateMoveConfirmToggle==='function')joygoUpdateMoveConfirmToggle()}catch(_){ }
+  };
+  function placeConfirmBar(){
+    const bar=document.getElementById('moveConfirmBar'); if(!bar)return;
+    bar.classList.remove('jg-confirm-docked');
+    if(portrait()){
+      const row=document.getElementById('gameActionRow'), player=document.querySelector('.player');
+      if(player && bar.parentElement!==player) player.insertBefore(bar,row||player.firstChild);
+    }else{
+      const right=document.querySelector('.right');
+      const toggle=document.getElementById('moveConfirmToggleWrap');
+      if(right && bar.parentElement!==right){
+        if(toggle && toggle.parentElement===right) toggle.insertAdjacentElement('afterend',bar); else right.appendChild(bar);
+      }
+    }
   }
-  const burst=()=>[80,260,650,1100].forEach(ms=>setTimeout(fit,ms));
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',burst,{once:true});else burst();
-  addEventListener('pageshow',burst,{passive:true});
-  addEventListener('orientationchange',burst,{passive:true});
-  addEventListener('resize',burst,{passive:true});
-  visualViewport?.addEventListener('resize',burst,{passive:true});
+  function closeForeignModals(){
+    document.body?.classList.add('guidance-embed-mode');
+    document.querySelectorAll('.modal-backdrop').forEach(m=>{if(m.id!=='onlineModal')m.classList.remove('open','show','active')});
+  }
+  function fitNow(){
+    const wrap=document.querySelector('.board-wrap'), canvas=document.getElementById('board'), app=document.querySelector('.app');
+    if(!wrap||!canvas||!app)return;
+    forceConfirm();placeConfirmBar();closeForeignModals();
+    ['width','height','max-width','max-height'].forEach(k=>canvas.style.removeProperty(k));
+    const p=portrait();
+    let size=300;
+    if(p){
+      const player=document.querySelector('.player');
+      const actionH=Math.max(106,Math.ceil(player?.getBoundingClientRect().height||106));
+      const availW=Math.max(280,window.innerWidth-12);
+      const availH=Math.max(280,window.innerHeight-actionH-16);
+      size=Math.floor(Math.min(availW,availH));
+      wrap.style.setProperty('height',size+8+'px','important');
+      wrap.style.setProperty('flex-basis',size+8+'px','important');
+    }else{
+      wrap.style.removeProperty('flex-basis');
+      wrap.style.setProperty('height','100%','important');
+      const r=wrap.getBoundingClientRect();
+      size=Math.floor(Math.min(Math.max(280,r.width-10),Math.max(280,r.height-10)));
+    }
+    size=Math.max(280,size);
+    canvas.style.setProperty('width',size+'px','important');
+    canvas.style.setProperty('height',size+'px','important');
+    canvas.style.setProperty('max-width',size+'px','important');
+    canvas.style.setProperty('max-height',size+'px','important');
+    try{
+      const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
+      if(typeof state!=='undefined')state.boardCssSize=size;
+      canvas._cssSize=size;canvas._dpr=dpr;
+      const px=Math.max(280,Math.floor(size*dpr));
+      if(canvas.width!==px||canvas.height!==px){canvas.width=px;canvas.height=px;ctx=canvas.getContext('2d',{alpha:false});ctx?.setTransform(dpr,0,0,dpr,0,0)}
+      if(typeof drawBoard==='function')drawBoard(state.currentSnapshot||activateSnapshot(state.index));
+    }catch(_){try{resizeBoard(true)}catch(__){}}
+  }
+  function schedule(ms=120){clearTimeout(timer);timer=setTimeout(()=>requestAnimationFrame(fitNow),ms)}
+  function boot(){
+    document.body?.classList.add('guidance-embed-mode');forceConfirm();placeConfirmBar();closeForeignModals();
+    try{
+      const originalOpen=window.openModal;
+      if(typeof originalOpen==='function')window.openModal=function(id){if(isGuidance()&&id!=='onlineModal')return;return originalOpen.apply(this,arguments)};
+    }catch(_){ }
+    try{
+      const oldToggle=window.joygoToggleMoveConfirm;
+      window.joygoToggleMoveConfirm=function(){forceConfirm();try{toast('多人指導棋：落子確認固定開啟')}catch(_){}};
+      const oldShow=window.joygoShowPendingMove;
+      if(typeof oldShow==='function')window.joygoShowPendingMove=function(...args){forceConfirm();placeConfirmBar();const ret=oldShow.apply(this,args);schedule(10);return ret};
+    }catch(_){ }
+    schedule(40);schedule(350);
+    window.addEventListener('orientationchange',()=>{schedule(180);schedule(520)},{passive:true});
+    window.addEventListener('resize',()=>schedule(180),{passive:true});
+    window.addEventListener('pageshow',()=>schedule(100),{passive:true});
+    if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>schedule(160),{passive:true});
+    try{ro=new ResizeObserver(()=>schedule(90));ro.observe(document.querySelector('.app'))}catch(_){ }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
 
