@@ -10529,7 +10529,9 @@ async function onlineSyncRoom(){
       // 多人指導棋 iframe：結果只用 toast 顯示一次，不再 alert，
       // 避免多盤同步或舊棋局超時時反覆跳出系統彈窗。
       if(!guidanceEmbed){
-        setTimeout(()=>{alert(message);openModal("onlineModal")},120);
+        // Beta 3.3.12zw：真人／指導棋結束只顯示頁內 toast，不再跳系統 alert。
+        // 避免 iPad 旋轉、重新同步或恢復房間時反覆出現「對局結束／超時」彈窗。
+        try{ onlineSetStatus(message.replace("\n","："), ""); }catch(_){}
       }
     }else if(room.status==="ended"&&!room.result){
       toast("🏁 對局已結束，請按「正式數地／計算勝負」並由雙方確認結果");
@@ -17101,5 +17103,22 @@ body.guidance-embed-mode #moveConfirmCancel{
 }
 </style>
 
+
+<script id="joygo-online-end-alert-guard-3312zw">
+(()=>{
+  const nativeAlert=window.alert.bind(window);
+  window.alert=(message)=>{
+    const text=String(message??"");
+    const onlineEnded = (text.includes("對局結束") || text.includes("超時")) && (()=>{
+      try{return !!window.state?.onlineMode || !!window.state?.onlineRoom;}catch(_){return false}
+    })();
+    if(onlineEnded){
+      try{ if(typeof toast==="function") toast(text.replace(/\n/g,"：")); }catch(_){}
+      return;
+    }
+    return nativeAlert(message);
+  };
+})();
+</script>
 </body>
 </html>
