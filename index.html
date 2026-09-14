@@ -12738,7 +12738,10 @@ function joygoShowPendingMove(x,y,point,mode){
   if(text){
     text.textContent=`${color==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`;
   }
-  if(bar)bar.hidden=false;
+  if(bar){
+    bar.hidden=false;
+    try{ if(typeof window.joygoGuidanceShowConfirmOverlay==="function") window.joygoGuidanceShowConfirmOverlay(); }catch(_){}
+  }
 }
 
 
@@ -15847,6 +15850,76 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   addEventListener('orientationchange',()=>setTimeout(place,260),{passive:true});
   addEventListener('pageshow',()=>setTimeout(place,80),{passive:true});
+})();
+</script>
+
+
+<style id="joygo-guidance-297g-confirm-overlay">
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] .board-wrap{position:relative!important;overflow:visible!important;}
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg297g-overlay{
+    position:absolute!important;
+    left:12px!important;right:12px!important;bottom:12px!important;
+    width:auto!important;max-width:none!important;margin:0!important;
+    display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;
+    padding:9px!important;box-sizing:border-box!important;
+    z-index:99999!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+    border-radius:14px!important;background:rgba(18,12,8,.96)!important;
+    border:1px solid #8b6338!important;box-shadow:0 8px 24px #0009!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg297g-overlay[hidden]{display:none!important;}
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg297g-overlay #moveConfirmText{
+    grid-column:1/-1!important;text-align:center!important;font-weight:900!important;color:#ffe7a0!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg297g-overlay #moveConfirmOk,
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg297g-overlay #moveConfirmCancel{
+    display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+    min-height:50px!important;font-size:16px!important;font-weight:900!important;
+  }
+}
+</style>
+<script id="joygo-guidance-297g-confirm-overlay-js">
+(()=>{
+  const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
+  if(!isGuidance())return;
+  const portrait=()=>window.innerHeight>=window.innerWidth;
+  window.joygoGuidanceShowConfirmOverlay=function(){
+    if(!portrait())return;
+    const bar=document.getElementById('moveConfirmBar');
+    const wrap=document.querySelector('.board-wrap');
+    if(!bar||!wrap)return;
+    if(bar.parentElement!==wrap)wrap.appendChild(bar);
+    bar.classList.add('jg297g-overlay');
+    bar.classList.remove('jg-portrait-fixed','jg-confirm-docked');
+    bar.hidden=false;
+    bar.style.setProperty('display','grid','important');
+    const ok=document.getElementById('moveConfirmOk'), cancel=document.getElementById('moveConfirmCancel');
+    if(ok){ok.hidden=false;ok.style.setProperty('display','block','important');}
+    if(cancel){cancel.hidden=false;cancel.style.setProperty('display','block','important');}
+  };
+  function restoreLandscape(){
+    if(portrait())return;
+    const bar=document.getElementById('moveConfirmBar');
+    const right=document.getElementById('rightTools');
+    if(!bar)return;
+    bar.classList.remove('jg297g-overlay');
+    if(right && bar.parentElement!==right) right.appendChild(bar);
+  }
+  // Fallback: after any board tap, if the pending marker became visible, show the bar.
+  function bind(){
+    const canvas=document.getElementById('board');
+    if(!canvas||canvas.dataset.jg297gBound)return;
+    canvas.dataset.jg297gBound='1';
+    const after=()=>setTimeout(()=>{
+      const marker=document.getElementById('moveConfirmMarker');
+      if(portrait() && marker && !marker.hidden) window.joygoGuidanceShowConfirmOverlay();
+    },20);
+    canvas.addEventListener('pointerup',after,{passive:true});
+    canvas.addEventListener('touchend',after,{passive:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  addEventListener('pageshow',()=>setTimeout(bind,60),{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(()=>{portrait()?bind():restoreLandscape()},300),{passive:true});
 })();
 </script>
 
