@@ -273,9 +273,19 @@ header h1{font-size:28px;font-weight:900;letter-spacing:.3px;color:var(--gold2);
 }
 </style>
 
+
+<style id="joygo-guidance-296f-frame-authoritative">
+/* Beta 2.9.6f：外層 iframe 僅提供固定工作區，不再在旋轉時捲動頁面。 */
+@media (orientation:portrait) and (min-width:700px) and (pointer:coarse){
+  .board-frame{height:1065px!important;min-height:1065px!important;max-height:1065px!important;overflow:hidden!important}
+}
+@media (orientation:landscape) and (min-width:900px) and (pointer:coarse){
+  .board-frame{height:760px!important;min-height:760px!important;max-height:760px!important;overflow:hidden!important}
+}
+</style>
 </head>
 <body>
-<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6e｜讓子無棋號＋直橫完整＋落子確認版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
+<header><div><h1>🎓 Joy Go 多人線上指導棋</h1><div class="tag">Beta 2.9.6f｜讓子無棋號＋旋轉穩定＋落子確認版｜1 對 1～1 對 5 <span class="security-note">🔒 權限鎖定</span></div></div><button class="btn ghost" onclick="location.href='admin-center.html'">回管理中心</button></header>
 <div class="wrap">
 <div id="notice" class="notice">正在確認登入狀態…</div>
 <section class="card"><h2>建立新的指導棋</h2><div class="body"><div class="toolbar" style="margin-bottom:12px">
@@ -483,7 +493,7 @@ function ensureFrame(b){
     f.referrerPolicy='no-referrer';
     f.setAttribute('allow','clipboard-write');
     f.setAttribute('scrolling','no');
-    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&guidance_handicap=${encodeURIComponent(Number(b.handicap||0))}&gv=296e`;
+    f.dataset.src=`index.html?room=${encodeURIComponent(b.room_code)}&guidance_embed=1&guidance_handicap=${encodeURIComponent(Number(b.handicap||0))}&gv=296f`;
     $("frames").appendChild(f);
   }
   if(!f.getAttribute('src')) f.src=f.dataset.src;
@@ -840,25 +850,5 @@ async function cleanupOldSessions(){
 $("cleanupBtn").onclick=cleanupOldSessions;
 async function init(){try{const {data,error}=await sb.auth.getSession();if(error||!data?.session)return notice('請先回 Joy Go Platform 登入主管理員帳號。','bad');me=data.session.user;const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');if(ae)return notice('無法檢查管理權限：'+ae.message,'bad');const a=Array.isArray(access)?access[0]:access;if(!a||a.staff_role==='none')return notice('此頁只開放授權工作人員使用。','bad');await loadProfiles();await autoCleanupOldSessions();await loadSessions();syncTeacherIdentityUI();notice('✅ 多人指導棋系統已就緒｜舊場次已安全整理。','good')}catch(e){notice('初始化失敗：'+(e.message||e),'bad')}}
 init();setInterval(()=>refreshSession(false),5000);
-</script>
-<script id="joygo-guidance-295h-rotation-scroll-fix">
-(()=>{
-  let t=0;
-  const stabilize=()=>{
-    clearTimeout(t);
-    t=setTimeout(()=>{
-      const active=document.querySelector('.board-frame.active');
-      if(!active) return;
-      /* 保持老師目前工作區可見，避免 iPad 旋轉後 Safari 保留舊捲動位置造成只看到半個棋盤 */
-      const r=active.getBoundingClientRect();
-      if(r.top<80 || r.top>innerHeight-120){
-        active.scrollIntoView({block:'start',behavior:'auto'});
-        window.scrollBy(0,-70);
-      }
-    },220);
-  };
-  window.addEventListener('orientationchange',stabilize,{passive:true});
-  window.addEventListener('resize',stabilize,{passive:true});
-})();
 </script>
 </body></html>
