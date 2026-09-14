@@ -15661,7 +15661,7 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
 }
 </style>
 
-<script id="joygo-guidance-3313b-confirm-stable-controller">
+<script id="joygo-guidance-3313c-confirm-stable-controller">
 (()=>{
   const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
   if(!isGuidance())return;
@@ -15766,7 +15766,6 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
         placeConfirmBar();
         const bar=document.getElementById('moveConfirmBar');
         if(bar)bar.hidden=false;
-        if(portrait()) schedule(40);
         return out;
       };
       wrapped.__guidance297b=true;
@@ -15781,6 +15780,93 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
   window.addEventListener('pageshow',()=>{loadPref();placeConfirmBar();refreshToggle();schedule(80)},{passive:true});
   window.addEventListener('orientationchange',()=>{joygoClearPendingMove();setTimeout(()=>{placeConfirmBar();schedule(80)},260)},{passive:true});
   window.addEventListener('resize',()=>schedule(180),{passive:true});
+})();
+</script>
+
+
+<style id="joygo-guidance-297c-portrait-confirm-final">
+/* 2.9.7c: 直式確認列脫離棋盤/功能列版面，固定在畫面底部上方，避免被父層裁切。 */
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed{
+    position:fixed!important;
+    left:10px!important;
+    right:10px!important;
+    top:auto!important;
+    bottom:calc(118px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:0!important;
+    z-index:99999!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:9px!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed[hidden]{display:none!important}
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmText{
+    grid-column:1/-1!important;font-size:14px!important;line-height:1.3!important
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmOk,
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmCancel{
+    display:block!important;min-height:48px!important;font-size:16px!important;pointer-events:auto!important
+  }
+}
+</style>
+<script id="joygo-guidance-297c-portrait-confirm-final-js">
+(()=>{
+  const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
+  if(!isGuidance())return;
+  const isPortrait=()=>innerHeight>=innerWidth;
+  function bar(){return document.getElementById('moveConfirmBar')}
+  function place(){
+    const b=bar(); if(!b)return;
+    if(isPortrait()){
+      if(b.parentElement!==document.body) document.body.appendChild(b);
+      b.classList.remove('jg-confirm-docked');
+      b.classList.add('jg-portrait-fixed');
+    }else{
+      b.classList.remove('jg-portrait-fixed');
+      const right=document.querySelector('.right');
+      const toggle=document.getElementById('moveConfirmToggleWrap');
+      if(right && b.parentElement!==right){
+        if(toggle&&toggle.parentElement===right) toggle.insertAdjacentElement('afterend',b); else right.prepend(b);
+      }
+    }
+  }
+  function ensureVisible(){
+    const b=bar();
+    if(!isPortrait()||!b)return;
+    place();
+    try{
+      if(window.joygoPendingOnlineMove && window.joygoMoveConfirmEnabled!==false){
+        b.hidden=false;
+        b.style.setProperty('display','grid','important');
+        b.style.setProperty('visibility','visible','important');
+        b.style.setProperty('opacity','1','important');
+      }
+    }catch(_){ }
+  }
+  function boot(){
+    place();
+    const canvas=document.getElementById('board');
+    if(canvas){
+      // 不重算棋盤，只在落點處理完成後檢查 pending move，避免橫式曾出現的抖動/卡住。
+      const after=()=>{setTimeout(ensureVisible,0);setTimeout(ensureVisible,70)};
+      canvas.addEventListener('pointerup',after,{passive:true});
+      canvas.addEventListener('touchend',after,{passive:true});
+      canvas.addEventListener('click',after,{passive:true});
+    }
+    const ok=document.getElementById('moveConfirmOk');
+    const cancel=document.getElementById('moveConfirmCancel');
+    ok?.addEventListener('click',()=>setTimeout(()=>{bar()&& (bar().hidden=true)},0),{passive:true});
+    cancel?.addEventListener('click',()=>setTimeout(()=>{bar()&& (bar().hidden=true)},0),{passive:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+  addEventListener('orientationchange',()=>setTimeout(place,260),{passive:true});
+  addEventListener('pageshow',()=>setTimeout(place,80),{passive:true});
 })();
 </script>
 
