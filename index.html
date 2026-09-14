@@ -15929,25 +15929,40 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
 </script>
 
 
-<style id="joygo-guidance-297h-dedicated-confirm">
+<style id="joygo-guidance-297i-confirm-no-resize">
+/* Beta 2.9.7i：確認面板改為絕對定位疊在操作區上，不參與版面高度計算，
+   因此顯示／隱藏確認鍵時不會重新壓縮棋盤。 */
 @media (orientation:portrait){
-  html[data-joygo-guidance="1"] .player{height:auto!important;max-height:none!important;overflow:visible!important;}
+  html[data-joygo-guidance="1"] .player{
+    position:relative!important;
+    overflow:visible!important;
+  }
   html[data-joygo-guidance="1"] #jgGuidanceConfirmDock{
     display:none;
+    position:absolute!important;
+    left:0!important;
+    right:0!important;
+    top:0!important;
+    width:auto!important;
+    box-sizing:border-box!important;
     grid-template-columns:1fr 1fr;
     gap:8px;
-    width:100%;
-    box-sizing:border-box;
-    margin:0 0 8px 0;
+    margin:0!important;
     padding:10px;
     border:1px solid #8b6338;
     border-radius:14px;
     background:#1b120d;
     color:#ffe7a0;
-    z-index:50;
+    z-index:500!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.28);
   }
   html[data-joygo-guidance="1"] #jgGuidanceConfirmDock.show{display:grid!important;}
-  html[data-joygo-guidance="1"] #jgGuidanceConfirmText{grid-column:1/-1;text-align:center;font-weight:900;font-size:15px;}
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmText{
+    grid-column:1/-1;
+    text-align:center;
+    font-weight:900;
+    font-size:15px;
+  }
   html[data-joygo-guidance="1"] #jgGuidanceConfirmOk,
   html[data-joygo-guidance="1"] #jgGuidanceConfirmCancel{
     min-height:50px!important;
@@ -15955,11 +15970,19 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
     font-weight:900!important;
     border-radius:12px!important;
   }
-  html[data-joygo-guidance="1"] #jgGuidanceConfirmOk{background:#f4bf3d!important;color:#23160a!important;border:1px solid #d49a21!important;}
-  html[data-joygo-guidance="1"] #jgGuidanceConfirmCancel{background:#2a1b14!important;color:#fff!important;border:1px solid #6f4a33!important;}
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmOk{
+    background:#f4bf3d!important;
+    color:#23160a!important;
+    border:1px solid #d49a21!important;
+  }
+  html[data-joygo-guidance="1"] #jgGuidanceConfirmCancel{
+    background:#2a1b14!important;
+    color:#fff!important;
+    border:1px solid #6f4a33!important;
+  }
 }
 </style>
-<script id="joygo-guidance-297h-dedicated-confirm-js">
+<script id="joygo-guidance-297i-dedicated-confirm-js">
 (()=>{
   const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
   if(!isGuidance())return;
