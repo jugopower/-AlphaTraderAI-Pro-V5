@@ -6428,6 +6428,26 @@ body.jg-online-mode #jgUSpeedPanel{
 
 
 
+
+<style id="joygo-guidance-297e-direct-confirm">
+@media (orientation:portrait){
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed{
+    position:fixed!important; left:12px!important; right:12px!important;
+    bottom:calc(132px + env(safe-area-inset-bottom))!important; top:auto!important;
+    width:auto!important; max-width:none!important; margin:0!important;
+    display:grid!important; grid-template-columns:1fr 1fr!important; gap:8px!important;
+    padding:9px!important; z-index:2147483640!important;
+    visibility:visible!important; opacity:1!important; pointer-events:auto!important;
+  }
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed[hidden]{display:none!important}
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmText{grid-column:1/-1!important}
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmOk,
+  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmCancel{
+    display:block!important; visibility:visible!important; opacity:1!important; pointer-events:auto!important;
+    min-height:48px!important; font-size:16px!important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -12738,6 +12758,27 @@ function joygoShowPendingMove(x,y,point,mode){
     text.textContent=`${color==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`;
   }
   if(bar)bar.hidden=false;
+
+  // Beta 2.9.7e：多人指導棋直式，直接在原始 pending-move 函式內顯示確認列。
+  // 不再依賴後掛 wrapper / window 變數，避免預覽棋出現但確認鈕不顯示。
+  try{
+    const q=new URLSearchParams(location.search);
+    const guidancePortrait=(window.self!==window.top && q.get("guidance_embed")==="1" && window.innerHeight>=window.innerWidth);
+    if(guidancePortrait && bar){
+      if(bar.parentElement!==document.body) document.body.appendChild(bar);
+      bar.classList.remove("jg-confirm-docked");
+      bar.classList.add("jg-portrait-fixed");
+      bar.hidden=false;
+      bar.style.setProperty("display","grid","important");
+      bar.style.setProperty("visibility","visible","important");
+      bar.style.setProperty("opacity","1","important");
+      bar.style.setProperty("pointer-events","auto","important");
+      const ok=document.getElementById("moveConfirmOk");
+      const cancel=document.getElementById("moveConfirmCancel");
+      if(ok){ ok.hidden=false; ok.style.setProperty("display","block","important"); }
+      if(cancel){ cancel.hidden=false; cancel.style.setProperty("display","block","important"); }
+    }
+  }catch(_){ }
 }
 
 
