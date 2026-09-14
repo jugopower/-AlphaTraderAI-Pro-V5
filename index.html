@@ -6429,25 +6429,6 @@ body.jg-online-mode #jgUSpeedPanel{
 
 
 
-<style id="joygo-guidance-297e-direct-confirm">
-@media (orientation:portrait){
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed{
-    position:fixed!important; left:12px!important; right:12px!important;
-    bottom:calc(132px + env(safe-area-inset-bottom))!important; top:auto!important;
-    width:auto!important; max-width:none!important; margin:0!important;
-    display:grid!important; grid-template-columns:1fr 1fr!important; gap:8px!important;
-    padding:9px!important; z-index:2147483640!important;
-    visibility:visible!important; opacity:1!important; pointer-events:auto!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed[hidden]{display:none!important}
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmText{grid-column:1/-1!important}
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmOk,
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmCancel{
-    display:block!important; visibility:visible!important; opacity:1!important; pointer-events:auto!important;
-    min-height:48px!important; font-size:16px!important;
-  }
-}
-</style>
 </head>
 <body>
 
@@ -12758,27 +12739,6 @@ function joygoShowPendingMove(x,y,point,mode){
     text.textContent=`${color==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`;
   }
   if(bar)bar.hidden=false;
-
-  // Beta 2.9.7e：多人指導棋直式，直接在原始 pending-move 函式內顯示確認列。
-  // 不再依賴後掛 wrapper / window 變數，避免預覽棋出現但確認鈕不顯示。
-  try{
-    const q=new URLSearchParams(location.search);
-    const guidancePortrait=(window.self!==window.top && q.get("guidance_embed")==="1" && window.innerHeight>=window.innerWidth);
-    if(guidancePortrait && bar){
-      if(bar.parentElement!==document.body) document.body.appendChild(bar);
-      bar.classList.remove("jg-confirm-docked");
-      bar.classList.add("jg-portrait-fixed");
-      bar.hidden=false;
-      bar.style.setProperty("display","grid","important");
-      bar.style.setProperty("visibility","visible","important");
-      bar.style.setProperty("opacity","1","important");
-      bar.style.setProperty("pointer-events","auto","important");
-      const ok=document.getElementById("moveConfirmOk");
-      const cancel=document.getElementById("moveConfirmCancel");
-      if(ok){ ok.hidden=false; ok.style.setProperty("display","block","important"); }
-      if(cancel){ cancel.hidden=false; cancel.style.setProperty("display","block","important"); }
-    }
-  }catch(_){ }
 }
 
 
@@ -15825,168 +15785,68 @@ html[data-joygo-guidance="1"] #moveConfirmCancel{
 </script>
 
 
-<style id="joygo-guidance-297c-portrait-confirm-final">
-/* 2.9.7c: 直式確認列脫離棋盤/功能列版面，固定在畫面底部上方，避免被父層裁切。 */
+
+<style id="joygo-guidance-297f-portrait-confirm-flow">
 @media (orientation:portrait){
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed{
-    position:fixed!important;
-    left:10px!important;
-    right:10px!important;
-    top:auto!important;
-    bottom:calc(118px + env(safe-area-inset-bottom))!important;
-    width:auto!important;
-    max-width:none!important;
-    margin:0!important;
-    z-index:99999!important;
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
-    padding:9px!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
+  html[data-joygo-guidance="1"] #moveConfirmBar{
+    position:static!important;inset:auto!important;transform:none!important;
+    width:100%!important;max-width:none!important;margin:0 0 6px!important;
+    z-index:50!important;display:grid!important;grid-template-columns:1fr 1fr!important;
+    gap:7px!important;padding:8px!important;box-sizing:border-box!important;
+    visibility:visible!important;opacity:1!important;pointer-events:auto!important;
   }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed[hidden]{display:none!important}
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmText{
-    grid-column:1/-1!important;font-size:14px!important;line-height:1.3!important
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmOk,
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmCancel{
-    display:block!important;min-height:48px!important;font-size:16px!important;pointer-events:auto!important
+  html[data-joygo-guidance="1"] #moveConfirmBar[hidden]{display:none!important}
+  html[data-joygo-guidance="1"] #moveConfirmBar:not([hidden]){display:grid!important}
+  html[data-joygo-guidance="1"] #moveConfirmText{grid-column:1/-1!important}
+  html[data-joygo-guidance="1"] #moveConfirmOk,
+  html[data-joygo-guidance="1"] #moveConfirmCancel{
+    display:block!important;visibility:visible!important;opacity:1!important;
+    pointer-events:auto!important;min-height:46px!important;font-size:15px!important;
   }
 }
 </style>
-<script id="joygo-guidance-297c-portrait-confirm-final-js">
+<script id="joygo-guidance-297f-portrait-confirm-flow-js">
 (()=>{
   const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
   if(!isGuidance())return;
   const isPortrait=()=>innerHeight>=innerWidth;
-  function bar(){return document.getElementById('moveConfirmBar')}
   function place(){
-    const b=bar(); if(!b)return;
-    if(isPortrait()){
-      if(b.parentElement!==document.body) document.body.appendChild(b);
-      b.classList.remove('jg-confirm-docked');
-      b.classList.add('jg-portrait-fixed');
-    }else{
-      b.classList.remove('jg-portrait-fixed');
-      const right=document.querySelector('.right');
-      const toggle=document.getElementById('moveConfirmToggleWrap');
-      if(right && b.parentElement!==right){
-        if(toggle&&toggle.parentElement===right) toggle.insertAdjacentElement('afterend',b); else right.prepend(b);
-      }
-    }
+    if(!isPortrait())return;
+    const bar=document.getElementById('moveConfirmBar');
+    const row=document.getElementById('gameActionRow');
+    const player=document.querySelector('.player');
+    if(!bar||!row||!player)return;
+    bar.classList.remove('jg-portrait-fixed','jg-confirm-docked');
+    if(bar.parentElement!==player || bar.nextElementSibling!==row) player.insertBefore(bar,row);
   }
-  function ensureVisible(){
-    const b=bar();
-    if(!isPortrait()||!b)return;
-    place();
-    try{
-      if(window.joygoPendingOnlineMove && window.joygoMoveConfirmEnabled!==false){
-        b.hidden=false;
-        b.style.setProperty('display','grid','important');
-        b.style.setProperty('visibility','visible','important');
-        b.style.setProperty('opacity','1','important');
-      }
-    }catch(_){ }
+  function showIfPending(){
+    if(!isPortrait())return;
+    const bar=document.getElementById('moveConfirmBar');
+    const marker=document.getElementById('moveConfirmMarker');
+    if(!bar)return;
+    // 預覽 marker 已顯示代表目前有待確認落子；不再依賴 window 上的 pending 變數。
+    if(marker && !marker.hidden){
+      place();
+      bar.hidden=false;
+      bar.style.setProperty('display','grid','important');
+      const ok=document.getElementById('moveConfirmOk');
+      const cancel=document.getElementById('moveConfirmCancel');
+      if(ok)ok.style.setProperty('display','block','important');
+      if(cancel)cancel.style.setProperty('display','block','important');
+    }
   }
   function boot(){
     place();
     const canvas=document.getElementById('board');
     if(canvas){
-      // 不重算棋盤，只在落點處理完成後檢查 pending move，避免橫式曾出現的抖動/卡住。
-      const after=()=>{setTimeout(ensureVisible,0);setTimeout(ensureVisible,70)};
+      const after=()=>{setTimeout(showIfPending,0);setTimeout(showIfPending,35)};
       canvas.addEventListener('pointerup',after,{passive:true});
       canvas.addEventListener('touchend',after,{passive:true});
-      canvas.addEventListener('click',after,{passive:true});
     }
-    const ok=document.getElementById('moveConfirmOk');
-    const cancel=document.getElementById('moveConfirmCancel');
-    ok?.addEventListener('click',()=>setTimeout(()=>{bar()&& (bar().hidden=true)},0),{passive:true});
-    cancel?.addEventListener('click',()=>setTimeout(()=>{bar()&& (bar().hidden=true)},0),{passive:true});
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   addEventListener('orientationchange',()=>setTimeout(place,260),{passive:true});
   addEventListener('pageshow',()=>setTimeout(place,80),{passive:true});
-})();
-</script>
-
-
-
-<style id="joygo-guidance-297d-portrait-confirm-force">
-@media (orientation:portrait){
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed{
-    position:fixed!important;
-    left:12px!important;
-    right:12px!important;
-    bottom:calc(126px + env(safe-area-inset-bottom))!important;
-    top:auto!important;
-    width:auto!important;
-    max-width:none!important;
-    margin:0!important;
-    z-index:2147483000!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
-    padding:9px!important;
-    pointer-events:auto!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed:not([hidden]){
-    display:grid!important;
-    visibility:visible!important;
-    opacity:1!important;
-  }
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmOk,
-  html[data-joygo-guidance="1"] #moveConfirmBar.jg-portrait-fixed #moveConfirmCancel{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-    min-height:48px!important;
-    font-size:16px!important;
-  }
-}
-</style>
-<script id="joygo-guidance-297d-portrait-confirm-force-js">
-(()=>{
-  const isGuidance=()=>{try{return window.self!==window.top&&new URLSearchParams(location.search).get('guidance_embed')==='1'}catch(_){return false}};
-  if(!isGuidance()) return;
-  const isPortrait=()=>window.innerHeight>=window.innerWidth;
-  function forcePortraitConfirm(){
-    if(!isPortrait()) return;
-    const b=document.getElementById('moveConfirmBar');
-    if(!b) return;
-    if(b.parentElement!==document.body) document.body.appendChild(b);
-    b.classList.remove('jg-confirm-docked');
-    b.classList.add('jg-portrait-fixed');
-    b.hidden=false;
-    b.style.setProperty('display','grid','important');
-    b.style.setProperty('visibility','visible','important');
-    b.style.setProperty('opacity','1','important');
-    const ok=document.getElementById('moveConfirmOk');
-    const cancel=document.getElementById('moveConfirmCancel');
-    if(ok){ok.hidden=false;ok.style.setProperty('display','block','important');}
-    if(cancel){cancel.hidden=false;cancel.style.setProperty('display','block','important');}
-  }
-  function install(){
-    const base=window.joygoShowPendingMove || (typeof joygoShowPendingMove==='function'?joygoShowPendingMove:null);
-    if(typeof base==='function'&&!base.__guidance297d){
-      const wrapped=function(){
-        const out=base.apply(this,arguments);
-        if(isPortrait()){
-          forcePortraitConfirm();
-          setTimeout(forcePortraitConfirm,0);
-          setTimeout(forcePortraitConfirm,40);
-        }
-        return out;
-      };
-      wrapped.__guidance297d=true;
-      window.joygoShowPendingMove=wrapped;
-      try{joygoShowPendingMove=wrapped}catch(_){ }
-    }
-    try{ if(typeof joygoBindMoveConfirmControls==='function') joygoBindMoveConfirmControls(); }catch(_){ }
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true}); else install();
-  window.addEventListener('pageshow',install,{passive:true});
 })();
 </script>
 
