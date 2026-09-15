@@ -6923,7 +6923,7 @@ body.jg-online-mode #jgUSpeedPanel{
         <option value="4D">4段</option>
         <option value="5D">5段</option>
         <option value="6D">6段</option>
-        <option value="7D">7段</option>
+        
         </select>
       </label>
       <label>Email<input id="memberSignupEmail" type="email" autocomplete="email" placeholder="name@example.com"></label>
@@ -6985,7 +6985,7 @@ body.jg-online-mode #jgUSpeedPanel{
 <option value="4D">4段</option>
 <option value="5D">5段</option>
 <option value="6D">6段</option>
-<option value="7D">7段</option>
+
           </select>
         </label>
         <button id="memberSaveRankBtn" class="action" type="button">確認棋力</button>
@@ -9375,7 +9375,7 @@ async function memberResetPassword(){
 }
 
 function joygoRankValid(code){
-  return /^(?:[1-9]|[12][0-9]|30)K$|^[1-7]D$/.test(String(code||""));
+  return /^(?:[1-9]|[12][0-9]|30)K$|^[1-6]D$/.test(String(code||""));
 }
 async function memberSaveRank(code,showStatus=true){
   if(!await memberEnsureClient())return false;
