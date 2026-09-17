@@ -77,7 +77,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5c</span></div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5d</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -150,7 +150,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
           <button class="tool" id="importBackupBtn">匯入題目備份</button>
           <input id="importBackupFile" type="file" accept=".json,application/json" style="display:none">
         </div>
-        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。</div>
+        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5d 可相容舊版 JSON 題庫備份。</div>
         <div class="small" id="shareHint" style="margin-top:8px">建議：白天輸出「題目圖」貼 LINE；到公布時間後輸出「正解圖」貼 LINE。網站入口維持固定短網址。</div>
 
         <div style="height:16px"></div>
@@ -552,27 +552,108 @@ function exportAllQuestions(){
   alert(`已匯出 ${qs.length} 題。\n請把 JSON 備份檔保存到 iCloud Drive 或其他安全位置。`);
 }
 
+function normalizeQuestion(q){
+  if(!q || typeof q!=='object') return null;
+
+  // 相容較舊版本可能使用的欄位名稱
+  const normalized={
+    id: q.id!=null ? q.id : Date.now()+Math.random(),
+    category: q.category || q.cat || q.type || '死活',
+    title: q.title || q.name || '每日一題',
+    prompt: q.prompt || q.question || q.description || '',
+    explain: q.explain || q.answerText || q.solutionText || '',
+    publishDate: q.publishDate || q.answerDate || q.date || todayStr(),
+    publishTime: q.publishTime || q.answerTime || q.time || '20:00',
+    size: +(q.size || q.boardSize || q.board || 19),
+    stones: q.stones || q.baseStones || q.position || {},
+    marks: q.marks || q.markers || {},
+    answerMoves: q.answerMoves || q.solutionMoves || q.moves || [],
+    updatedAt: q.updatedAt || q.modifiedAt || Date.now()
+  };
+
+  if(![9,13,19].includes(normalized.size)) normalized.size=19;
+  if(!['死活','佈局','中盤','手筋'].includes(normalized.category)) normalized.category='死活';
+
+  return normalized;
+}
+
 function importQuestionsFromFile(file){
+  const name=(file && file.name || '').toLowerCase();
+
+  // 先判斷明顯不是 JSON 的檔案
+  if(name.endsWith('.html') || name.endsWith('.htm')){
+    alert('你選到的是 HTML 網頁檔，不是題庫備份。\n請選 JoyGo-題庫備份-日期.json');
+    return;
+  }
+  if(name.match(/\.(png|jpg|jpeg|webp|gif)$/)){
+    alert('你選到的是圖片檔，不是題庫備份。\n請選 JoyGo-題庫備份-日期.json');
+    return;
+  }
+  if(name && !name.endsWith('.json')){
+    alert('這個檔案不是 JSON 題庫備份。\n請選副檔名為 .json 的 Joy Go 題庫備份檔。');
+    return;
+  }
+
   const r=new FileReader();
   r.onload=()=>{
     try{
-      const obj=JSON.parse(r.result);
-      const incoming=Array.isArray(obj)?obj:obj.questions;
-      if(!Array.isArray(incoming)) throw new Error('格式不正確');
+      const raw=String(r.result||'').trim();
+      if(!raw) throw new Error('empty');
+
+      // 額外偵測 HTML 內容被誤命名成 json
+      if(raw.startsWith('<!doctype html') || raw.startsWith('<html') || raw.includes('<script')){
+        alert('這個檔案內容其實是 HTML 網頁，不是題庫備份。');
+        return;
+      }
+
+      const obj=JSON.parse(raw);
+
+      // 相容三種常見格式：
+      // 1. 直接陣列 [...]
+      // 2. {questions:[...]}
+      // 3. {data:[...]}
+      let incoming=null;
+      if(Array.isArray(obj)) incoming=obj;
+      else if(obj && Array.isArray(obj.questions)) incoming=obj.questions;
+      else if(obj && Array.isArray(obj.data)) incoming=obj.data;
+      else if(obj && Array.isArray(obj.items)) incoming=obj.items;
+
+      if(!Array.isArray(incoming)){
+        alert('這個 JSON 不是 Joy Go 題庫格式。\n找不到 questions / data / items 題目清單。');
+        return;
+      }
+
+      const normalized=incoming.map(normalizeQuestion).filter(Boolean);
+      if(!normalized.length){
+        alert('備份檔裡沒有可匯入的題目。');
+        return;
+      }
+
       const current=getQs();
       const byId=new Map(current.map(q=>[String(q.id),q]));
-      incoming.forEach(q=>{
-        if(q && q.id!=null) byId.set(String(q.id),q);
-        else if(q) byId.set(String(Date.now())+Math.random(),q);
+
+      normalized.forEach(q=>{
+        const sid=String(q.id);
+        if(byId.has(sid)){
+          // 若同 ID，保留較新的版本
+          const old=byId.get(sid);
+          if((q.updatedAt||0) >= (old.updatedAt||0)) byId.set(sid,q);
+        }else{
+          byId.set(sid,q);
+        }
       });
+
       const merged=[...byId.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
       setQs(merged);
       renderList();
-      alert(`匯入完成。\n目前共有 ${merged.length} 題。`);
+
+      alert(`匯入完成。\n本次辨識 ${normalized.length} 題，目前共有 ${merged.length} 題。`);
     }catch(e){
-      alert('這個檔案不是有效的 Joy Go 題庫備份。');
+      alert('無法讀取這個備份檔。\n請確認它是 Joy Go 匯出的 .json 題庫備份。');
     }
   };
+
+  r.onerror=()=>alert('讀取檔案失敗，請重新選擇備份檔。');
   r.readAsText(file,'utf-8');
 }
 
