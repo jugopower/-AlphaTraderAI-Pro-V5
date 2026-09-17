@@ -77,7 +77,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5f</span></div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5g</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -150,7 +150,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
           <button class="tool" id="importBackupBtn">匯入題目備份</button>
           <input id="importBackupFile" type="file" accept=".json,application/json" style="display:none">
         </div>
-        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5f 可相容舊版 JSON 題庫備份。</div>
+        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5g 可相容舊版 JSON 題庫備份。</div>
         <div class="small" id="shareHint" style="margin-top:8px">建議：白天輸出「題目圖」貼 LINE；到公布時間後輸出「正解圖」貼 LINE。網站入口維持固定短網址。</div>
 
         <div style="height:16px"></div>
@@ -572,26 +572,62 @@ function delQ(id){
  alert('題目已刪除。');
 }
 
+
+function normalizeCategoryName(v){
+  const x=String(v||'').trim();
+  if(['死活','詰棋','生命'].includes(x)) return '死活';
+  if(['佈局','布局','開局'].includes(x)) return '佈局';
+  if(['中盤','中盘'].includes(x)) return '中盤';
+  if(['手筋','技巧'].includes(x)) return '手筋';
+  return '死活';
+}
+
 function renderList(){
   const list=document.getElementById('questionList');
   if(!list) return;
 
   list.innerHTML='';
 
-  const all=getQs();
-  const qs=all.filter(q=>(q.category||'死活')===category);
+  const all=getQs().map(q=>{
+    if(q && typeof q==='object'){
+      q.category=normalizeCategoryName(q.category);
+    }
+    return q;
+  }).filter(Boolean);
+
+  category=normalizeCategoryName(category);
+  const qs=all.filter(q=>normalizeCategoryName(q.category)===category);
 
   const countEl=document.getElementById('questionCount');
-  if(countEl) countEl.textContent=qs.length+' 題';
+  if(countEl) countEl.textContent=qs.length+' 題／全部 '+all.length+' 題';
 
   if(!qs.length){
-    list.innerHTML='<div class="status" style="background:#f7f2df;color:#6a5725">目前這個分類尚未建立題目。按上方「儲存題目」後，題目會立即出現在這裡。</div>';
+    list.innerHTML=
+      '<div class="status" style="background:#f7f2df;color:#6a5725">'+
+      '目前「'+escapeHtml(category)+'」分類 0 題；全部題庫共有 '+all.length+' 題。'+
+      (all.length ? '<br>若舊題分類名稱不同，可按下方「顯示全部題目」。' : '')+
+      '</div>';
+
+    if(all.length){
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='tool';
+      btn.style.marginTop='8px';
+      btn.textContent='顯示全部題目';
+      btn.onclick=()=>renderQuestionItems(all,true);
+      list.appendChild(btn);
+    }
     return;
   }
 
-  qs.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  renderQuestionItems(qs,false);
+}
 
-  qs.forEach(q=>{
+function renderQuestionItems(items,showCategory){
+  const list=document.getElementById('questionList');
+  list.innerHTML='';
+
+  items.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).forEach(q=>{
     const d=document.createElement('div');
     d.className='item';
 
@@ -600,8 +636,8 @@ function renderList(){
     left.innerHTML=
       '<b>'+escapeHtml(q.title||'每日一題')+'</b>'+
       '<div class="small">'+
+      (showCategory ? escapeHtml(normalizeCategoryName(q.category))+'｜' : '')+
       escapeHtml((q.publishDate||'')+' '+(q.publishTime||''))+
-      '｜'+escapeHtml(q.category||'死活')+
       '</div>';
 
     const right=document.createElement('div');
@@ -700,49 +736,81 @@ function normalizeQuestion(q){
   return normalized;
 }
 
+function extractQuestionsFromBackup(obj){
+  // 某些 iPad/舊版備份可能把 JSON 再包成字串
+  for(let i=0;i<3 && typeof obj==='string';i++){
+    try{ obj=JSON.parse(obj); }catch(e){ break; }
+  }
+
+  if(Array.isArray(obj)) return obj;
+
+  if(!obj || typeof obj!=='object') return null;
+
+  // 現行與舊版常見格式
+  for(const k of ['questions','data','items','quiz','quizzes']){
+    if(Array.isArray(obj[k])) return obj[k];
+    if(typeof obj[k]==='string'){
+      try{
+        const p=JSON.parse(obj[k]);
+        if(Array.isArray(p)) return p;
+      }catch(e){}
+    }
+  }
+
+  // localStorage 匯出格式
+  if(obj.joygo_daily_quiz_v1!=null){
+    try{
+      const p=typeof obj.joygo_daily_quiz_v1==='string'
+        ? JSON.parse(obj.joygo_daily_quiz_v1)
+        : obj.joygo_daily_quiz_v1;
+      if(Array.isArray(p)) return p;
+    }catch(e){}
+  }
+
+  // 題目以 ID 為 key 的物件格式
+  const vals=Object.values(obj);
+  if(vals.length && vals.every(v=>v && typeof v==='object' && !Array.isArray(v))){
+    const likely=vals.filter(v=>('title' in v)||('stones' in v)||('baseStones' in v)||('answerMoves' in v));
+    if(likely.length) return likely;
+  }
+
+  return null;
+}
+
 function importQuestionsFromFile(file){
   const name=(file && file.name || '').toLowerCase();
 
-  // 先判斷明顯不是 JSON 的檔案
   if(name.endsWith('.html') || name.endsWith('.htm')){
     alert('你選到的是 HTML 網頁檔，不是題庫備份。\n請選 JoyGo-題庫備份-日期.json');
     return;
   }
-  if(name.match(/\.(png|jpg|jpeg|webp|gif)$/)){
-    alert('你選到的是圖片檔，不是題庫備份。\n請選 JoyGo-題庫備份-日期.json');
-    return;
-  }
-  if(name && !name.endsWith('.json')){
-    alert('這個檔案不是 JSON 題庫備份。\n請選副檔名為 .json 的 Joy Go 題庫備份檔。');
+  if(/\.(png|jpg|jpeg|webp|gif)$/.test(name)){
+    alert('你選到的是圖片檔，不是題庫備份。\n請選 .json 題庫備份。');
     return;
   }
 
   const r=new FileReader();
   r.onload=()=>{
     try{
-      const raw=String(r.result||'').trim();
+      let raw=String(r.result||'').replace(/^\uFEFF/,'').trim();
       if(!raw) throw new Error('empty');
 
-      // 額外偵測 HTML 內容被誤命名成 json
-      if(raw.startsWith('<!doctype html') || raw.startsWith('<html') || raw.includes('<script')){
-        alert('這個檔案內容其實是 HTML 網頁，不是題庫備份。');
+      if(raw.startsWith('<!doctype') || raw.startsWith('<html') || raw.includes('<script')){
+        alert('這個檔案內容是 HTML 網頁，不是題庫備份。');
         return;
       }
 
-      const obj=JSON.parse(raw);
+      let obj;
+      try{
+        obj=JSON.parse(raw);
+      }catch(e){
+        alert('這個檔案不是有效 JSON。\n請重新用「匯出全部題目」產生備份。');
+        return;
+      }
 
-      // 相容三種常見格式：
-      // 1. 直接陣列 [...]
-      // 2. {questions:[...]}
-      // 3. {data:[...]}
-      let incoming=null;
-      if(Array.isArray(obj)) incoming=obj;
-      else if(obj && Array.isArray(obj.questions)) incoming=obj.questions;
-      else if(obj && Array.isArray(obj.data)) incoming=obj.data;
-      else if(obj && Array.isArray(obj.items)) incoming=obj.items;
-
+      const incoming=extractQuestionsFromBackup(obj);
       if(!Array.isArray(incoming)){
-        alert('這個 JSON 不是 Joy Go 題庫格式。\n找不到 questions / data / items 題目清單。');
+        alert('已讀到 JSON，但找不到題目資料。\n請用目前網站的「匯出全部題目」重新備份一次。');
         return;
       }
 
@@ -756,9 +824,9 @@ function importQuestionsFromFile(file){
       const byId=new Map(current.map(q=>[String(q.id),q]));
 
       normalized.forEach(q=>{
+        q.category=normalizeCategoryName(q.category);
         const sid=String(q.id);
         if(byId.has(sid)){
-          // 若同 ID，保留較新的版本
           const old=byId.get(sid);
           if((q.updatedAt||0) >= (old.updatedAt||0)) byId.set(sid,q);
         }else{
@@ -767,12 +835,14 @@ function importQuestionsFromFile(file){
       });
 
       const merged=[...byId.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
-      setQs(merged);
-      renderList();
 
-      alert(`匯入完成。\n本次辨識 ${normalized.length} 題，目前共有 ${merged.length} 題。`);
+      if(!setQs(merged)) return;
+
+      renderList();
+      alert(`匯入完成。\n本次辨識 ${normalized.length} 題，目前題庫共有 ${merged.length} 題。`);
     }catch(e){
-      alert('無法讀取這個備份檔。\n請確認它是 Joy Go 匯出的 .json 題庫備份。');
+      console.error(e);
+      alert('讀取備份時發生錯誤。\n請用目前網站重新「匯出全部題目」後再試。');
     }
   };
 
