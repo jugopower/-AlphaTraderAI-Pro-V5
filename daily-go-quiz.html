@@ -77,7 +77,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5e</span></div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5f</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -150,7 +150,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
           <button class="tool" id="importBackupBtn">匯入題目備份</button>
           <input id="importBackupFile" type="file" accept=".json,application/json" style="display:none">
         </div>
-        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5e 可相容舊版 JSON 題庫備份。</div>
+        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5f 可相容舊版 JSON 題庫備份。</div>
         <div class="small" id="shareHint" style="margin-top:8px">建議：白天輸出「題目圖」貼 LINE；到公布時間後輸出「正解圖」貼 LINE。網站入口維持固定短網址。</div>
 
         <div style="height:16px"></div>
@@ -476,8 +476,17 @@ document.getElementById('saveBtn').onclick=()=>{
     st.style.color='#145c3b';
     st.textContent='✅ 已儲存成功：'+(q.title||'每日一題')+'　｜目前題庫 '+getQs().length+' 題';
 
-    renderList();
-    preview(q);
+    try{
+      renderList();
+    }catch(listErr){
+      console.error('題目已儲存，但清單更新失敗',listErr);
+    }
+
+    try{
+      preview(q);
+    }catch(previewErr){
+      console.error('題目已儲存，但預覽更新失敗',previewErr);
+    }
 
     btn.textContent='✓ 已儲存';
     setTimeout(()=>{
@@ -562,6 +571,60 @@ function delQ(id){
  renderList();
  alert('題目已刪除。');
 }
+
+function renderList(){
+  const list=document.getElementById('questionList');
+  if(!list) return;
+
+  list.innerHTML='';
+
+  const all=getQs();
+  const qs=all.filter(q=>(q.category||'死活')===category);
+
+  const countEl=document.getElementById('questionCount');
+  if(countEl) countEl.textContent=qs.length+' 題';
+
+  if(!qs.length){
+    list.innerHTML='<div class="status" style="background:#f7f2df;color:#6a5725">目前這個分類尚未建立題目。按上方「儲存題目」後，題目會立即出現在這裡。</div>';
+    return;
+  }
+
+  qs.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+
+  qs.forEach(q=>{
+    const d=document.createElement('div');
+    d.className='item';
+
+    const left=document.createElement('div');
+    left.style.flex='1';
+    left.innerHTML=
+      '<b>'+escapeHtml(q.title||'每日一題')+'</b>'+
+      '<div class="small">'+
+      escapeHtml((q.publishDate||'')+' '+(q.publishTime||''))+
+      '｜'+escapeHtml(q.category||'死活')+
+      '</div>';
+
+    const right=document.createElement('div');
+    right.className='row';
+
+    const e=document.createElement('button');
+    e.type='button';
+    e.className='tool';
+    e.textContent='✏️ 編輯';
+    e.onclick=()=>loadQ(q.id);
+
+    const x=document.createElement('button');
+    x.type='button';
+    x.className='tool danger';
+    x.textContent='🗑 刪除';
+    x.onclick=()=>delQ(q.id);
+
+    right.append(e,x);
+    d.append(left,right);
+    list.append(d);
+  });
+}
+
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function published(q){
  const t=new Date(q.publishDate+'T'+(q.publishTime||'20:00')+':00');
