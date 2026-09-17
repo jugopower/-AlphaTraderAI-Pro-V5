@@ -77,7 +77,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5</span></div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5b</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -116,7 +116,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
         <div id="shareQuestionText" class="status" style="display:none;margin-bottom:10px"></div>
         <div class="boardWrap"><canvas id="board" width="900" height="900"></canvas></div>
         <div id="shareAnswerText" class="answerBox" style="display:none;margin-top:10px"></div>
-        <div class="small editorOnly" style="margin-top:8px">點棋盤交叉點即可擺棋、○ × △ 或 A／B／C／D。解答手順依圍棋規則自動提子。支援 iPad / iPhone 觸控。</div>
+        <div class="small editorOnly" style="margin-top:8px">點棋盤交叉點即可擺棋、○ × △ 或 A／B／C／D。標記可直接覆蓋；用「橡皮擦」可刪除標記或棋子。解答手順依圍棋規則自動提子。</div>
 
         <div class="editorOnly" style="height:14px"></div>
         <h3 class="editorOnly" style="margin:0 0 10px">解答手順編輯</h3>
@@ -326,32 +326,69 @@ function drawMark(x,y,m){
 }
 c.addEventListener('pointerdown',e=>{
   if(shareMode)return;
-  const p=pointFromEvent(e); if(!p)return; snapshot();
+  const p=pointFromEvent(e); if(!p)return;
   const k=key(p.x,p.y);
-  if(answerMode){
-    if(tool==='erase'){
-      // remove the most recent matching answer move, then rebuild the board
-      for(let i=answerMoves.length-1;i>=0;i--){
-        if(answerMoves[i].x===p.x&&answerMoves[i].y===p.y){answerMoves.splice(i,1);break}
-      }
-      answerBoard=simulateAnswerBoard();
+
+  // 橡皮擦：不論題目模式或解答模式，都先刪除標記
+  if(tool==='erase'){
+    snapshot();
+
+    if(marks[k]){
+      delete marks[k];
+      draw();
+      return;
     }
-    else if(tool==='black'||tool==='white'){
+
+    if(answerMode){
+      let removed=false;
+      for(let i=answerMoves.length-1;i>=0;i--){
+        if(answerMoves[i].x===p.x && answerMoves[i].y===p.y){
+          answerMoves.splice(i,1);
+          removed=true;
+          break;
+        }
+      }
+      if(removed){
+        answerBoard=simulateAnswerBoard();
+      }else if(baseStones[k]){
+        delete baseStones[k];
+        answerBoard=simulateAnswerBoard();
+      }
+    }else{
+      delete baseStones[k];
+    }
+
+    draw();
+    return;
+  }
+
+  snapshot();
+
+  if(answerMode){
+    if(tool==='black'||tool==='white'){
       const current=Object.keys(answerBoard||{}).length ? answerBoard : simulateAnswerBoard();
       const r=playMoveOnBoard(current,p.x,p.y,tool);
       if(r.ok){
         answerMoves.push({x:p.x,y:p.y,color:tool,captured:r.captured});
         answerBoard=r.board;
-        tool=tool==='black'?'white':'black'; refreshToolButtons();
+        tool=tool==='black'?'white':'black';
+        refreshToolButtons();
       }else{
         history.pop();
         alert('這一手不能下：交叉點已有棋子，或是自殺手。');
       }
-    } else marks[k]=tool;
+    }else{
+      // A/B/C/D、○、×、△ 可直接覆蓋原標記
+      marks[k]=tool;
+    }
   }else{
-    if(tool==='erase'){delete baseStones[k];delete marks[k]}
-    else if(tool==='black'||tool==='white'){baseStones[k]=tool;delete marks[k]}
-    else marks[k]=tool;
+    if(tool==='black'||tool==='white'){
+      baseStones[k]=tool;
+      delete marks[k];
+    }else{
+      // A/B/C/D、○、×、△ 可直接覆蓋原標記
+      marks[k]=tool;
+    }
   }
   draw()
 });
@@ -573,7 +610,9 @@ async function exportLineCard(showAnswer){
   answerMode=!!showAnswer;
   draw();
   const boardSize=900, bx=90, by=yy;
-  g.fillStyle='#dfe8dd'; g.fillRect(bx-18,by-18,boardSize+36,boardSize+36);
+  // 改成很細的淺綠邊緣，不再有厚框
+  g.fillStyle='#dfe8dd'; g.fillRect(bx-4,by-4,boardSize+8,boardSize+8);
+  g.strokeStyle='#cddbcf'; g.lineWidth=2; g.strokeRect(bx-4,by-4,boardSize+8,boardSize+8);
   g.drawImage(c,bx,by,boardSize,boardSize);
   answerMode=prevAnswerMode; draw();
 
