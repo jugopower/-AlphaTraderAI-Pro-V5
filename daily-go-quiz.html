@@ -45,6 +45,7 @@ textarea{min-height:88px;resize:vertical}
 .answerHidden{filter:blur(8px);user-select:none}
 .list{display:grid;gap:8px;max-height:370px;overflow:auto}
 .item{border:1px solid #b9c8ba;border-radius:12px;padding:10px;background:#f3f7f1;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.item.editing{background:#fff3c9;border:2px solid #d0a33e;box-shadow:0 0 0 3px #f1dfaa88}
 .item b{display:block}.badge{font-size:12px;background:#edf3ef;padding:4px 7px;border-radius:999px}
 .footerNote{margin-top:14px;text-align:center;color:#53665a;font-size:13px}
 .shareBanner{display:none;margin-bottom:14px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,#dce9dc,#f0e7c9);border:1px solid #b6c7b7;font-weight:800;color:#214936}
@@ -77,7 +78,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5g</span></div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5h</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -150,7 +151,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
           <button class="tool" id="importBackupBtn">匯入題目備份</button>
           <input id="importBackupFile" type="file" accept=".json,application/json" style="display:none">
         </div>
-        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5g 可相容舊版 JSON 題庫備份。</div>
+        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5h 可相容舊版 JSON 題庫備份。</div>
         <div class="small" id="shareHint" style="margin-top:8px">建議：白天輸出「題目圖」貼 LINE；到公布時間後輸出「正解圖」貼 LINE。網站入口維持固定短網址。</div>
 
         <div style="height:16px"></div>
@@ -474,7 +475,7 @@ document.getElementById('saveBtn').onclick=()=>{
     st.style.display='block';
     st.style.background='#dff3e7';
     st.style.color='#145c3b';
-    st.textContent='✅ 已儲存成功：'+(q.title||'每日一題')+'　｜目前題庫 '+getQs().length+' 題';
+    st.textContent='✅ 已儲存成功：'+(q.title||'每日一題')+'　｜目前題庫 '+getQs().length+' 題｜此題仍保持「編輯中」狀態';
 
     try{
       renderList();
@@ -511,7 +512,7 @@ document.getElementById('newBtn').onclick=()=>{
  const st=document.getElementById('editStatus'); st.style.display='none'; st.textContent='';
  document.getElementById('title').value='每日一題';
  document.getElementById('prompt').value='黑先，請找出最佳手順。';document.getElementById('explain').value='';
- document.getElementById('publishDate').value=todayStr();draw();
+ document.getElementById('publishDate').value=todayStr();draw();renderList();
 };
 function findQuestionById(id){
  const sid=String(id);
@@ -540,7 +541,11 @@ function loadQ(id){
 
  const st=document.getElementById('editStatus');
  st.style.display='block';
- st.textContent='正在編輯：'+(q.title||'每日一題')+'　｜修改完成後請按「儲存題目」';
+ const sameCat=getQs()
+   .filter(x=>normalizeCategoryName(x.category)===normalizeCategoryName(q.category))
+   .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+ const pos=sameCat.findIndex(x=>String(x.id)===String(q.id));
+ st.textContent='✏️ 正在編輯：第 '+(pos>=0?pos+1:'?')+' 題｜'+(q.title||'每日一題')+'　｜修改完成後請按「儲存題目」';
 
  answerMode=false;
  document.getElementById('answerModeBtn').textContent='切換到解答手順';
@@ -630,11 +635,15 @@ function renderQuestionItems(items,showCategory){
   items.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).forEach(q=>{
     const d=document.createElement('div');
     d.className='item';
+    if(currentId!=null && String(currentId)===String(q.id)) d.classList.add('editing');
 
     const left=document.createElement('div');
     left.style.flex='1';
+    const editingBadge=(currentId!=null && String(currentId)===String(q.id))
+      ? '<span class="badge" style="margin-left:6px;background:#d7ab49;color:#173d30">正在編輯</span>'
+      : '';
     left.innerHTML=
-      '<b>'+escapeHtml(q.title||'每日一題')+'</b>'+
+      '<b>'+escapeHtml(q.title||'每日一題')+'</b>'+editingBadge+
       '<div class="small">'+
       (showCategory ? escapeHtml(normalizeCategoryName(q.category))+'｜' : '')+
       escapeHtml((q.publishDate||'')+' '+(q.publishTime||''))+
