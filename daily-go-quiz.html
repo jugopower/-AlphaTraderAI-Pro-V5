@@ -77,7 +77,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5d</span></div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5e</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -150,7 +150,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
           <button class="tool" id="importBackupBtn">匯入題目備份</button>
           <input id="importBackupFile" type="file" accept=".json,application/json" style="display:none">
         </div>
-        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5d 可相容舊版 JSON 題庫備份。</div>
+        <div class="small" style="margin-top:6px">建議每次新增或修改數題後，就匯出一次備份到「檔案／iCloud Drive」。V1.5e 可相容舊版 JSON 題庫備份。</div>
         <div class="small" id="shareHint" style="margin-top:8px">建議：白天輸出「題目圖」貼 LINE；到公布時間後輸出「正解圖」貼 LINE。網站入口維持固定短網址。</div>
 
         <div style="height:16px"></div>
@@ -158,7 +158,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
         <div class="field"><label>網站入口網址</label><input id="urlInput" value="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/"></div>
 
         <div style="height:12px"></div>
-        <h3>已建立題目</h3>
+        <h3>已建立題目 <span id="questionCount" class="badge">0 題</span></h3>
         <div class="list" id="questionList"></div>
       </div>
     </aside>
@@ -417,8 +417,29 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
 function todayStr(){return new Date().toISOString().slice(0,10)}
 document.getElementById('publishDate').value=todayStr();
 
-function getQs(){return JSON.parse(localStorage.getItem('joygo_daily_quiz_v1')||'[]')}
-function setQs(q){localStorage.setItem('joygo_daily_quiz_v1',JSON.stringify(q))}
+function getQs(){
+  try{
+    const raw=localStorage.getItem('joygo_daily_quiz_v1');
+    const data=raw?JSON.parse(raw):[];
+    return Array.isArray(data)?data:[];
+  }catch(e){
+    console.error('讀取題庫失敗',e);
+    return [];
+  }
+}
+function setQs(q){
+  try{
+    localStorage.setItem('joygo_daily_quiz_v1',JSON.stringify(q));
+    // 立即回讀驗證，避免 Safari 看似成功其實沒有寫入
+    const check=JSON.parse(localStorage.getItem('joygo_daily_quiz_v1')||'[]');
+    if(!Array.isArray(check)) throw new Error('storage verify failed');
+    return true;
+  }catch(e){
+    console.error('儲存題庫失敗',e);
+    alert('題目儲存失敗。\nSafari 目前無法寫入本機儲存空間。\n請確認不是無痕模式，或重新整理頁面後再試。');
+    return false;
+  }
+}
 function formData(){
  return {
   id:currentId||Date.now(), category, title:document.getElementById('title').value.trim()||'每日一題',
@@ -428,14 +449,53 @@ function formData(){
  };
 }
 document.getElementById('saveBtn').onclick=()=>{
- let qs=getQs(),q=formData(),i=qs.findIndex(x=>String(x.id)===String(q.id));
- if(i>=0)qs[i]=q;else qs.unshift(q);
- setQs(qs);
- currentId=q.id;
- const st=document.getElementById('editStatus');
- st.style.display='block';
- st.textContent='已儲存：'+(q.title||'每日一題')+'　｜你仍可繼續修改後再次儲存';
- renderList();preview(q);alert(i>=0?'題目修改已儲存':'新題目已儲存');
+  const btn=document.getElementById('saveBtn');
+  const oldText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent='儲存中…';
+
+  try{
+    let qs=getQs();
+    const q=formData();
+
+    const idx=qs.findIndex(x=>String(x.id)===String(q.id));
+    if(idx>=0) qs[idx]=q;
+    else qs.unshift(q);
+
+    if(!setQs(qs)){
+      btn.disabled=false;
+      btn.textContent=oldText;
+      return;
+    }
+
+    currentId=q.id;
+
+    const st=document.getElementById('editStatus');
+    st.style.display='block';
+    st.style.background='#dff3e7';
+    st.style.color='#145c3b';
+    st.textContent='✅ 已儲存成功：'+(q.title||'每日一題')+'　｜目前題庫 '+getQs().length+' 題';
+
+    renderList();
+    preview(q);
+
+    btn.textContent='✓ 已儲存';
+    setTimeout(()=>{
+      btn.disabled=false;
+      btn.textContent='儲存題目';
+    },1200);
+
+    // 自動捲到題目清單，讓老師立刻看到題目已經出現
+    setTimeout(()=>{
+      const list=document.getElementById('questionList');
+      if(list) list.scrollIntoView({behavior:'smooth',block:'center'});
+    },150);
+  }catch(e){
+    console.error(e);
+    btn.disabled=false;
+    btn.textContent=oldText;
+    alert('儲存時發生錯誤，請重新整理頁面後再試。');
+  }
 };
 document.getElementById('newBtn').onclick=()=>{
  currentId=null;baseStones={};marks={};answerMoves=[];answerBoard={};
