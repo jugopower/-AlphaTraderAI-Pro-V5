@@ -77,7 +77,7 @@ body.share-mode .boardWrap{background:#dfe8dd}
   <div class="head">
     <div class="brand">
       <div class="logo" id="logoBox">朱</div>
-      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5b</span></div></div>
+      <div><h1>Joy Go 每日圍棋測驗</h1><div class="sub">死活・佈局・中盤・手筋｜每日一題・定時公布正解　<span style="color:#f0d486;font-weight:800">V1.5c</span></div></div>
     </div>
     <a class="enter" id="platformLink" href="https://jugopower.github.io/-AlphaTraderAI-Pro-V5/" target="_blank" rel="noopener">進入 Joy Go Platform</a>
   </div>
@@ -130,7 +130,8 @@ body.share-mode .boardWrap{background:#dfe8dd}
 
     <aside class="card">
       <h2>題目與公布設定</h2>
-      <div class="inner">
+      <div class="inner" id="editorPanel">
+        <div id="editStatus" class="status" style="display:none;margin-bottom:10px"></div>
         <div class="field"><label>題目名稱</label><input id="title" value="每日一題"></div>
         <div class="field"><label>題目說明</label><textarea id="prompt">黑先，請找出最佳手順。</textarea></div>
         <div class="field"><label>老師解答／講解</label><textarea id="explain" placeholder="例如：黑1扳是要點，白2擋後黑3打吃……"></textarea></div>
@@ -427,36 +428,79 @@ function formData(){
  };
 }
 document.getElementById('saveBtn').onclick=()=>{
- let qs=getQs(),q=formData(),i=qs.findIndex(x=>x.id===q.id);
- if(i>=0)qs[i]=q;else qs.unshift(q);setQs(qs);currentId=q.id;renderList();preview(q);alert('題目已儲存');
+ let qs=getQs(),q=formData(),i=qs.findIndex(x=>String(x.id)===String(q.id));
+ if(i>=0)qs[i]=q;else qs.unshift(q);
+ setQs(qs);
+ currentId=q.id;
+ const st=document.getElementById('editStatus');
+ st.style.display='block';
+ st.textContent='已儲存：'+(q.title||'每日一題')+'　｜你仍可繼續修改後再次儲存';
+ renderList();preview(q);alert(i>=0?'題目修改已儲存':'新題目已儲存');
 };
 document.getElementById('newBtn').onclick=()=>{
- currentId=null;baseStones={};marks={};answerMoves=[];answerBoard={};document.getElementById('title').value='每日一題';
+ currentId=null;baseStones={};marks={};answerMoves=[];answerBoard={};
+ const st=document.getElementById('editStatus'); st.style.display='none'; st.textContent='';
+ document.getElementById('title').value='每日一題';
  document.getElementById('prompt').value='黑先，請找出最佳手順。';document.getElementById('explain').value='';
  document.getElementById('publishDate').value=todayStr();draw();
 };
-function loadQ(id){
- const q=getQs().find(x=>x.id===id);if(!q)return;
- currentId=q.id;category=q.category;N=q.size;sizeSel.value=N;baseStones=q.stones||{};marks=q.marks||{};answerMoves=q.answerMoves||[];answerBoard=simulateAnswerBoard();
- document.getElementById('title').value=q.title;document.getElementById('prompt').value=q.prompt;
- document.getElementById('explain').value=q.explain;document.getElementById('publishDate').value=q.publishDate;
- document.getElementById('publishTime').value=q.publishTime;
- document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.cat===category));
- document.getElementById('boardTitle').textContent=category+'｜題目棋盤';draw();preview(q);renderList();
+function findQuestionById(id){
+ const sid=String(id);
+ return getQs().find(x=>String(x.id)===sid);
 }
-function delQ(id){if(!confirm('刪除這一題？'))return;setQs(getQs().filter(x=>x.id!==id));if(currentId===id)currentId=null;renderList()}
-function renderList(){
- const list=document.getElementById('questionList');list.innerHTML='';
- const qs=getQs().filter(q=>q.category===category);
- if(!qs.length){list.innerHTML='<div class="small">這個分類尚未建立題目。</div>';return}
- qs.forEach(q=>{
-  const d=document.createElement('div');d.className='item';
-  const left=document.createElement('div');left.innerHTML=`<b>${escapeHtml(q.title)}</b><span class="badge">${q.publishDate} ${q.publishTime}</span>`;
-  const right=document.createElement('div');right.className='row';
-  const e=document.createElement('button');e.className='tool';e.textContent='編輯';e.onclick=()=>loadQ(q.id);
-  const x=document.createElement('button');x.className='tool danger';x.textContent='刪除';x.onclick=()=>delQ(q.id);
-  right.append(e,x);d.append(left,right);list.append(d);
- })
+function loadQ(id){
+ const q=findQuestionById(id);
+ if(!q){alert('找不到這一題，請重新整理頁面。');return;}
+ currentId=q.id;
+ category=q.category||'死活';
+ N=+q.size||19;
+ sizeSel.value=String(N);
+ baseStones=q.stones||{};
+ marks=q.marks||{};
+ answerMoves=q.answerMoves||[];
+ answerBoard=simulateAnswerBoard();
+
+ document.getElementById('title').value=q.title||'每日一題';
+ document.getElementById('prompt').value=q.prompt||'';
+ document.getElementById('explain').value=q.explain||'';
+ document.getElementById('publishDate').value=q.publishDate||todayStr();
+ document.getElementById('publishTime').value=q.publishTime||'20:00';
+
+ document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.cat===category));
+ document.getElementById('boardTitle').textContent=category+'｜題目棋盤';
+
+ const st=document.getElementById('editStatus');
+ st.style.display='block';
+ st.textContent='正在編輯：'+(q.title||'每日一題')+'　｜修改完成後請按「儲存題目」';
+
+ answerMode=false;
+ document.getElementById('answerModeBtn').textContent='切換到解答手順';
+ document.getElementById('modeStatus').textContent='目前：編輯題目棋盤';
+
+ draw();
+ preview(q);
+ renderList();
+
+ setTimeout(()=>{
+   document.getElementById('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});
+ },80);
+}
+function delQ(id){
+ const q=findQuestionById(id);
+ if(!q){alert('找不到這一題，請重新整理頁面。');return;}
+ if(!confirm('確定刪除「'+(q.title||'每日一題')+'」？\n刪除後無法復原，除非有題庫備份。'))return;
+
+ const sid=String(id);
+ setQs(getQs().filter(x=>String(x.id)!==sid));
+
+ if(currentId!=null && String(currentId)===sid){
+   currentId=null;
+   const st=document.getElementById('editStatus');
+   st.style.display='none';
+   st.textContent='';
+ }
+ renderList();
+ alert('題目已刪除。');
 }
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function published(q){
