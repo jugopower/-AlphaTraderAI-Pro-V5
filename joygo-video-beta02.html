@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go 視訊指導棋 Beta 0.2</title>
+<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f3efe6; --panel:#fffdf8; --ink:#2f342f; --muted:#69716a;
+  --green:#2f5d50; --green2:#3b7464; --gold:#c6a15b; --line:#d9d0bf;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--green);color:white;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:20px;margin:0}
+.badge{font-size:12px;background:rgba(255,255,255,.14);padding:6px 9px;border-radius:999px}
+main{max-width:1180px;margin:auto;padding:14px}
+.setup,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+.setup{padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,button{font:inherit;border-radius:9px;border:1px solid #c9c1b3;padding:9px 10px}
+input{min-width:220px;flex:1}
+button{background:white;cursor:pointer}
+button.primary{background:var(--green);color:white;border-color:var(--green)}
+button.warn{background:#8c3f36;color:#fff;border-color:#8c3f36}
+button:disabled{opacity:.45;cursor:not-allowed}
+.status{margin-top:8px;font-size:13px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px}
+.card{padding:12px}
+.board-wrap{display:flex;justify-content:center;align-items:center;min-height:0}
+canvas{width:min(78vw,720px);height:auto;aspect-ratio:1/1;display:block;border-radius:8px;touch-action:manipulation}
+.side{display:flex;flex-direction:column;gap:12px}
+.video-box{background:#141817;border-radius:12px;overflow:hidden;aspect-ratio:4/3;position:relative}
+.video-box video{width:100%;height:100%;object-fit:cover;display:block;background:#141817}
+.label{position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.58);color:white;font-size:12px;padding:4px 7px;border-radius:6px}
+.placeholder{position:absolute;inset:0;display:grid;place-items:center;color:#bbc5c0;font-size:14px;padding:20px;text-align:center}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.people{font-size:13px;line-height:1.6}
+.people strong{color:var(--green)}
+.note{font-size:12px;color:var(--muted);line-height:1.55}
+.board-toolbar{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.turn{font-weight:700;color:var(--green)}
+.hidden-media{display:none}
+@media(max-width:850px){
+  .layout{grid-template-columns:1fr}
+  .side{display:grid;grid-template-columns:1fr 1fr}
+  .side .card:last-child{grid-column:1/-1}
+  canvas{width:min(96vw,680px)}
+}
+@media(max-width:560px){
+  main{padding:8px}.setup,.card{border-radius:10px}
+  .side{grid-template-columns:1fr}
+  .side .card:last-child{grid-column:auto}
+  header{padding:12px}
+  input{min-width:100%}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Joy Go 視訊指導棋</h1>
+  <span class="badge">Beta 0.2｜獨立測試版</span>
+</header>
+
+<main>
+  <section class="setup">
+    <div class="row">
+      <select id="role">
+        <option value="teacher">老師：視訊＋語音</option>
+        <option value="student">學生：只有語音</option>
+      </select>
+      <input id="tokenServerId" placeholder="Development Token Server ID，例如 token-server-xxxxxx">
+      <input id="roomName" value="joygo-video-test" placeholder="房間名稱，例如 joygo-video-test">
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button id="deviceTest">先測攝影機／麥克風</button>
+      <button id="connect" class="primary">進入測試房</button>
+      <button id="leave" class="warn" disabled>離開房間</button>
+    </div>
+    <div id="status" class="status">尚未連線。先測攝影機／麥克風，再輸入 Token Server ID 進房。</div>
+    <div class="note" style="margin-top:6px">測試版使用 LiveKit Development Token Server；只供 Beta 測試，不用輸入 API Secret。</div>
+  </section>
+
+  <div class="layout">
+    <section class="card">
+      <div class="board-toolbar">
+        <div><strong>19 路測試棋盤</strong>　<span id="turn" class="turn">黑先</span></div>
+        <div class="row">
+          <button id="resetBoard">清空棋盤</button>
+        </div>
+      </div>
+      <div class="board-wrap">
+        <canvas id="board" width="760" height="760"></canvas>
+      </div>
+      <div class="note" style="margin-top:8px">
+        Beta 0.2 棋盤只測「雙方同步落子」，暫不計提子、打劫、勝負與棋鐘；這些之後直接接回 Joy Go 原本棋局系統。
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card">
+        <div class="video-box">
+          <video id="teacherVideo" autoplay playsinline muted></video>
+          <div id="teacherPlaceholder" class="placeholder">老師視訊尚未開啟</div>
+          <div class="label">老師畫面</div>
+        </div>
+        <div class="controls" style="margin-top:10px">
+          <button id="micBtn" disabled>🎤 麥克風</button>
+          <button id="camBtn" disabled>📹 攝影機</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <strong>線上成員</strong>
+        <div id="people" class="people" style="margin-top:8px">尚未加入房間</div>
+      </section>
+
+      <section class="card">
+        <strong>這版要測什麼？</strong>
+        <div class="note" style="margin-top:7px">
+          ① 老師 iPad 能否顯示視訊與聲音<br>
+          ② 學生手機只傳麥克風<br>
+          ③ 雙方能否互相聽見<br>
+          ④ 棋盤落子能否同步<br>
+          ⑤ 靜音、關鏡頭、離開是否正常
+        </div>
+      </section>
+    </aside>
+  </div>
+  <div id="remoteAudio" class="hidden-media"></div>
+</main>
+
+<script>
+const LK = window.LivekitClient;
+const { Room, RoomEvent, Track, VideoPresets, TokenSource } = LK || {};
+let room = null;
+let localPreview = null;
+let micOn = true, camOn = true;
+let stones = [];
+let nextColor = 1; // 1 black, 2 white
+const enc = new TextEncoder(), dec = new TextDecoder();
+
+const $ = id => document.getElementById(id);
+function setStatus(t){ $('status').textContent = t; }
+
+function role(){ return $('role').value; }
+
+async function stopLocalPreview(){
+  if(localPreview){
+    localPreview.getTracks().forEach(t=>t.stop());
+    localPreview = null;
+  }
+}
+
+async function testDevices(){
+  try{
+    await stopLocalPreview();
+    const isTeacher = role()==='teacher';
+    localPreview = await navigator.mediaDevices.getUserMedia({
+      audio:true,
+      video:isTeacher ? {width:{ideal:1280},height:{ideal:720},facingMode:'user'} : false
+    });
+    if(isTeacher){
+      $('teacherVideo').srcObject = localPreview;
+      $('teacherPlaceholder').style.display='none';
+      $('teacherVideo').muted = true;
+      setStatus('老師端攝影機與麥克風測試成功。');
+    } else {
+      $('teacherVideo').srcObject = null;
+      $('teacherPlaceholder').style.display='grid';
+      setStatus('學生端麥克風測試成功；學生模式不開攝影機。');
+    }
+  }catch(e){
+    setStatus('裝置測試失敗：' + (e.message || e));
+  }
+}
+
+function refreshPeople(){
+  if(!room){ $('people').textContent='尚未加入房間'; return; }
+  let rows = [`<strong>自己：</strong>${room.localParticipant.identity || '本機'}`];
+  room.remoteParticipants.forEach(p => rows.push(`• ${p.identity}`));
+  $('people').innerHTML = rows.join('<br>');
+}
+
+function attachRemoteTrack(track, participant){
+  if(track.kind === Track.Kind.Video){
+    // 本測試版假設只有老師發布視訊
+    const el = track.attach();
+    el.autoplay = true; el.playsInline = true; el.muted = false;
+    const box = $('teacherVideo');
+    box.srcObject = el.srcObject;
+    $('teacherPlaceholder').style.display='none';
+  }
+  if(track.kind === Track.Kind.Audio){
+    const el = track.attach();
+    el.autoplay = true;
+    $('remoteAudio').appendChild(el);
+  }
+}
+
+async function showOwnTeacherVideo(){
+  if(role()!=='teacher' || !room) return;
+  const pubs = Array.from(room.localParticipant.trackPublications.values());
+  const pub = pubs.find(p => p.source === Track.Source.Camera && p.track);
+  if(pub && pub.track){
+    const el = pub.track.attach();
+    $('teacherVideo').srcObject = el.srcObject;
+    $('teacherVideo').muted = true;
+    $('teacherPlaceholder').style.display='none';
+  }
+}
+
+async function connectRoom(){
+  if(!LK){ setStatus('LiveKit SDK 載入失敗，請確認網路。'); return; }
+  const url=$('wsUrl').value.trim(), token=$('token').value.trim();
+  if(!url || !token){
+    setStatus('請先填入 Development Token Server ID 與房間名稱。');
+    return;
+  }
+  try{
+    await stopLocalPreview();
+    room = new Room({
+      adaptiveStream:true,
+      dynacast:true,
+      videoCaptureDefaults:{resolution:VideoPresets.h720.resolution}
+    });
+
+    room
+      .on(RoomEvent.TrackSubscribed, attachRemoteTrack)
+      .on(RoomEvent.ParticipantConnected, refreshPeople)
+      .on(RoomEvent.ParticipantDisconnected, refreshPeople)
+      .on(RoomEvent.DataReceived, (payload, participant, kind, topic) => {
+        try{
+          const msg = JSON.parse(dec.decode(payload));
+          if(msg.type==='go-move'){
+            if(!stones.some(s=>s.x===msg.x && s.y===msg.y)){
+              stones.push({x:msg.x,y:msg.y,c:msg.c});
+              nextColor = msg.c===1 ? 2 : 1;
+              drawBoard();
+            }
+          }else if(msg.type==='go-reset'){
+            stones=[]; nextColor=1; drawBoard();
+          }
+        }catch(e){}
+      })
+      .on(RoomEvent.Disconnected, () => {
+        setStatus('已離開房間。');
+        $('connect').disabled=false; $('leave').disabled=true;
+        $('micBtn').disabled=true; $('camBtn').disabled=true;
+        refreshPeople();
+      });
+
+    setStatus('正在向 LiveKit 取得測試連線憑證…');
+    const tokenSource = TokenSource.developmentTokenServer(tokenServerId);
+    const { serverUrl, participantToken } = await tokenSource.fetch({ roomName });
+    await room.connect(serverUrl, participantToken);
+
+    if(role()==='teacher'){
+      await room.localParticipant.setMicrophoneEnabled(true);
+      await room.localParticipant.setCameraEnabled(true);
+      micOn=true; camOn=true;
+      $('camBtn').disabled=false;
+      await showOwnTeacherVideo();
+    }else{
+      await room.localParticipant.setMicrophoneEnabled(true);
+      await room.localParticipant.setCameraEnabled(false);
+      micOn=true; camOn=false;
+      $('camBtn').disabled=true;
+    }
+
+    $('micBtn').disabled=false;
+    $('connect').disabled=true;
+    $('leave').disabled=false;
+    refreshPeople();
+    setStatus('已進入測試房。老師＝視訊＋語音；學生＝只有語音。');
+  }catch(e){
+    setStatus('連線失敗：' + (e.message || e));
+    try{ if(room) await room.disconnect(); }catch(_){}
+    room=null;
+  }
+}
+
+async function leaveRoom(){
+  try{ if(room) await room.disconnect(); }catch(e){}
+  room=null;
+  $('teacherVideo').srcObject=null;
+  $('teacherPlaceholder').style.display='grid';
+  $('connect').disabled=false; $('leave').disabled=true;
+  $('micBtn').disabled=true; $('camBtn').disabled=true;
+  refreshPeople();
+}
+
+async function toggleMic(){
+  if(!room) return;
+  micOn=!micOn;
+  await room.localParticipant.setMicrophoneEnabled(micOn);
+  $('micBtn').textContent = micOn ? '🎤 麥克風' : '🔇 已靜音';
+}
+async function toggleCam(){
+  if(!room || role()!=='teacher') return;
+  camOn=!camOn;
+  await room.localParticipant.setCameraEnabled(camOn);
+  $('camBtn').textContent = camOn ? '📹 攝影機' : '🚫 鏡頭關閉';
+  if(camOn) await showOwnTeacherVideo();
+  else{
+    $('teacherVideo').srcObject=null;
+    $('teacherPlaceholder').style.display='grid';
+  }
+}
+
+async function sendData(obj){
+  if(!room) return;
+  try{
+    await room.localParticipant.publishData(enc.encode(JSON.stringify(obj)), {
+      reliable:true, topic:'joygo-board'
+    });
+  }catch(e){ setStatus('棋盤同步傳送失敗：'+(e.message||e)); }
+}
+
+// ---- Go board: sync/layout test only ----
+const canvas=$('board'), ctx=canvas.getContext('2d');
+const N=19, PAD=38, SIZE=canvas.width, GAP=(SIZE-PAD*2)/(N-1);
+function xy(i){ return PAD+i*GAP; }
+function drawBoard(){
+  ctx.clearRect(0,0,SIZE,SIZE);
+  ctx.fillStyle='#d7ad65'; ctx.fillRect(0,0,SIZE,SIZE);
+  ctx.strokeStyle='#382d1f'; ctx.lineWidth=1.25;
+  for(let i=0;i<N;i++){
+    ctx.beginPath(); ctx.moveTo(xy(0),xy(i)); ctx.lineTo(xy(N-1),xy(i)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(xy(i),xy(0)); ctx.lineTo(xy(i),xy(N-1)); ctx.stroke();
+  }
+  const stars=[3,9,15];
+  ctx.fillStyle='#30271e';
+  stars.forEach(a=>stars.forEach(b=>{
+    ctx.beginPath(); ctx.arc(xy(a),xy(b),4.2,0,Math.PI*2); ctx.fill();
+  }));
+  stones.forEach(s=>{
+    const X=xy(s.x),Y=xy(s.y),r=GAP*.43;
+    const g=ctx.createRadialGradient(X-r*.35,Y-r*.35,2,X,Y,r);
+    if(s.c===1){g.addColorStop(0,'#555');g.addColorStop(1,'#050505');}
+    else{g.addColorStop(0,'#fff');g.addColorStop(1,'#d9d9d9');}
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(X,Y,r,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=s.c===1?'#111':'#aaa';ctx.stroke();
+  });
+  $('turn').textContent = nextColor===1 ? '黑下' : '白下';
+}
+canvas.addEventListener('pointerup', async ev=>{
+  const r=canvas.getBoundingClientRect();
+  const sx=SIZE/r.width, sy=SIZE/r.height;
+  const px=(ev.clientX-r.left)*sx, py=(ev.clientY-r.top)*sy;
+  const x=Math.round((px-PAD)/GAP), y=Math.round((py-PAD)/GAP);
+  if(x<0||x>=N||y<0||y>=N) return;
+  if(stones.some(s=>s.x===x&&s.y===y)) return;
+  const c=nextColor;
+  stones.push({x,y,c}); nextColor=c===1?2:1; drawBoard();
+  await sendData({type:'go-move',x,y,c});
+});
+$('resetBoard').addEventListener('click', async()=>{
+  stones=[];nextColor=1;drawBoard();
+  await sendData({type:'go-reset'});
+});
+
+$('deviceTest').onclick=testDevices;
+$('connect').onclick=connectRoom;
+$('leave').onclick=leaveRoom;
+$('micBtn').onclick=toggleMic;
+$('camBtn').onclick=toggleCam;
+$('role').onchange=()=>{
+  $('camBtn').disabled = role()!=='teacher' || !room;
+  setStatus(role()==='teacher' ? '老師模式：會開視訊＋麥克風。' : '學生模式：只開麥克風，不開攝影機。');
+};
+window.addEventListener('beforeunload',()=>{ try{room?.disconnect();}catch(e){} });
+drawBoard();
+</script>
+</body>
+</html>
