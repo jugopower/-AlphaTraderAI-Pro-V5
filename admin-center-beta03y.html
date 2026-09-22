@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2b2117">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<title>Joy Go Beta 3.1｜管理中心</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#08100C;--panel:#0F1913;--panel2:#16251B;--ink:#F8F2E3;
+  --muted:#B7C3B9;--line:#355241;--gold:#E7BD62;--gold2:#FFE08A;
+  --green:#4FC08A;--red:#E87D78;--blue:#79BCE7;--field:#09110D;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;color:var(--ink);
+background:radial-gradient(circle at 90% 0,#183B28 0,transparent 35%),linear-gradient(145deg,#050907,#0B1B11)}
+header{position:sticky;top:0;z-index:20;background:rgba(7,14,10,.96);backdrop-filter:blur(12px);color:white;padding:15px 18px;display:flex;gap:12px;align-items:center;border-bottom:1px solid #2A4435;box-shadow:0 3px 18px #0007}
+header h1{margin:0;font-size:22px;flex:1;color:var(--gold2)}
+header small{display:block;color:var(--muted);margin-top:3px}
+.wrap{max-width:1180px;margin:auto;padding:16px}
+.notice{padding:12px 14px;border-radius:12px;background:#101B14;border:1px solid var(--line);margin-bottom:14px;color:var(--muted)}
+.good{background:#0E2B1E;color:#9BE7C0;border-color:#2C7253}.bad{background:#2D1515;color:#FFB3AF;border-color:#8A4542}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}
+.stat{background:linear-gradient(155deg,#15261B,#0B120E);border:1px solid var(--line);border-radius:15px;padding:15px;box-shadow:0 8px 24px #0004}
+.stat .n{font-size:30px;font-weight:900;margin-top:5px;color:var(--gold2)}.stat .t{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.card{background:linear-gradient(155deg,#111C15,#0A110D);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 8px 24px #0004}
+.card h2{font-size:17px;margin:0;padding:13px 14px;background:#18271D;color:var(--gold2);border-bottom:1px solid #2E4638}
+.card .body{padding:14px}.desc{color:var(--muted);font-size:13px;line-height:1.55;min-height:42px}
+button,.btn{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-weight:800;font:inherit;cursor:pointer;text-decoration:none;background:#0A120D;color:var(--ink)}
+.primary{background:#4A3825;color:#FFF4D2;border-color:#725634}.green{background:#225E43;color:#D9FFEB;border-color:#347C5C}.gold{background:#74591E;color:#FFF0B6;border-color:#94762D}.blue{background:#22465B;color:#D8F0FF;border-color:#376D89}.ghost{background:#101811;color:#F4EBD8;border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.health{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:var(--muted)}.dot{width:11px;height:11px;border-radius:50%;background:#777}.dot.ok{background:#42C184}.dot.warn{background:#D0A53E}.dot.bad{background:#E96660}
+.list{margin:0;padding:0;list-style:none}.list li{padding:8px 0;border-bottom:1px solid #263A2F;font-size:13px}.list li:last-child{border-bottom:0}
+.hidden{display:none!important}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}header h1{font-size:18px}}
+</style>
+<!-- Beta 3.2.8-E 副管理員入口修正版 -->
+</head>
+<body>
+<div style="position:fixed;right:10px;bottom:10px;z-index:9999;background:#214d42;color:#fff;padding:6px 9px;border-radius:999px;font-weight:800;font-size:12px">視訊 Beta 0.3y</div>
+<header>
+  <div>
+    <h1>🧭 Joy Go 管理中心</h1>
+    <small>Beta 3.2.4｜瑞士制重複對手防止修正版</small>
+  </div>
+  <button class="ghost" onclick="location.href='joygo-video-beta03y.html'">返回 Beta 平台</button>
+</header>
+
+<div class="wrap">
+  <div id="status" class="notice">正在檢查管理員權限與系統狀態…</div>
+
+  <section id="content" class="hidden">
+    <div class="stats">
+      <div class="stat"><div class="t">已註冊會員</div><div id="memberCount" class="n">—</div></div>
+      <div class="stat"><div class="t">有效真人棋局（24小時）</div><div id="liveRoomCount" class="n">—</div></div>
+      <div class="stat"><div class="t">有效指導棋場次（24小時）</div><div id="guidanceCount" class="n">—</div></div>
+      <div class="stat"><div class="t">近 30 天活動</div><div id="activityCount" class="n">—</div></div>
+    </div>
+
+    <div class="grid">
+      <article class="card">
+        <h2>👥 會員管理</h2>
+        <div class="body">
+          <div class="desc">會員查詢、正式／試用狀態、停權與參賽資格等會員營運資料。</div>
+          <div class="row">
+            <a class="btn primary" href="member-admin.html">進入會員管理</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>🏆 比賽管理</h2>
+        <div class="body">
+          <div class="desc">管理報名、16 人瑞士制自動配對、輪次、即時排名、正式棋局與成績。</div>
+          <div class="row">
+            <a class="btn gold" href="tournament-admin.html">進入比賽管理</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>🎓 多人指導棋</h2>
+        <div class="body">
+          <div class="desc">快速查看與管理 1 對 1～1 對 5 的線上指導棋場次。</div>
+          <div class="row">
+            <a class="btn green" href="guidance.html">進入指導棋</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>🔔 活動通知</h2>
+        <div class="body">
+          <div class="desc">發布站內活動通知，依全部會員、正式會員或試用會員分流。</div>
+          <div class="row">
+            <a class="btn blue" href="notification-center.html">進入通知中心</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>🩺 系統狀態</h2>
+        <div class="body">
+          <div class="health"><span id="dbDot" class="dot"></span><span>Supabase 資料庫</span></div>
+          <div class="health"><span id="authDot" class="dot"></span><span>會員登入服務</span></div>
+          <div class="health"><span id="roomDot" class="dot"></span><span>真人棋局資料</span></div>
+          <div class="row"><button id="healthBtn" class="ghost">重新檢查</button><a class="btn gold" href="room-diagnostics.html">舊房間診斷</a></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>🛡️ 資安與管理紀錄</h2>
+        <div class="body">
+          <div class="desc">快速查看最近管理員操作與系統稽核紀錄。</div>
+          <ul id="auditList" class="list"><li>讀取中…</li></ul>
+          <div class="row"><button id="auditBtn" class="ghost">重新整理</button></div>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>
+
+<script>
+const SUPABASE_URL="https://kpwfkmkxtrwmlxhomaxy.supabase.co";
+const SUPABASE_KEY="sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+});
+const $=id=>document.getElementById(id);
+
+function setStatus(msg,type=""){
+  $("status").className="notice"+(type?(" "+type):"");
+  $("status").textContent=msg;
+}
+function setDot(id,state){
+  $(id).className="dot "+state;
+}
+function fmt(ts){
+  if(!ts)return "";
+  try{return new Date(ts).toLocaleString("zh-TW",{hour12:false})}catch{return String(ts)}
+}
+
+async function loadDashboard(){
+  const {data,error}=await sb.rpc("joygo_admin_dashboard_summary");
+  if(error){
+    setStatus("管理中心資料讀取失敗："+error.message,"bad");
+    return;
+  }
+  const r=Array.isArray(data)?data[0]:data;
+  $("memberCount").textContent=r?.member_count ?? 0;
+  $("liveRoomCount").textContent=r?.live_room_count ?? 0;
+  $("guidanceCount").textContent=r?.active_guidance_count ?? 0;
+  $("activityCount").textContent=r?.recent_activity_count ?? 0;
+}
+
+async function loadAudit(){
+  const {data,error}=await sb.rpc("joygo_admin_recent_audit",{p_limit:6});
+  if(error){
+    $("auditList").innerHTML="<li>目前無法讀取稽核紀錄</li>";
+    return;
+  }
+  const rows=data||[];
+  $("auditList").innerHTML=rows.length
+    ? rows.map(x=>`<li><b>${x.action_name||"操作"}</b><br><span style="color:#746454">${fmt(x.created_at)}</span></li>`).join("")
+    : "<li>目前沒有近期紀錄</li>";
+}
+
+async function health(){
+  setDot("dbDot","warn");setDot("authDot","warn");setDot("roomDot","warn");
+  const {data:{session}}=await sb.auth.getSession();
+  setDot("authDot",session?"ok":"bad");
+
+  const {error:dbErr}=await sb.rpc("joygo_admin_dashboard_summary");
+  setDot("dbDot",dbErr?"bad":"ok");
+
+  const {error:roomErr}=await sb.rpc("joygo_admin_room_health");
+  setDot("roomDot",roomErr?"bad":"ok");
+}
+
+async function init(){
+  const {data:{session},error}=await sb.auth.getSession();
+  if(error || !session){
+    setStatus("請先登入 Joy Go 管理員帳號。","bad");
+    return;
+  }
+
+  const {data:isStaff,error:staffErr}=await sb.rpc("is_joygo_staff");
+  if(staffErr || isStaff!==true){
+    setStatus("此頁僅限 Joy Go 管理員使用。","bad");
+    return;
+  }
+
+  let staffRole="staff";
+  try{
+    const {data:access}=await sb.rpc("joygo_get_staff_access");
+    const x=Array.isArray(access)?access[0]:access;
+    staffRole=x?.staff_role||"staff";
+  }catch{}
+
+  $("content").classList.remove("hidden");
+  const roleLabel=staffRole==="admin"?"主管理員":staffRole==="deputy"?"副管理員":staffRole==="moderator"?"巡場管理員":"管理員";
+  setStatus(`✅ ${roleLabel}模式｜管理中心已就緒。`,"good");
+  await Promise.all([loadDashboard(),loadAudit(),health()]);
+}
+
+$("healthBtn").addEventListener("click",health);
+$("auditBtn").addEventListener("click",loadAudit);
+init();
+</script>
+</body>
+</html>
