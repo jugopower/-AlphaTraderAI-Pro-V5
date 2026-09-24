@@ -2974,6 +2974,9 @@ body.spectator-viewing #statusText{font-weight:800}
   font-size:10px;font-weight:800;pointer-events:none;
   box-shadow:0 3px 12px #0008;
 }
+.joygo-flag-picker{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:9px 0;color:inherit}
+.joygo-flag-picker select{max-width:170px;min-height:38px;background:#21150e;color:#f7ead6;border:1px solid #6c4b2c;border-radius:8px;padding:5px 8px;font:inherit}
+.joygo-flag-picker [role=status]{font-size:12px}
 #memberConfigPanel{display:none!important}
 </style>
 
@@ -6943,6 +6946,12 @@ body.jg-online-mode #jgUSpeedPanel{
       <div><b>Email：</b><span id="memberAccountEmail">—</span></div>
       <div><b>權限：</b><span id="memberAccessLabel">讀取中…</span></div>
       <div><b>棋力：</b><span id="memberRankLabel">未設定</span></div>
+      <label class="joygo-flag-picker">顯示國旗
+        <select id="memberFlagSelect" aria-label="選擇顯示國旗">
+          <option value="">不顯示</option><option value="TW">🇹🇼 台灣</option><option value="JP">🇯🇵 日本</option><option value="US">🇺🇸 美國</option><option value="KR">🇰🇷 韓國</option><option value="CN">🇨🇳 中國</option>
+        </select>
+        <span id="memberFlagStatus" role="status" aria-live="polite"></span>
+      </label>
       <div id="memberRankRequiredNote" class="rank-required-note">⚠️ 請先設定棋力，完成後才能進入真人弈廳。</div>
 
       <div id="memberInitialRankBox" class="rank-select-row">
@@ -9061,6 +9070,19 @@ async function memberInitClient(showMessage=false){
     return false;
   }
 }
+const JOYGO_FLAGS={TW:"🇹🇼",JP:"🇯🇵",US:"🇺🇸",KR:"🇰🇷",CN:"🇨🇳"};
+function joygoFlag(code){return JOYGO_FLAGS[code]||""}
+async function memberSaveFlag(code){
+  if(!memberSession?.user||!memberSupabase)return;
+  const picker=$("memberFlagSelect"),note=$("memberFlagStatus");
+  if(!Object.hasOwn(JOYGO_FLAGS,code)&&code!=="")return;
+  picker.disabled=true;note.textContent="儲存中…";
+  const {error}=await memberSupabase.rpc("joygo_set_my_flag",{p_code:code||null});
+  picker.disabled=false;
+  if(error){picker.value=memberAccess.flagCode||"";note.textContent="儲存失敗："+error.message;return}
+  memberAccess.flagCode=code;note.textContent="已儲存";
+  onlineLobbyTrackPresence();joygoGlobalPresenceStart();
+}
 function memberDisplayName(user){
   return memberAccess.displayName||user?.user_metadata?.display_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"會員";
 }
@@ -9094,6 +9116,7 @@ async function joygoGlobalPresenceStart(){
           await joygoGlobalPresenceChannel.track({
             user_id:memberSession.user.id,
             name:memberDisplayName(memberSession.user),
+            flag_code:memberAccess.flagCode||"",
             rank_code:memberAccess.rankCode||"UNRATED",
             rank_label:memberAccess.rankLabel||"未設定",
             rank_sort:Number(memberAccess.rankSort||0),
@@ -9123,7 +9146,7 @@ async function memberRefreshAccess(){
   }
   try{
     const {data,error}=await memberSupabase.from("profiles")
-      .select("role,status,expires_at,display_name,rank_code,rank_label,rank_sort,rating_total_games,rating_total_wins,rating_total_losses,rating_cycle_games,rating_cycle_wins,rating_cycle_losses,rating_win_streak").eq("id",user.id).single();
+      .select("role,status,expires_at,display_name,flag_code,rank_code,rank_label,rank_sort,rating_total_games,rating_total_wins,rating_total_losses,rating_cycle_games,rating_cycle_wins,rating_cycle_losses,rating_win_streak").eq("id",user.id).single();
     if(error)throw error;
     let staffRole="none";
     try{
@@ -9140,6 +9163,7 @@ async function memberRefreshAccess(){
       expiresAt:data.expires_at||null,
       label:blocked?(data.status==="suspended"?"已停權":"會員已到期"):(staffRole==="deputy"?"副管理員":(labels[data.role]||"會員")),
       displayName:data.display_name||"",
+      flagCode:data.flag_code||"",
       rankCode:data.rank_code||"UNRATED",
       rankLabel:data.rank_label||"未設定",
       rankSort:Number(data.rank_sort||0),
@@ -9294,6 +9318,7 @@ function memberRenderSession(){
     if($("memberAccountEmail"))$("memberAccountEmail").textContent=u.email||"—";
     if($("memberAccessLabel"))$("memberAccessLabel").textContent=memberAccess.label;
     if($("memberRankLabel"))$("memberRankLabel").textContent=memberAccess.rankLabel||"未設定";
+    if($("memberFlagSelect"))$("memberFlagSelect").value=memberAccess.flagCode||"";
     const rankReady=!!memberAccess.rankCode && memberAccess.rankCode!=="UNRATED";
     if($("memberRankRequiredNote")){
       $("memberRankRequiredNote").textContent=rankReady?"✅ 棋力已設定並鎖定。":"⚠️ 請先設定棋力；確認後一般會員不可自行更改。";
@@ -9654,7 +9679,8 @@ async function onlineSyncRoom(){
     state.index=state.moves.length;state.turn=room.turn||((state.moves.length%2)?"W":"B");
     state.setupB=guidanceSetupB;state.setupW=[];state.actions=[];state.replayCache=[];state.currentSnapshot=null;state.renderedHash="";
     state.gameEnded=room.status==="ended";
-    $("blackName").textContent=(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
+    const [blackFlag,whiteFlag]=await joygoRoomFlags(room);
+    $("blackName").textContent=(blackFlag?blackFlag+" ":"")+(room.black_name||"黑方")+(state.onlineColor==="B"?"（我）":"");
     $("whiteName").textContent=(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
     $("blackClockName").textContent="黑方｜"+(room.black_name||"等待加入")+(state.onlineColor==="B"?"（我）":"");
     $("whiteClockName").textContent="白方｜"+(room.white_name||"等待加入")+(state.onlineColor==="W"?"（我）":"");
@@ -9859,6 +9885,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   $("onlineLeaveBtn")?.addEventListener("click",onlineLeaveRoom);
   $("onlineClearEndedBtn")?.addEventListener("click",onlineClearEndedRoom);
   $("onlineJoinCode")?.addEventListener("input",e=>{e.target.value=onlineNormalizeCode(e.target.value)});
+  $("memberFlagSelect")?.addEventListener("change",e=>memberSaveFlag(e.target.value));
   $("memberSaveRankBtn")?.addEventListener("click",()=>memberSaveRank($("memberRankSelect")?.value));
   $("rankAdminOpenBtn")?.addEventListener("click",rankAdminOpen);
   $("rankAdminRefreshBtn")?.addEventListener("click",rankAdminLoad);
@@ -9867,6 +9894,16 @@ document.addEventListener("DOMContentLoaded",()=>{
 // ===== Joy Go Platform Beta 2.0.0: 真人對弈大廳 V1 =====
 let onlineLobbyPresenceChannel=null;
 let onlineLobbyRoomChannel=null;
+const joygoRoomFlagCache=new Map();
+async function joygoRoomFlags(room){
+  const ids=[room.black_id,room.white_id].filter(Boolean);
+  const missing=ids.filter(id=>!joygoRoomFlagCache.has(id));
+  if(missing.length){
+    const {data,error}=await memberSupabase.rpc("joygo_get_player_flags",{p_ids:missing});
+    if(!error){missing.forEach(id=>joygoRoomFlagCache.set(id,""));(data||[]).forEach(p=>joygoRoomFlagCache.set(p.id,p.flag_code||""))}
+  }
+  return [joygoFlag(joygoRoomFlagCache.get(room.black_id)),joygoFlag(joygoRoomFlagCache.get(room.white_id))];
+}
 let onlineLobbyRefreshTimer=null;
 
 function onlineLobbyPresenceRows(){
@@ -9900,6 +9937,7 @@ function onlineLobbyRenderFriends(){
     const card=document.createElement("div");card.className="online-friend-card";
     const info=document.createElement("div");
     const name=document.createElement("div");name.className="online-friend-name";name.innerHTML='<span class="online-presence-dot"></span>';
+    if(joygoFlag(r.flag_code)){const f=document.createElement("span");f.textContent=joygoFlag(r.flag_code);f.setAttribute("aria-label","棋友顯示旗幟");name.appendChild(f)}
     const nt=document.createElement("span");nt.textContent=(r.name||"棋友")+(r.user_id===memberSession?.user?.id?"（我）":"");name.appendChild(nt);
     if(r.rank_label && r.rank_label!=="未設定"){const rb=document.createElement("span");rb.className="rank-badge";rb.textContent=r.rank_label;name.appendChild(rb)}
     const meta=document.createElement("div");meta.className="online-friend-meta";meta.textContent=r.status==="playing"&&r.room_code?"房間 "+r.room_code:"Joy Go 會員";
@@ -9914,6 +9952,7 @@ async function onlineLobbyTrackPresence(){
     await onlineLobbyPresenceChannel.track({
       user_id:memberSession.user.id,
       name:onlineMemberName(),
+      flag_code:memberAccess.flagCode||"",
       rank_code:memberAccess.rankCode||"UNRATED",
       rank_label:memberAccess.rankLabel||"未設定",
       rank_sort:Number(memberAccess.rankSort||0),
