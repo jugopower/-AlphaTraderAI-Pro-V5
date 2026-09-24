@@ -10955,6 +10955,7 @@ function resizeBoard(force=false){
   canvas.style.setProperty("aspect-ratio","1 / 1","important");
   canvas.style.setProperty("object-fit","fill","important");
   canvas.style.setProperty("display","block","important");
+  canvas.style.setProperty("flex","none","important");
 
   const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
   const px=Math.max(260,Math.floor(css*dpr));
@@ -10968,6 +10969,16 @@ function resizeBoard(force=false){
   canvas._dpr=dpr;
   if(ctx)ctx.setTransform(dpr,0,0,dpr,0,0);
   return bitmapChanged||Math.abs(css-oldCss)>=1||force;
+}
+function boardNeedsReflow(){
+  const r=canvas.getBoundingClientRect();
+  const css=canvas._cssSize||0;
+  return !css||Math.abs(r.width-r.height)>2||Math.abs(r.width-css)>2||Math.abs(r.height-css)>2;
+}
+function refreshBoardGeometry(){
+  if(state.isSliderDragging)return;
+  resizeBoard(boardNeedsReflow());
+  drawBoard(state.currentSnapshot||activateSnapshot(state.index));
 }
 function forceBoardRebuild(reason="refresh"){
   try{
@@ -13033,6 +13044,7 @@ function handleBoardInput(e){
 }
 if(window.PointerEvent){
   canvas.addEventListener('pointerdown',e=>{
+    if(boardNeedsReflow())refreshBoardGeometry();
     if(e.pointerType!=='mouse'&&e.cancelable)e.preventDefault();
     activeBoardPointer=e.pointerId;
     boardPointerStart={x:e.clientX,y:e.clientY};
@@ -13087,14 +13099,14 @@ setConnectorStatus("warn",getApiSettings().url?"KataGo AI 分析服務已設定�
 let layoutTimer=0;
 function scheduleLayoutRefresh(delay=160){
   clearTimeout(layoutTimer);
-  layoutTimer=setTimeout(()=>{
-    if(state.isSliderDragging)return;
-    resizeBoard(false);
-    drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-  },delay);
+  layoutTimer=setTimeout(refreshBoardGeometry,delay);
 }
 window.addEventListener("resize",()=>scheduleLayoutRefresh(180),{passive:true});
-window.addEventListener("orientationchange",()=>scheduleLayoutRefresh(320),{passive:true});
+window.addEventListener("orientationchange",()=>{
+  [100,350,800,1400].forEach(ms=>setTimeout(refreshBoardGeometry,ms));
+},{passive:true});
+window.visualViewport?.addEventListener("resize",()=>scheduleLayoutRefresh(220),{passive:true});
+window.addEventListener("pageshow",()=>scheduleLayoutRefresh(120),{passive:true});
 if(window.ResizeObserver){
   const boardObserver=new ResizeObserver(()=>scheduleLayoutRefresh(120));
   boardObserver.observe(canvas.parentElement);
