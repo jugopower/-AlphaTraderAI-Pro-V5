@@ -10950,6 +10950,9 @@ function resizeBoard(force=false){
   // 因而在兩側露出畫布底色。尺寸統一交由此函式依容器計算。
   canvas.style.setProperty("max-width","none","important");
   canvas.style.setProperty("max-height","none","important");
+  canvas.style.setProperty("min-width","0","important");
+  canvas.style.setProperty("min-height","0","important");
+  canvas.style.setProperty("aspect-ratio","1 / 1","important");
   canvas.style.setProperty("object-fit","fill","important");
   canvas.style.setProperty("display","block","important");
 
@@ -12030,8 +12033,7 @@ function inspectScoringPoint(x,y){
 }
 function handleScoringBoardInput(e){
   const now=Date.now();if(now-lastBoardInputAt<250)return;lastBoardInputAt=now;if(e.cancelable)e.preventDefault();
-  const rect=canvas.getBoundingClientRect(),css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
-  const localX=(e.clientX-rect.left)*(css/rect.width),localY=(e.clientY-rect.top)*(css/rect.height);
+  const {css,localX,localY}=boardVisualGeometry(e);
   const pad=css*(state.showCoords?0.085:0.055),step=(css-pad*2)/(state.size-1);
   let x=Math.round((localX-pad)/step),y=Math.round((localY-pad)/step),tol=step*.62;
   if(localX<pad-tol||localX>css-pad+tol||localY<pad-tol||localY>css-pad+tol)return;
@@ -12698,13 +12700,21 @@ function resetBoardInputGuard(){
   activeBoardPointer=null;
   boardPointerStart=null;
 }
-function boardInputPointFromEvent(e){
+// Safari 在旋轉期間可能先更新畫布寬度、稍後才更新高度。
+// canvas 的 object-fit:contain 會把正方形內容置中；觸控必須扣掉留白。
+function boardVisualGeometry(e){
   const rect=canvas.getBoundingClientRect();
-  if(!rect.width||!rect.height)return null;
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
-  // 將 Safari／iPad 實際顯示座標，換算回 drawBoard 使用的正方形 CSS 座標。
-  const localX=(e.clientX-rect.left)*(css/rect.width);
-  const localY=(e.clientY-rect.top)*(css/rect.height);
+  const side=Math.min(rect.width,rect.height);
+  const left=rect.left+(rect.width-side)/2;
+  const top=rect.top+(rect.height-side)/2;
+  return {rect,css,side,left,top,
+    localX:(e.clientX-left)*css/side,
+    localY:(e.clientY-top)*css/side};
+}
+function boardInputPointFromEvent(e){
+  const {rect,css,side,localX,localY}=boardVisualGeometry(e);
+  if(!side)return null;
   // 必須和 drawBoard 完全一致：顯示座標時外邊距為 8.5%，關閉時為 5.5%。
   const pad=css*(state.showCoords?0.085:0.055);
   const step=(css-pad*2)/(state.size-1);
@@ -12791,14 +12801,13 @@ function joygoClearPendingMove(){
 
 
 function joygoShowPendingMove(x,y,point,mode){
-  const rect=canvas.getBoundingClientRect();
-  const css=point?.css||canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
+  const {css,side,left,top}=boardVisualGeometry({clientX:0,clientY:0});
   const pad=point?.pad ?? css*(state.showCoords?0.085:0.055);
   const step=point?.step ?? (css-pad*2)/(state.size-1);
   const localX=pad+x*step;
   const localY=pad+y*step;
-  const clientX=rect.left+localX*(rect.width/css);
-  const clientY=rect.top+localY*(rect.height/css);
+  const clientX=left+localX*(side/css);
+  const clientY=top+localY*(side/css);
 
   let color="B";
   let roomId=null;
