@@ -10946,6 +10946,11 @@ function resizeBoard(force=false){
   canvas.style.setProperty("--board-size",css+"px");
   canvas.style.setProperty("width",css+"px","important");
   canvas.style.setProperty("height",css+"px","important");
+  // 舊版橫式 CSS 的 max-height 會把正方形畫布壓扁；object-fit:contain
+  // 因而在兩側露出畫布底色。尺寸統一交由此函式依容器計算。
+  canvas.style.setProperty("max-width","none","important");
+  canvas.style.setProperty("max-height","none","important");
+  canvas.style.setProperty("object-fit","fill","important");
   canvas.style.setProperty("display","block","important");
 
   const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
