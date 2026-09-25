@@ -531,7 +531,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <style id="build0214-fix">
 /* Build021.20：棋盤固定正方形，棋子固定圓形 */
-#board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+#goBoard, .board, .go-board, .board-canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
   object-fit: contain !important;
@@ -541,13 +541,13 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   border-radius: 50% !important;
 }
 @media (orientation: landscape) {
-  #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+  #goBoard, .board, .go-board, .board-canvas {
     width: min(72vh, 74vw) !important;
     max-width: 100% !important;
   }
 }
 @media (orientation: portrait) {
-  #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+  #goBoard, .board, .go-board, .board-canvas {
     width: min(96vw, 82vh) !important;
     max-width: 100% !important;
   }
@@ -1757,7 +1757,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     height:min(88vw,68dvh)!important;
     min-width:0!important;min-height:0!important;
     max-width:100%!important;max-height:100%!important;
-    aspect-ratio:1/1!important;object-fit:contain!important;margin:0 auto!important;
+    aspect-ratio:1/1!important;object-fit:fill!important;margin:0 auto!important;
   }
   .player{
     grid-column:1!important;grid-row:3!important;
@@ -2243,7 +2243,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 @media (orientation:portrait){.game-action-row{grid-template-columns:repeat(3,minmax(82px,1fr))!important}}
 </style>
 <style id="build02235-canvas-rebuild">
-#board{background:#d99a43!important;visibility:visible!important;opacity:1!important;contain:none!important}
+#board{background:transparent!important;visibility:visible!important;opacity:1!important;contain:none!important}
 .board-wrap{contain:layout paint!important}
 </style>
 
@@ -12861,7 +12861,7 @@ function joygoShowPendingMove(x,y,point,mode){
 
     /* Beta 3.3.5b：手機預覽棋子縮小，不遮住鄰近交叉點。
        依目前棋盤格距縮放；約為正式棋子的 55～60%。 */
-    const visualStep=step*(rect.width/css);
+    const visualStep=step*(side/css);
     const previewSize=Math.max(12,Math.min(22,visualStep*0.58));
     marker.style.width=previewSize+"px";
     marker.style.height=previewSize+"px";
