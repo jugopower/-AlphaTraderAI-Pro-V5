@@ -535,7 +535,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 
 <style id="build0214-fix">
 /* Build021.20：棋盤固定正方形，棋子固定圓形 */
-#board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+#goBoard, .board, .go-board, .board-canvas {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
   object-fit: contain !important;
@@ -545,13 +545,13 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
   border-radius: 50% !important;
 }
 @media (orientation: landscape) {
-  #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+  #goBoard, .board, .go-board, .board-canvas {
     width: min(72vh, 74vw) !important;
     max-width: 100% !important;
   }
 }
 @media (orientation: portrait) {
-  #board, #goBoard, .board, .go-board, .board-canvas, .board-wrap canvas {
+  #goBoard, .board, .go-board, .board-canvas {
     width: min(96vw, 82vh) !important;
     max-width: 100% !important;
   }
@@ -1761,7 +1761,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
     height:min(88vw,68dvh)!important;
     min-width:0!important;min-height:0!important;
     max-width:100%!important;max-height:100%!important;
-    aspect-ratio:1/1!important;object-fit:contain!important;margin:0 auto!important;
+    aspect-ratio:1/1!important;object-fit:fill!important;margin:0 auto!important;
   }
   .player{
     grid-column:1!important;grid-row:3!important;
@@ -2247,7 +2247,7 @@ select,input,textarea{background:#090604;color:white;border:1px solid #513722;bo
 @media (orientation:portrait){.game-action-row{grid-template-columns:repeat(3,minmax(82px,1fr))!important}}
 </style>
 <style id="build02235-canvas-rebuild">
-#board{background:#d99a43!important;visibility:visible!important;opacity:1!important;contain:none!important}
+#board{background:transparent!important;visibility:visible!important;opacity:1!important;contain:none!important}
 .board-wrap{contain:layout paint!important}
 </style>
 
@@ -10877,7 +10877,16 @@ function resizeBoard(force=false){
   canvas.style.setProperty("--board-size",css+"px");
   canvas.style.setProperty("width",css+"px","important");
   canvas.style.setProperty("height",css+"px","important");
+  // 舊版橫式 CSS 的 max-height 會把正方形畫布壓扁；object-fit:contain
+  // 因而在兩側露出畫布底色。尺寸統一交由此函式依容器計算。
+  canvas.style.setProperty("max-width","none","important");
+  canvas.style.setProperty("max-height","none","important");
+  canvas.style.setProperty("min-width","0","important");
+  canvas.style.setProperty("min-height","0","important");
+  canvas.style.setProperty("aspect-ratio","1 / 1","important");
+  canvas.style.setProperty("object-fit","fill","important");
   canvas.style.setProperty("display","block","important");
+  canvas.style.setProperty("flex","none","important");
 
   const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
   const px=Math.max(260,Math.floor(css*dpr));
@@ -10891,6 +10900,16 @@ function resizeBoard(force=false){
   canvas._dpr=dpr;
   if(ctx)ctx.setTransform(dpr,0,0,dpr,0,0);
   return bitmapChanged||Math.abs(css-oldCss)>=1||force;
+}
+function boardNeedsReflow(){
+  const r=canvas.getBoundingClientRect();
+  const css=canvas._cssSize||0;
+  return !css||Math.abs(r.width-r.height)>2||Math.abs(r.width-css)>2||Math.abs(r.height-css)>2;
+}
+function refreshBoardGeometry(){
+  if(state.isSliderDragging)return;
+  resizeBoard(boardNeedsReflow());
+  drawBoard(state.currentSnapshot||activateSnapshot(state.index));
 }
 function forceBoardRebuild(reason="refresh"){
   try{
@@ -12624,13 +12643,19 @@ function resetBoardInputGuard(){
   activeBoardPointer=null;
   boardPointerStart=null;
 }
-function boardInputPointFromEvent(e){
+function boardVisualGeometry(e){
   const rect=canvas.getBoundingClientRect();
-  if(!rect.width||!rect.height)return null;
   const css=canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
-  // 將 Safari／iPad 實際顯示座標，換算回 drawBoard 使用的正方形 CSS 座標。
-  const localX=(e.clientX-rect.left)*(css/rect.width);
-  const localY=(e.clientY-rect.top)*(css/rect.height);
+  const side=Math.min(rect.width,rect.height);
+  const left=rect.left+(rect.width-side)/2;
+  const top=rect.top+(rect.height-side)/2;
+  return {rect,css,side,left,top,
+    localX:(e.clientX-left)*css/side,
+    localY:(e.clientY-top)*css/side};
+}
+function boardInputPointFromEvent(e){
+  const {rect,css,side,localX,localY}=boardVisualGeometry(e);
+  if(!side)return null;
   // 必須和 drawBoard 完全一致：顯示座標時外邊距為 8.5%，關閉時為 5.5%。
   const pad=css*(state.showCoords?0.085:0.055);
   const step=(css-pad*2)/(state.size-1);
@@ -12718,14 +12743,13 @@ function joygoClearPendingMove(){
 
 
 function joygoShowPendingMove(x,y,point,mode){
-  const rect=canvas.getBoundingClientRect();
-  const css=point?.css||canvas._cssSize||state.boardCssSize||Math.min(rect.width,rect.height);
+  const {css,side,left,top}=boardVisualGeometry({clientX:0,clientY:0});
   const pad=point?.pad ?? css*(state.showCoords?0.085:0.055);
   const step=point?.step ?? (css-pad*2)/(state.size-1);
   const localX=pad+x*step;
   const localY=pad+y*step;
-  const clientX=rect.left+localX*(rect.width/css);
-  const clientY=rect.top+localY*(rect.height/css);
+  const clientX=left+localX*(side/css);
+  const clientY=top+localY*(side/css);
 
   let color="B";
   let roomId=null;
@@ -12768,7 +12792,7 @@ function joygoShowPendingMove(x,y,point,mode){
 
     /* Beta 3.3.5b：手機預覽棋子縮小，不遮住鄰近交叉點。
        依目前棋盤格距縮放；約為正式棋子的 55～60%。 */
-    const visualStep=step*(rect.width/css);
+    const visualStep=step*(side/css);
     const previewSize=Math.max(12,Math.min(22,visualStep*0.58));
     marker.style.width=previewSize+"px";
     marker.style.height=previewSize+"px";
@@ -12778,14 +12802,7 @@ function joygoShowPendingMove(x,y,point,mode){
   if(text){
     text.textContent=`${color==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`;
   }
-  if(bar){
-    bar.hidden=false;
-    try{ if(typeof window.joygoGuidanceShowConfirmOverlay==="function") window.joygoGuidanceShowConfirmOverlay(); }catch(_){}
-  }
-  try{
-    if(typeof window.joygoGuidanceShowDedicatedConfirm==="function")
-      window.joygoGuidanceShowDedicatedConfirm(`${color==="B"?"黑":"白"}棋 ${coordLabel(x,y)}｜是否落子？`);
-  }catch(_){}
+  if(bar)bar.hidden=false;
 }
 
 
@@ -12989,6 +13006,7 @@ function handleBoardInput(e){
 }
 if(window.PointerEvent){
   canvas.addEventListener('pointerdown',e=>{
+    if(boardNeedsReflow())refreshBoardGeometry();
     if(e.pointerType!=='mouse'&&e.cancelable)e.preventDefault();
     activeBoardPointer=e.pointerId;
     boardPointerStart={x:e.clientX,y:e.clientY};
@@ -13043,14 +13061,14 @@ setConnectorStatus("warn",getApiSettings().url?"Build024.3 已載入 API，請�
 let layoutTimer=0;
 function scheduleLayoutRefresh(delay=160){
   clearTimeout(layoutTimer);
-  layoutTimer=setTimeout(()=>{
-    if(state.isSliderDragging)return;
-    resizeBoard(false);
-    drawBoard(state.currentSnapshot||activateSnapshot(state.index));
-  },delay);
+  layoutTimer=setTimeout(refreshBoardGeometry,delay);
 }
 window.addEventListener("resize",()=>scheduleLayoutRefresh(180),{passive:true});
-window.addEventListener("orientationchange",()=>scheduleLayoutRefresh(320),{passive:true});
+window.addEventListener("orientationchange",()=>{
+  [100,350,800,1400].forEach(ms=>setTimeout(refreshBoardGeometry,ms));
+},{passive:true});
+window.visualViewport?.addEventListener("resize",()=>scheduleLayoutRefresh(220),{passive:true});
+window.addEventListener("pageshow",()=>scheduleLayoutRefresh(120),{passive:true});
 if(window.ResizeObserver){
   const boardObserver=new ResizeObserver(()=>scheduleLayoutRefresh(120));
   boardObserver.observe(canvas.parentElement);

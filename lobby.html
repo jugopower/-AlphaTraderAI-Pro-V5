@@ -112,7 +112,7 @@ let activeRoomCode=null,activeRoomAutoJumped=false,session=null,meName="會員",
 const $=id=>document.getElementById(id);
 function msg(t,type=""){const n=$("notice");n.textContent=t;n.className="notice "+type;if(!t)n.style.display="none";else n.style.display="block"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function goRoom(code){location.href="index.html?room="+encodeURIComponent(code)}
+function goRoom(code){location.href="index.html?room="+encodeURIComponent(code)+"&boardfix=20260925"}
 async function loadProfile(){const {data}=await sb.from("profiles").select("display_name,flag_code,rank_code,rank_label,rank_sort,role,status").eq("id",session.user.id).maybeSingle();meFlag=data?.flag_code||"";meName=data?.display_name||session.user.user_metadata?.display_name||session.user.email?.split("@")[0]||"會員";meRank=data?.rank_label||"未設定";meRankCode=data?.rank_code||"UNRATED";meRankSort=Number(data?.rank_sort||0);meRole=data?.role||"member";meStatus=data?.status||"active";try{const {data:a}=await sb.rpc("joygo_get_staff_access");const x=Array.isArray(a)?a[0]:a;staffRole=x?.staff_role||"none"}catch{staffRole=meRole==="admin"?"admin":"none"}}
 
 async function checkModeration(initial=false){
@@ -128,7 +128,7 @@ async function checkModeration(initial=false){
   if(!x.online_allowed||kicked){
     try{if(presence)await presence.untrack()}catch(_){}
     msg("⛔ "+(x.message||"目前已被管理員限制使用真人大廳。"),"bad");
-    setTimeout(()=>location.href="index.html",1800);
+    setTimeout(()=>location.href="index.html?boardfix=20260925",1800);
     return false;
   }
   return true;
@@ -295,7 +295,7 @@ $("cleanupInvitesBtn").onclick=async()=>{
   await loadInvites();
   btn.disabled=false;
 };
-$("refreshBtn").onclick=async()=>{await loadProfile();await ensurePresenceHealthy();loadInvites();loadRooms();loadMyActiveRoom();await loadChatControl();loadChat()};$("chatSendBtn").onclick=sendChatMessage;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChatMessage()}});$("backBtn").onclick=()=>location.href="index.html";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);$("saveTournamentBtn").onclick=saveTournamentSettings;document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(presenceHealthTimer)clearInterval(presenceHealthTimer);if(presenceReconnectTimer)clearTimeout(presenceReconnectTimer);if(chatControlPollTimer)clearInterval(chatControlPollTimer);if(moderationTimer)clearInterval(moderationTimer)},{passive:true});$("reconnectBtn").onclick=()=>{if(activeRoomCode)goRoom(activeRoomCode)};
+$("refreshBtn").onclick=async()=>{await loadProfile();await ensurePresenceHealthy();loadInvites();loadRooms();loadMyActiveRoom();await loadChatControl();loadChat()};$("chatSendBtn").onclick=sendChatMessage;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChatMessage()}});$("backBtn").onclick=()=>location.href="index.html?boardfix=20260925";$("joinCodeBtn").onclick=()=>joinRoom($("roomCode").value);$("roomCode").oninput=e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);$("saveTournamentBtn").onclick=saveTournamentSettings;document.querySelectorAll("[data-free-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-free-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("free",...b.dataset.freePreset.split(",").map(Number))});document.querySelectorAll("[data-t-preset]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t-preset]").forEach(x=>x.classList.remove("active"));b.classList.add("active");setPreset("t",...b.dataset.tPreset.split(",").map(Number))});window.addEventListener("pagehide",()=>{if(refreshTimer)clearInterval(refreshTimer);if(presenceHealthTimer)clearInterval(presenceHealthTimer);if(presenceReconnectTimer)clearTimeout(presenceReconnectTimer);if(chatControlPollTimer)clearInterval(chatControlPollTimer);if(moderationTimer)clearInterval(moderationTimer)},{passive:true});$("reconnectBtn").onclick=()=>{if(activeRoomCode)goRoom(activeRoomCode)};
 init();
 </script>
 <script>console.info("Joy Go Chat Beta 1.2k｜舊邀請安全自動清理｜pending 逾時＋accepted 無有效房間｜保留 1.2j 與既有功能");</script>

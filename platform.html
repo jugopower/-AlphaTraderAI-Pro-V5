@@ -9956,7 +9956,7 @@ async function onlineClearEndedRoom(){
   try{localStorage.removeItem("joygo-online-room-code")}catch(_){}
   state.onlineMode=false;state.onlineRoom=null;state.onlineColor="";state.casualMode=true;state.gameEnded=false;
   toast("✅ 本局已清除");
-  setTimeout(()=>{window.location.href="lobby.html"},250);
+  setTimeout(()=>{window.location.href="lobby.html?v=boardfix20260925"},250);
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -10085,7 +10085,7 @@ openOnlineLobby=async function(){
   if(!await onlineReady())return;
   // Beta 2.1.1a：真人按鈕永遠先進獨立大廳。
   // 是否回到既有房間，改由大廳中的「加入／接受邀請／重新進入」明確決定。
-  window.location.href="lobby.html?v=2111a";
+  window.location.href="lobby.html?v=boardfix20260925";
 };
 const onlineEnterRoomV1=onlineEnterRoom;
 onlineEnterRoom=async function(room){await onlineEnterRoomV1(room);await onlineLobbyTrackPresence();await onlineLobbyLoadRooms()};
