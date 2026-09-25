@@ -6579,6 +6579,31 @@ body.jg-online-mode #jgUSpeedPanel{
 
 <!-- Joy Go Platform 正式版介面整理：第四輪按鈕名稱統一 -->
 <!-- Joy Go Platform 正式版介面整理：第五輪產品用語統一 -->
+<style id="joygoFullscreenIpadSafeAreaFix">
+/* iPad Safari 全螢幕保留系統狀態列及關閉鈕的空間。一般模式不受影響。 */
+@media (orientation:landscape) and (min-width:901px){
+  html:fullscreen #joygoLiveMonitor,
+  html:-webkit-full-screen #joygoLiveMonitor{
+    top:max(36px,env(safe-area-inset-top,0px) + 8px)!important;
+    left:112px!important;
+  }
+  html:fullscreen #memberChip,
+  html:-webkit-full-screen #memberChip{
+    top:max(36px,env(safe-area-inset-top,0px) + 8px)!important;
+  }
+  html:fullscreen .app,
+  html:-webkit-full-screen .app{
+    padding-top:max(40px,env(safe-area-inset-top,0px) + 12px)!important;
+    height:100dvh!important;
+  }
+  html:fullscreen .board-wrap,
+  html:-webkit-full-screen .board-wrap{
+    height:calc(100dvh - 108px)!important;
+    max-height:calc(100dvh - 108px)!important;
+    min-height:0!important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -13107,6 +13132,9 @@ window.addEventListener("orientationchange",()=>{
 },{passive:true});
 window.visualViewport?.addEventListener("resize",()=>scheduleLayoutRefresh(220),{passive:true});
 window.addEventListener("pageshow",()=>scheduleLayoutRefresh(120),{passive:true});
+for(const eventName of ["fullscreenchange","webkitfullscreenchange"]){
+  document.addEventListener(eventName,()=>{scheduleLayoutRefresh(80);setTimeout(refreshBoardGeometry,260);},{passive:true});
+}
 if(window.ResizeObserver){
   const boardObserver=new ResizeObserver(()=>scheduleLayoutRefresh(120));
   boardObserver.observe(canvas.parentElement);
