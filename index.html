@@ -2975,7 +2975,7 @@ body.spectator-viewing #statusText{font-weight:800}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Beta 3.4.9a：正式比賽辨識改用 online_rooms.is_tournament -->
+<!-- Beta 3.4.9c：棋局結束同步容錯＋正式比賽準備開賽 -->
 <style id="joygoReadyStart348Style">
 /* Beta 3.4.8a：準備開賽移至棋盤主畫面 */
 .online-ready-box{margin-top:10px;padding:10px;border:1px solid #6c4b2c;border-radius:12px;background:#0c0806}
@@ -10677,10 +10677,27 @@ async function onlineSyncRoom(){
   state.onlineSyncing=true;
   try{
     const [{data:room,error:roomError},{data:moves,error:movesError}]=await Promise.all([
-      memberSupabase.from("online_rooms").select("*").eq("id",roomId).single(),
+      memberSupabase.from("online_rooms").select("*").eq("id",roomId).maybeSingle(),
       memberSupabase.from("online_moves").select("move_no,color,x,y,is_pass").eq("room_id",roomId).order("move_no")
     ]);
     if(roomError)throw roomError;if(movesError)throw movesError;
+
+    // Beta 3.4.9c：棋局結束／房間已被後端清除時，PostgREST 會回傳 0 筆。
+    // 舊版使用 .single() 會產生「Cannot coerce the result to a single JSON object」並卡在同步失敗。
+    // 這裡改用 .maybeSingle()，若房間已不存在，就安全結束同步，不再讓畫面當機。
+    if(!room){
+      state.gameEnded=true;
+      if(onlineClockTimer)clearInterval(onlineClockTimer);
+      onlineClockTimer=null;
+      try{localStorage.removeItem("joygo-online-room-code")}catch(_){}
+      onlineReconnectProtectUntil=0;
+      if($("onlineRoomStateBadge"))$("onlineRoomStateBadge").textContent="已結束";
+      if($("onlineTurnText"))$("onlineTurnText").textContent="對局結束";
+      if($("onlineClearEndedBtn"))$("onlineClearEndedBtn").style.display="none";
+      onlineSetStatus("🏁 棋局已結束，房間資料已結清；可返回真人大廳。","ok");
+      return;
+    }
+
     await onlineLoadRoomRanks(room);
     state.onlineRoom=room;
     state.onlineColor=room.black_id===memberSession.user.id?"B":(room.white_id===memberSession.user.id?"W":"");
