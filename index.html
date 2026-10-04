@@ -1,4 +1,4 @@
-<!-- Joy Go Platform Beta 3.4.9a｜瑞士制正式比賽準備開賽修正版 -->
+<!-- Joy Go Platform Beta 3.4.9b｜手機真人對弈落子觸控修正版 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -13954,6 +13954,8 @@ function joygoBindMoveConfirmControls(){
   }
   joygoLoadMoveConfirmSetting();
 }
+let joygoLastBoardInputDispatchAt=0;
+
 function handleBoardInput(e){
   if(state.spectatorMode){toast("觀戰模式只能觀看，不能落子");return;}
   if(state.scoringMode){handleScoringBoardInput(e);return;}
@@ -13962,6 +13964,10 @@ function handleBoardInput(e){
   if(e.cancelable)e.preventDefault();
   const point=boardInputPointFromEvent(e);if(!point)return;
   const now=Date.now(),pointKey=`${point.x},${point.y}`;
+  // Beta 3.4.9b：記錄「真正進入棋盤落子流程」的時間。
+  // Android 某些瀏覽器會收到 pointerup 但前置 pointer 狀態異常；
+  // 不能只因收到 pointerup 就誤判成已處理，否則 touchend 備援會被吃掉。
+  joygoLastBoardInputDispatchAt=now;
   if(now-lastBoardInputAt<BOARD_INPUT_LOCK_MS)return;
   if(state.trialMode && pointKey===lastBoardInputPoint && now-lastBoardInputAt<BOARD_SAME_POINT_LOCK_MS)return;
   boardInputBusy=true;lastBoardInputAt=now;lastBoardInputPoint=pointKey;
@@ -14096,10 +14102,10 @@ document.addEventListener('touchend',e=>{
     const r=canvas.getBoundingClientRect();
     if(t.clientX<r.left||t.clientX>r.right||t.clientY<r.top||t.clientY>r.bottom)return;
 
-    // 若 pointerup 剛剛已經處理同一次觸碰，就不重送。
-    const dt=Date.now()-joygoLastBoardPointerHandledAt;
-    const d=Math.hypot(t.clientX-joygoLastBoardPointerHandledX,t.clientY-joygoLastBoardPointerHandledY);
-    if(dt>=0 && dt<420 && d<28)return;
+    // Beta 3.4.9b：只有「handleBoardInput 真的跑過」才視為已處理。
+    // 不再用單純收到 pointerup 作為判斷，避免 Android 上 pointerup 有到、落子流程卻沒跑的假成功。
+    const dt=Date.now()-joygoLastBoardInputDispatchAt;
+    if(dt>=0 && dt<500)return;
 
     if(e.cancelable)e.preventDefault();
     resetBoardInputGuard();
@@ -14111,6 +14117,22 @@ document.addEventListener('touchend',e=>{
     try{toast('手機落子觸控失敗：'+(err?.message||err))}catch(_){}
   }
 },{capture:true,passive:false});
+
+// Beta 3.4.9b：Android / 手機瀏覽器最後一道 click 備援。
+// 若 pointer/touch 已真正送入 handleBoardInput，500ms 內的合成 click 會被忽略，避免重複落子。
+canvas.addEventListener('click',e=>{
+  try{
+    if(!state.onlineMode||state.spectatorMode||state.scoringMode)return;
+    if(Date.now()-joygoLastBoardInputDispatchAt<500)return;
+    const r=canvas.getBoundingClientRect();
+    if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)return;
+    if(e.cancelable)e.preventDefault();
+    resetBoardInputGuard();
+    handleBoardInput(e);
+  }catch(err){
+    try{toast('手機落子 click 備援失敗：'+(err?.message||err))}catch(_){}
+  }
+},{passive:false});
 
 // Build028.1.12：切換方向、分頁或返回頁面時清除殘留觸控鎖，避免下一次試下無法落子或誤判重複。
 window.addEventListener('orientationchange',()=>{joygoClearPendingMove();resetBoardInputGuard()},{passive:true});
