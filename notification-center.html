@@ -15,7 +15,7 @@
   base-uri 'self';
   form-action 'self';
 ">
-<title>Joy Go Beta 3.0.2｜會員活動通知中心</title>
+<title>Joy Go Beta 3.0.3｜會員活動通知中心</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -122,7 +122,7 @@ button{font-size:16px;font-weight:900;padding:11px 17px}
 <header>
   <div>
     <h1>🔔 Joy Go 會員活動通知中心</h1>
-    <small>Beta 3.0.2｜站內通知＋收回／刪除＋會員 Email</small>
+    <small>Beta 3.0.3｜站內通知＋收回／刪除＋會員 Email</small>
   </div>
   <button class="ghost" onclick="location.href='index.html'">返回平台</button>
 </header>
@@ -148,7 +148,14 @@ button{font-size:16px;font-weight:900;padding:11px 17px}
             <option value="all">全部已註冊會員</option>
             <option value="member">正式會員</option>
             <option value="trial">試用會員</option>
+            <option value="test_admin">僅寄主管理員（請輸入本人註冊 Email）</option>
+            <option value="test_member">指定單一會員（Email 測試）</option>
           </select>
+        </div>
+        <div id="testEmailBox" class="full hidden">
+          <label id="testEmailLabel">測試收件 Email</label>
+          <input id="testEmailAddress" type="email" autocomplete="off" placeholder="輸入要測試的會員註冊 Email">
+          <div class="meta">僅測試寄信，不建立站內通知；寄信服務必須支援安全的單人測試模式。</div>
         </div>
         <div>
           <label>活動地點／方式</label>
@@ -232,6 +239,8 @@ function clearForm(){
   $("signupUrl").value="";
   $("body").value="";
   $("audience").value="all";
+  $("testEmailAddress").value="";
+  syncAudience();
 }
 
 async function init(){
@@ -304,12 +313,50 @@ async function markAllRead(){
   await loadFeed();
 }
 
+function syncAudience(){
+  const mode=$("audience").value;
+  const test=mode.startsWith("test_");
+  $("testEmailBox").classList.toggle("hidden",!test);
+  $("testEmailLabel").textContent=mode==="test_admin"?"主管理員註冊 Email":"指定會員註冊 Email";
+  $("publishBtn").textContent=test?"測試寄送 Email":"發布給會員";
+  if(test)$("sendEmail").checked=true;
+  $("sendEmail").disabled=test;
+}
+$("audience").addEventListener("change",syncAudience);
+syncAudience();
+
 async function publish(){
   const title=$("title").value.trim();
   const body=$("body").value.trim();
   if(!title)return setStatus("請輸入活動標題。","bad");
   if(!body)return setStatus("請輸入活動內容。","bad");
 
+  const mode=$("audience").value;
+  if(mode.startsWith("test_")){
+    const testEmail=$("testEmailAddress").value.trim();
+    if(!testEmail)return setStatus("請輸入會員註冊 Email。","bad");
+    if(!confirm("只寄送一封測試 Email 至："+testEmail+"。不會發布站內通知，確定？"))return;
+    $("publishBtn").disabled=true;
+    setStatus("正在驗證會員並寄送單人測試 Email…");
+    try{
+      const {data:{session}}=await sb.auth.getSession();
+      if(!session)throw new Error("請先登入主管理員帳號");
+      const resp=await fetch(SUPABASE_URL+"/functions/v1/joygo-send-activity-email",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token},
+        body:JSON.stringify({test_mode:mode,test_email:testEmail,test_title:title,test_body:body,
+          test_event_at:$("eventAt").value?new Date($("eventAt").value).toISOString():null,
+          test_location:$("location").value.trim(),test_signup_url:$("signupUrl").value.trim()})
+      });
+      const result=await resp.json().catch(()=>({}));
+      if(!resp.ok)throw new Error(result.error||"寄信失敗");
+      setStatus(result.sent_count===1?"✅ 單一會員測試信已送交寄信服務（1 封），未發布站內通知。":
+        `⚠️ 測試未成功：成功 ${result.sent_count||0}，失敗 ${result.failed_count||0}。`,result.sent_count===1?"good":"bad");
+    }catch(e){setStatus("單人測試失敗："+e.message,"bad");}
+    finally{$("publishBtn").disabled=false;}
+    return;
+  }
+  if(!confirm("即將發布站內通知給「"+$("audience").selectedOptions[0].textContent+"」"+($("sendEmail").checked?"並寄送 Email":"")+"。確定繼續？"))return;
   $("publishBtn").disabled=true;
   setStatus("正在發布活動通知…");
 
