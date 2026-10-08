@@ -162,26 +162,90 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
-  let body: { activity_id?: string };
+  let body: {
+    activity_id?: string;
+    test_mode?: string;
+    test_email?: string;
+    test_title?: string;
+    test_body?: string;
+    test_event_at?: string | null;
+    test_location?: string;
+    test_signup_url?: string;
+  };
   try {
     body = await req.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("Invalid body");
   } catch {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
   }
 
-  const activity_id = body?.activity_id;
-  if (!activity_id) {
-    return jsonResponse({ error: "Missing activity_id" }, 400);
-  }
-
-  // Authorization: caller must be Joy Go staff.
+  // Authorization applies to both single-member tests and activity broadcasts.
+  const token = getBearerToken(req);
+  if (!token) return jsonResponse({ error: "Login required" }, 401);
   const uClient = userClient(req);
+  const { data: caller, error: callerErr } = await uClient.auth.getUser(token);
+  if (callerErr || !caller.user) return jsonResponse({ error: "Invalid login" }, 401);
   const allowed = await isJoyGoStaff(uClient);
-  if (!allowed) {
-    return jsonResponse({ error: "Unauthorized" }, 403);
+  if (!allowed) return jsonResponse({ error: "Unauthorized" }, 403);
+  const aClient = adminClient();
+
+  // Test mode never creates an activity or member notification.
+  if (body.test_email !== undefined) {
+    if (body.activity_id !== undefined) return jsonResponse({ error: "Choose one mode" }, 400);
+    if (typeof body.test_email !== "string" || typeof body.test_title !== "string" ||
+        typeof body.test_body !== "string") return jsonResponse({ error: "Invalid test fields" }, 400);
+    if (body.test_mode !== "test_admin" && body.test_mode !== "test_member")
+      return jsonResponse({ error: "Invalid test mode" }, 400);
+    const target = body.test_email.trim().toLowerCase();
+    if (body.test_mode === "test_admin" && caller.user.email?.trim().toLowerCase() !== target)
+      return jsonResponse({ error: "主管理員測試只能寄至目前登入者的註冊 Email" }, 403);
+    const title = body.test_title.trim();
+    const content = body.test_body.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target) || target.length > 254 ||
+        !title || title.length > 100 || !content || content.length > 3000)
+      return jsonResponse({ error: "Invalid email/title/content" }, 400);
+
+    // Never send to an arbitrary address: verify it belongs to a registered Auth user.
+    // Supabase Auth listUsers is paginated; stop once a matching user is found.
+    let registered = false;
+    for (let page = 1; page <= 100; page++) {
+      const { data, error } = await aClient.auth.admin.listUsers({ page, perPage: 100 });
+      if (error) return jsonResponse({ error: "Member lookup failed" }, 500);
+      const users = data?.users ?? [];
+      if (users.some((u) => u.email?.trim().toLowerCase() === target)) {
+        registered = true;
+        break;
+      }
+      if (users.length < 100) break;
+    }
+    if (!registered) return jsonResponse({ error: "找不到此已註冊會員 Email（或會員超過查詢上限）" }, 404);
+
+    const eventTime = body.test_event_at ? formatDate(body.test_event_at) : "";
+    const location = typeof body.test_location === "string" ? body.test_location.slice(0, 120) : "";
+    const link = typeof body.test_signup_url === "string" ? body.test_signup_url.slice(0, 500) : "";
+    const plain = ["Joy Go 會員您好：", "", `【${title}】`, "", content,
+      eventTime ? `活動時間：${eventTime}` : "", location ? `活動地點／方式：${location}` : "",
+      link ? `活動連結：${link}` : "", "", "Joy Go Platform（測試信）"].filter(Boolean).join("\n");
+    const html = `<div style="font-family:sans-serif;max-width:640px;margin:auto;line-height:1.8;padding:24px">
+      <h2>Joy Go 會員活動通知（測試）</h2><h3>${escapeHtml(title)}</h3>
+      <p style="white-space:pre-wrap">${escapeHtml(content)}</p>
+      ${eventTime ? `<p>活動時間：${escapeHtml(eventTime)}</p>` : ""}
+      ${location ? `<p>活動地點／方式：${escapeHtml(location)}</p>` : ""}
+      ${link && /^https:\/\//i.test(link) ? `<p><a href="${escapeHtml(link)}">活動連結</a></p>` : ""}
+      <p>Joy Go Platform｜單人測試信</p></div>`;
+    try {
+      await sendResendEmail({ to: target, subject: `Joy Go 測試通知｜${title}`, html, text: plain });
+      return jsonResponse({ sent_count: 1, failed_count: 0, test_mode: true });
+    } catch (err) {
+      console.error("Single-member email failed:", err);
+      return jsonResponse({ error: "寄信服務未成功，請查看 Edge Function Logs", sent_count: 0, failed_count: 1 }, 502);
+    }
   }
 
-  const aClient = adminClient();
+  const activity_id = body.activity_id;
+  if (typeof activity_id !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(activity_id)) {
+    return jsonResponse({ error: "Missing or invalid activity_id" }, 400);
+  }
 
   // Current Joy Go activity schema.
   const { data: activity, error: activityErr } = await aClient
