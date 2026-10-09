@@ -53,6 +53,7 @@
     <option value="JOYGO8-TEST-001">JOYGO8-TEST-001｜8 人虛擬測試</option>
     <option value="JOYGO16-TEST-001">JOYGO16-TEST-001｜16 人虛擬測試</option>
     <option value="JOYGO4-LIVE-TEST-001">JOYGO4-LIVE-TEST-001｜4 人真人測試</option>
+    <option value="JOYGO-PAY-TEST-001">JOYGO-PAY-TEST-001｜2 人收費測試（NT$200）</option>
   </select>
   <button class="btn gold" id="loadTournamentCode">載入比賽</button>
   <span class="current">目前：<b id="currentTournamentCode">—</b></span>
@@ -243,10 +244,10 @@
 </main>
 <script>
 const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
-const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const ALLOWED_CODES=["JOYGO16-001","JOYGO8-TEST-001","JOYGO16-TEST-001","JOYGO4-LIVE-TEST-001"];const requestedCode=new URLSearchParams(location.search).get("tournament")||localStorage.getItem("joygoTournamentCode")||"JOYGO16-001";let CODE=ALLOWED_CODES.includes(requestedCode)?requestedCode:"JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],swissPlayers=[],swissRounds=[],swissPairings=[],auditLogs=[],staffRole="none",moderatorIds=new Set();let swissTotalRounds=5;const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const ALLOWED_CODES=["JOYGO16-001","JOYGO8-TEST-001","JOYGO16-TEST-001","JOYGO4-LIVE-TEST-001","JOYGO-PAY-TEST-001"];const requestedCode=new URLSearchParams(location.search).get("tournament")||localStorage.getItem("joygoTournamentCode")||"JOYGO16-001";let CODE=ALLOWED_CODES.includes(requestedCode)?requestedCode:"JOYGO16-001";let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],swissPlayers=[],swissRounds=[],swissPairings=[],auditLogs=[],staffRole="none",moderatorIds=new Set();let swissTotalRounds=5;const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function notice(t,k=""){const e=$("notice");e.className="notice"+(k?" "+k:"");e.textContent=t}
 
-function tournamentMax(){if(CODE==="JOYGO4-LIVE-TEST-001")return 4;if(CODE==="JOYGO8-TEST-001")return 8;return 16}
+function tournamentMax(){if(CODE==="JOYGO-PAY-TEST-001")return 2;if(CODE==="JOYGO4-LIVE-TEST-001")return 4;if(CODE==="JOYGO8-TEST-001")return 8;return 16}
 function updateTournamentUI(){
   const max=tournamentMax();
   if($("tournamentCodeSelect"))$("tournamentCodeSelect").value=CODE;
@@ -269,7 +270,7 @@ async function switchTournamentCode(){
   if($("eventFee"))$("eventFee").value="0";
   if($("eventOpen"))$("eventOpen").value="false";
   updateTournamentUI();notice(`正在載入 ${CODE}…`);
-  const jobs=[loadRegs(),loadSwiss(),loadBroadcasts(),loadAuditLogs()];
+  const jobs=[loadRegs(),loadSwiss(),loadBroadcasts(),loadAuditLogs(),loadEvent()];
   const result=await Promise.allSettled(jobs);
   renderControl();updateHome();updateTournamentUI();showTab("swiss");
   const bad=result.find(x=>x.status==="rejected");
@@ -1138,12 +1139,13 @@ async function loadEvent(){
 
   const defaults={
     code:CODE,
-    title:CODE==="JOYGO4-LIVE-TEST-001"?"Joy Go 4 人真人整合測試賽":
+    title:CODE==="JOYGO-PAY-TEST-001"?"Joy Go 2 人收費功能測試賽":
+          CODE==="JOYGO4-LIVE-TEST-001"?"Joy Go 4 人真人整合測試賽":
           CODE==="JOYGO8-TEST-001"?"Joy Go 8 人虛擬測試賽":
           CODE==="JOYGO16-TEST-001"?"Joy Go 16 人虛擬測試賽":
           "Joy Go 16 人瑞士制比賽",
     max_players:tournamentMax(),
-    entry_fee:0,
+    entry_fee:CODE==="JOYGO-PAY-TEST-001"?200:0,
     event_date:null,
     registration_open:false,
     venue:""
@@ -1152,7 +1154,7 @@ async function loadEvent(){
 
   $("eventTitle").value=ev.title||defaults.title;
   $("eventMax").value=Number(ev.max_players||defaults.max_players);
-  $("eventFee").value=Number(ev.entry_fee||0);
+  $("eventFee").value=Number(ev.entry_fee??defaults.entry_fee);
   $("eventDate").value=ev.event_date||'';
   $("eventOpen").value=String(ev.registration_open===true);
   $("eventVenue").value=ev.venue||'';
@@ -1173,6 +1175,7 @@ $("saveEvent").onclick=async()=>{
   const payload={
     code:CODE,
     title:$("eventTitle").value.trim()||(
+      CODE==="JOYGO-PAY-TEST-001"?"Joy Go 2 人收費功能測試賽":
       CODE==="JOYGO4-LIVE-TEST-001"?"Joy Go 4 人真人整合測試賽":
       CODE==="JOYGO8-TEST-001"?"Joy Go 8 人虛擬測試賽":
       CODE==="JOYGO16-TEST-001"?"Joy Go 16 人虛擬測試賽":
