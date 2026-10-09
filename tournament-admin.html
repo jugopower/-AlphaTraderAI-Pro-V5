@@ -1199,7 +1199,7 @@ async function loadPaymentSettings(){
 async function savePaymentSettings(){
  if(staffRole!=="admin")return notice("只有主管理員可以設定銀行收款。","bad");
  const bank_name=$("payBankName").value.trim(),bank_code=$("payBankCode").value.trim(),bank_account=$("payBankAccount").value.trim(),account_holder=$("payAccountHolder").value.trim(),payment_note=$("payNote").value.trim(),payment_enabled=$("payEnabled").value==="true";
- if(payment_enabled&&(!bank_name||!/^\\d{3}$/.test(bank_code)||!bank_account||!account_holder))return notice("啟用收款前，請完整填寫銀行名稱、三位銀行代碼、帳號及戶名。","bad");
+ if(payment_enabled&&(!bank_name||!/^\d{3}$/.test(bank_code)||!bank_account||!account_holder))return notice("啟用收款前，請完整填寫銀行名稱、三位銀行代碼、帳號及戶名。","bad");
  if(payment_enabled&&!confirm("確定啟用 "+CODE+" 的銀行轉帳收款？請先確認銀行資料正確。"))return;
  const btn=$("savePaymentSettings");btn.disabled=true;
  const payload={tournament_code:CODE,bank_name,bank_code,bank_account,account_holder,payment_note,payment_enabled,updated_at:new Date().toISOString(),updated_by:me?.id||null};
