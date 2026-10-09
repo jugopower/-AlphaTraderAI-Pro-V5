@@ -239,7 +239,22 @@
 <button type="button" class="mini neutral feePreset" data-fee="500">500</button>
 <button type="button" class="mini neutral feePreset" data-fee="800">800</button>
 <button type="button" class="mini neutral feePreset" data-fee="1000">1000</button>
-</div></div><div class="field"><label>比賽日期</label><input id="eventDate" type="date"></div><div class="field"><label>報名狀態</label><select id="eventOpen"><option value="true">開放報名</option><option value="false">停止報名</option></select></div><div class="field"><label>決賽方式</label><input id="eventVenue"></div></div><div style="margin-top:12px"><button id="saveEvent" class="btn green">儲存比賽資料</button></div></div></section><section class="card"><h2>網路比賽計時</h2><div class="card-body"><div class="formgrid"><div class="field"><label>棋盤</label><select id="tBoard"><option>19</option><option>13</option><option>9</option></select></div><div class="field"><label>貼目</label><input id="tKomi" type="number" step="0.5"></div><div class="field"><label>基本時間（分）</label><input id="tMain" type="number" min="0"></div><div class="field"><label>讀秒（秒）</label><input id="tByo" type="number" min="5"></div><div class="field"><label>讀秒次數</label><input id="tPeriods" type="number" min="1"></div></div><div style="margin-top:12px"><button id="saveTimer" class="btn green">儲存比賽計時</button></div><div id="timerNote" class="sub" style="margin-top:9px"></div></div></section></div></section>
+</div></div><div class="field"><label>比賽日期</label><input id="eventDate" type="date"></div><div class="field"><label>報名狀態</label><select id="eventOpen"><option value="true">開放報名</option><option value="false">停止報名</option></select></div><div class="field"><label>決賽方式</label><input id="eventVenue"></div></div><div style="margin-top:12px"><button id="saveEvent" class="btn green">儲存比賽資料</button></div></div></section><section class="card"><h2>網路比賽計時</h2><div class="card-body"><div class="formgrid"><div class="field"><label>棋盤</label><select id="tBoard"><option>19</option><option>13</option><option>9</option></select></div><div class="field"><label>貼目</label><input id="tKomi" type="number" step="0.5"></div><div class="field"><label>基本時間（分）</label><input id="tMain" type="number" min="0"></div><div class="field"><label>讀秒（秒）</label><input id="tByo" type="number" min="5"></div><div class="field"><label>讀秒次數</label><input id="tPeriods" type="number" min="1"></div></div><div style="margin-top:12px"><button id="saveTimer" class="btn green">儲存比賽計時</button></div><div id="timerNote" class="sub" style="margin-top:9px"></div></div></section></div>
+<section class="card" style="margin-top:14px">
+<h2>🏦 銀行收款設定（僅主管理員）</h2>
+<div class="card-body">
+<p class="sub">設定只適用目前選取的比賽。測試期間請保持停用；啟用前確認帳號正確。儲存不會自動確認選手已付款。</p>
+<div class="formgrid">
+<div class="field"><label>銀行名稱</label><input id="payBankName" autocomplete="off" placeholder="例如：臺灣銀行"></div>
+<div class="field"><label>銀行代碼</label><input id="payBankCode" inputmode="numeric" autocomplete="off" placeholder="例如：004"></div>
+<div class="field"><label>收款帳號</label><input id="payBankAccount" autocomplete="off" inputmode="numeric"></div>
+<div class="field"><label>收款戶名</label><input id="payAccountHolder" autocomplete="off"></div>
+<div class="field"><label>收款狀態</label><select id="payEnabled"><option value="false">停用（測試中）</option><option value="true">啟用銀行轉帳</option></select></div>
+</div>
+<div class="field" style="margin-top:10px"><label>匯款說明</label><textarea id="payNote" rows="3" style="width:100%;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px" placeholder="請於匯款後提供轉帳後五碼，等待人工核對。"></textarea></div>
+<div class="toolbar" style="margin-top:12px;flex-wrap:wrap"><button class="btn green" id="savePaymentSettings">儲存銀行收款設定</button><button class="btn" id="reloadPaymentSettings">重新讀取</button></div>
+<div id="paymentSettingsNote" class="sub" aria-live="polite">尚未讀取。</div>
+</div></section></section>
 </section>
 </main>
 <script>
@@ -270,7 +285,7 @@ async function switchTournamentCode(){
   if($("eventFee"))$("eventFee").value="0";
   if($("eventOpen"))$("eventOpen").value="false";
   updateTournamentUI();notice(`正在載入 ${CODE}…`);
-  const jobs=[loadRegs(),loadSwiss(),loadBroadcasts(),loadAuditLogs(),loadEvent()];
+  const jobs=[loadRegs(),loadSwiss(),loadBroadcasts(),loadAuditLogs(),loadEvent(),loadPaymentSettings()];
   const result=await Promise.allSettled(jobs);
   renderControl();updateHome();updateTournamentUI();showTab("swiss");
   const bad=result.find(x=>x.status==="rejected");
@@ -1166,6 +1181,37 @@ async function loadEvent(){
     notice(note);
   }
 }
+async function loadPaymentSettings(){
+ const ids=["payBankName","payBankCode","payBankAccount","payAccountHolder","payNote","payEnabled"];
+ const note=$("paymentSettingsNote");
+ if(staffRole!=="admin"){ids.forEach(id=>{$(id).disabled=true});$("savePaymentSettings").disabled=true;note.textContent="僅主管理員可設定收款帳號。";return}
+ note.textContent="正在讀取 "+CODE+" 的銀行設定…";
+ const {data,error}=await sb.from("tournament_payment_settings").select("bank_name,bank_code,bank_account,account_holder,payment_note,payment_enabled").eq("tournament_code",CODE).maybeSingle();
+ if(error){note.textContent="讀取失敗："+error.message;return}
+ $("payBankName").value=data?.bank_name||"";
+ $("payBankCode").value=data?.bank_code||"";
+ $("payBankAccount").value=data?.bank_account||"";
+ $("payAccountHolder").value=data?.account_holder||"";
+ $("payNote").value=data?.payment_note||"";
+ $("payEnabled").value=String(data?.payment_enabled===true);
+ note.textContent=data?"已讀取本場收款設定。":"本場尚未建立銀行設定；預設停用。";
+}
+async function savePaymentSettings(){
+ if(staffRole!=="admin")return notice("只有主管理員可以設定銀行收款。","bad");
+ const bank_name=$("payBankName").value.trim(),bank_code=$("payBankCode").value.trim(),bank_account=$("payBankAccount").value.trim(),account_holder=$("payAccountHolder").value.trim(),payment_note=$("payNote").value.trim(),payment_enabled=$("payEnabled").value==="true";
+ if(payment_enabled&&(!bank_name||!/^\\d{3}$/.test(bank_code)||!bank_account||!account_holder))return notice("啟用收款前，請完整填寫銀行名稱、三位銀行代碼、帳號及戶名。","bad");
+ if(payment_enabled&&!confirm("確定啟用 "+CODE+" 的銀行轉帳收款？請先確認銀行資料正確。"))return;
+ const btn=$("savePaymentSettings");btn.disabled=true;
+ const payload={tournament_code:CODE,bank_name,bank_code,bank_account,account_holder,payment_note,payment_enabled,updated_at:new Date().toISOString(),updated_by:me?.id||null};
+ const {error}=await sb.from("tournament_payment_settings").upsert(payload,{onConflict:"tournament_code"});
+ btn.disabled=false;
+ if(error){$("paymentSettingsNote").textContent="儲存失敗："+error.message;return notice("銀行收款設定儲存失敗："+error.message,"bad")}
+ $("paymentSettingsNote").textContent="已儲存 "+CODE+" 的銀行設定。";
+ notice("✅ 銀行收款設定已儲存。","good");
+ await loadPaymentSettings();
+}
+$("savePaymentSettings").onclick=()=>savePaymentSettings().catch(e=>notice("銀行設定失敗："+e.message,"bad"));
+$("reloadPaymentSettings").onclick=()=>loadPaymentSettings().catch(e=>notice("讀取失敗："+e.message,"bad"));
 async function loadTimer(){const {data,error}=await sb.from('tournament_settings').select('board_size,komi,main_seconds,byo_seconds,byo_periods').eq('user_id',me.id).maybeSingle();if(error){$("timerNote").textContent='計時設定讀取失敗：'+error.message;return}if(data){$("tBoard").value=String(data.board_size||19);$("tKomi").value=String(data.komi??7.5);$("tMain").value=String(Math.round(Number(data.main_seconds||1200)/60));$("tByo").value=String(data.byo_seconds||30);$("tPeriods").value=String(data.byo_periods||3)}else{$("tBoard").value='19';$("tKomi").value='7.5';$("tMain").value='20';$("tByo").value='30';$("tPeriods").value='3'}$("timerNote").textContent='目前設定已載入。'}
 document.querySelectorAll(".feePreset").forEach(b=>b.onclick=()=>{$("eventFee").value=b.dataset.fee});
 $("saveEvent").onclick=async()=>{
@@ -1206,7 +1252,7 @@ async function loadAll(){
 notice('正在同步管理資料…');
 await loadModeratorIds();
 if(staffRole==="admin"||staffRole==="deputy"){
-  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration(),loadBroadcasts(),loadSwiss()]);
+  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration(),loadBroadcasts(),loadSwiss(),loadPaymentSettings()]);
   await loadAuditLogs();
   renderControl();
 }else{
