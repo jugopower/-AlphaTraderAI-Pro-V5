@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Joy Go 收款設定</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>body{background:#07110d;color:#f7f2df;font-family:-apple-system,'Noto Sans TC',sans-serif;margin:0;padding:16px}main{max-width:850px;margin:auto}h1,h2{color:#ffe08a}section{background:#102019;border:1px solid #365844;border-radius:15px;padding:18px;margin:15px 0}label{display:block;margin:13px 0;font-weight:bold}input,select,textarea{display:block;width:100%;box-sizing:border-box;background:#07100c;color:white;border:1px solid #42654e;border-radius:9px;padding:11px;margin-top:5px;font:inherit}button,a.btn{display:inline-block;background:#e8b83f;color:#241700;border:0;border-radius:10px;padding:12px 18px;font-weight:bold;text-decoration:none;cursor:pointer}button:disabled{opacity:.5}.small{color:#bec9be;font-size:13px}#status{padding:12px;border:1px solid #365844;border-radius:9px}table{width:100%;border-collapse:collapse}td,th{padding:9px;border-bottom:1px solid #365844;text-align:left}</style></head><body><main><h1>🏦 Joy Go 比賽收費管理</h1><a class="btn" href="tournament-admin.html">← 返回比賽管理</a><p id="status">確認主管理員權限中…</p>
+<section id="app" hidden><label>選擇比賽<select id="code"><option value="JOYGO16-001">16 人正式賽</option><option value="JOYGO8-TEST-001">8 人測試賽</option><option value="JOYGO16-TEST-001">16 人測試賽</option><option value="JOYGO4-LIVE-TEST-001">4 人真人測試</option></select></label>
+<h2>收款帳號設定</h2><p class="small">報名費金額仍由原「比賽管理 → 比賽設定」控制。本頁只設定轉帳資訊。</p>
+<label>銀行名稱<input id="bank" maxlength="80" placeholder="例如：台灣銀行"></label><label>銀行代碼<input id="bankCode" maxlength="3" inputmode="numeric" placeholder="例如：004"></label><label>收款戶名<input id="holder" maxlength="100"></label><label>銀行帳號<input id="account" maxlength="30" inputmode="numeric"></label><label>轉帳說明<textarea id="note" rows="3" maxlength="400" placeholder="例如：轉帳後填寫轉出帳號末五碼"></textarea></label><button id="save">儲存收款設定</button>
+</section><section id="stats" hidden><h2>收費統計（以管理員標記為準）</h2><div id="numbers"></div><p class="small">此統計來自原有報名紀錄；標記已繳費前，務必先核對銀行實際入帳。免費比賽不計入收入。</p></section></main>
+<script>
+const sb=supabase.createClient("https://kpwfkmkxtrwmlxhomaxy.supabase.co","sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);let me;
+function status(t){$("status").textContent=t}
+async function load(){
+ const code=$("code").value;
+ const r=await sb.from("tournament_payment_settings").select("*").eq("tournament_code",code).maybeSingle();
+ if(r.error){status("讀取失敗，請先執行 SQL："+r.error.message);return}
+ const x=r.data||{};$("bank").value=x.bank_name||"";$("bankCode").value=x.bank_code||"";$("holder").value=x.account_holder||"";$("account").value=x.bank_account||"";$("note").value=x.payment_note||"";
+ const q=await sb.from("tournament_registrations").select("payment_status,payment_amount").eq("tournament_code",code);
+ if(q.error){$("numbers").textContent="統計讀取失敗："+q.error.message;return}
+ const all=q.data||[],paid=all.filter(x=>x.payment_status==="paid"&&Number(x.payment_amount)>0);
+ $("numbers").textContent=`報名 ${all.length} 人｜已標記繳費 ${paid.length} 人｜待確認 ${all.filter(x=>x.payment_status==="pending"&&Number(x.payment_amount)>0).length} 人｜已標記收款 NT$ ${paid.reduce((s,x)=>s+Number(x.payment_amount||0),0).toLocaleString()}`;
+ status("已載入 "+code+" 的收款設定");
+}
+$("code").onchange=load;
+$("save").onclick=async()=>{
+ const code=$("code").value, bank=$("bank").value.trim(),bankCode=$("bankCode").value.trim(),holder=$("holder").value.trim(),account=$("account").value.replace(/[\s-]/g,"");
+ if(!bank||!/^\d{3}$/.test(bankCode)||!holder||!/^\d{6,30}$/.test(account)){status("請填銀行、3 位銀行代碼、戶名與 6–30 位數字帳號。");return}
+ if(!confirm("確定儲存此比賽的收款帳號？棋友登入後即可看見。"))return;
+ $("save").disabled=true;
+ const {error}=await sb.from("tournament_payment_settings").upsert({tournament_code:code,bank_name:bank,bank_code:bankCode,account_holder:holder,bank_account:account,payment_note:$("note").value.trim(),updated_at:new Date().toISOString(),updated_by:me.id},{onConflict:"tournament_code"});
+ $("save").disabled=false;
+ if(error){status("儲存失敗："+error.message);return}status("✅ 已儲存收款設定。");await load();
+};
+(async()=>{const s=await sb.auth.getSession();if(!s.data?.session){status("請先登入 Joy Go Platform");return}me=s.data.session.user;const r=await sb.rpc("joygo_get_staff_access");if(r.error){status("無法驗證權限："+r.error.message);return}const a=Array.isArray(r.data)?r.data[0]:r.data;if(a?.staff_role!=="admin"){status("僅主管理員可使用此頁。");return}$("app").hidden=false;$("stats").hidden=false;await load()})().catch(e=>status(e.message));
+</script></body></html>
