@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go 大型賽務整合 Beta 2.1b</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#06140f;color:#f6f2df;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:18px}
+.card{border:1px solid #315847;background:#0b1f17;border-radius:18px;padding:18px;margin:14px 0}
+h1{font-size:30px;margin:0 0 8px;color:#ffd45e}
+h2{font-size:22px;color:#ffd45e}
+.sub{color:#b9c7c0}
+.status{padding:12px 14px;border-radius:12px;background:#102e22;border:1px solid #2b8b61;margin:12px 0}
+.buttons{display:flex;gap:10px;flex-wrap:wrap}
+button,select{font-size:17px;font-weight:700;border-radius:12px;padding:11px 14px;border:1px solid #50705f;background:#10251c;color:#fff;touch-action:manipulation}
+button.primary{background:#52d39a;color:#062116}
+button.gold{background:#f3bd3d;color:#1b1605}
+button.danger{background:#3b211d}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{padding:15px;border:1px solid #315847;border-radius:14px;background:#0b1a14}
+.stat b{display:block;font-size:26px;color:#ffd45e;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px;border-bottom:1px solid #29493b;text-align:left}
+th{color:#ffd45e;position:sticky;top:0;background:#0b1f17}
+.scroll{overflow:auto;max-height:560px;border-radius:12px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}button,select{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>👑 Joy Go 大型賽務整合 Beta 2.1b</h1>
+  <div class="sub">六組獨立保存修正版｜報名 → 報到 → 正式名單 → 瑞士制 → 成績 → 排名</div>
+  <div class="status">✅ 純本機沙盒。每一組使用獨立 Safari 儲存，不連 Supabase、不修改正式會員。</div>
+
+  <div class="card">
+    <h2>① 賽事總控</h2>
+    <div class="buttons">
+      <select id="groupSelect">
+        <option value="G67">6–7段組｜上限60</option>
+        <option value="G5">5段組｜上限80</option>
+        <option value="G4" selected>4段組｜上限100</option>
+        <option value="G3">3段組｜上限100</option>
+        <option value="G2">2段組｜上限80</option>
+        <option value="G1">1段組｜上限80</option>
+      </select>
+      <button id="btnLoad" class="gold">載入組別</button>
+      <button id="btnSeed" class="primary">建立測試報名名單</button>
+      <button id="btnCheckin">全員報到</button>
+      <button id="btnOfficial">建立正式名單</button>
+      <button id="btnRound" class="gold">產生下一輪</button>
+      <button id="btnAuto">自動輸入本輪成績</button>
+      <button id="btnReset" class="danger">清除本組</button>
+    </div>
+    <div class="status" id="groupStatus">目前組別：4段組｜上限100人</div>
+    <div class="status" id="actionStatus">操作狀態：等待操作。</div>
+  </div>
+
+  <div class="grid">
+    <div class="stat">報名人數<b id="sReg">0</b></div>
+    <div class="stat">已報到<b id="sCheck">0</b></div>
+    <div class="stat">正式選手<b id="sOfficial">0</b></div>
+    <div class="stat">目前輪次<b id="sRound">0</b></div>
+    <div class="stat">本輪桌數<b id="sBoards">0</b></div>
+    <div class="stat">重複對手<b id="sRepeat">0</b></div>
+  </div>
+
+  <div class="card">
+    <h2>② 六組賽事總覽</h2>
+    <div class="grid" id="groupOverview"></div>
+  </div>
+
+  <div class="card">
+    <h2>③ 報名／報到名單</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>編號</th><th>姓名</th><th>棋力</th><th>報到</th><th>正式名單</th></tr></thead>
+      <tbody id="regRows"><tr><td colspan="5">尚無資料。</td></tr></tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2>④ 本輪對戰表</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>桌次</th><th>黑棋</th><th>白棋</th><th>結果</th></tr></thead>
+      <tbody id="pairRows"><tr><td colspan="4">尚未產生配對。</td></tr></tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2>⑤ 即時排名前20名</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>名次</th><th>選手</th><th>主分</th><th>第一副分</th><th>第二副分</th><th>第三副分</th><th>第四副分</th></tr></thead>
+      <tbody id="rankRows"><tr><td colspan="7">尚無排名資料。</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var GROUPS={
+  G67:{name:"6–7段組",limit:60,rank:"6–7段"},
+  G5:{name:"5段組",limit:80,rank:"5段"},
+  G4:{name:"4段組",limit:100,rank:"4段"},
+  G3:{name:"3段組",limit:100,rank:"3段"},
+  G2:{name:"2段組",limit:80,rank:"2段"},
+  G1:{name:"1段組",limit:80,rank:"1段"}
+};
+
+var PREFIX="JOYGO_BETA21B_";
+var CURRENT_KEY=PREFIX+"CURRENT";
+var currentCode="G4";
+var g=null;
+
+function fresh(code){
+  return {code:code,registrations:[],official:[],round:0,currentPairs:[],history:[]};
+}
+function key(code){return PREFIX+"GROUP_"+code;}
+function el(id){return document.getElementById(id);}
+
+function saveGroup(group){
+  try{localStorage.setItem(key(group.code),JSON.stringify(group));}catch(e){}
+}
+function loadGroup(code){
+  try{
+    var raw=localStorage.getItem(key(code));
+    if(raw){
+      var x=JSON.parse(raw);
+      if(x && x.code===code) return x;
+    }
+  }catch(e){}
+  return fresh(code);
+}
+function saveCurrentCode(){
+  try{localStorage.setItem(CURRENT_KEY,currentCode);}catch(e){}
+}
+function restoreCurrentCode(){
+  try{
+    var x=localStorage.getItem(CURRENT_KEY);
+    if(x && GROUPS[x]) currentCode=x;
+  }catch(e){}
+}
+
+function playerMap(){
+  var m={};
+  g.official.forEach(function(p){m[p.id]=p;});
+  return m;
+}
+
+function pairView(pair){
+  var m=playerMap();
+  return {
+    bye:pair.bye,
+    board:pair.board,
+    black:m[pair.blackId]||null,
+    white:pair.whiteId?(m[pair.whiteId]||null):null,
+    result:pair.result||""
+  };
+}
+
+function refreshHeader(){
+  el("groupStatus").textContent="目前組別："+GROUPS[currentCode].name+"｜上限"+GROUPS[currentCode].limit+"人";
+}
+
+function countRepeats(ps){
+  var c=0;
+  ps.forEach(function(p){
+    var seen={};
+    (p.opponents||[]).forEach(function(id){if(seen[id])c++; seen[id]=1;});
+  });
+  return Math.floor(c/2);
+}
+
+function renderOverview(){
+  var html="";
+  Object.keys(GROUPS).forEach(function(code){
+    var x=loadGroup(code), m=GROUPS[code];
+    var checked=x.registrations.filter(function(p){return p.checked;}).length;
+    var active=code===currentCode;
+    html+='<div class="stat" style="'+(active?'border-color:#e8b83f':'')+'">'+
+      '<span>'+m.name+(active?'｜目前':'')+'</span>'+
+      '<b>'+x.official.length+' / '+m.limit+'</b>'+
+      '<div class="sub">報名 '+x.registrations.length+'｜報到 '+checked+'｜第 '+x.round+' 輪</div></div>';
+  });
+  el("groupOverview").innerHTML=html;
+}
+
+function renderRegs(){
+  if(!g.registrations.length){
+    el("regRows").innerHTML='<tr><td colspan="5">尚無資料。</td></tr>'; return;
+  }
+  var html="";
+  g.registrations.forEach(function(p){
+    html+="<tr><td>"+p.no+"</td><td>"+p.name+"</td><td>"+p.rank+"</td><td>"+(p.checked?"✅":"—")+"</td><td>"+(p.official?"✅":"—")+"</td></tr>";
+  });
+  el("regRows").innerHTML=html;
+}
+
+function renderPairs(){
+  if(!g.currentPairs.length){
+    el("pairRows").innerHTML='<tr><td colspan="4">尚未產生配對。</td></tr>'; return;
+  }
+  var html="";
+  g.currentPairs.forEach(function(raw){
+    var p=pairView(raw);
+    if(p.bye){
+      html+="<tr><td>輪空</td><td>"+(p.black?p.black.name:"?")+"</td><td>—</td><td>輪空得1分</td></tr>";
+    }else{
+      html+="<tr><td>"+p.board+"</td><td>"+p.black.name+"</td><td>"+p.white.name+"</td><td>"+(p.result||"待輸入")+"</td></tr>";
+    }
+  });
+  el("pairRows").innerHTML=html;
+}
+
+function computeTB(ps){
+  var map={}; ps.forEach(function(p){map[p.id]=p;});
+  ps.forEach(function(p){
+    var os=(p.opponents||[]).map(function(id){return map[id]?map[id].score:0;});
+    p.s1=os.reduce(function(s,v){return s+v;},0);
+    if(os.length>=3){
+      var t=os.slice().sort(function(a,b){return a-b;});
+      p.s2=t.slice(1,-1).reduce(function(s,v){return s+v;},0);
+    } else p.s2=p.s1;
+    var sb=0;
+    (p.results||[]).forEach(function(r){if(!r.bye&&r.points===1&&map[r.opp])sb+=map[r.opp].score;});
+    p.s3=sb;
+  });
+  ps.forEach(function(p){
+    var s=0;(p.opponents||[]).forEach(function(id){if(map[id])s+=map[id].s1;}); p.s4=s;
+  });
+}
+
+function renderRank(){
+  if(!g.official.length){
+    el("rankRows").innerHTML='<tr><td colspan="7">尚無排名資料。</td></tr>'; return;
+  }
+  computeTB(g.official);
+  var r=g.official.slice().sort(function(a,b){
+    if(b.score!==a.score)return b.score-a.score;
+    if(b.s1!==a.s1)return b.s1-a.s1;
+    if(b.s2!==a.s2)return b.s2-a.s2;
+    if(b.s3!==a.s3)return b.s3-a.s3;
+    if(b.s4!==a.s4)return b.s4-a.s4;
+    return a.id.localeCompare(b.id);
+  });
+  var html="";
+  r.slice(0,20).forEach(function(p,i){
+    html+="<tr><td>"+(i+1)+"</td><td>"+p.name+"</td><td>"+p.score+"</td><td>"+p.s1+"</td><td>"+p.s2+"</td><td>"+p.s3+"</td><td>"+p.s4+"</td></tr>";
+  });
+  el("rankRows").innerHTML=html;
+}
+
+function renderAll(){
+  el("sReg").textContent=g.registrations.length;
+  el("sCheck").textContent=g.registrations.filter(function(p){return p.checked;}).length;
+  el("sOfficial").textContent=g.official.length;
+  el("sRound").textContent=g.round;
+  el("sBoards").textContent=g.currentPairs.filter(function(p){return !p.bye;}).length;
+  el("sRepeat").textContent=countRepeats(g.official);
+  renderOverview(); renderRegs(); renderPairs(); renderRank();
+}
+
+function createSeed(){
+  var m=GROUPS[currentCode];
+  g=fresh(currentCode);
+  for(var i=1;i<=m.limit;i++){
+    g.registrations.push({
+      no:i,id:currentCode+"-"+i,
+      name:m.name+"測試"+("000"+i).slice(-3),
+      rank:m.rank,checked:false,official:false
+    });
+  }
+  saveGroup(g); renderAll();
+  el("actionStatus").textContent="✅ "+m.name+" 已建立 "+m.limit+" 人測試報名名單。";
+}
+
+function checkAll(){
+  g.registrations.forEach(function(p){p.checked=true;});
+  saveGroup(g); renderAll();
+  el("actionStatus").textContent="✅ "+GROUPS[currentCode].name+" 已全員報到。";
+}
+
+function buildOfficial(){
+  g.official=g.registrations.filter(function(p){return p.checked;}).map(function(p){
+    p.official=true;
+    return {id:p.id,name:p.name,rank:p.rank,score:0,opponents:[],results:[],black:0,white:0,byes:0,s1:0,s2:0,s3:0,s4:0};
+  });
+  g.round=0;g.currentPairs=[];g.history=[];
+  saveGroup(g);renderAll();
+  el("actionStatus").textContent="✅ 已建立正式名單 "+g.official.length+" 人。";
+}
+
+function alreadyPlayed(a,b){return (a.opponents||[]).indexOf(b.id)!==-1;}
+function colorPenalty(a,b){return Math.abs((a.black+1)-a.white)+Math.abs(b.black-(b.white+1));}
+function orientation(a,b){
+  var p1=colorPenalty(a,b),p2=colorPenalty(b,a);
+  if(p2<p1)return{black:a===b?b:b,white:a};
+  if(p1<p2)return{black:a,white:b};
+  return (a.black-a.white>b.black-b.white)?{black:b,white:a}:{black:a,white:b};
+}
+
+function nextRound(){
+  if(!g.official.length){el("actionStatus").textContent="⚠️ 請先建立正式名單。";return;}
+  if(g.currentPairs.some(function(p){return !p.bye&&!p.result;})){
+    el("actionStatus").textContent="⚠️ 請先完成目前這一輪成績。";return;
+  }
+
+  g.round++;
+  var arr=g.official.slice().sort(function(a,b){
+    if(b.score!==a.score)return b.score-a.score;
+    return a.id.localeCompare(b.id);
+  });
+  var pool=arr.slice(),pairs=[],board=1;
+
+  if(pool.length%2===1){
+    var bi=-1;
+    for(var z=pool.length-1;z>=0;z--){if(pool[z].byes===0){bi=z;break;}}
+    if(bi<0)bi=pool.length-1;
+    var bp=pool.splice(bi,1)[0];
+    bp.byes++;bp.score+=1;bp.results.push({round:g.round,opp:null,points:1,bye:true});
+    pairs.push({bye:true,board:null,blackId:bp.id,whiteId:null,result:"輪空"});
+  }
+
+  while(pool.length){
+    var a=pool.shift(),best=0,bestCost=1e15;
+    for(var j=0;j<pool.length;j++){
+      var b=pool[j];
+      var cost=(alreadyPlayed(a,b)?1000000:0)+Math.abs(a.score-b.score)*10000+Math.min(colorPenalty(a,b),colorPenalty(b,a))*100+j;
+      if(cost<bestCost){bestCost=cost;best=j;}
+    }
+    var b=pool.splice(best,1)[0];
+    var o=orientation(a,b);
+    pairs.push({bye:false,board:board++,blackId:o.black.id,whiteId:o.white.id,result:""});
+  }
+
+  g.currentPairs=pairs;
+  g.history.push(JSON.parse(JSON.stringify(pairs)));
+  saveGroup(g);renderAll();
+  el("actionStatus").textContent="✅ 已產生第 "+g.round+" 輪，共 "+g.currentPairs.filter(function(p){return !p.bye;}).length+" 桌。";
+}
+
+function autoResult(){
+  if(!g.currentPairs.length){el("actionStatus").textContent="⚠️ 尚未產生本輪配對。";return;}
+  var map=playerMap(),added=0,existed=0;
+  g.currentPairs.forEach(function(raw){
+    if(raw.bye)return;
+    if(raw.result){existed++;return;}
+    var black=map[raw.blackId],white=map[raw.whiteId];
+    black.black++;white.white++;
+    black.opponents.push(white.id);white.opponents.push(black.id);
+    var bid=parseInt(black.id.match(/(\d+)$/)[1],10);
+    var wid=parseInt(white.id.match(/(\d+)$/)[1],10);
+    var blackWins=((bid*17+wid*31+g.round*13+black.score*7+white.score*5+raw.board*11)%100)<50;
+    var winner=blackWins?black:white,loser=blackWins?white:black;
+    winner.score+=1;
+    winner.results.push({round:g.round,opp:loser.id,points:1,bye:false});
+    loser.results.push({round:g.round,opp:winner.id,points:0,bye:false});
+    raw.result=blackWins?"黑勝":"白勝";
+    added++;
+  });
+  saveGroup(g);renderAll();
+  el("actionStatus").textContent=added>0
+    ?"✅ 第 "+g.round+" 輪已輸入 "+added+" 桌成績。"
+    :"ℹ️ 第 "+g.round+" 輪原本已有 "+existed+" 桌成績。";
+}
+
+function resetGroup(){
+  g=fresh(currentCode);saveGroup(g);renderAll();
+  el("actionStatus").textContent="🗑️ 已清除 "+GROUPS[currentCode].name+"。";
+}
+
+function switchGroup(){
+  saveGroup(g);
+  currentCode=el("groupSelect").value;
+  saveCurrentCode();
+  g=loadGroup(currentCode);
+  refreshHeader();renderAll();
+  el("actionStatus").textContent="✅ 已載入 "+GROUPS[currentCode].name+"：正式選手 "+g.official.length+" 人，第 "+g.round+" 輪。";
+}
+
+el("btnLoad").addEventListener("click",switchGroup);
+el("btnSeed").addEventListener("click",createSeed);
+el("btnCheckin").addEventListener("click",checkAll);
+el("btnOfficial").addEventListener("click",buildOfficial);
+el("btnRound").addEventListener("click",nextRound);
+el("btnAuto").addEventListener("click",autoResult);
+el("btnReset").addEventListener("click",resetGroup);
+
+restoreCurrentCode();
+g=loadGroup(currentCode);
+el("groupSelect").value=currentCode;
+refreshHeader();renderAll();
+el("actionStatus").textContent="✅ 已從 Safari 本機恢復 "+GROUPS[currentCode].name+"：正式選手 "+g.official.length+" 人，第 "+g.round+" 輪。";
+})();
+</script>
+</body>
+</html>
