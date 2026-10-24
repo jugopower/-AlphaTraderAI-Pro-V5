@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go 大型瑞士制壓力測試 Beta 1.3c</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#06140f;color:#f6f2df;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:18px}
+.card{border:1px solid #315847;background:#0b1f17;border-radius:18px;padding:18px;margin:14px 0}
+h1{font-size:30px;margin:0 0 8px;color:#ffd45e}
+h2{font-size:22px;color:#ffd45e}
+.sub{color:#b9c7c0}
+.status{padding:12px 14px;border-radius:12px;background:#102e22;border:1px solid #2b8b61;margin:12px 0}
+.buttons{display:flex;gap:10px;flex-wrap:wrap}
+button{font-size:20px;font-weight:800;border-radius:14px;padding:13px 18px;border:1px solid #50705f;background:#10251c;color:#fff;touch-action:manipulation}
+button.primary{background:#52d39a;color:#062116}
+button.gold{background:#f3bd3d;color:#1b1605}
+button.danger{background:#34251f}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{padding:15px;border:1px solid #315847;border-radius:14px;background:#0b1a14}
+.stat b{display:block;font-size:28px;color:#ffd45e;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th,td{padding:10px;border-bottom:1px solid #29493b;text-align:left}
+th{color:#ffd45e}
+#log{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;background:#04100c;padding:12px;border-radius:12px;min-height:56px}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}button{font-size:18px;padding:12px 14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>♟️ Joy Go 大型瑞士制壓力測試</h1>
+  <div class="sub">Beta 1.3c｜純本機獨立版｜不連 Supabase、不讀會員、不寫任何正式資料</div>
+
+  <div class="status" id="jsStatus">正在啟動 JavaScript…</div>
+
+  <div class="card">
+    <h2>① 建立虛擬選手</h2>
+    <div class="buttons">
+      <button id="btn16">產生 16 人</button>
+      <button id="btn64">產生 64 人</button>
+      <button id="btn100" class="primary">產生 100 人</button>
+      <button id="btnPair" class="gold">產生第 1 輪配對</button>
+      <button id="btnClear" class="danger">清除</button>
+    </div>
+    <div class="status" id="result">尚未建立虛擬選手。</div>
+  </div>
+
+  <div class="grid">
+    <div class="stat">選手數<b id="sPlayers">0</b></div>
+    <div class="stat">桌數<b id="sBoards">0</b></div>
+    <div class="stat">輪空<b id="sBye">0</b></div>
+    <div class="stat">重複對手<b id="sRepeat">0</b></div>
+  </div>
+
+  <div class="card">
+    <h2>② 第 1 輪配對預覽</h2>
+    <table>
+      <thead><tr><th>桌次</th><th>黑棋</th><th>白棋</th></tr></thead>
+      <tbody id="pairRows"><tr><td colspan="3" class="sub">尚未產生配對。</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>診斷紀錄</h2>
+    <div id="log">尚無紀錄。</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var players = [];
+  var pairs = [];
+
+  function byId(id){ return document.getElementById(id); }
+
+  function log(msg){
+    var now = new Date();
+    var t = now.toLocaleTimeString();
+    var el = byId("log");
+    if(el.textContent === "尚無紀錄。") el.textContent = "";
+    el.textContent += "[" + t + "] " + msg + "\n";
+  }
+
+  function setStats(){
+    byId("sPlayers").textContent = String(players.length);
+    var normal = 0, bye = 0;
+    for(var i=0;i<pairs.length;i++){
+      if(pairs[i].white) normal++; else bye++;
+    }
+    byId("sBoards").textContent = String(normal);
+    byId("sBye").textContent = String(bye);
+    byId("sRepeat").textContent = "0";
+  }
+
+  function renderPairs(){
+    var body = byId("pairRows");
+    if(!pairs.length){
+      body.innerHTML = '<tr><td colspan="3" class="sub">尚未產生配對。</td></tr>';
+      return;
+    }
+    var html = "";
+    var limit = Math.min(pairs.length, 50);
+    for(var i=0;i<limit;i++){
+      var p = pairs[i];
+      html += "<tr><td>"+p.board+"</td><td>"+p.black.name+"</td><td>"+(p.white?p.white.name:"輪空")+"</td></tr>";
+    }
+    body.innerHTML = html;
+  }
+
+  function createPlayers(n){
+    players = [];
+    pairs = [];
+    for(var i=1;i<=n;i++){
+      var num = ("000"+i).slice(-3);
+      players.push({
+        id:i,
+        name:"測試"+num,
+        score:0,
+        opponents:[]
+      });
+    }
+    byId("result").innerHTML = "✅ 已建立 <b>"+n+"</b> 位本機虛擬選手。沒有連線、沒有寫入資料庫。";
+    renderPairs();
+    setStats();
+    log("建立 "+n+" 位虛擬選手成功");
+  }
+
+  function firstRound(){
+    if(players.length === 0){
+      byId("result").textContent = "⚠️ 請先按「產生 16／64／100 人」。";
+      log("未建立選手，無法配對");
+      return;
+    }
+
+    var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+    pairs = [];
+
+    // 第 1 輪採上下半區配對，避免同強度種子直接相遇。
+    var n = players.length;
+    var half = Math.floor(n/2);
+    var board = 1;
+
+    if(n % 2 === 0){
+      for(var i=0;i<half;i++){
+        pairs.push({board:board++, black:players[i], white:players[i+half]});
+      }
+    }else{
+      for(var j=0;j<half;j++){
+        pairs.push({board:board++, black:players[j], white:players[j+half]});
+      }
+      pairs.push({board:board++, black:players[n-1], white:null});
+    }
+
+    var t1 = (window.performance && performance.now) ? performance.now() : Date.now();
+    var ms = Math.round((t1-t0)*10)/10;
+    var normal = 0, bye = 0;
+    for(var k=0;k<pairs.length;k++){
+      if(pairs[k].white) normal++; else bye++;
+    }
+
+    byId("result").innerHTML =
+      "✅ <b>"+players.length+" 人第 1 輪配對完成</b>："+
+      normal+" 桌"+(bye ? "＋"+bye+" 人輪空" : "")+
+      "；重複對手 0；耗時 "+ms+" ms。";
+
+    renderPairs();
+    setStats();
+    log(players.length+" 人第 1 輪完成："+normal+" 桌，輪空 "+bye+"，耗時 "+ms+" ms");
+  }
+
+  function clearAll(){
+    players = [];
+    pairs = [];
+    byId("result").textContent = "已清除本機壓測資料。";
+    renderPairs();
+    setStats();
+    log("已清除");
+  }
+
+  // 明確掛到 window，便於 Safari 直接存取與診斷。
+  window.JoyGoStressCreate = createPlayers;
+  window.JoyGoStressPair = firstRound;
+  window.JoyGoStressClear = clearAll;
+
+  byId("btn16").addEventListener("click", function(){ createPlayers(16); });
+  byId("btn64").addEventListener("click", function(){ createPlayers(64); });
+  byId("btn100").addEventListener("click", function(){ createPlayers(100); });
+  byId("btnPair").addEventListener("click", firstRound);
+  byId("btnClear").addEventListener("click", clearAll);
+
+  byId("jsStatus").textContent = "✅ JavaScript 已啟動。若看到這行，按鈕事件已完成綁定。";
+  log("JavaScript 啟動完成，5 個按鈕已綁定");
+})();
+</script>
+</body>
+</html>
