@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go 奇數人數＋改判壓力測試 Beta 1.5</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#06140f;color:#f6f2df;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:18px}
+.card{border:1px solid #315847;background:#0b1f17;border-radius:18px;padding:18px;margin:14px 0}
+h1{font-size:30px;margin:0 0 8px;color:#ffd45e}
+h2{font-size:22px;color:#ffd45e}
+.sub{color:#b9c7c0}
+.status{padding:12px 14px;border-radius:12px;background:#102e22;border:1px solid #2b8b61;margin:12px 0}
+.buttons{display:flex;gap:10px;flex-wrap:wrap}
+button,select{font-size:18px;font-weight:800;border-radius:14px;padding:12px 16px;border:1px solid #50705f;background:#10251c;color:#fff;touch-action:manipulation}
+button.primary{background:#52d39a;color:#062116}
+button.gold{background:#f3bd3d;color:#1b1605}
+button.danger{background:#34251f}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.stat{padding:15px;border:1px solid #315847;border-radius:14px;background:#0b1a14}
+.stat b{display:block;font-size:26px;color:#ffd45e;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:9px;border-bottom:1px solid #29493b;text-align:left}
+th{color:#ffd45e;position:sticky;top:0;background:#0b1f17}
+.scroll{overflow:auto;max-height:560px;border-radius:12px}
+#log{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:#04100c;padding:12px;border-radius:12px;min-height:70px}
+.good{color:#8ff0ba}.bad{color:#ff9b9b}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}button,select{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>♟️ Joy Go 奇數人數＋改判壓力測試</h1>
+  <div class="sub">Beta 1.5｜99 人 7 輪輪空測試＋第 3 輪改判後重算｜純本機，不連 Supabase</div>
+
+  <div class="status" id="jsStatus">正在啟動 JavaScript…</div>
+
+  <div class="card">
+    <h2>① 99 人完整 7 輪</h2>
+    <div class="buttons">
+      <button id="btn99" class="primary">產生 99 人</button>
+      <button id="btnRun99" class="gold">一鍵跑 7 輪</button>
+      <button id="btnClear" class="danger">清除</button>
+    </div>
+    <div class="status" id="result99">尚未開始。</div>
+  </div>
+
+  <div class="grid">
+    <div class="stat">選手數<b id="sPlayers">0</b></div>
+    <div class="stat">完成輪數<b id="sRounds">0</b></div>
+    <div class="stat">重複對手<b id="sRepeat">0</b></div>
+    <div class="stat">重複輪空<b id="sByeRepeat">0</b></div>
+    <div class="stat">最大黑白差<b id="sColorDiff">0</b></div>
+  </div>
+
+  <div class="card">
+    <h2>② 每輪摘要</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>輪次</th><th>桌數</th><th>輪空者</th><th>重複對手</th><th>重複輪空</th><th>黑白最大差</th></tr></thead>
+        <tbody id="roundRows"><tr><td colspan="6" class="sub">尚未模擬。</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>③ 第 3 輪改判測試</h2>
+    <div class="sub">先建立 100 人並跑完 7 輪，再把第 3 輪第 1 桌勝負反轉，系統從第 4 輪開始重新配對，最後比較排名是否改變。</div>
+    <div class="buttons" style="margin-top:12px">
+      <button id="btnAmend" class="gold">執行改判測試</button>
+    </div>
+    <div class="status" id="amendResult">尚未執行改判測試。</div>
+  </div>
+
+  <div class="card">
+    <h2>④ 改判前後比較</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>項目</th><th>改判前</th><th>改判後</th></tr></thead>
+        <tbody id="compareRows"><tr><td colspan="3" class="sub">尚無資料。</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>診斷紀錄</h2>
+    <div id="log">尚無紀錄。</div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var players=[], historyRounds=[];
+
+function el(id){return document.getElementById(id);}
+function log(msg){
+  var t=new Date().toLocaleTimeString();
+  var x=el("log");
+  if(x.textContent==="尚無紀錄。") x.textContent="";
+  x.textContent += "["+t+"] "+msg+"\n";
+}
+
+function newPlayers(n){
+  players=[]; historyRounds=[];
+  for(var i=1;i<=n;i++){
+    var num=("000"+i).slice(-3);
+    players.push({
+      id:i,name:"測試"+num,score:0,opponents:[],results:[],
+      black:0,white:0,byes:0,s1:0,s2:0,s3:0,s4:0
+    });
+  }
+  refreshStats();
+}
+
+function alreadyPlayed(a,b){ return a.opponents.indexOf(b.id)!==-1; }
+
+function colorPenalty(a,b){
+  var da=Math.abs((a.black+1)-a.white);
+  var db=Math.abs(b.black-(b.white+1));
+  return da+db;
+}
+
+function chooseOrientation(a,b){
+  var p1=colorPenalty(a,b), p2=colorPenalty(b,a);
+  if(p2<p1) return {black:b,white:a};
+  if(p1<p2) return {black:a,white:b};
+  if((a.black-a.white)>(b.black-b.white)) return {black:b,white:a};
+  return {black:a,white:b};
+}
+
+function swissPairRound(roundNo, forcedOutcome){
+  var arr=players.slice().sort(function(a,b){
+    if(b.score!==a.score) return b.score-a.score;
+    return a.id-b.id;
+  });
+
+  var pool=arr.slice(), pairs=[], repeatCount=0;
+  var byePlayer=null;
+
+  if(pool.length%2===1){
+    var byeIdx=-1;
+    for(var bi=pool.length-1;bi>=0;bi--){
+      if(pool[bi].byes===0){ byeIdx=bi; break; }
+    }
+    if(byeIdx<0) byeIdx=pool.length-1;
+    byePlayer=pool.splice(byeIdx,1)[0];
+    byePlayer.byes++;
+    byePlayer.score+=1;
+    byePlayer.results.push({round:roundNo,opp:null,points:1,bye:true});
+  }
+
+  var board=1;
+  while(pool.length){
+    var a=pool.shift(), best=-1, bestCost=1e15;
+    for(var j=0;j<pool.length;j++){
+      var b=pool[j];
+      var repeated=alreadyPlayed(a,b)?1:0;
+      var scoreGap=Math.abs(a.score-b.score);
+      var colorCost=Math.min(colorPenalty(a,b),colorPenalty(b,a));
+      var cost=repeated*1000000 + scoreGap*10000 + colorCost*100 + j;
+      if(cost<bestCost){bestCost=cost;best=j;}
+    }
+    var b=pool.splice(best,1)[0];
+    if(alreadyPlayed(a,b)) repeatCount++;
+    var o=chooseOrientation(a,b);
+    pairs.push({round:roundNo,board:board++,black:o.black,white:o.white});
+  }
+
+  for(var k=0;k<pairs.length;k++){
+    var p=pairs[k], black=p.black, white=p.white;
+    black.black++; white.white++;
+    black.opponents.push(white.id); white.opponents.push(black.id);
+
+    var blackWins;
+    if(forcedOutcome && forcedOutcome.round===roundNo && forcedOutcome.board===p.board){
+      blackWins = forcedOutcome.blackWins;
+    }else{
+      blackWins = ((black.id*17 + white.id*31 + roundNo*13 + black.score*7 + white.score*5) % 100) < 50;
+    }
+
+    var winner=blackWins?black:white;
+    var loser=blackWins?white:black;
+    winner.score+=1;
+    winner.results.push({round:roundNo,opp:loser.id,points:1,bye:false,board:p.board});
+    loser.results.push({round:roundNo,opp:winner.id,points:0,bye:false,board:p.board});
+    p.blackWins=blackWins;
+  }
+
+  var maxDiff=0;
+  for(var z=0;z<players.length;z++) maxDiff=Math.max(maxDiff,Math.abs(players[z].black-players[z].white));
+
+  return {round:roundNo,pairs:pairs,byePlayer:byePlayer,repeatCount:repeatCount,maxColorDiff:maxDiff};
+}
+
+function analyzeRepeats(){
+  var repeats=0;
+  for(var i=0;i<players.length;i++){
+    var seen={};
+    for(var j=0;j<players[i].opponents.length;j++){
+      var id=players[i].opponents[j];
+      if(seen[id]) repeats++;
+      seen[id]=1;
+    }
+  }
+  return Math.floor(repeats/2);
+}
+
+function analyzeByeRepeats(){
+  var c=0;
+  for(var i=0;i<players.length;i++) if(players[i].byes>1) c++;
+  return c;
+}
+
+function refreshStats(){
+  el("sPlayers").textContent=players.length;
+  el("sRounds").textContent=historyRounds.length;
+  el("sRepeat").textContent=analyzeRepeats();
+  el("sByeRepeat").textContent=analyzeByeRepeats();
+  var max=0;
+  for(var i=0;i<players.length;i++) max=Math.max(max,Math.abs(players[i].black-players[i].white));
+  el("sColorDiff").textContent=max;
+}
+
+function run99(){
+  newPlayers(99);
+  var rows="";
+  for(var r=1;r<=7;r++){
+    var info=swissPairRound(r,null);
+    historyRounds.push(info);
+    var byeName=info.byePlayer?info.byePlayer.name:"—";
+    rows += "<tr><td>"+r+"</td><td>"+info.pairs.length+"</td><td>"+byeName+
+      "</td><td class='"+(info.repeatCount?"bad":"good")+"'>"+info.repeatCount+
+      "</td><td>"+analyzeByeRepeats()+"</td><td>"+info.maxColorDiff+"</td></tr>";
+  }
+  el("roundRows").innerHTML=rows;
+  refreshStats();
+  var rep=analyzeRepeats(), br=analyzeByeRepeats();
+  el("result99").innerHTML=(rep===0&&br===0?"✅ ":"⚠️ ")+
+    "<b>99 人 × 7 輪完成</b>；每輪 49 桌＋1 輪空；重複對手 "+rep+"；重複輪空 "+br+"。";
+  log("99人7輪完成；重複對手 "+rep+"；重複輪空 "+br);
+}
+
+function computeTiebreaks(ps){
+  var map={};
+  for(var i=0;i<ps.length;i++) map[ps[i].id]=ps[i];
+
+  for(var a=0;a<ps.length;a++){
+    var p=ps[a], oppScores=[];
+    for(var j=0;j<p.opponents.length;j++){
+      var op=map[p.opponents[j]];
+      if(op) oppScores.push(op.score);
+    }
+    p.s1=oppScores.reduce(function(s,v){return s+v;},0);
+    if(oppScores.length>=3){
+      var srt=oppScores.slice().sort(function(x,y){return x-y;});
+      p.s2=srt.slice(1,-1).reduce(function(s,v){return s+v;},0);
+    }else p.s2=p.s1;
+
+    var sb=0;
+    for(var q=0;q<p.results.length;q++){
+      var rr=p.results[q];
+      if(rr.bye) continue;
+      if(rr.points===1 && map[rr.opp]) sb+=map[rr.opp].score;
+    }
+    p.s3=sb;
+  }
+
+  for(var b=0;b<ps.length;b++){
+    var x=ps[b], s4=0;
+    for(var t=0;t<x.opponents.length;t++){
+      var ox=map[x.opponents[t]];
+      if(ox) s4+=ox.s1;
+    }
+    x.s4=s4;
+  }
+}
+
+function rankedCopy(ps){
+  computeTiebreaks(ps);
+  return ps.slice().sort(function(a,b){
+    if(b.score!==a.score) return b.score-a.score;
+    if(b.s1!==a.s1) return b.s1-a.s1;
+    if(b.s2!==a.s2) return b.s2-a.s2;
+    if(b.s3!==a.s3) return b.s3-a.s3;
+    if(b.s4!==a.s4) return b.s4-a.s4;
+    return a.id-b.id;
+  });
+}
+
+function clonePlayers(ps){
+  return ps.map(function(p){
+    return JSON.parse(JSON.stringify(p));
+  });
+}
+
+function simulate100WithOptionalAmend(amend){
+  newPlayers(100);
+  var round1to3=[];
+  var originalThirdBoard1=null;
+
+  for(var r=1;r<=3;r++){
+    var info=swissPairRound(r,null);
+    historyRounds.push(info);
+    round1to3.push(info);
+    if(r===3) originalThirdBoard1=info.pairs[0];
+  }
+
+  if(amend){
+    // 回到第3輪前的狀態，重新跑第3輪第1桌反轉，之後第4~7輪重排
+    newPlayers(100);
+    historyRounds=[];
+    for(var rr=1;rr<=2;rr++){
+      var x=swissPairRound(rr,null);
+      historyRounds.push(x);
+    }
+
+    // 先用正常規則知道第3輪第1桌原始結果，再反轉
+    var preview=swissPairRound(3,null);
+    var first=preview.pairs[0];
+    var originalBW=first.blackWins;
+
+    // 重建到第2輪，避免 preview 已寫入資料
+    newPlayers(100); historyRounds=[];
+    for(var r2=1;r2<=2;r2++){
+      var y=swissPairRound(r2,null);
+      historyRounds.push(y);
+    }
+    var amended3=swissPairRound(3,{round:3,board:1,blackWins:!originalBW});
+    historyRounds.push(amended3);
+
+    for(var r3=4;r3<=7;r3++){
+      var z=swissPairRound(r3,null);
+      historyRounds.push(z);
+    }
+    return {
+      players:clonePlayers(players),
+      changed:{
+        black:amended3.pairs[0].black.name,
+        white:amended3.pairs[0].white.name,
+        newBlackWins:amended3.pairs[0].blackWins
+      }
+    };
+  }else{
+    for(var r4=4;r4<=7;r4++){
+      var z2=swissPairRound(r4,null);
+      historyRounds.push(z2);
+    }
+    return {
+      players:clonePlayers(players),
+      changed:{
+        black:originalThirdBoard1.black.name,
+        white:originalThirdBoard1.white.name,
+        newBlackWins:originalThirdBoard1.blackWins
+      }
+    };
+  }
+}
+
+function topNames(ps,n){
+  var r=rankedCopy(ps);
+  return r.slice(0,n).map(function(p){return p.name;});
+}
+
+function runAmend(){
+  var before=simulate100WithOptionalAmend(false);
+  var after=simulate100WithOptionalAmend(true);
+
+  var beforeRank=rankedCopy(before.players);
+  var afterRank=rankedCopy(after.players);
+
+  var beforeTop6=beforeRank.slice(0,6).map(function(p){return p.name;}).join("、");
+  var afterTop6=afterRank.slice(0,6).map(function(p){return p.name;}).join("、");
+
+  var changedCount=0;
+  for(var i=0;i<20;i++){
+    if(beforeRank[i] && afterRank[i] && beforeRank[i].id!==afterRank[i].id) changedCount++;
+  }
+
+  var rows="";
+  rows += "<tr><td>第3輪第1桌</td><td>"+before.changed.black+" vs "+before.changed.white+"</td><td>"+after.changed.black+" vs "+after.changed.white+"</td></tr>";
+  rows += "<tr><td>第3輪第1桌結果</td><td>"+(before.changed.newBlackWins?"黑勝":"白勝")+"</td><td>"+(after.changed.newBlackWins?"黑勝":"白勝")+"（反轉）</td></tr>";
+  rows += "<tr><td>前6名</td><td>"+beforeTop6+"</td><td>"+afterTop6+"</td></tr>";
+  rows += "<tr><td>前20名位置改變數</td><td>—</td><td>"+changedCount+"</td></tr>";
+  rows += "<tr><td>重複對手</td><td>"+countRepeatsIn(before.players)+"</td><td>"+countRepeatsIn(after.players)+"</td></tr>";
+  rows += "<tr><td>重複輪空</td><td>"+countByeRepeatsIn(before.players)+"</td><td>"+countByeRepeatsIn(after.players)+"</td></tr>";
+  el("compareRows").innerHTML=rows;
+
+  el("amendResult").innerHTML=
+    "✅ 改判測試完成：第 3 輪第 1 桌已反轉勝負，系統從第 4 輪重新配對；"+
+    "前 20 名中有 <b>"+changedCount+"</b> 個名次位置改變。";
+
+  log("改判測試完成；前20名位置改變 "+changedCount+" 個");
+}
+
+function countRepeatsIn(ps){
+  var repeats=0;
+  for(var i=0;i<ps.length;i++){
+    var seen={};
+    for(var j=0;j<ps[i].opponents.length;j++){
+      var id=ps[i].opponents[j];
+      if(seen[id]) repeats++;
+      seen[id]=1;
+    }
+  }
+  return Math.floor(repeats/2);
+}
+
+function countByeRepeatsIn(ps){
+  var c=0;
+  for(var i=0;i<ps.length;i++) if(ps[i].byes>1) c++;
+  return c;
+}
+
+function clearAll(){
+  players=[]; historyRounds=[];
+  refreshStats();
+  el("result99").textContent="已清除。";
+  el("amendResult").textContent="尚未執行改判測試。";
+  el("roundRows").innerHTML='<tr><td colspan="6" class="sub">尚未模擬。</td></tr>';
+  el("compareRows").innerHTML='<tr><td colspan="3" class="sub">尚無資料。</td></tr>';
+  log("已清除");
+}
+
+el("btn99").addEventListener("click",function(){newPlayers(99); el("result99").innerHTML="✅ 已建立 99 位本機虛擬選手。";});
+el("btnRun99").addEventListener("click",run99);
+el("btnAmend").addEventListener("click",runAmend);
+el("btnClear").addEventListener("click",clearAll);
+
+window.JoyGoBeta15={run99:run99,runAmend:runAmend,clear:clearAll};
+
+el("jsStatus").textContent="✅ JavaScript 已啟動。Beta 1.5 測試可開始。";
+log("Beta 1.5 JavaScript 啟動完成");
+})();
+</script>
+</body>
+</html>
