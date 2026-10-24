@@ -1,0 +1,1368 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go 管理中心 Beta 3.2.5L</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{color-scheme:dark;--bg:#07100b;--panel:#0e1912;--panel2:#14241a;--line:#365543;--gold:#f0bc43;--gold2:#ffe184;--ink:#fff9e8;--muted:#b9c5bb;--green:#55d69a;--red:#ff8c8c;--blue:#83cfff;--amber:#e9bf61}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:radial-gradient(circle at 90% 0,#183b28 0,transparent 35%),linear-gradient(145deg,#050907,#0b1b11);color:var(--ink)}button,input,select{font:inherit}.shell{width:min(1280px,100%);margin:auto;padding:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.brand h1{margin:0;color:var(--gold2);font-size:clamp(27px,4vw,42px)}.brand p{margin:5px 0 0;color:var(--muted)}.head-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0b140e;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:850;text-decoration:none;cursor:pointer}.btn.gold{border:0;background:linear-gradient(135deg,#ffe185,#d99b23);color:#211400}.btn.green{border:0;background:var(--green);color:#082317}.btn.red{border:0;background:var(--red);color:#3b0808}.btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.35)}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:13px;color:var(--muted);margin-bottom:12px}.notice.good{border-color:#257657;color:#9cebc7}.notice.bad{border-color:#914343;color:#ffb0b0}.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.tab{border:1px solid var(--line);border-radius:14px;padding:12px 8px;background:#0b1510;color:var(--muted);font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(155deg,#2c3b1f,#17231a);color:var(--gold2);border-color:#8d7432}.pane{display:none}.pane.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#14251a,#0a110d)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;font-size:26px;color:var(--gold2);margin-top:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);border-radius:18px;background:#0b130e;overflow:hidden}.card h2{margin:0;padding:15px 16px;border-bottom:1px solid #293d31;color:#ffe083;font-size:20px}.card-body{padding:14px}.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar input{flex:1;min-width:0;background:#050806;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:10px 12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:10px;border-bottom:1px solid #26362c;text-align:left;vertical-align:middle;font-size:13px}th{background:#18261d;color:#ffe083;position:sticky;top:0}.name{font-weight:900;font-size:14px}.sub{color:var(--muted);font-size:12px;line-height:1.45}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}.ok{background:#10472f;color:#90efbd}.pending{background:#52431e;color:#ffe0a0}.badpill{background:#542626;color:#ffb0b0}.blue{background:#163d54;color:#a8ddff}.rowops{display:flex;gap:5px;flex-wrap:wrap}.mini{border:0;border-radius:8px;padding:7px 9px;font-weight:850;cursor:pointer}.mini.save,.mini.approve{background:var(--green);color:#082317}.mini.wait{background:var(--blue);color:#092337}.mini.reject{background:var(--red);color:#3b0808}.mini.neutral{background:#d9bb76;color:#2d2008}.field{display:grid;gap:6px}.field label{color:var(--muted);font-size:12px}.field input,.field select{width:100%;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.room-list{display:grid;gap:8px}.room{border:1px solid #2f4638;border-radius:13px;padding:11px;background:#0a110d;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.05fr;gap:8px;align-items:center}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.quick a{border:1px solid var(--line);border-radius:15px;padding:16px;background:#0b1510;text-decoration:none;color:var(--ink);font-weight:900}.quick a span{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:5px}.muted{color:var(--muted)}@media(max-width:850px){.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.grid,.formgrid{grid-template-columns:1fr}.room{grid-template-columns:1fr 1fr}.shell{padding:10px}.head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}}
+.control-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.control-alert{border:1px solid #6f5723;background:#231d0d;border-radius:12px;padding:10px;margin:8px 0}.control-alert.danger{border-color:#8c3d3d;background:#2a1111}.audit-list{display:grid;gap:7px}.audit-item{border:1px solid #2f4638;border-radius:11px;padding:10px;background:#08100b}.audit-item b{color:var(--gold2)}.top4-row{background:linear-gradient(90deg,rgba(240,188,67,.14),transparent)}.qualify-badge{display:inline-block;margin-left:7px;padding:3px 7px;border-radius:999px;background:#6b531d;color:#ffe9a6;font-size:11px;font-weight:900}.champ-badge{background:#8a6a19;color:#fff3b0}@media(max-width:850px){.control-grid{grid-template-columns:1fr 1fr}#divisionSummary{grid-template-columns:1fr 1fr!important}}
+
+.tournament-switch{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin:0 0 12px;border:1px solid #6f5723;border-radius:14px;background:linear-gradient(160deg,#1d2415,#0a110d)}
+.tournament-switch label{color:var(--gold2);font-weight:900}.tournament-switch select{min-width:250px;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.tournament-switch .current{color:var(--muted);font-size:12px}
+@media(max-width:850px){.tournament-switch{align-items:stretch}.tournament-switch select,.tournament-switch button{width:100%}}
+@media print{
+  body{background:#fff!important;color:#000!important}
+  .head,.notice,.tournament-switch,.tabs,
+  #pane-home,#pane-control,#pane-members,#pane-registrations,
+  #pane-live,#pane-broadcast,#pane-moderation,#pane-settings,
+  #pane-swiss .card:first-of-type,
+  #pane-swiss .card:nth-of-type(2),
+  .no-print{display:none!important}
+  .shell{width:100%;padding:0}
+  #app{display:block!important}
+  #pane-swiss{display:block!important}
+  .card{border:0!important;background:#fff!important;overflow:visible!important}
+  .card h2{color:#000!important;border-bottom:1px solid #999!important}
+  .card-body{padding:8px 0!important}
+  .table-wrap{overflow:visible!important}
+  table{min-width:0!important;width:100%!important}
+  th,td{color:#000!important;background:#fff!important;border-bottom:1px solid #bbb!important;font-size:11px!important;padding:6px!important}
+  .top4-row{background:#f2f2f2!important}
+  .qualify-badge,.champ-badge{background:#eee!important;color:#000!important;border:1px solid #999!important}
+  #printHeader{display:block!important;margin-bottom:14px}
+}
+#printHeader{display:none}
+
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="head"><div class="brand"><h1>👑 Joy Go 管理中心</h1><p>大型賽務 Beta 1.0｜300～500 人・六組別瑞士制</p></div><div class="head-actions"><button id="refreshAll" class="btn">重新整理</button><a class="btn" href="tournament-register.html">選手報名頁</a><a class="btn" href="admin-center.html">返回管理中心</a><a class="btn gold" href="platform.html">返回平台</a></div></header>
+<div id="notice" class="notice">正在確認管理員身分…</div>
+<section id="app" hidden>
+<div id="printHeader">
+  <h1 id="printTitle">Joy Go 瑞士制最終排名</h1>
+  <div id="printMeta" style="font-size:13px"></div>
+</div>
+<div class="tournament-switch" id="tournamentSwitchBox">
+  <label for="tournamentCodeSelect">🏆 大型賽組別</label>
+  <select id="tournamentCodeSelect"></select>
+  <button class="btn gold" id="loadTournamentCode">載入組別</button>
+  <span class="current">目前：<b id="currentTournamentCode">—</b></span>
+  <span class="current">｜總規模：<b>500 人</b></span>
+</div>
+<div class="stats" id="divisionSummary" style="grid-template-columns:repeat(6,1fr);margin-bottom:12px">
+  <div class="stat"><span>6–7段組</span><b id="sumG67">—</b></div>
+  <div class="stat"><span>5段組</span><b id="sumG5">—</b></div>
+  <div class="stat"><span>4段組</span><b id="sumG4">—</b></div>
+  <div class="stat"><span>3段組</span><b id="sumG3">—</b></div>
+  <div class="stat"><span>2段組</span><b id="sumG2">—</b></div>
+  <div class="stat"><span>1段組</span><b id="sumG1">—</b></div>
+</div>
+
+<nav class="tabs"><button class="tab active" data-tab="home">📊 總覽</button><button class="tab" data-tab="control">🎛️ 比賽總控</button><button class="tab" data-tab="members">👥 會員</button><button class="tab" data-tab="registrations">🏆 比賽報名</button><button class="tab" data-tab="swiss">♟️ 瑞士制</button><button class="tab" data-tab="live">🟢 真人對弈</button><button class="tab" data-tab="broadcast">📢 廣播</button><button class="tab" data-tab="moderation">📋 巡場紀錄</button><button class="tab" data-tab="settings">⚙️ 比賽設定</button></nav>
+
+<section class="pane active" id="pane-home">
+<div class="stats"><div class="stat"><span>全部會員</span><b id="hMembers">—</b></div><div class="stat"><span>待審核報名</span><b id="hPending">—</b></div><div class="stat"><span>正式參賽</span><b id="hApproved">—</b></div><div class="stat"><span>進行中棋局</span><b id="hPlaying">—</b></div></div>
+<div class="grid"><section class="card"><h2>今日管理重點</h2><div class="card-body" id="todayFocus" class="muted">讀取中…</div></section><section class="card"><h2>快速入口</h2><div class="card-body quick"><a href="tournament-register.html">🏆 選手報名頁<span>查看公開報名畫面</span></a><a href="lobby.html">🟢 真人大廳<span>進入棋友與比賽大廳</span></a><a href="tournament-register.html">📋 選手報名頁<span>查看與測試公開報名入口</span></a><a href="platform.html">🎯 回主平台<span>返回 Joy Go Platform</span></a></div></section></div>
+</section>
+
+<section class="pane" id="pane-control">
+  <div class="stats">
+    <div class="stat"><span>目前輪次</span><b id="cRound">—</b></div>
+    <div class="stat"><span>進行中正式棋局</span><b id="cPlaying">0</b></div>
+    <div class="stat"><span>待回報結果</span><b id="cPending">0</b></div>
+    <div class="stat"><span>長時間未更新</span><b id="cStale">0</b></div>
+  </div>
+  <div class="grid">
+    <section class="card"><h2>🎛️ 本輪比賽總控</h2><div class="card-body">
+      <div class="toolbar"><button class="btn gold" id="controlRefresh">重新整理總控</button><button class="btn" onclick="showTab('swiss')">進入瑞士制</button><button class="btn" onclick="showTab('live')">棋局監控</button><button class="btn" onclick="showTab('broadcast')">廣播中心</button></div>
+      <div id="controlAlerts" class="sub">讀取中…</div> ／
+      <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>桌次</th><th>黑方</th><th>白方</th><th>房號</th><th>棋局狀態</th><th>成績</th></tr></thead><tbody id="controlMatchRows"><tr><td colspan="6" class="sub">尚未載入。</td></tr></tbody></table></div>
+    </div></section>
+    <section class="card"><h2>🧾 最近管理操作</h2><div class="card-body"><div id="auditList" class="audit-list"><div class="sub">需先執行 Beta 2.6.0 SQL 後顯示。</div></div></div></section>
+  </div>
+</section>
+
+<section class="pane" id="pane-members"><div class="stats"><div class="stat"><span>全部會員</span><b id="mTotal">0</b></div><div class="stat"><span>正式會員</span><b id="mMember">0</b></div><div class="stat"><span>試用會員</span><b id="mTrial">0</b></div><div class="stat"><span>停權</span><b id="mSusp">0</b></div></div><section class="card"><h2>會員管理</h2><div class="card-body"><div class="toolbar"><input id="memberSearch" placeholder="搜尋姓名或 Email"><button class="btn" id="memberClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>會員</th><th>身分</th><th>狀態／處置</th><th>試用到期</th><th>建立日期</th><th>管理處置</th></tr></thead><tbody id="memberRows"></tbody></table></div></div></section></section>
+
+<section class="pane" id="pane-registrations"><div class="stats"><div class="stat"><span>全部報名</span><b id="rTotal">0</b></div><div class="stat"><span>正式參賽</span><b id="rApproved">0</b></div><div class="stat"><span>待審核</span><b id="rPending">0</b></div><div class="stat"><span>候補／未通過</span><b id="rOther">0</b></div></div><section class="card"><h2 id="registrationHeading">比賽報名審核</h2><div class="card-body"><div class="toolbar"><input id="regSearch" placeholder="搜尋姓名、Email、電話、棋帳號"><button class="btn" id="regClear">清除</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>選手</th><th>聯絡／棋力</th><th>付款</th><th>身分</th><th>資格</th><th>管理操作</th></tr></thead><tbody id="regRows"></tbody></table></div></div></section></section>
+
+
+<section class="pane" id="pane-swiss">
+  <div class="stats">
+    <div class="stat"><span>正式選手</span><b id="sPlayers">0 / 16</b></div>
+    <div class="stat"><span>目前輪次</span><b id="sRound">0 / —</b></div>
+    <div class="stat"><span>本輪完成</span><b id="sDone">0 / 0</b></div>
+    <div class="stat"><span>狀態</span><b id="sStatus">尚未開始</b></div>
+  </div>
+
+  <section class="card">
+    <h2 id="swissHeading">♟️ 瑞士制自動配對核心</h2>
+    <div class="card-body">
+      <p class="sub" id="swissFlowText">流程：同步「正式參賽」名單 → 產生第 1 輪 → 輸入本輪勝負 → 系統重新計分 → 自動產生下一輪。系統會盡量避免重複對手並平衡黑白棋。</p>
+
+      <div class="tournament-switch" style="margin:12px 0">
+        <label for="swissRoundSelect">🔢 比賽輪數</label>
+        <select id="swissRoundSelect">
+          <option value="4">4 輪</option>
+          <option value="5" selected>5 輪</option>
+          <option value="6">6 輪</option>
+        </select>
+        <button class="btn green" id="saveSwissRounds">儲存輪數設定</button>
+        <span class="current">目前設定：<b id="currentSwissRounds">5 輪</b></span>
+      </div>
+
+      <details style="margin:12px 0;border:1px solid #6f5723;border-radius:12px;padding:10px 12px;background:#12180f">
+        <summary style="cursor:pointer;color:var(--gold2);font-weight:900">📘 副分計算說明</summary>
+        <div class="sub" style="margin-top:10px;line-height:1.8">
+          <div><b>主分：</b>每勝 1 局得 1 分，負棋 0 分。</div>
+          <div><b>第一副分（Buchholz）：</b>所有對手的主分總和。</div>
+          <div><b>第二副分（Median Buchholz）：</b>扣除最高與最低一位對手主分後，其餘對手主分總和。</div>
+          <div><b>第三副分（Sonneborn-Berger）：</b>把自己擊敗過的對手主分加總。</div>
+          <div><b>第四副分（累進分）：</b>每輪結束時自己的累積主分再全部加總。</div>
+          <div style="margin-top:6px"><b>排名順序：</b>主分 → 第一副分 → 第二副分 → 第三副分 → 第四副分。五項完全相同則標示「完全同分」。</div>
+        </div>
+      </details>
+
+      <div class="toolbar">
+        <button class="btn" id="syncSwissPlayers">① 同步正式名單</button>
+        <button class="btn gold" id="generateSwissRound">② 產生下一輪配對</button>
+        <button class="btn gold" id="createSwissRooms">③ 建立本輪正式棋局</button>
+        <button class="btn" id="exportSwissFinal">📥 匯出最終排名 CSV</button>
+        <button class="btn" id="printSwissFinal">🖨️ 列印最終排名</button>
+        <button class="btn" id="refreshSwiss">重新整理</button>
+      </div>
+      <div id="swissNote" class="sub" style="margin-top:10px">尚未載入。</div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>本輪對戰表</h2>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>桌次</th><th>黑棋</th><th>白棋</th><th>正式棋局</th><th>結果</th><th>操作</th></tr></thead>
+          <tbody id="swissPairingRows"><tr><td colspan="6" class="sub">尚未產生配對。</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>🏆 前六名主分＋四副分</h2>
+    <div class="card-body">
+      <p class="sub">排名規則：主分 → 第一副分（Buchholz）→ 第二副分（Median Buchholz）→ 第三副分（Sonneborn-Berger）→ 第四副分（累進分）。五項完全相同則標示「完全同分」。</p>
+      <div class="table-wrap">
+        <table style="min-width:650px">
+          <thead><tr><th>名次</th><th>選手</th><th>棋力</th><th>主分</th><th>第一副分</th><th>第二副分</th><th>第三副分</th><th>第四副分</th></tr></thead>
+          <tbody id="swissTop6Rows"><tr><td colspan="7" class="sub">尚無排名資料。</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>即時排名</h2>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>名次</th><th>選手</th><th>棋力</th><th>勝</th><th>負</th><th>主分</th><th>第一副分</th><th>第二副分</th><th>第三副分</th><th>第四副分</th><th>黑/白</th></tr></thead>
+          <tbody id="swissStandingRows"><tr><td colspan="8" class="sub">尚無選手資料。</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</section>
+
+<section class="pane" id="pane-live"><div class="stats"><div class="stat"><span>等待加入</span><b id="lWaiting">0</b></div><div class="stat"><span>對弈中</span><b id="lPlaying">0</b></div><div class="stat"><span>已結束未清</span><b id="lEnded">0</b></div><div class="stat"><span>全部棋局</span><b id="lTotal">0</b></div></div><section class="card"><h2>真人棋局監看</h2><div class="card-body"><p class="sub">只有「已結束」棋局可以刪除；等待中與對弈中棋局不提供刪除，避免誤刪正在使用的房間。</p><div class="toolbar" style="margin-bottom:12px"><button id="clearEndedRooms" class="btn" style="border-color:#8d3d3d;color:#ffc0c0">🧹 清除全部已結束棋局</button><a href="lobby.html" class="btn gold">進入真人大廳管理</a></div><div id="roomList" class="room-list"></div></div></section></section>
+
+
+<section class="pane" id="pane-broadcast">
+  <section class="card">
+    <h2>📢 比賽弈廳廣播器</h2>
+    <div class="card-body">
+      <p class="sub">只有主管理員可以發送全體廣播。訊息會顯示在真人／比賽弈廳上方；所有發送內容都保留紀錄。</p>
+      <div class="grid" style="grid-template-columns:1.3fr .7fr">
+        <div>
+          <label>公告內容</label>
+          <textarea id="broadcastMessage" maxlength="240" rows="5" placeholder="例如：第 2 輪將於 14:30 開始，請選手準時進入比賽弈廳。" style="width:100%;margin-top:6px"></textarea>
+          <div class="sub" style="margin-top:6px">最多 240 字。</div>
+        </div>
+        <div>
+          <label>公告類型</label>
+          <select id="broadcastLevel" style="width:100%;margin-top:6px">
+            <option value="info">📢 一般通知</option>
+            <option value="important">⚠️ 重要通知</option>
+            <option value="emergency">🚨 緊急通知</option>
+          </select>
+          <label style="display:block;margin-top:12px">顯示時間</label>
+          <select id="broadcastDuration" style="width:100%;margin-top:6px">
+            <option value="10">10 秒</option>
+            <option value="30" selected>30 秒</option>
+            <option value="60">60 秒</option>
+            <option value="0">直到手動關閉</option>
+          </select>
+        </div>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button id="sendBroadcast" class="btn gold">📢 立即廣播</button>
+        <button id="clearBroadcast" class="btn" style="border-color:#8d3d3d;color:#ffc0c0">停止目前廣播</button>
+      </div>
+      <div id="broadcastStatus" class="sub" style="margin-top:10px"></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>廣播紀錄</h2>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>時間</th><th>類型</th><th>內容</th><th>狀態</th><th>到期</th></tr></thead>
+          <tbody id="broadcastRows"><tr><td colspan="5" class="sub">讀取中…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</section>
+<section class="pane" id="pane-moderation">
+<section class="card"><h2>📋 巡場處置紀錄</h2><div class="card-body">
+<p class="sub">主管理員可看全部紀錄；巡場管理員只看自己的處置紀錄；一般會員看不到。</p>
+<div class="stats" style="margin:12px 0"><div class="stat"><span>全部紀錄</span><b id="modTotal">0</b></div><div class="stat"><span>今日處置</span><b id="modToday">0</b></div><div class="stat"><span>停權紀錄</span><b id="modSuspend">0</b></div><div class="stat"><span>裁判終止</span><b id="modEndRoom">0</b></div></div>
+<div class="toolbar" style="margin-bottom:12px"><input id="modSearch" placeholder="搜尋會員、執行者、原因…" style="min-width:260px;flex:1"><select id="modFilter"><option value="">全部處置</option><option value="kick">踢出大廳</option><option value="suspend_1d">停權 1 天</option><option value="suspend_7d">停權 7 天</option><option value="suspend_permanent">永久停權</option><option value="unsuspend">解除停權</option><option value="end_room">裁判終止棋局</option></select><button id="refreshModeration" class="btn">重新整理紀錄</button></div>
+<div class="table-wrap"><table><thead><tr><th>時間</th><th>執行者</th><th>對象</th><th>處置</th><th>原因／備註</th><th>到期時間</th></tr></thead><tbody id="moderationRows"><tr><td colspan="6" class="sub">讀取中…</td></tr></tbody></table></div>
+</div></section></section>
+<section class="pane" id="pane-settings"><div class="grid"><section class="card"><h2 id="settingsHeading">比賽基本資料</h2><div class="card-body"><div class="formgrid"><div class="field"><label>比賽名稱</label><input id="eventTitle"></div><div class="field"><label>名額</label><input id="eventMax" type="number" min="2" max="512"></div><div class="field"><label>報名費 NT$</label><input id="eventFee" type="number" min="0" step="50">
+<div class="sub" style="margin-top:6px">可輸入任意金額；0 元會在報名頁顯示「免費」。</div>
+<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px">
+<button type="button" class="mini neutral feePreset" data-fee="0">免費</button>
+<button type="button" class="mini neutral feePreset" data-fee="300">300</button>
+<button type="button" class="mini neutral feePreset" data-fee="500">500</button>
+<button type="button" class="mini neutral feePreset" data-fee="800">800</button>
+<button type="button" class="mini neutral feePreset" data-fee="1000">1000</button>
+</div></div><div class="field"><label>比賽日期</label><input id="eventDate" type="date"></div><div class="field"><label>報名狀態</label><select id="eventOpen"><option value="true">開放報名</option><option value="false">停止報名</option></select></div><div class="field"><label>決賽方式</label><input id="eventVenue"></div></div><div style="margin-top:12px"><button id="saveEvent" class="btn green">儲存比賽資料</button></div></div></section><section class="card"><h2>網路比賽計時</h2><div class="card-body"><div class="formgrid"><div class="field"><label>棋盤</label><select id="tBoard"><option>19</option><option>13</option><option>9</option></select></div><div class="field"><label>貼目</label><input id="tKomi" type="number" step="0.5"></div><div class="field"><label>基本時間（分）</label><input id="tMain" type="number" min="0"></div><div class="field"><label>讀秒（秒）</label><input id="tByo" type="number" min="5"></div><div class="field"><label>讀秒次數</label><input id="tPeriods" type="number" min="1"></div></div><div style="margin-top:12px"><button id="saveTimer" class="btn green">儲存比賽計時</button></div><div id="timerNote" class="sub" style="margin-top:9px"></div></div></section></div>
+<section class="card" style="margin-top:14px">
+<h2>🏦 銀行收款設定（僅主管理員）</h2>
+<div class="card-body">
+<p class="sub">設定只適用目前選取的比賽。測試期間請保持停用；啟用前確認帳號正確。儲存不會自動確認選手已付款。</p>
+<div class="formgrid">
+<div class="field"><label>銀行名稱</label><input id="payBankName" autocomplete="off" placeholder="例如：臺灣銀行"></div>
+<div class="field"><label>銀行代碼</label><input id="payBankCode" inputmode="numeric" autocomplete="off" placeholder="例如：004"></div>
+<div class="field"><label>收款帳號</label><input id="payBankAccount" autocomplete="off" inputmode="numeric"></div>
+<div class="field"><label>收款戶名</label><input id="payAccountHolder" autocomplete="off"></div>
+<div class="field"><label>收款狀態</label><select id="payEnabled"><option value="false">停用（測試中）</option><option value="true">啟用銀行轉帳</option></select></div>
+</div>
+<div class="field" style="margin-top:10px"><label>匯款說明</label><textarea id="payNote" rows="3" style="width:100%;background:#050806;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px" placeholder="請於匯款後提供轉帳後五碼，等待人工核對。"></textarea></div>
+<div class="toolbar" style="margin-top:12px;flex-wrap:wrap"><button class="btn green" id="savePaymentSettings">儲存銀行收款設定</button><button class="btn" id="reloadPaymentSettings">重新讀取</button></div>
+<div id="paymentSettingsNote" class="sub" aria-live="polite">尚未讀取。</div>
+</div></section></section>
+</section>
+</main>
+<script>
+const CFG={url:"https://kpwfkmkxtrwmlxhomaxy.supabase.co",key:"sb_publishable_0Dryz0sA-BS7Hw28vUb0oA_06N9hWqr"};
+const sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const LARGE_EVENT={
+  name:"Joy Go 大型圍棋賽",
+  totalMax:500,
+  divisions:[
+    {code:"JOYGO-LARGE-001-G67",key:"G67",name:"6–7段組",max:60},
+    {code:"JOYGO-LARGE-001-G5", key:"G5", name:"5段組",  max:80},
+    {code:"JOYGO-LARGE-001-G4", key:"G4", name:"4段組",  max:100},
+    {code:"JOYGO-LARGE-001-G3", key:"G3", name:"3段組",  max:100},
+    {code:"JOYGO-LARGE-001-G2", key:"G2", name:"2段組",  max:80},
+    {code:"JOYGO-LARGE-001-G1", key:"G1", name:"1段組",  max:80}
+  ]
+};
+const ALLOWED_CODES=LARGE_EVENT.divisions.map(x=>x.code);
+const DEFAULT_CODE=ALLOWED_CODES[0];
+const requestedCode=new URLSearchParams(location.search).get("tournament")||localStorage.getItem("joygoTournamentCode")||DEFAULT_CODE;
+let CODE=ALLOWED_CODES.includes(requestedCode)?requestedCode:DEFAULT_CODE;let me=null,members=[],regs=[],rooms=[],moderationEvents=[],broadcasts=[],swissPlayers=[],swissRounds=[],swissPairings=[],auditLogs=[],staffRole="none",moderatorIds=new Set();let swissTotalRounds=5;const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function currentDivision(){return LARGE_EVENT.divisions.find(x=>x.code===CODE)||LARGE_EVENT.divisions[0]}
+function initDivisionSelect(){const sel=$("tournamentCodeSelect");if(!sel)return;sel.innerHTML=LARGE_EVENT.divisions.map(d=>`<option value="${d.code}">${d.name}｜上限 ${d.max} 人</option>`).join("");sel.value=CODE}
+async function loadDivisionSummary(){
+  const ids={G67:"sumG67",G5:"sumG5",G4:"sumG4",G3:"sumG3",G2:"sumG2",G1:"sumG1"};
+  await Promise.all(LARGE_EVENT.divisions.map(async d=>{
+    const {count,error}=await sb.from("tournament_registrations").select("id",{count:"exact",head:true}).eq("tournament_code",d.code).eq("registration_status","approved");
+    const el=$(ids[d.key]); if(el)el.textContent=error?"—":`${count||0}/${d.max}`;
+  }));
+}
+function notice(t,k=""){const e=$("notice");e.className="notice"+(k?" "+k:"");e.textContent=t}
+
+function tournamentMax(){return currentDivision().max}
+function updateTournamentUI(){
+  const d=currentDivision(),max=d.max;
+  if($("tournamentCodeSelect"))$("tournamentCodeSelect").value=CODE;
+  if($("currentTournamentCode"))$("currentTournamentCode").textContent=`${d.name}｜${CODE}`;
+  if($("registrationHeading"))$("registrationHeading").textContent=`${d.name}｜報名審核（上限 ${max} 人）`;
+  if($("swissHeading"))$("swissHeading").textContent=`♟️ ${d.name}｜瑞士制自動配對核心`;
+  if($("settingsHeading"))$("settingsHeading").textContent=`${d.name}｜比賽基本資料`;
+  if($("sPlayers"))$("sPlayers").textContent=`${swissPlayers.length} / ${max}`;
+}
+async function switchTournamentCode(){
+  if(staffRole!=="admin")return notice("只有主管理員可以切換比賽。","bad");
+  const next=$("tournamentCodeSelect")?.value||CODE;
+  if(!ALLOWED_CODES.includes(next))return notice("不支援的比賽代碼。","bad");
+  if(next===CODE){showTab("swiss");updateTournamentUI();return notice(`目前已是 ${currentDivision().name}。`,"good")}
+  if(!confirm(`確定切換到 ${LARGE_EVENT.divisions.find(d=>d.code===next)?.name||next}？\n各組資料完全獨立，不會修改其他組別。`)){$("tournamentCodeSelect").value=CODE;return}
+  CODE=next;localStorage.setItem("joygoTournamentCode",CODE);
+  swissTotalRounds=5;
+  regs=[];broadcasts=[];swissPlayers=[];swissRounds=[];swissPairings=[];auditLogs=[];
+  if($("eventMax"))$("eventMax").value=tournamentMax();
+  if($("eventFee"))$("eventFee").value="0";
+  if($("eventOpen"))$("eventOpen").value="false";
+  updateTournamentUI();notice(`正在載入 ${currentDivision().name}…`);
+  const jobs=[loadRegs(),loadSwiss(),loadBroadcasts(),loadAuditLogs(),loadEvent(),loadPaymentSettings()];
+  const result=await Promise.allSettled(jobs);
+  renderControl();updateHome();updateTournamentUI();loadDivisionSummary();showTab("swiss");
+  const bad=result.find(x=>x.status==="rejected");
+  if(bad)return notice(`已切換到 ${currentDivision().name}，部分附屬資料讀取失敗：${bad.reason?.message||bad.reason}`,"bad");
+  notice(`✅ 已切換到 ${currentDivision().name}。`,"good");
+}
+function dateInput(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(+d))return"";return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function showTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+name))}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function updateHome(){
+const pending=regs.filter(x=>x.registration_status==='pending').length, approved=regs.filter(x=>x.registration_status==='approved').length, playing=rooms.filter(x=>x.status==='playing').length;
+if($("hMembers")) $("hMembers").textContent=members.length;
+if($("hPlaying")) $("hPlaying").textContent=playing;
+if(staffRole==="admin"||staffRole==="deputy"){
+  const max=tournamentMax();
+  if($("hPending")) $("hPending").textContent=pending;
+  if($("hApproved")) $("hApproved").textContent=approved+" / "+max;
+  const notes=[];if(pending)notes.push(`🔔 有 ${pending} 位選手等待報名審核。`);
+  if(rooms.filter(x=>x.status==='ended').length)notes.push(`🧹 有 ${rooms.filter(x=>x.status==='ended').length} 局已結束尚未清除。`);
+  if(approved<max)notes.push(`🏆 正式參賽目前 ${approved}/${max} 人，尚有 ${max-approved} 個名額。`);else notes.push(`✅ ${max} 人正式名額已滿。`);
+  if($("todayFocus")) $("todayFocus").innerHTML=notes.map(x=>`<p>${esc(x)}</p>`).join('');
+}else{
+  const ended=rooms.filter(x=>x.status==='ended').length;
+  if($("todayFocus")) $("todayFocus").innerHTML=`<p>🕵️ 巡場模式：對外以一般會員身分在線。</p><p>🟢 對弈中 ${playing} 局；已結束 ${ended} 局。</p><p>⚠️ 可踢出大廳、停權 1 天／7 天、解除停權與裁判終止棋局。</p>`;
+}
+}
+function renderMembers(){
+const q=$("memberSearch").value.trim().toLowerCase(),arr=members.filter(x=>!q||[x.display_name,x.email,x.moderation_note].join(' ').toLowerCase().includes(q));
+$("mTotal").textContent=members.length;
+$("mMember").textContent=members.filter(x=>x.role==='member'&&x.status==='active').length;
+$("mTrial").textContent=members.filter(x=>x.role==='trial').length;
+$("mSusp").textContent=members.filter(x=>x.status==='suspended').length;
+$("memberRows").innerHTML=arr.map(r=>{
+const self=r.id===me.id, isAdmin=r.role==='admin', isModerator=moderatorIds.has(r.id);
+const protectedTarget=isAdmin || (staffRole==="moderator"&&isModerator);
+const until=r.suspended_until?new Date(r.suspended_until):null;
+const temp=until&&until.getTime()>Date.now();
+const lobbyUntil=r.lobby_blocked_until?new Date(r.lobby_blocked_until):null;
+const lobbyBlocked=lobbyUntil&&lobbyUntil.getTime()>Date.now();
+const stateText=r.status==='suspended'?(temp?`暫停至 ${until.toLocaleString('zh-TW')}`:'永久停權'):(lobbyBlocked?`大廳停用至 ${lobbyUntil.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}`:'正常');
+const stateClass=r.status==='suspended'?'bad':(lobbyBlocked?'pending':'ok');
+const note=r.moderation_note?`<div class="sub">備註：${esc(r.moderation_note)}</div>`:'';
+let actions='';
+if(self||protectedTarget){
+  actions=`<span class="sub">${self?'自己的帳號不可處置':isAdmin?'不可處置主管理員':'巡場員彼此不可處置'}</span>`;
+}else{
+  actions=`<div style="display:flex;flex-wrap:wrap;gap:5px;min-width:250px">
+<button class="mini neutral" onclick="moderateMember('${r.id}','kick')">踢出大廳 10 分</button>
+<button class="mini wait" onclick="moderateMember('${r.id}','suspend_1d')">停 1 天</button>
+<button class="mini wait" onclick="moderateMember('${r.id}','suspend_7d')">停 7 天</button>
+${staffRole==="admin"?`<button class="mini reject" onclick="moderateMember('${r.id}','suspend_permanent')">永久停權</button>`:''}
+<button class="mini approve" onclick="moderateMember('${r.id}','unsuspend')">解除</button>
+</div>`;
+}
+let roleCell='';
+if(staffRole==="admin"){
+  roleCell=`<select class="role" ${self?'disabled':''}><option value="trial" ${r.role==='trial'?'selected':''}>試用</option><option value="member" ${r.role==='member'?'selected':''}>正式會員</option><option value="admin" ${r.role==='admin'?'selected':''}>管理員</option></select>
+  ${!isAdmin&&!self?`<div style="margin-top:6px"><button class="mini ${isModerator?'reject':'neutral'}" onclick="setModerator('${r.id}',${isModerator?'false':'true'})">${isModerator?'取消巡場':'設為巡場'}</button></div>`:''}
+  ${isModerator?'<div class="sub">🕵️ 隱身巡場員</div>':''}`;
+}else{
+  roleCell=`<span>${r.role==='admin'?'管理員':isModerator?'正式會員':'正式會員'}</span>${isModerator?'<div class="sub">🕵️ 巡場員（僅內部可見）</div>':''}`;
+}
+return `<tr data-id="${r.id}">
+<td><div class="name">${esc(r.display_name||'未命名')}${self?'（我）':''}</div><div class="sub">${esc(r.email)}</div>${note}</td>
+<td>${roleCell}</td>
+<td><span class="pill ${stateClass}">${stateText}</span></td>
+<td>${staffRole==="admin"?`<input class="expires" type="date" value="${dateInput(r.expires_at)}" ${self?'disabled':''}>`:'—'}</td>
+<td>${new Date(r.created_at).toLocaleDateString('zh-TW')}</td>
+<td>${actions}${staffRole==="admin"?`<button class="mini save" style="margin-top:6px" ${self?'disabled':''} onclick="saveMember('${r.id}')">儲存身分／期限</button>`:''}</td>
+</tr>`}).join('')||'<tr><td colspan="6" class="sub">沒有符合資料。</td></tr>';
+}
+async function setModerator(id,enabled){
+if(staffRole!=="admin")return notice('只有主管理員可以設定巡場員。','bad');
+const row=members.find(x=>x.id===id);if(!row)return;
+if(!confirm(`${enabled?'設為':'取消'}「${row.display_name||row.email}」的巡場管理員資格？`))return;
+notice('正在更新巡場員資格…');
+const {error}=await sb.rpc('joygo_admin_set_moderator',{p_target_user:id,p_enabled:enabled});
+if(error)return notice('巡場員設定失敗：'+error.message,'bad');
+notice(`✅ 已${enabled?'設為':'取消'}巡場管理員。`,'good');
+await Promise.all([loadModeratorIds(),loadMembers()]);
+}
+window.setModerator=setModerator;
+async function moderateMember(id,action){
+const row=members.find(x=>x.id===id); if(!row)return;
+const labels={kick:'踢出真人大廳 10 分鐘',suspend_1d:'暫停帳號 1 天',suspend_7d:'暫停帳號 7 天',suspend_permanent:'永久停權',unsuspend:'解除停權'};
+let reason='';
+if(action!=='unsuspend'){
+  reason=prompt(`對「${row.display_name||row.email}」執行：${labels[action]}\n\n請輸入管理備註（可留空）：`,'')??'';
+  if(!confirm(`確定要${labels[action]}「${row.display_name||row.email}」？`))return;
+}else{
+  if(!confirm(`確定解除「${row.display_name||row.email}」的停權與大廳限制？`))return;
+}
+notice('正在執行管理處置…');
+const {error}=await sb.rpc('joygo_admin_moderate_member',{p_target_user:id,p_action:action,p_reason:reason});
+if(error)return notice('處置失敗：'+error.message,'bad');
+notice(`✅ 已${labels[action]}。`,'good');
+await Promise.all([loadMembers(),loadRooms(),loadModeration()]);
+}
+window.moderateMember=moderateMember;
+window.saveMember=async id=>{if(staffRole!=="admin")return notice("只有主管理員可以修改會員身分。","bad");const row=document.querySelector(`tr[data-id="${id}"]`),role=row.querySelector('.role').value,exp=row.querySelector('.expires').value;const changes={role,expires_at:role==='trial'&&exp?new Date(exp+'T23:59:59').toISOString():null,updated_at:new Date().toISOString()};const {error}=await sb.from('profiles').update(changes).eq('id',id);if(error)return notice('會員更新失敗：'+error.message,'bad');notice('✅ 會員資料已更新。','good');await loadMembers()}
+const rl=s=>({pending:'待審核',approved:'正式參賽',waitlist:'候補',rejected:'未通過',cancelled:'已取消'}[s]||s),pl=s=>({pending:'待確認',paid:'已繳費',rejected:'有問題',refunded:'已退款'}[s]||s),il=s=>({pending:'待查核',verified:'已通過',rejected:'未通過'}[s]||s);
+function isPaidTournamentReg(r){return Number(r.payment_amount||0)>0;}
+function renderRegs(){
+ const q=$("regSearch").value.trim().toLowerCase(),arr=regs.filter(r=>!q||[r.real_name,r.email,r.phone,r.rank,r.go_account,r.payment_last5].join(' ').toLowerCase().includes(q));
+ $("rTotal").textContent=regs.length;$("rApproved").textContent=regs.filter(x=>x.registration_status==='approved').length;$("rPending").textContent=regs.filter(x=>x.registration_status==='pending').length;$("rOther").textContent=regs.filter(x=>['waitlist','rejected'].includes(x.registration_status)).length;
+ $("regRows").innerHTML=arr.map((r,i)=>{
+  const paid=r.payment_status==='paid',fee=isPaidTournamentReg(r),isWaitlist=r.registration_status==='waitlist';
+  const paymentAction=fee&&!isWaitlist?(paid?`<button class="mini neutral" onclick="setRegPayment('${r.id}',false)">取消付款確認</button>`:`<button class="mini save" onclick="setRegPayment('${r.id}',true)">💰 確認付款</button>`):'';
+  const actions=staffRole==='admin'?`<div class="rowops">${isWaitlist?'<span class="sub">候補暫不收款</span>':''}${paymentAction}<button class="mini approve" ${fee&&!paid?'disabled title="請先確認實際入帳"':''} onclick="approveReg('${r.id}')">✓ 核准</button><button class="mini neutral" onclick="reviewReg('${r.id}','pending','${esc(r.payment_status||'pending')}','pending','')">待審</button><button class="mini wait" onclick="waitlistReg('${r.id}')">候補</button><button class="mini reject" onclick="rejectReg('${r.id}')">退回</button></div>`:`<span class="sub">副管理員：唯讀監看</span>`;
+  return `<tr><td>${i+1}</td><td><div class="name">${esc(r.real_name)}</div><div class="sub">${esc(r.email)}</div></td><td><b>${esc(r.rank)}</b><div class="sub">${esc(r.phone)}<br>${esc(r.go_account||'—')}</div></td><td><b>NT$ ${Number(r.payment_amount||0).toLocaleString()}</b><div class="sub">後五碼 ${esc(r.payment_last5)}<br><span class="pill ${paid?'ok':'pending'}">${esc(pl(r.payment_status))}</span></div></td><td>${esc(il(r.identity_status))}</td><td><span class="pill ${r.registration_status==='approved'?'ok':r.registration_status==='pending'?'pending':r.registration_status==='waitlist'?'blue':'badpill'}">${esc(rl(r.registration_status))}</span></td><td>${actions}</td></tr>`;
+ }).join('')||'<tr><td colspan="7" class="sub">目前沒有報名資料。</td></tr>';
+}
+window.setRegPayment=async(id,paid)=>{
+ if(staffRole!=='admin')return notice('只有主管理員可以確認付款。','bad');
+ const r=regs.find(x=>x.id===id);if(!r)return notice('找不到報名資料。','bad');
+ if(!isPaidTournamentReg(r))return notice('免費報名不需要確認付款。','bad');
+ if(paid&&r.registration_status==='waitlist')return notice('候補棋友暫不收款，請先確認有空缺名額。','bad');
+ if(paid&&!confirm(`請先核對銀行實際入帳。\n\n選手：${r.real_name}\n金額：NT$ ${r.payment_amount}\n轉帳後五碼：${r.payment_last5||'未填'}\n\n確定已收到款項？`))return;
+ if(!paid&&!confirm(`確定取消「${r.real_name}」的已付款確認？`))return;
+ if(!paid&&r.registration_status==='approved')return notice('此選手已正式核准，請先調整參賽資格，再取消付款確認。','bad');
+ const next=paid?'paid':'pending';
+ const {error}=await sb.rpc('joygo_review_tournament_registration',{p_registration_id:id,p_identity_status:r.identity_status||'pending',p_payment_status:next,p_registration_status:r.registration_status||'pending',p_admin_note:paid?'主管理員已人工核對銀行入帳':'主管理員撤銷付款確認'});
+ if(error)return notice('付款狀態更新失敗：'+error.message,'bad');
+ notice(paid?'✅ 已標記付款確認；仍須另外核准參賽。':'已取消付款確認。','good');await loadRegs();
+};
+window.approveReg=async id=>{
+ if(staffRole!=='admin')return notice('只有主管理員可以核准報名。','bad');
+ const r=regs.find(x=>x.id===id);if(!r)return notice('找不到報名資料。','bad');
+ if(r.registration_status==='waitlist'&&regs.filter(x=>x.registration_status==='approved').length>=tournamentMax())return notice('名額已滿，請先釋出正式名額，再通知候補者付款。','bad');
+ if(isPaidTournamentReg(r)&&r.payment_status!=='paid')return notice('收費報名必須先人工確認銀行入帳，才能核准。','bad');
+ if(!confirm(`確定核准「${r.real_name}」正式參賽？`))return;
+ const {error}=await sb.rpc('joygo_approve_tournament_registration',{p_registration_id:id});
+ if(error)return notice('核准失敗：'+error.message,'bad');notice('✅ 已核准正式參賽。','good');await loadRegs();
+};
+window.reviewReg=async(id,is,pay,reg,note)=>{
+ if(staffRole!=='admin')return notice('只有主管理員可以審核。','bad');
+ const r=regs.find(x=>x.id===id);if(!r)return;
+ if(isPaidTournamentReg(r)&&reg==='approved'&&pay!=='paid')return notice('請先確認付款。','bad');
+ const {error}=await sb.rpc('joygo_review_tournament_registration',{p_registration_id:id,p_identity_status:is,p_payment_status:pay,p_registration_status:reg,p_admin_note:note});
+ if(error)return notice('審核失敗：'+error.message,'bad');notice('✅ 報名狀態已更新。','good');await loadRegs();
+};
+window.waitlistReg=id=>{const r=regs.find(x=>x.id===id);if(!r)return;reviewReg(id,r.identity_status||'pending',r.payment_status||'pending','waitlist','正式名額未確認，暫列候補')};
+window.rejectReg=id=>{const n=prompt('退回原因','資料待補正');if(n===null)return;const r=regs.find(x=>x.id===id);if(!r)return;reviewReg(id,'rejected',r.payment_status||'pending','rejected',n||'資料待補正')};
+function renderRooms(){
+$("lWaiting").textContent=rooms.filter(x=>x.status==='waiting').length;
+$("lPlaying").textContent=rooms.filter(x=>x.status==='playing').length;
+$("lEnded").textContent=rooms.filter(x=>x.status==='ended').length;
+$("lTotal").textContent=rooms.length;
+$("clearEndedRooms").disabled=staffRole!=="admin"||!rooms.some(x=>x.status==='ended');
+$("roomList").innerHTML=rooms.slice(0,100).map(r=>`<div class="room">
+<div><b>${esc(r.room_code)}</b><div class="sub">${new Date(r.created_at).toLocaleString('zh-TW')}</div></div>
+<div>${esc(r.black_name||'黑方')} vs ${esc(r.white_name||'等待加入')}</div>
+<div>${r.board_size}路｜${Math.round(Number(r.main_seconds||0)/60)}分＋${r.byo_seconds||30}秒×${r.byo_periods||3}</div>
+<div><span class="pill ${r.status==='playing'?'ok':r.status==='waiting'?'pending':'blue'}">${r.status==='playing'?'對弈中':r.status==='waiting'?'等待':'已結束'}</span>${r.status==='playing'?`<button class="mini wait" style="margin-left:8px" onclick="staffEndRoom('${esc(r.id)}','${esc(r.room_code)}')">⚖️ 裁判終止</button>`:''}${r.status==='ended'&&staffRole==='admin'?`<button class="mini reject" style="margin-left:8px" onclick="deleteEndedRoom('${esc(r.id)}','${esc(r.room_code)}')">🗑️ 刪除此局</button>`:''}</div>
+</div>`).join('')||'<div class="sub">目前沒有真人棋局。</div>';
+}
+async function staffEndRoom(id,code){
+const reason=prompt(`裁判終止棋局「${code}」\n\n請輸入原因：`,'異常／鬧場處置');
+if(reason===null)return;
+if(!confirm(`確定由管理人員終止棋局「${code}」？`))return;
+notice('正在裁判終止棋局…');
+const {error}=await sb.rpc('joygo_staff_end_room',{p_room_id:id,p_reason:reason});
+if(error)return notice('終止失敗：'+error.message,'bad');
+notice(`✅ 棋局 ${code} 已由裁判終止。`,'good');
+await loadRooms();
+}
+window.staffEndRoom=staffEndRoom;
+async function deleteEndedRoom(id,code){
+if(!confirm(`確定刪除已結束棋局「${code}」？\n刪除後無法復原。`))return;
+notice('正在刪除已結束棋局…');
+const {data,error}=await sb.rpc('joygo_admin_delete_ended_room',{p_room_id:id});
+if(error)return notice('刪除失敗：'+error.message,'bad');
+notice(`✅ 已刪除棋局 ${code}。`,'good');
+await loadRooms();
+}
+async function clearAllEndedRooms(){
+const n=rooms.filter(x=>x.status==='ended').length;
+if(!n){notice('目前沒有已結束棋局需要清除。');return}
+if(!confirm(`確定清除全部 ${n} 局已結束棋局？\n等待中與對弈中棋局不會被刪除。\n刪除後無法復原。`))return;
+notice(`正在清除 ${n} 局已結束棋局…`);
+const {data,error}=await sb.rpc('joygo_admin_clear_ended_rooms');
+if(error)return notice('清除失敗：'+error.message,'bad');
+notice(`✅ 已清除 ${Number(data||0)} 局已結束棋局。`,'good');
+await loadRooms();
+}
+window.deleteEndedRoom=deleteEndedRoom;
+
+
+
+function swissResultLabel(r){
+  return ({pending:"未回報",B:"黑勝",W:"白勝",BYE:"輪空勝",VOID:"作廢"}[r]||r);
+}
+function swissPlayer(id){
+  return swissPlayers.find(p=>Number(p.id)===Number(id));
+}
+function swissPlayerGames(playerId){
+  return swissPairings
+    .filter(g=>
+      Number(g.black_player_id)===Number(playerId) ||
+      Number(g.white_player_id)===Number(playerId)
+    )
+    .sort((a,b)=>Number(a.round_no)-Number(b.round_no));
+}
+
+function swissTiebreaks(player){
+  const games=swissPlayerGames(player.id);
+  const opponentScores=[];
+  let sonnebornBerger=0;
+  let running=0;
+  let progressive=0;
+
+  games.forEach(g=>{
+    const isBlack=Number(g.black_player_id)===Number(player.id);
+    const oppId=isBlack?g.white_player_id:g.black_player_id;
+    const opp=oppId?swissPlayer(oppId):null;
+    const oppPts=opp?Number(opp.points||0):0;
+
+    if(opp)opponentScores.push(oppPts);
+
+    const result=String(g.result||"").toUpperCase();
+    const won=(isBlack&&result==="B") || (!isBlack&&result==="W") || (isBlack&&!g.white_player_id&&result==="BYE");
+    if(won)sonnebornBerger+=oppPts;
+
+    if(won)running+=1;
+    progressive+=running;
+  });
+
+  const buchholz=opponentScores.reduce((s,v)=>s+v,0);
+
+  let medianBuchholz=buchholz;
+  if(opponentScores.length>=3){
+    const sorted=[...opponentScores].sort((a,b)=>a-b);
+    medianBuchholz=sorted.slice(1,-1).reduce((s,v)=>s+v,0);
+  }
+
+  return {
+    main:Number(player.points||0),
+    tb1:buchholz,
+    tb2:medianBuchholz,
+    tb3:sonnebornBerger,
+    tb4:progressive
+  };
+}
+
+function swissComparePlayers(a,b){
+  const A=swissTiebreaks(a), B=swissTiebreaks(b);
+  return (
+    B.main-A.main ||
+    B.tb1-A.tb1 ||
+    B.tb2-A.tb2 ||
+    B.tb3-A.tb3 ||
+    B.tb4-A.tb4
+  );
+}
+
+function swissSameRankScore(a,b){
+  const A=swissTiebreaks(a), B=swissTiebreaks(b);
+  return A.main===B.main &&
+         A.tb1===B.tb1 &&
+         A.tb2===B.tb2 &&
+         A.tb3===B.tb3 &&
+         A.tb4===B.tb4;
+}
+
+function swissSortedPlayers(){
+  return [...swissPlayers].sort(swissComparePlayers);
+}
+
+function swissDuplicateGroups(){
+  const byUser=new Map();
+  swissPlayers.forEach(p=>{
+    const uid=String(p.user_id||"").trim();
+    if(!uid)return;
+    if(!byUser.has(uid))byUser.set(uid,[]);
+    byUser.get(uid).push(p);
+  });
+  return [...byUser.values()].filter(g=>g.length>1);
+}
+function swissDuplicateWarning(){
+  const groups=swissDuplicateGroups();
+  if(!groups.length)return "";
+  return "⚠️ 瑞士制選手表發現重複會員："+groups.map(g=>g.map(x=>x.player_name).join(" / ")).join("；")+"。請先執行 Beta 3.2.2a 安全清理，再產生下一輪。";
+}
+
+async function loadSwissRoundSetting(){
+  if(staffRole!=="admin")return;
+  const {data,error}=await sb.rpc("joygo_swiss_get_total_rounds",{p_tournament_code:CODE});
+  if(error){
+    swissTotalRounds=5;
+    if($("currentSwissRounds"))$("currentSwissRounds").textContent="讀取失敗";
+    return;
+  }
+  swissTotalRounds=Number(data||5);
+  if(![4,5,6].includes(swissTotalRounds))swissTotalRounds=5;
+  if($("swissRoundSelect"))$("swissRoundSelect").value=String(swissTotalRounds);
+  if($("currentSwissRounds"))$("currentSwissRounds").textContent=`${swissTotalRounds} 輪`;
+  if($("swissFlowText"))$("swissFlowText").textContent=`流程：同步「正式參賽」名單 → 產生第 1 輪 → 輸入本輪勝負 → 系統重新計分 → 自動產生下一輪。本場設定 ${swissTotalRounds} 輪；系統會盡量避免重複對手並平衡黑白棋。`;
+}
+
+async function saveSwissRoundSetting(){
+  if(staffRole!=="admin")return notice("只有主管理員可以設定瑞士制輪數。","bad");
+  const n=Number($("swissRoundSelect")?.value||5);
+  if(![4,5,6].includes(n))return notice("比賽輪數只能選 4、5 或 6 輪。","bad");
+
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const current=latest?Number(latest.round_no):0;
+  if(current>n)return notice(`目前已經進行到第 ${current} 輪，不能改成 ${n} 輪。`,"bad");
+
+  if(!confirm(`確定將 ${CODE} 設定為 ${n} 輪？`)){
+    $("swissRoundSelect").value=String(swissTotalRounds);
+    return;
+  }
+
+  $("saveSwissRounds").disabled=true;
+  const {data,error}=await sb.rpc("joygo_admin_set_swiss_rounds",{
+    p_tournament_code:CODE,
+    p_total_rounds:n
+  });
+  $("saveSwissRounds").disabled=false;
+
+  if(error){
+    $("swissRoundSelect").value=String(swissTotalRounds);
+    return notice("輪數設定失敗："+error.message,"bad");
+  }
+
+  swissTotalRounds=Number(data||n);
+  if($("currentSwissRounds"))$("currentSwissRounds").textContent=`${swissTotalRounds} 輪`;
+  notice(`✅ 已設定為 ${swissTotalRounds} 輪。`,"good");
+  renderSwiss();
+  renderControl();
+}
+
+
+function updateSwissCompletionLock(){
+  const btn=$("generateSwissRound");
+  if(!btn)return;
+
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const roundNo=latest?Number(latest.round_no):0;
+  const finished=Boolean(latest && latest.status==="completed" && roundNo>=swissTotalRounds);
+
+  if(finished){
+    btn.disabled=true;
+    btn.textContent="🏁 比賽已完成";
+    btn.title=`本場設定 ${swissTotalRounds} 輪，已全部完成`;
+  }else{
+    btn.disabled=false;
+    btn.textContent="② 產生下一輪配對";
+    btn.title="";
+  }
+
+  const roomBtn=$("createSwissRooms");
+  if(roomBtn){
+    // 最後一輪已完成後也不需要再建立新棋局
+    if(finished){
+      roomBtn.disabled=true;
+      roomBtn.title="比賽已完成";
+    }else{
+      roomBtn.disabled=false;
+      roomBtn.title="";
+    }
+  }
+
+  const exportBtn=$("exportSwissFinal");
+  if(exportBtn){
+    exportBtn.disabled=!finished;
+    exportBtn.title=finished?"匯出本場最終排名 CSV":"比賽完成後才能匯出最終排名";
+  }
+
+  const printBtn=$("printSwissFinal");
+  if(printBtn){
+    printBtn.disabled=!finished;
+    printBtn.title=finished?"列印本場最終排名":"比賽完成後才能列印最終排名";
+  }
+}
+
+
+function swissIsFinished(){
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const roundNo=latest?Number(latest.round_no):0;
+  return Boolean(latest && latest.status==="completed" && roundNo>=swissTotalRounds);
+}
+
+function swissPlaceLabel(index){
+  return ["🥇 冠軍／第1名","🥈 亞軍／第2名","🥉 第3名","🏅 第4名"][index]||"";
+}
+
+function csvEscape(v){
+  const s=String(v??"");
+  return `"${s.replace(/"/g,'""')}"`;
+}
+
+function exportSwissFinalRanking(){
+  if(staffRole!=="admin")return notice("只有主管理員可以匯出最終排名。","bad");
+  if(!swissIsFinished())return notice("比賽尚未完成，完成最後一輪後才能匯出最終排名。","bad");
+
+  const players=swissSortedPlayers();
+  if(!players.length)return notice("目前沒有排名資料可匯出。","bad");
+
+  const rows=[
+    ["名次","晉級","選手","棋力","勝","負","主分","第一副分","第二副分","第三副分","第四副分","黑棋局數","白棋局數","比賽代碼","總輪數"],
+    ...players.map((p,i)=>{
+      const tb=swissTiebreaks(p);
+      const prev=i>0?players[i-1]:null;
+      const tied=prev?swissSameRankScore(prev,p):false;
+      return [
+        tied?"同分":i+1,
+        i<4?"前四名":"",
+        p.player_name||"",
+        p.rank||"",
+        Number(p.wins||0),
+        Number(p.losses||0),
+        tb.main.toFixed(1),
+        tb.tb1.toFixed(1),
+        tb.tb2.toFixed(1),
+        tb.tb3.toFixed(1),
+        tb.tb4.toFixed(1),
+        Number(p.black_count||0),
+        Number(p.white_count||0),
+        CODE,
+        swissTotalRounds
+      ];
+    })
+  ];
+
+  // UTF-8 BOM，讓 iPad Numbers / Excel 開啟中文較穩定
+  const csv="\uFEFF"+rows.map(r=>r.map(csvEscape).join(",")).join("\r\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  const safeCode=CODE.replace(/[^A-Za-z0-9_-]/g,"_");
+  a.href=url;
+  a.download=`${safeCode}_最終排名_${swissTotalRounds}輪.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+
+  notice(`✅ 已匯出 ${CODE} 最終排名，共 ${players.length} 位選手。`,"good");
+}
+
+
+function printSwissFinalRanking(){
+  if(staffRole!=="admin")return notice("只有主管理員可以列印最終排名。","bad");
+  if(!swissIsFinished())return notice("比賽尚未完成，完成最後一輪後才能列印最終排名。","bad");
+
+  const title=$("eventTitle")?.value?.trim() || CODE;
+  if($("printTitle"))$("printTitle").textContent=`${title}｜最終排名`;
+  if($("printMeta"))$("printMeta").textContent=`比賽代碼：${CODE}｜瑞士制 ${swissTotalRounds} 輪｜排名依主分與四副分依序判定`;
+  window.print();
+}
+
+function renderSwiss(){
+  const players=swissSortedPlayers();
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const roundNo=latest?Number(latest.round_no):0;
+  const cur=swissPairings.filter(x=>Number(x.round_no)===roundNo);
+  const done=cur.filter(x=>x.result!=="pending").length;
+
+  $("sPlayers").textContent=`${players.length} / ${tournamentMax()}`;
+  $("sRound").textContent=`${roundNo} / ${swissTotalRounds}`;
+  $("sDone").textContent=`${done} / ${cur.length}`;
+  $("sStatus").textContent=!latest?"尚未開始":latest.status==="completed"?"本輪完成":"比賽中";
+  const dupWarning=swissDuplicateWarning();
+  if(dupWarning){
+    $("swissNote").textContent=dupWarning;
+  }
+
+  const finished=swissIsFinished();
+
+  const top6Players=players.slice(0,6);
+  $("swissTop6Rows").innerHTML=top6Players.map((p,i)=>{
+    const tb=swissTiebreaks(p);
+    const prev=i>0?top6Players[i-1]:null;
+    const tied=prev?swissSameRankScore(prev,p):false;
+    const rankText=tied?"同分":String(i+1);
+    return `
+      <tr class="${finished&&i<4?"top4-row":""}">
+        <td><b>${rankText}</b></td>
+        <td><div class="name">${esc(p.player_name)}${finished&&i<4?`<span class="qualify-badge ${i===0?"champ-badge":""}">${esc(swissPlaceLabel(i))}</span>`:""}${tied?'<span class="qualify-badge">完全同分</span>':""}</div></td>
+        <td>${esc(p.rank||"—")}</td>
+        <td><b>${tb.main.toFixed(1)}</b></td>
+        <td><b>${tb.tb1.toFixed(1)}</b></td>
+        <td><b>${tb.tb2.toFixed(1)}</b></td>
+        <td><b>${tb.tb3.toFixed(1)}</b></td>
+        <td><b>${tb.tb4.toFixed(1)}</b></td>
+      </tr>`;
+  }).join("")||'<tr><td colspan="8" class="sub">尚無排名資料。</td></tr>';
+
+  $("swissStandingRows").innerHTML=players.map((p,i)=>{
+    const top4=finished&&i<4;
+    const tb=swissTiebreaks(p);
+    const prev=i>0?players[i-1]:null;
+    const tied=prev?swissSameRankScore(prev,p):false;
+    const badge=top4?`<span class="qualify-badge ${i===0?"champ-badge":""}">${esc(swissPlaceLabel(i))}</span>`:"";
+    return `<tr class="${top4?"top4-row":""}">
+      <td><b>${tied?"同分":i+1}</b></td>
+      <td><div class="name">${esc(p.player_name)}${badge}${tied?'<span class="qualify-badge">完全同分</span>':""}</div></td>
+      <td>${esc(p.rank||"—")}</td>
+      <td>${Number(p.wins||0)}</td>
+      <td>${Number(p.losses||0)}</td>
+      <td><b>${tb.main.toFixed(1)}</b></td>
+      <td>${tb.tb1.toFixed(1)}</td>
+      <td>${tb.tb2.toFixed(1)}</td>
+      <td>${tb.tb3.toFixed(1)}</td>
+      <td>${tb.tb4.toFixed(1)}</td>
+      <td>${Number(p.black_count||0)} / ${Number(p.white_count||0)}</td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="11" class="sub">尚無選手資料。</td></tr>';
+
+  $("swissPairingRows").innerHTML=cur.map(x=>{
+    const bp=swissPlayer(x.black_player_id), wp=swissPlayer(x.white_player_id);
+    const locked=x.result!=="pending";
+    return `<tr>
+      <td><b>${x.board_no}</b></td>
+      <td>${bp?esc(bp.player_name):"—"}</td>
+      <td>${wp?esc(wp.player_name):"輪空"}</td>
+      <td>${x.game_room_code?`<a class="mini approve" href="index.html?room=${encodeURIComponent(x.game_room_code)}">${esc(x.game_room_code)}</a>`:(wp?"尚未建立":"輪空")}</td>
+      <td><span class="pill ${locked?"ok":"pending"}">${esc(swissResultLabel(x.result))}</span></td>
+      <td><div class="rowops">
+        ${wp?`<button class="mini approve" onclick="setSwissResult(${x.id},'B')">黑勝</button>
+        <button class="mini wait" onclick="setSwissResult(${x.id},'W')">白勝</button>`:""}
+        ${locked?`<button class="mini neutral" onclick="setSwissResult(${x.id},'pending')">更正</button>`:""}
+      </div></td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="6" class="sub">尚未產生配對。</td></tr>';
+
+  if(!dupWarning){
+    if(!players.length)$("swissNote").textContent="請先按「同步正式名單」。";
+    else if(roundNo===0)$("swissNote").textContent=`已同步 ${players.length} 位正式選手，可產生第 1 輪。`;
+    else if(roundNo>=swissTotalRounds&&latest?.status==="completed")$("swissNote").textContent=`🏁 ${swissTotalRounds} 輪瑞士制已全部完成；排名依主分、第一副分、第二副分、第三副分、第四副分依序比較，前四名已自動標示，可匯出最終排名 CSV。`;
+    else if(latest?.status==="completed")$("swissNote").textContent=`✅ 第 ${roundNo} 輪完成，可產生第 ${roundNo+1} 輪。`;
+    else $("swissNote").textContent=`第 ${roundNo} 輪進行中：已完成 ${done}/${cur.length} 桌。`;
+  }
+
+  updateSwissCompletionLock();
+}
+async function loadSwiss(){
+  if(staffRole!=="admin")return;
+  await loadSwissRoundSetting();
+  const [p1,p2,p3]=await Promise.all([
+    sb.from("joygo_swiss_players").select("*").eq("tournament_code",CODE).eq("active",true),
+    sb.from("joygo_swiss_rounds").select("*").eq("tournament_code",CODE).order("round_no",{ascending:true}),
+    sb.from("joygo_swiss_pairings").select("*").eq("tournament_code",CODE).order("round_no",{ascending:true}).order("board_no",{ascending:true})
+  ]);
+  if(p1.error||p2.error||p3.error){
+    $("swissNote").textContent="瑞士制資料讀取失敗："+(p1.error||p2.error||p3.error).message;
+    return;
+  }
+  swissPlayers=p1.data||[];swissRounds=p2.data||[];swissPairings=p3.data||[];
+  renderSwiss();
+  renderControl();
+}
+async function syncSwissPlayers(){
+  if(staffRole!=="admin")return notice("只有主管理員可以操作瑞士制。","bad");
+  if(swissRounds.length&& !confirm("比賽已經產生輪次。同步只會補入正式參賽名單，不會刪除既有棋手。確定繼續？"))return;
+  const {data,error}=await sb.rpc("joygo_swiss_sync_players",{p_tournament_code:CODE});
+  if(error)return notice("同步失敗："+error.message,"bad");
+  notice(`✅ 正式參賽名單已同步，共 ${data} 人。`,"good");
+  await loadSwiss();
+}
+function opponentSet(){
+  const m=new Map();
+  swissPlayers.forEach(p=>m.set(Number(p.id),new Set()));
+  swissPairings.forEach(g=>{
+    if(!g.black_player_id||!g.white_player_id)return;
+    m.get(Number(g.black_player_id))?.add(Number(g.white_player_id));
+    m.get(Number(g.white_player_id))?.add(Number(g.black_player_id));
+  });
+  return m;
+}
+function colorCost(p,asBlack){
+  const b=Number(p.black_count||0),w=Number(p.white_count||0);
+  return asBlack?Math.max(0,(b+1)-w):Math.max(0,(w+1)-b);
+}
+function chooseColors(a,b,boardNo){
+  const ab=colorCost(a,true)+colorCost(b,false);
+  const ba=colorCost(b,true)+colorCost(a,false);
+  if(ab<ba)return [a,b];
+  if(ba<ab)return [b,a];
+  return boardNo%2===1?[a,b]:[b,a];
+}
+function swissByeCount(playerId){
+  return swissPairings.filter(g=>
+    Number(g.black_player_id)===Number(playerId) &&
+    !g.white_player_id &&
+    String(g.result||"").toUpperCase()==="BYE"
+  ).length;
+}
+
+function swissPairPenalty(a,b,opponents){
+  const rematch=opponents.get(Number(a.id))?.has(Number(b.id))?1:0;
+  const score=Math.abs(Number(a.points||0)-Number(b.points||0));
+  const buch=Math.abs(Number(a.buchholz||0)-Number(b.buchholz||0));
+  // 重複對手是絕對高優先級；只要存在無重複完整配對，就不會選重複。
+  return rematch*1000000000 + score*1000000 + buch*1000 + Math.abs(Number(a.seed||0)-Number(b.seed||0));
+}
+
+function buildOptimalPairsForPlayers(players,opponents){
+  const arr=[...players];
+  const n=arr.length;
+  if(n===0)return {pairs:[],rematchCount:0,totalPenalty:0};
+  if(n%2!==0)return {pairs:[],rematchCount:999,totalPenalty:Number.POSITIVE_INFINITY};
+
+  // n<=16，使用 bitmask + memo 找整輪全域最佳配對，避免舊版逐桌貪婪造成「明明可避開卻重複」。
+  const fullMask=(1<<n)-1;
+  const memo=new Map();
+  function solve(mask){
+    if(mask===0)return {cost:0,rematches:0,indexPairs:[]};
+    if(memo.has(mask))return memo.get(mask);
+    let i=0;
+    while(i<n && !(mask&(1<<i)))i++;
+    let best=null;
+    const restWithoutI=mask&~(1<<i);
+    const candidates=[];
+    for(let j=i+1;j<n;j++){
+      if(!(restWithoutI&(1<<j)))continue;
+      const rematch=opponents.get(Number(arr[i].id))?.has(Number(arr[j].id))?1:0;
+      candidates.push({j,rematch,penalty:swissPairPenalty(arr[i],arr[j],opponents)});
+    }
+    candidates.sort((a,b)=>a.rematch-b.rematch || a.penalty-b.penalty);
+    for(const c of candidates){
+      const sub=solve(restWithoutI&~(1<<c.j));
+      if(!sub)continue;
+      const candidate={
+        cost:c.penalty+sub.cost,
+        rematches:c.rematch+sub.rematches,
+        indexPairs:[[i,c.j],...sub.indexPairs]
+      };
+      if(!best || candidate.rematches<best.rematches ||
+         (candidate.rematches===best.rematches && candidate.cost<best.cost)) best=candidate;
+      // 已找到 0 重複時仍比較同層其他候選的同分品質，但 memo 會保持 iPad 可接受的速度。
+    }
+    memo.set(mask,best);
+    return best;
+  }
+
+  const solved=solve(fullMask);
+  if(!solved)return {pairs:[],rematchCount:999,totalPenalty:Number.POSITIVE_INFINITY};
+  const pairs=solved.indexPairs.map(([i,j],k)=>{
+    const [black,white]=chooseColors(arr[i],arr[j],k+1);
+    return {board_no:k+1,black_player_id:Number(black.id),white_player_id:Number(white.id)};
+  });
+  return {pairs,rematchCount:solved.rematches,totalPenalty:solved.cost};
+}
+
+function chooseSwissRoundPlan(arr){
+  const opponents=opponentSet();
+  if(arr.length%2===0){
+    const built=buildOptimalPairsForPlayers(arr,opponents);
+    return {...built,byePlayer:null,byeCount:0,byeRankPenalty:0};
+  }
+
+  const plans=[];
+  for(let i=0;i<arr.length;i++){
+    const byePlayer=arr[i];
+    const remaining=arr.filter(p=>Number(p.id)!==Number(byePlayer.id));
+    const built=buildOptimalPairsForPlayers(remaining,opponents);
+    plans.push({...built,byePlayer,byeCount:swissByeCount(byePlayer.id),byeRankPenalty:(arr.length-1-i)});
+  }
+  plans.sort((a,b)=>
+    a.rematchCount-b.rematchCount ||
+    a.byeCount-b.byeCount ||
+    a.totalPenalty-b.totalPenalty ||
+    a.byeRankPenalty-b.byeRankPenalty
+  );
+  return plans[0];
+}
+
+function makeSwissPairs(){
+  const arr=swissSortedPlayers();
+  const plan=chooseSwissRoundPlan(arr);
+  const pairs=[...plan.pairs];
+  if(plan.byePlayer){
+    pairs.push({board_no:pairs.length+1,black_player_id:Number(plan.byePlayer.id),white_player_id:null});
+  }
+  return {pairs,plan};
+}
+
+async function generateSwissRound(){
+  if(staffRole!=="admin")return notice("只有主管理員可以產生配對。","bad");
+  if(swissDuplicateGroups().length)return notice("瑞士制選手表有重複會員，請先安全清理，再產生下一輪。","bad");
+  if(!swissPlayers.length)return notice("請先同步正式參賽名單。","bad");
+  if(swissPlayers.length>tournamentMax())return notice(`正式選手超過 ${tournamentMax()} 人，請先處理名單。`,"bad");
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const next=latest?Number(latest.round_no)+1:1;
+
+  if(latest && latest.status==="completed" && Number(latest.round_no)>=swissTotalRounds){
+    updateSwissCompletionLock();
+    return notice(`🏁 本場 ${swissTotalRounds} 輪瑞士制已完成，已鎖定產生下一輪功能。`,"good");
+  }
+
+  if(next>swissTotalRounds){
+    updateSwissCompletionLock();
+    return notice(`${swissTotalRounds} 輪瑞士制已完成。`,"bad");
+  }
+  if(latest&&latest.status!=="completed")return notice(`第 ${latest.round_no} 輪尚未全部回報勝負。`,"bad");
+
+  const {pairs,plan}=makeSwissPairs();
+  if(!pairs.length)return notice("無法產生配對。","bad");
+  if(plan.rematchCount>0){
+    return notice(`⛔ 第 ${next} 輪找不到完全無重複的合法配對，系統已停止建立輪次。請先由裁判檢查歷史配對。`,"bad");
+  }
+
+  const byePair=pairs.find(x=>!x.white_player_id);
+  const byeP=byePair?swissPlayer(byePair.black_player_id):null;
+  const byeInfo=byeP?`\n輪空：${byeP.player_name}（過去輪空 ${swissByeCount(byeP.id)} 次）`:"";
+  const msg=`確定產生第 ${next} 輪？\n共 ${pairs.length} 桌${byeInfo}\n✅ 已通過全域檢查：本輪無重複對手。`;
+  if(!confirm(msg))return;
+
+  const {error}=await sb.rpc("joygo_swiss_create_round",{
+    p_tournament_code:CODE,p_round_no:next,p_pairings:pairs
+  });
+  if(error)return notice("產生配對失敗："+error.message,"bad");
+  notice(`✅ 第 ${next} 輪配對已產生，且無重複對手。`,"good");
+  await loadSwiss();
+}
+window.setSwissResult=async(id,result)=>{
+  if(staffRole!=="admin")return;
+  if(result!=="pending"&&!confirm(`確定登錄為「${swissResultLabel(result)}」？`))return;
+  const {error}=await sb.rpc("joygo_swiss_set_result",{p_pairing_id:id,p_result:result});
+  if(error)return notice("成績登錄失敗："+error.message,"bad");
+  notice("✅ 成績已更新。","good");
+  await loadSwiss();
+};
+
+async function createSwissRooms(){
+  if(staffRole!=="admin")return notice("只有主管理員可以建立正式比賽棋局。","bad");
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  if(!latest)return notice("請先產生瑞士制配對。","bad");
+  const cur=swissPairings.filter(x=>Number(x.round_no)===Number(latest.round_no));
+  const normal=cur.filter(x=>x.white_player_id);
+  if(!normal.length)return notice("本輪沒有可建立的正式棋局。","bad");
+  const missing=normal.filter(x=>!x.game_room_code).length;
+  if(!missing)return notice(`第 ${latest.round_no} 輪正式棋局已全部建立。`,"good");
+  if(!confirm(`確定建立第 ${latest.round_no} 輪正式比賽棋局？\n將建立 ${missing} 桌，並套用目前比賽計時設定。`))return;
+  $("createSwissRooms").disabled=true;
+  const {data,error}=await sb.rpc("joygo_swiss_create_rooms",{
+    p_tournament_code:CODE,
+    p_round_no:Number(latest.round_no)
+  });
+  $("createSwissRooms").disabled=false;
+  if(error)return notice("建立正式棋局失敗："+error.message,"bad");
+  notice(`✅ 第 ${latest.round_no} 輪已建立 ${data} 個正式比賽棋局。`,"good");
+  await Promise.all([loadSwiss(),loadRooms()]);
+}
+$("syncSwissPlayers")?.addEventListener("click",syncSwissPlayers);
+$("generateSwissRound")?.addEventListener("click",generateSwissRound);
+$("createSwissRooms")?.addEventListener("click",createSwissRooms);
+$("refreshSwiss")?.addEventListener("click",loadSwiss);
+$("exportSwissFinal")?.addEventListener("click",exportSwissFinalRanking);
+$("printSwissFinal")?.addEventListener("click",printSwissFinalRanking);
+$("saveSwissRounds")?.addEventListener("click",saveSwissRoundSetting);
+$("controlRefresh")?.addEventListener("click",loadControl);
+
+const broadcastLevelLabel=l=>({info:"一般通知",important:"重要通知",emergency:"緊急通知"}[l]||l);
+async function loadBroadcasts(){
+  if(!["admin","deputy"].includes(staffRole))return;
+  const {data,error}=await sb.from("joygo_broadcasts")
+    .select("id,tournament_code,level,message,active,created_at,expires_at")
+    .eq("tournament_code",CODE)
+    .order("created_at",{ascending:false})
+    .limit(30);
+  if(error){
+    $("broadcastRows").innerHTML=`<tr><td colspan="5" class="sub">廣播紀錄讀取失敗：${esc(error.message)}</td></tr>`;
+    return;
+  }
+  broadcasts=data||[];
+  $("broadcastRows").innerHTML=broadcasts.map(b=>{
+    const expired=b.expires_at&&new Date(b.expires_at).getTime()<=Date.now();
+    const state=b.active&&!expired?"廣播中":expired?"已到期":"已停止";
+    return `<tr>
+      <td>${new Date(b.created_at).toLocaleString("zh-TW")}</td>
+      <td><span class="pill ${b.level==="emergency"?"bad":b.level==="important"?"pending":"blue"}">${esc(broadcastLevelLabel(b.level))}</span></td>
+      <td>${esc(b.message)}</td>
+      <td>${state}</td>
+      <td>${b.expires_at?new Date(b.expires_at).toLocaleString("zh-TW"):"手動關閉"}</td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="5" class="sub">尚無廣播紀錄。</td></tr>';
+}
+async function sendBroadcast(){
+  if(!["admin","deputy"].includes(staffRole))return notice("只有主管理員或副管理員可以發送廣播。","bad");
+  const message=$("broadcastMessage").value.trim();
+  const level=$("broadcastLevel").value;
+  const duration=Number($("broadcastDuration").value||0);
+  if(!message)return notice("請先輸入廣播內容。","bad");
+  if(!confirm(`確定向比賽弈廳廣播？\n\n${message}`))return;
+  $("sendBroadcast").disabled=true;
+  $("broadcastStatus").textContent="正在發送…";
+  const {error}=await sb.rpc("joygo_admin_broadcast",{
+    p_tournament_code:CODE,
+    p_level:level,
+    p_message:message,
+    p_display_seconds:duration
+  });
+  $("sendBroadcast").disabled=false;
+  if(error){
+    $("broadcastStatus").textContent="發送失敗："+error.message;
+    return;
+  }
+  $("broadcastStatus").textContent="✅ 廣播已送出。";
+  $("broadcastMessage").value="";
+  await loadBroadcasts();
+}
+async function clearBroadcast(){
+  if(staffRole!=="admin")return notice("只有主管理員可以停止廣播。","bad");
+  if(!confirm("確定停止目前正在顯示的廣播？"))return;
+  const {error}=await sb.rpc("joygo_admin_clear_broadcast",{p_tournament_code:CODE});
+  if(error){$("broadcastStatus").textContent="停止失敗："+error.message;return}
+  $("broadcastStatus").textContent="✅ 目前廣播已停止。";
+  await loadBroadcasts();
+}
+$("sendBroadcast")?.addEventListener("click",sendBroadcast);
+$("clearBroadcast")?.addEventListener("click",clearBroadcast);
+
+const moderationActionLabel=a=>({kick:"踢出大廳 10 分鐘",suspend_1d:"停權 1 天",suspend_7d:"停權 7 天",suspend_permanent:"永久停權",unsuspend:"解除停權",end_room:"裁判終止棋局"}[a]||a);
+function renderModeration(){
+ const q=($("modSearch")?.value||"").trim().toLowerCase(),f=$("modFilter")?.value||"",byId=new Map(members.map(x=>[x.id,x]));
+ const arr=moderationEvents.filter(e=>{if(f&&e.action!==f)return false;const a=byId.get(e.admin_user_id),t=byId.get(e.target_user_id),txt=[a?.display_name,a?.email,t?.display_name,t?.email,e.action,e.reason].join(" ").toLowerCase();return !q||txt.includes(q)});
+ const today=new Date();today.setHours(0,0,0,0);
+ $("modTotal").textContent=moderationEvents.length;$("modToday").textContent=moderationEvents.filter(e=>new Date(e.created_at)>=today).length;$("modSuspend").textContent=moderationEvents.filter(e=>["suspend_1d","suspend_7d","suspend_permanent"].includes(e.action)).length;$("modEndRoom").textContent=moderationEvents.filter(e=>e.action==="end_room").length;
+ $("moderationRows").innerHTML=arr.map(e=>{const a=byId.get(e.admin_user_id),t=byId.get(e.target_user_id),an=a?.display_name||a?.email||"未知工作人員",tn=e.action==="end_room"?"棋局":(t?.display_name||t?.email||"未知會員"),reason=String(e.reason||"").replace(/^room=([^｜]+)｜?/,"棋局 $1｜");return `<tr><td>${new Date(e.created_at).toLocaleString("zh-TW")}</td><td><div class="name">${esc(an)}</div><div class="sub">${a?.email?esc(a.email):""}</div></td><td><div class="name">${esc(tn)}</div><div class="sub">${t?.email&&e.action!=="end_room"?esc(t.email):""}</div></td><td><span class="pill ${["suspend_1d","suspend_7d","suspend_permanent"].includes(e.action)?"bad":e.action==="unsuspend"?"ok":"pending"}">${esc(moderationActionLabel(e.action))}</span></td><td>${esc(reason||"—")}</td><td>${e.expires_at?new Date(e.expires_at).toLocaleString("zh-TW"):"—"}</td></tr>`}).join("")||'<tr><td colspan="6" class="sub">沒有符合的處置紀錄。</td></tr>';
+}
+async function loadModeration(){
+ let q=sb.from("moderation_events")
+   .select("id,target_user_id,admin_user_id,action,reason,expires_at,created_at")
+   .order("created_at",{ascending:false})
+   .limit(300);
+ if(staffRole==="moderator")q=q.eq("admin_user_id",me.id);
+ const {data,error}=await q;
+ if(error){
+   $("moderationRows").innerHTML=`<tr><td colspan="6" class="sub">紀錄讀取失敗：${esc(error.message)}</td></tr>`;
+   return;
+ }
+ moderationEvents=data||[];
+ renderModeration();
+}
+async function loadModeratorIds(){
+const {data,error}=await sb.rpc('joygo_get_moderator_ids');
+if(error){moderatorIds=new Set();return}
+moderatorIds=new Set((data||[]).map(x=>x.user_id||x));
+}
+async function loadMembers(){try{await sb.rpc('joygo_admin_cleanup_expired_suspensions')}catch{}const {data,error}=await sb.from('profiles').select('id,email,display_name,role,status,expires_at,suspended_until,lobby_blocked_until,moderation_note,created_at').order('created_at',{ascending:true});if(error)throw error;members=data||[];renderMembers();updateHome()}
+async function loadRegs(){const {data,error}=await sb.from('tournament_registrations').select('*').eq('tournament_code',CODE).order('created_at',{ascending:true});if(error)throw error;regs=data||[];renderRegs();updateHome()}
+function renderControl(){
+  if(staffRole!=="admin")return;
+  const latest=[...swissRounds].sort((a,b)=>Number(b.round_no)-Number(a.round_no))[0];
+  const roundNo=latest?Number(latest.round_no):0;
+  const cur=swissPairings.filter(x=>Number(x.round_no)===roundNo);
+  const roomById=new Map(rooms.map(r=>[String(r.id),r]));
+  const playing=cur.filter(x=>{const r=roomById.get(String(x.game_room_id||''));return r?.status==='playing'}).length;
+  const pending=cur.filter(x=>x.white_player_id && (!x.result || x.result==='pending')).length;
+  const now=Date.now();
+  const stale=cur.filter(x=>{const r=roomById.get(String(x.game_room_id||''));if(!r||r.status!=='playing'||!r.updated_at)return false;return now-new Date(r.updated_at).getTime()>10*60*1000}).length;
+  $("cRound").textContent=roundNo?`${roundNo} / ${swissTotalRounds}`:"尚未開始";
+  $("cPlaying").textContent=playing;
+  $("cPending").textContent=pending;
+  $("cStale").textContent=stale;
+  const alerts=[];
+  if(!roundNo)alerts.push('<div class="control-alert">尚未產生第 1 輪配對。</div>');
+  if(pending)alerts.push(`<div class="control-alert">⚠️ 本輪尚有 ${pending} 桌未回報正式結果。</div>`);
+  if(stale)alerts.push(`<div class="control-alert danger">🔴 有 ${stale} 桌超過 10 分鐘沒有棋局資料更新，請裁判查看。這是「異常提醒」，不會自動判負。</div>`);
+  if(roundNo&&latest?.status==='completed'){
+    if(roundNo>=swissTotalRounds)alerts.push(`<div class="control-alert">🏁 第 ${roundNo} 輪已完成，本場 ${swissTotalRounds} 輪瑞士制全部結束；下一輪功能已鎖定。</div>`);
+    else alerts.push(`<div class="control-alert">✅ 第 ${roundNo} 輪已完成，可檢查排名後產生第 ${roundNo+1} 輪。</div>`);
+  }
+  if(roundNo&&!pending&&!playing&&latest?.status!=='completed')alerts.push('<div class="control-alert">棋局已無進行中，但輪次尚未完成，請檢查是否有結果未寫入。</div>');
+  $("controlAlerts").innerHTML=alerts.join('')||'<div class="control-alert">✅ 目前未偵測到需處理的比賽異常。</div>';
+  $("controlMatchRows").innerHTML=cur.map(x=>{
+    const bp=swissPlayers.find(p=>Number(p.id)===Number(x.black_player_id));
+    const wp=swissPlayers.find(p=>Number(p.id)===Number(x.white_player_id));
+    const r=roomById.get(String(x.game_room_id||''));
+    const rs=r?.status==='playing'?'對弈中':r?.status==='ended'?'已結束':(x.game_room_code?'已建立':'尚未建立');
+    return `<tr><td>${x.board_no}</td><td>${esc(bp?.player_name||'—')}</td><td>${esc(wp?.player_name||'輪空')}</td><td>${x.game_room_code?`<a class="mini approve" href="index.html?room=${encodeURIComponent(x.game_room_code)}">${esc(x.game_room_code)}</a>`:'—'}</td><td>${esc(rs)}</td><td>${esc(swissResultLabel(x.result))}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="sub">尚未產生本輪對戰表。</td></tr>';
+  $("auditList").innerHTML=auditLogs.length?auditLogs.map(a=>`<div class="audit-item"><b>${esc(a.action_label||a.action||'管理操作')}</b><div class="sub">${esc(a.actor_name||'主管理員')}｜${new Date(a.created_at).toLocaleString('zh-TW')}</div><div class="sub">${esc(a.description||'')}</div></div>`).join(''):'<div class="sub">目前沒有操作紀錄，或尚未安裝 Beta 2.6.0 SQL。</div>';
+}
+async function loadAuditLogs(){
+  if(staffRole!=="admin")return;
+  const {data,error}=await sb.rpc('joygo_admin_get_audit_log',{p_tournament_code:CODE,p_limit:30});
+  if(error){auditLogs=[];renderControl();return}
+  auditLogs=data||[];renderControl();
+}
+async function loadControl(){
+  if(staffRole!=="admin")return;
+  await Promise.all([loadSwiss(),loadRooms()]);
+  await loadAuditLogs();
+  renderControl();
+}
+async function loadRooms(){const {data,error}=await sb.from('online_rooms').select('id,room_code,black_id,black_name,white_id,white_name,board_size,status,main_seconds,byo_seconds,byo_periods,created_at,updated_at').order('created_at',{ascending:false}).limit(100);if(error)throw error;rooms=data||[];renderRooms();updateHome();renderControl()}
+async function loadEvent(){
+  let {data,error}=await sb.from('tournament_events').select('*').eq('code',CODE).maybeSingle();
+
+  if(error){
+    const msg=String(error.message||"");
+    if(msg.includes("Cannot coerce") || msg.includes("multiple")){
+      const fallback=await sb.from('tournament_events').select('*').eq('code',CODE).order('updated_at',{ascending:false}).limit(1);
+      if(fallback.error)throw fallback.error;
+      data=(fallback.data||[])[0]||null;
+      error=null;
+      notice(`⚠️ ${CODE} 的比賽基本資料疑似有重複列，目前暫時讀取最新一筆；之後可再做資料清理。`);
+    }else{
+      throw error;
+    }
+  }
+
+  const defaults={
+    code:CODE,
+    title:CODE==="JOYGO-PAY-TEST-001"?"Joy Go 2 人收費功能測試賽":
+          CODE==="JOYGO4-LIVE-TEST-001"?"Joy Go 4 人真人整合測試賽":
+          CODE==="JOYGO8-TEST-001"?"Joy Go 8 人虛擬測試賽":
+          CODE==="JOYGO16-TEST-001"?"Joy Go 16 人虛擬測試賽":
+          "Joy Go 16 人瑞士制比賽",
+    max_players:tournamentMax(),
+    entry_fee:CODE==="JOYGO-PAY-TEST-001"?200:0,
+    event_date:null,
+    registration_open:false,
+    venue:""
+  };
+  const ev=data||defaults;
+
+  $("eventTitle").value=ev.title||defaults.title;
+  $("eventMax").value=Number(ev.max_players||defaults.max_players);
+  $("eventFee").value=Number(ev.entry_fee??defaults.entry_fee);
+  $("eventDate").value=ev.event_date||'';
+  $("eventOpen").value=String(ev.registration_open===true);
+  $("eventVenue").value=ev.venue||'';
+
+  if(!data){
+    const note=CODE.includes("-TEST-")
+      ?`ℹ️ ${CODE} 尚未建立比賽基本資料；目前先顯示測試賽預設值。第一次按「儲存比賽資料」時會自動建立。`
+      :`ℹ️ ${CODE} 尚未建立比賽基本資料；第一次儲存時會自動建立。`;
+    notice(note);
+  }
+}
+async function loadPaymentSettings(){
+ const ids=["payBankName","payBankCode","payBankAccount","payAccountHolder","payNote","payEnabled"];
+ const note=$("paymentSettingsNote");
+ if(staffRole!=="admin"){ids.forEach(id=>{$(id).disabled=true});$("savePaymentSettings").disabled=true;note.textContent="僅主管理員可設定收款帳號。";return}
+ note.textContent="正在讀取 "+CODE+" 的銀行設定…";
+ const {data,error}=await sb.from("tournament_payment_settings").select("bank_name,bank_code,bank_account,account_holder,payment_note,payment_enabled").eq("tournament_code",CODE).maybeSingle();
+ if(error){note.textContent="讀取失敗："+error.message;return}
+ $("payBankName").value=data?.bank_name||"";
+ $("payBankCode").value=data?.bank_code||"";
+ $("payBankAccount").value=data?.bank_account||"";
+ $("payAccountHolder").value=data?.account_holder||"";
+ $("payNote").value=data?.payment_note||"";
+ $("payEnabled").value=String(data?.payment_enabled===true);
+ note.textContent=data?"已讀取本場收款設定。":"本場尚未建立銀行設定；預設停用。";
+}
+async function savePaymentSettings(){
+ if(staffRole!=="admin")return notice("只有主管理員可以設定銀行收款。","bad");
+ const bank_name=$("payBankName").value.trim(),bank_code=$("payBankCode").value.trim(),bank_account=$("payBankAccount").value.trim(),account_holder=$("payAccountHolder").value.trim(),payment_note=$("payNote").value.trim(),payment_enabled=$("payEnabled").value==="true";
+ if(payment_enabled&&(!bank_name||!/^\d{3}$/.test(bank_code)||!bank_account||!account_holder))return notice("啟用收款前，請完整填寫銀行名稱、三位銀行代碼、帳號及戶名。","bad");
+ if(payment_enabled&&!confirm("確定啟用 "+CODE+" 的銀行轉帳收款？請先確認銀行資料正確。"))return;
+ const btn=$("savePaymentSettings");btn.disabled=true;
+ const payload={tournament_code:CODE,bank_name,bank_code,bank_account,account_holder,payment_note,payment_enabled,updated_at:new Date().toISOString(),updated_by:me?.id||null};
+ const {error}=await sb.from("tournament_payment_settings").upsert(payload,{onConflict:"tournament_code"});
+ btn.disabled=false;
+ if(error){$("paymentSettingsNote").textContent="儲存失敗："+error.message;return notice("銀行收款設定儲存失敗："+error.message,"bad")}
+ $("paymentSettingsNote").textContent="已儲存 "+CODE+" 的銀行設定。";
+ notice("✅ 銀行收款設定已儲存。","good");
+ await loadPaymentSettings();
+}
+$("savePaymentSettings").onclick=()=>savePaymentSettings().catch(e=>notice("銀行設定失敗："+e.message,"bad"));
+$("reloadPaymentSettings").onclick=()=>loadPaymentSettings().catch(e=>notice("讀取失敗："+e.message,"bad"));
+async function loadTimer(){const {data,error}=await sb.from('tournament_settings').select('board_size,komi,main_seconds,byo_seconds,byo_periods').eq('user_id',me.id).maybeSingle();if(error){$("timerNote").textContent='計時設定讀取失敗：'+error.message;return}if(data){$("tBoard").value=String(data.board_size||19);$("tKomi").value=String(data.komi??7.5);$("tMain").value=String(Math.round(Number(data.main_seconds||1200)/60));$("tByo").value=String(data.byo_seconds||30);$("tPeriods").value=String(data.byo_periods||3)}else{$("tBoard").value='19';$("tKomi").value='7.5';$("tMain").value='20';$("tByo").value='30';$("tPeriods").value='3'}$("timerNote").textContent='目前設定已載入。'}
+document.querySelectorAll(".feePreset").forEach(b=>b.onclick=()=>{$("eventFee").value=b.dataset.fee});
+$("saveEvent").onclick=async()=>{
+  const fee=Math.max(0,Math.round(Number($("eventFee").value||0)));
+  $("eventFee").value=String(fee);
+
+  const payload={
+    code:CODE,
+    title:$("eventTitle").value.trim()||(
+      CODE==="JOYGO-PAY-TEST-001"?"Joy Go 2 人收費功能測試賽":
+      CODE==="JOYGO4-LIVE-TEST-001"?"Joy Go 4 人真人整合測試賽":
+      CODE==="JOYGO8-TEST-001"?"Joy Go 8 人虛擬測試賽":
+      CODE==="JOYGO16-TEST-001"?"Joy Go 16 人虛擬測試賽":
+      "Joy Go 16 人瑞士制比賽"
+    ),
+    max_players:Number($("eventMax").value)||tournamentMax(),
+    entry_fee:fee,
+    event_date:$("eventDate").value||null,
+    registration_open:$("eventOpen").value==='true',
+    venue:$("eventVenue").value.trim(),
+    updated_at:new Date().toISOString()
+  };
+
+  const {error}=await sb.from('tournament_events').upsert(payload,{onConflict:'code'});
+  if(error)return notice('比賽資料儲存失敗：'+error.message,'bad');
+
+  notice(`✅ ${CODE} 比賽基本資料已儲存。`,'good');
+  await loadEvent();
+};
+$("saveTimer").onclick=async()=>{const payload={p_board_size:Number($("tBoard").value),p_komi:Number($("tKomi").value),p_main_seconds:Math.max(0,Math.round(Number($("tMain").value||20)*60)),p_byo_seconds:Math.max(5,Math.round(Number($("tByo").value||30))),p_byo_periods:Math.max(1,Math.round(Number($("tPeriods").value||3)))};const {error}=await sb.rpc('joygo_save_tournament_settings',payload);if(error)return notice('計時設定儲存失敗：'+error.message,'bad');notice('✅ 比賽計時設定已儲存。','good');await loadTimer()};
+$("clearEndedRooms").onclick=()=>{if(staffRole!=="admin")return notice("巡場員不能刪除棋局資料。","bad");clearAllEndedRooms()};
+$("memberSearch").oninput=renderMembers;$("memberClear").onclick=()=>{$("memberSearch").value='';renderMembers()};$("regSearch").oninput=renderRegs;$("regClear").onclick=()=>{$("regSearch").value='';renderRegs()};
+$("modSearch")?.addEventListener("input",renderModeration);
+$("modFilter")?.addEventListener("change",renderModeration);
+$("refreshModeration")?.addEventListener("click",()=>loadModeration());
+$("loadTournamentCode")?.addEventListener("click",()=>switchTournamentCode().catch(e=>notice("切換比賽失敗："+(e?.message||e),"bad")));
+async function loadAll(){
+notice('正在同步管理資料…');
+await loadModeratorIds();
+if(staffRole==="admin"||staffRole==="deputy"){
+  await Promise.all([loadMembers(),loadRegs(),loadRooms(),loadEvent(),loadTimer(),loadModeration(),loadBroadcasts(),loadSwiss(),loadPaymentSettings()]);
+  await loadAuditLogs();
+  renderControl();
+}else{
+  await Promise.all([loadMembers(),loadRooms()]);
+}
+notice(staffRole==='admin'?'✅ 主管理員管理中心已同步完成。':staffRole==='deputy'?'✅ 副管理員管理中心已同步完成。':'✅ 巡場監控資料已同步完成。','good');
+}
+$("refreshAll").onclick=()=>loadAll().catch(e=>notice('重新整理失敗：'+e.message,'bad'));
+async function init(){
+try{
+  const {data,error}=await sb.auth.getSession();
+  if(error||!data?.session){notice('請先回 Joy Go Platform 登入帳號。','bad');return}
+  me=data.session.user;
+  const {data:access,error:ae}=await sb.rpc('joygo_get_staff_access');
+  if(ae)throw ae;
+  const a=Array.isArray(access)?access[0]:access;
+  staffRole=a?.staff_role||'none';
+  if(!['admin','deputy','moderator'].includes(staffRole)){notice('此頁只有管理工作人員可使用。','bad');return}
+  $("app").hidden=false;
+  const modPane=document.querySelector("#pane-moderation .sub");
+  if(modPane){
+    modPane.textContent=staffRole==="admin"
+      ?"主管理員可查看全部管理處置紀錄。"
+      :staffRole==="deputy"?"副管理員可協助會員、棋局與比賽監看；高風險設定仍由主管理員處理。":"巡場管理員只能查看自己執行的處置紀錄。";
+  }
+  if(staffRole==="deputy"){
+    document.querySelectorAll('.tab[data-tab="control"],.tab[data-tab="settings"]').forEach(x=>x.hidden=true);
+    const brand=document.querySelector('.brand p');if(brand)brand.textContent='🛡️ 副管理員模式｜可協助會員、棋局、報名監看與一般廣播';
+  }
+  if(staffRole==="moderator"){
+    document.querySelectorAll('.tab[data-tab="control"],.tab[data-tab="registrations"],.tab[data-tab="swiss"],.tab[data-tab="settings"],.tab[data-tab="broadcast"]').forEach(x=>x.hidden=true);
+    const hp=$("hPending")?.closest(".stat"),ha=$("hApproved")?.closest(".stat");if(hp)hp.hidden=true;if(ha)ha.hidden=true;
+    $("clearEndedRooms").hidden=true;
+    document.querySelectorAll('.quick a[href="tournament-register.html"],.quick a[href="tournament-admin.html"]').forEach(x=>x.hidden=true);
+    const brand=document.querySelector('.brand p');if(brand)brand.textContent='🕵️ 巡場監控模式｜對外不顯示管理員標記';
+  }
+  updateTournamentUI();
+  await loadAll();
+  initDivisionSelect();
+updateTournamentUI();
+loadDivisionSummary();
+}catch(e){notice('系統錯誤：'+(e?.message||e),'bad')}
+}init();
+</script>
+</body></html>
