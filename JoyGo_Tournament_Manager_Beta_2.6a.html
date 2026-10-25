@@ -49,7 +49,7 @@ textarea{width:100%;min-height:120px}
 <header>
   <div>
     <h1>Joy Go Tournament Manager</h1>
-    <div class="sub">圍棋賽務系統 Beta 2.6a｜補回修改功能</div>
+    <div class="sub">圍棋賽務系統 Beta 2.6a｜報到篩選修正版</div>
   </div>
   <div class="badge">EVENT ONLY｜不建立網路對局房間</div>
 </header>
@@ -125,6 +125,7 @@ textarea{width:100%;min-height:120px}
   <div class="check-toolbar">
     <div class="field wide"><label>搜尋姓名</label><input id="checkSearch" placeholder="輸入姓名"></div>
     <button id="btnShowAll">全部</button>
+    <button id="btnShowChecked">只看已報到</button>
     <button id="btnShowUnchecked">只看未報到</button>
     <button id="btnOfficial" class="gold">建立正式名單</button>
   </div>
@@ -192,11 +193,12 @@ function render(){
 }
 function renderRegs(){
   var h="";if(!g.registrations.length)h='<tr><td colspan="6">尚無資料。</td></tr>';
-  g.registrations.forEach(function(p){h+='<tr><td>'+p.no+'</td><td>'+p.name+'</td><td>'+p.rank+'</td><td>'+GROUPS[p.group].name+'</td><td>'+(p.checked?"✅":"—")+'</td><td><button class="small-btn" onclick="editP(\''+p.id+'\')">修改</button> <button class="small-btn" onclick="delP(\''+p.id+'\')">刪除</button></td></tr>'});el("regRows").innerHTML=h
+  g.registrations.forEach(function(p){h+='<tr><td>'+p.no+'</td><td>'+p.name+'</td><td>'+p.rank+'</td><td>'+GROUPS[p.group].name+'</td><td>'+(p.checked?"✅":"—")+'</td><td><button class="small-btn" onclick="delP(\''+p.id+'\')">刪除</button></td></tr>'});el("regRows").innerHTML=h
 }
 function renderCheckin(){
   var q=(el("checkSearch")?el("checkSearch").value.trim():"").toLowerCase(),rows=g.registrations.slice();
   if(checkFilter==="unchecked")rows=rows.filter(function(p){return !p.checked});
+   if(checkFilter==="checked")rows=rows.filter(function(p){return !!p.checked});
   if(q)rows=rows.filter(function(p){return p.name.toLowerCase().indexOf(q)!==-1});
   var total=g.registrations.length,ck=g.registrations.filter(function(p){return p.checked}).length;
   el("cTotal").textContent=total;el("cChecked").textContent=ck;el("cUnchecked").textContent=total-ck;
@@ -205,29 +207,6 @@ function renderCheckin(){
 }
 window.checkP=function(id){var p=g.registrations.find(function(x){return x.id===id});if(!p)return;p.checked=true;save();render();el("actionStatus").textContent="✅ "+p.name+" 已完成報到。"}
 window.cancelCheck=function(id){var p=g.registrations.find(function(x){return x.id===id});if(!p)return;if(p.official){el("actionStatus").textContent="⚠️ 已進正式名單，不能直接取消。";return}p.checked=false;save();render();el("actionStatus").textContent="↩️ "+p.name+" 已取消報到。"}
-window.editP=function(id){
-  var p=g.registrations.find(function(x){return x.id===id});
-  if(!p)return;
-  if(p.official){
-    el("regStatus").textContent="⚠️ 已進正式名單，不能修改。";
-    return;
-  }
-  var newName=prompt("修改姓名",p.name);
-  if(newName===null)return;
-  newName=newName.trim();
-  if(!newName){
-    el("regStatus").textContent="⚠️ 姓名不可空白。";
-    return;
-  }
-  var newRank=prompt("修改棋力（例如：4段）",p.rank);
-  if(newRank===null)return;
-  newRank=newRank.trim()||p.rank;
-  p.name=newName;
-  p.rank=newRank;
-  save();
-  render();
-  el("regStatus").textContent="✅ 已修改 "+p.name+"。";
-}
 window.delP=function(id){var i=g.registrations.findIndex(function(p){return p.id===id});if(i<0)return;if(g.registrations[i].official){el("regStatus").textContent="⚠️ 已進正式名單，不能刪除。";return}g.registrations.splice(i,1);g.registrations.forEach(function(p,j){p.no=j+1});save();render()}
 
 function addP(name,rank,code){name=name.trim();if(!name)return false;var target=load(code);if(target.registrations.length>=GROUPS[code].limit)return false;var no=target.registrations.length+1;target.registrations.push({no:no,id:"EV-"+code+"-"+Date.now()+"-"+no,name:name,rank:rank,group:code,checked:false,official:false});localStorage.setItem(key(code),JSON.stringify(target));if(code===currentCode)g=target;return true}
@@ -236,6 +215,7 @@ el("btnBulk").onclick=function(){var lines=el("bulkInput").value.split(/\r?\n/).
 
 el("btnShowAll").onclick=function(){checkFilter="all";renderCheckin()}
 el("btnShowUnchecked").onclick=function(){checkFilter="unchecked";renderCheckin()}
+ el("btnShowChecked").onclick=function(){checkFilter="checked";renderCheckin()}
 el("checkSearch").oninput=renderCheckin
 el("btnOfficial").onclick=function(){g.official=g.registrations.filter(function(p){return p.checked}).map(function(p){p.official=true;return{id:p.id,name:p.name,rank:p.rank,score:0,opponents:[],results:[],black:0,white:0,byes:0}});g.round=0;g.currentPairs=[];g.drawDone=false;g.drawLocked=false;save();render();el("actionStatus").textContent="✅ 正式名單 "+g.official.length+" 人；未報到排除 "+(g.registrations.length-g.official.length)+" 人。"}
 
