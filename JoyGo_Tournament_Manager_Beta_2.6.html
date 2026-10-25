@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go Tournament Manager Beta 2.6</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#07120e;color:#f6f1dd;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:30px;margin:0;color:#ffd45e}
+h2{color:#ffd45e;margin-top:0}
+.sub{color:#b9c7c0;margin-top:6px}
+.badge{padding:7px 11px;border:1px solid #3e7e60;border-radius:999px;background:#163b2c;color:#9df0bd;font-weight:800;font-size:13px}
+.card{border:1px solid #315847;background:#0b1f17;border-radius:18px;padding:18px;margin:14px 0}
+.status{padding:12px 14px;border-radius:12px;background:#102e22;border:1px solid #2b8b61;margin:12px 0}
+.buttons{display:flex;gap:10px;flex-wrap:wrap}
+button,select,input,textarea{font-size:17px;font-weight:700;border-radius:12px;padding:11px 14px;border:1px solid #50705f;background:#10251c;color:#fff}
+button.primary{background:#52d39a;color:#062116}
+button.gold{background:#f3bd3d;color:#1b1605}
+button.danger{background:#3b211d}
+.menu{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{min-height:110px;border:1px solid #355c4a;background:#0b1a14;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between}
+.tile b{font-size:18px;color:#ffd45e}
+.tile span{color:#b9c7c0;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat,.check-card{padding:14px;border:1px solid #315847;border-radius:14px;background:#0b1a14}
+.stat b,.check-card b{display:block;font-size:25px;color:#ffd45e}
+.hidden{display:none}
+.scroll{overflow:auto;max-height:540px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px;border-bottom:1px solid #29493b;text-align:left}
+th{color:#ffd45e;background:#0b1f17;position:sticky;top:0}
+.form-row,.check-toolbar{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:14px;color:#c4d4cc;font-weight:700}
+#regName,#checkSearch{min-height:54px;font-size:21px}
+.check-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.small-btn{padding:7px 10px;font-size:14px}
+textarea{width:100%;min-height:120px}
+@media(max-width:900px){.menu{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.menu,.grid,.check-summary{grid-template-columns:1fr}.form-row,.check-toolbar{grid-template-columns:1fr 1fr}.field.wide{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Joy Go Tournament Manager</h1>
+    <div class="sub">圍棋賽務系統 Beta 2.6｜現場報到正式版</div>
+  </div>
+  <div class="badge">EVENT ONLY｜不建立網路對局房間</div>
+</header>
+
+<div class="status">✅ 大型實體賽務獨立系統：報名、報到、抽籤、桌次、成績、排名、列印；與 Online Tournament 分離。</div>
+
+<div class="card">
+  <h2>賽務主控台</h2>
+  <div class="menu">
+    <div class="tile"><div><b>建立賽事</b><br><span>賽事名稱、日期、輪數、組別上限</span></div><button onclick="showPanel('event')">開啟</button></div>
+    <div class="tile"><div><b>報名管理</b><br><span>新增、修改、刪除、批次匯入</span></div><button onclick="showPanel('registration')">開啟</button></div>
+    <div class="tile"><div><b>現場報到</b><br><span>逐人報到、取消、搜尋、未到名單</span></div><button onclick="showPanel('checkin')">開啟</button></div>
+    <div class="tile"><div><b>報到後抽籤</b><br><span>僅已報到選手進入正式名單</span></div><button onclick="showPanel('draw')">開啟</button></div>
+    <div class="tile"><div><b>瑞士制配對</b><br><span>只產生桌次，不開房</span></div><button onclick="showPanel('pairing')">開啟</button></div>
+    <div class="tile"><div><b>成績輸入</b><br><span>黑勝、白勝、改判</span></div><button onclick="showPanel('results')">開啟</button></div>
+    <div class="tile"><div><b>即時排名</b><br><span>主分＋第一～第四副分</span></div><button onclick="showPanel('ranking')">開啟</button></div>
+    <div class="tile"><div><b>列印報表</b><br><span>對戰單與排名表</span></div><button onclick="showPanel('print')">開啟</button></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>目前組別</h2>
+  <div class="buttons">
+    <select id="groupSelect">
+      <option value="G67">6–7段組｜60</option>
+      <option value="G5">5段組｜80</option>
+      <option value="G4" selected>4段組｜100</option>
+      <option value="G3">3段組｜100</option>
+      <option value="G2">2段組｜80</option>
+      <option value="G1">1段組｜80</option>
+    </select>
+    <button id="btnLoad" class="gold">載入組別</button>
+  </div>
+  <div id="groupStatus" class="status">目前組別：4段組</div>
+</div>
+
+<div class="grid">
+  <div class="stat">報名<b id="sReg">0</b></div>
+  <div class="stat">報到<b id="sCheck">0</b></div>
+  <div class="stat">正式名單<b id="sOfficial">0</b></div>
+  <div class="stat">目前輪次<b id="sRound">0</b></div>
+  <div class="stat">本輪桌數<b id="sBoards">0</b></div>
+  <div class="stat">重複對手<b id="sRepeat">0</b></div>
+</div>
+
+<div id="panel-event" class="card hidden">
+  <h2>建立賽事</h2>
+  <div class="form-row">
+    <div class="field wide"><label>賽事名稱</label><input id="eventName" value="Joy Go 第一屆公開賽"></div>
+    <div class="field"><label>日期</label><input id="eventDate" type="date"></div>
+    <div class="field"><label>主辦</label><input id="organizer" value="Joy Go"></div>
+    <button id="btnSaveEvent" class="primary">儲存賽事</button>
+  </div>
+  <div class="status" id="eventStatus">尚未儲存。</div>
+</div>
+
+<div id="panel-registration" class="card hidden">
+  <h2>報名管理</h2>
+  <div class="form-row">
+    <div class="field wide"><label>選手姓名</label><input id="regName" placeholder="輸入姓名"></div>
+    <div class="field"><label>棋力</label><select id="regRank"><option>7段</option><option>6段</option><option>5段</option><option selected>4段</option><option>3段</option><option>2段</option><option>1段</option></select></div>
+    <div class="field"><label>組別</label><select id="regGroup"><option value="G67">6–7段組</option><option value="G5">5段組</option><option value="G4" selected>4段組</option><option value="G3">3段組</option><option value="G2">2段組</option><option value="G1">1段組</option></select></div>
+    <button id="btnAddPlayer" class="primary">新增選手</button>
+  </div>
+  <div class="status" id="regStatus">報名管理已就緒。</div>
+  <textarea id="bulkInput" placeholder="王小明,4段,G4&#10;李小華,5段,G5"></textarea>
+  <div class="buttons" style="margin-top:10px"><button id="btnBulk">批次匯入</button></div>
+  <div class="scroll"><table><thead><tr><th>編號</th><th>姓名</th><th>棋力</th><th>組別</th><th>報到</th><th>操作</th></tr></thead><tbody id="regRows"></tbody></table></div>
+</div>
+
+<div id="panel-checkin" class="card hidden">
+  <h2>現場報到</h2>
+  <div class="check-toolbar">
+    <div class="field wide"><label>搜尋姓名</label><input id="checkSearch" placeholder="輸入姓名"></div>
+    <button id="btnShowAll">全部</button>
+    <button id="btnShowUnchecked">只看未報到</button>
+    <button id="btnOfficial" class="gold">建立正式名單</button>
+  </div>
+  <div class="check-summary">
+    <div class="check-card">報名人數<b id="cTotal">0</b></div>
+    <div class="check-card">已報到<b id="cChecked">0</b></div>
+    <div class="check-card">未報到<b id="cUnchecked">0</b></div>
+  </div>
+  <div id="actionStatus" class="status">等待操作。</div>
+  <div class="scroll"><table><thead><tr><th>編號</th><th>姓名</th><th>棋力</th><th>狀態</th><th>操作</th></tr></thead><tbody id="checkRows"></tbody></table></div>
+</div>
+
+<div id="panel-draw" class="card hidden">
+  <h2>報到後抽籤</h2>
+  <button id="btnDraw" class="gold">自動抽籤</button>
+  <div id="drawStatus" class="status">請先建立正式名單。</div>
+</div>
+
+<div id="panel-pairing" class="card hidden">
+  <h2>瑞士制配對</h2>
+  <button id="btnNext" class="gold">產生下一輪桌次</button>
+  <div class="status">EVENT ONLY：只產生桌次，不建立網路對局房間。</div>
+  <div class="scroll"><table><thead><tr><th>桌次</th><th>黑棋</th><th>白棋</th><th>結果</th></tr></thead><tbody id="pairRows"></tbody></table></div>
+</div>
+
+<div id="panel-results" class="card hidden">
+  <h2>成績輸入</h2>
+  <button id="btnAutoResult">自動輸入本輪成績（測試）</button>
+</div>
+
+<div id="panel-ranking" class="card hidden">
+  <h2>即時排名</h2>
+  <div class="scroll"><table><thead><tr><th>名次</th><th>選手</th><th>主分</th><th>第一副分</th></tr></thead><tbody id="rankRows"></tbody></table></div>
+</div>
+
+<div id="panel-print" class="card hidden">
+  <h2>列印報表</h2>
+  <button onclick="window.print()">列印目前頁面</button>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var GROUPS={G67:{name:"6–7段組",limit:60,rank:"6段"},G5:{name:"5段組",limit:80,rank:"5段"},G4:{name:"4段組",limit:100,rank:"4段"},G3:{name:"3段組",limit:100,rank:"3段"},G2:{name:"2段組",limit:80,rank:"2段"},G1:{name:"1段組",limit:80,rank:"1段"}};
+var PREFIX="JOYGO_EVENT_BETA26_";
+var currentCode="G4",g=null,checkFilter="all";
+
+function el(id){return document.getElementById(id)}
+function fresh(c){return{code:c,registrations:[],official:[],round:0,currentPairs:[],history:[],drawDone:false,drawLocked:false}}
+function key(c){return PREFIX+c}
+function normalize(c,x){if(!x||typeof x!=="object")x=fresh(c);if(!Array.isArray(x.registrations))x.registrations=[];if(!Array.isArray(x.official))x.official=[];if(!Array.isArray(x.currentPairs))x.currentPairs=[];if(!Array.isArray(x.history))x.history=[];if(typeof x.round!=="number")x.round=0;return x}
+function load(c){try{var r=localStorage.getItem(key(c));if(r)return normalize(c,JSON.parse(r))}catch(e){}return fresh(c)}
+function save(){try{localStorage.setItem(key(currentCode),JSON.stringify(g))}catch(e){}}
+function meta(){return GROUPS[currentCode]}
+function pmap(){var m={};g.official.forEach(function(p){m[p.id]=p});return m}
+window.showPanel=function(n){document.querySelectorAll('[id^="panel-"]').forEach(function(x){x.classList.add("hidden")});el("panel-"+n).classList.remove("hidden");render()}
+
+function render(){
+  el("groupStatus").textContent="目前組別："+meta().name+"｜上限"+meta().limit+"人";
+  el("sReg").textContent=g.registrations.length;
+  var checked=g.registrations.filter(function(p){return p.checked}).length;
+  el("sCheck").textContent=checked;el("sOfficial").textContent=g.official.length;el("sRound").textContent=g.round;el("sBoards").textContent=g.currentPairs.filter(function(p){return !p.bye}).length;el("sRepeat").textContent="0";
+  renderRegs();renderCheckin();renderPairs();renderRanks()
+}
+function renderRegs(){
+  var h="";if(!g.registrations.length)h='<tr><td colspan="6">尚無資料。</td></tr>';
+  g.registrations.forEach(function(p){h+='<tr><td>'+p.no+'</td><td>'+p.name+'</td><td>'+p.rank+'</td><td>'+GROUPS[p.group].name+'</td><td>'+(p.checked?"✅":"—")+'</td><td><button class="small-btn" onclick="delP(\''+p.id+'\')">刪除</button></td></tr>'});el("regRows").innerHTML=h
+}
+function renderCheckin(){
+  var q=(el("checkSearch")?el("checkSearch").value.trim():"").toLowerCase(),rows=g.registrations.slice();
+  if(checkFilter==="unchecked")rows=rows.filter(function(p){return !p.checked});
+  if(q)rows=rows.filter(function(p){return p.name.toLowerCase().indexOf(q)!==-1});
+  var total=g.registrations.length,ck=g.registrations.filter(function(p){return p.checked}).length;
+  el("cTotal").textContent=total;el("cChecked").textContent=ck;el("cUnchecked").textContent=total-ck;
+  var h="";if(!rows.length)h='<tr><td colspan="5">沒有符合條件的選手。</td></tr>';
+  rows.forEach(function(p){h+='<tr><td>'+p.no+'</td><td>'+p.name+'</td><td>'+p.rank+'</td><td>'+(p.checked?"✅ 已報到":"⏳ 未報到")+'</td><td>'+(p.checked?'<button class="small-btn" onclick="cancelCheck(\''+p.id+'\')">取消報到</button>':'<button class="small-btn" onclick="checkP(\''+p.id+'\')">報到</button>')+'</td></tr>'});el("checkRows").innerHTML=h
+}
+window.checkP=function(id){var p=g.registrations.find(function(x){return x.id===id});if(!p)return;p.checked=true;save();render();el("actionStatus").textContent="✅ "+p.name+" 已完成報到。"}
+window.cancelCheck=function(id){var p=g.registrations.find(function(x){return x.id===id});if(!p)return;if(p.official){el("actionStatus").textContent="⚠️ 已進正式名單，不能直接取消。";return}p.checked=false;save();render();el("actionStatus").textContent="↩️ "+p.name+" 已取消報到。"}
+window.delP=function(id){var i=g.registrations.findIndex(function(p){return p.id===id});if(i<0)return;if(g.registrations[i].official){el("regStatus").textContent="⚠️ 已進正式名單，不能刪除。";return}g.registrations.splice(i,1);g.registrations.forEach(function(p,j){p.no=j+1});save();render()}
+
+function addP(name,rank,code){name=name.trim();if(!name)return false;var target=load(code);if(target.registrations.length>=GROUPS[code].limit)return false;var no=target.registrations.length+1;target.registrations.push({no:no,id:"EV-"+code+"-"+Date.now()+"-"+no,name:name,rank:rank,group:code,checked:false,official:false});localStorage.setItem(key(code),JSON.stringify(target));if(code===currentCode)g=target;return true}
+el("btnAddPlayer").onclick=function(){var ok=addP(el("regName").value,el("regRank").value,el("regGroup").value);el("regStatus").textContent=ok?"✅ 已新增選手。":"⚠️ 新增失敗。";if(ok)el("regName").value="";render()}
+el("btnBulk").onclick=function(){var lines=el("bulkInput").value.split(/\r?\n/).filter(Boolean),ok=0;lines.forEach(function(line){var a=line.split(/[,，\t]/).map(function(x){return x.trim()});if(addP(a[0]||"",a[1]||meta().rank,a[2]||currentCode))ok++});g=load(currentCode);render();el("regStatus").textContent="✅ 批次匯入 "+ok+" 人。"}
+
+el("btnShowAll").onclick=function(){checkFilter="all";renderCheckin()}
+el("btnShowUnchecked").onclick=function(){checkFilter="unchecked";renderCheckin()}
+el("checkSearch").oninput=renderCheckin
+el("btnOfficial").onclick=function(){g.official=g.registrations.filter(function(p){return p.checked}).map(function(p){p.official=true;return{id:p.id,name:p.name,rank:p.rank,score:0,opponents:[],results:[],black:0,white:0,byes:0}});g.round=0;g.currentPairs=[];g.drawDone=false;g.drawLocked=false;save();render();el("actionStatus").textContent="✅ 正式名單 "+g.official.length+" 人；未報到排除 "+(g.registrations.length-g.official.length)+" 人。"}
+
+el("btnDraw").onclick=function(){if(!g.official.length){el("drawStatus").textContent="⚠️ 請先建立正式名單。";return}if(g.drawLocked){el("drawStatus").textContent="🔒 第1輪已產生，不能重抽。";return}for(var i=g.official.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=g.official[i];g.official[i]=g.official[j];g.official[j]=t}g.official.forEach(function(p,i){p.drawNo=i+1});g.drawDone=true;save();el("drawStatus").textContent="✅ 已完成 "+g.official.length+" 人抽籤。"}
+
+function paired(a,b){return a.opponents.indexOf(b.id)!==-1}
+el("btnNext").onclick=function(){if(!g.drawDone){el("actionStatus").textContent="⚠️ 請先完成抽籤。";return}if(g.currentPairs.some(function(p){return !p.bye&&!p.result})){el("actionStatus").textContent="⚠️ 請先完成本輪成績。";return}g.round++;var pool=g.official.slice().sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id)}),pairs=[],board=1;if(pool.length%2){var bp=pool.pop();bp.byes++;bp.score++;pairs.push({bye:true,blackId:bp.id,whiteId:null,result:"輪空"})}while(pool.length){var a=pool.shift(),best=0;for(var i=0;i<pool.length;i++){if(!paired(a,pool[i])){best=i;break}}var b=pool.splice(best,1)[0];pairs.push({bye:false,board:board++,blackId:a.id,whiteId:b.id,result:""})}g.currentPairs=pairs;g.drawLocked=true;save();render()}
+el("btnAutoResult").onclick=function(){var m=pmap();g.currentPairs.forEach(function(p){if(p.bye||p.result)return;var b=m[p.blackId],w=m[p.whiteId];b.opponents.push(w.id);w.opponents.push(b.id);var bw=(p.board+g.round)%2===0;var win=bw?b:w,lose=bw?w:b;win.score++;p.result=bw?"黑勝":"白勝"});save();render()}
+
+function renderPairs(){var m=pmap(),h="";if(!g.currentPairs.length)h='<tr><td colspan="4">尚未產生桌次。</td></tr>';g.currentPairs.forEach(function(p){var b=m[p.blackId],w=p.whiteId?m[p.whiteId]:null;h+=p.bye?'<tr><td>輪空</td><td>'+b.name+'</td><td>—</td><td>輪空</td></tr>':'<tr><td>'+p.board+'</td><td>'+b.name+'</td><td>'+w.name+'</td><td>'+(p.result||"待輸入")+'</td></tr>'});el("pairRows").innerHTML=h}
+function renderRanks(){var r=g.official.slice().sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id)}),h="";if(!r.length)h='<tr><td colspan="4">尚無排名。</td></tr>';r.slice(0,20).forEach(function(p,i){var s=0;p.opponents.forEach(function(id){var op=g.official.find(function(x){return x.id===id});if(op)s+=op.score});h+='<tr><td>'+(i+1)+'</td><td>'+p.name+'</td><td>'+p.score+'</td><td>'+s+'</td></tr>'});el("rankRows").innerHTML=h}
+
+el("btnLoad").onclick=function(){save();currentCode=el("groupSelect").value;g=load(currentCode);render()}
+el("btnSaveEvent").onclick=function(){localStorage.setItem(PREFIX+"EVENT",JSON.stringify({name:el("eventName").value,date:el("eventDate").value,organizer:el("organizer").value}));el("eventStatus").textContent="✅ 賽事設定已儲存。"}
+
+g=load(currentCode);render()
+})();
+</script>
+</body>
+</html>
