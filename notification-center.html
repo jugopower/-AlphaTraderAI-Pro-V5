@@ -15,7 +15,7 @@
   base-uri 'self';
   form-action 'self';
 ">
-<title>Joy Go Beta 3.0.3｜會員活動通知中心</title>
+<title>Joy Go Beta 3.0.4｜會員活動通知中心</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -122,7 +122,7 @@ button{font-size:16px;font-weight:900;padding:11px 17px}
 <header>
   <div>
     <h1>🔔 Joy Go 會員活動通知中心</h1>
-    <small>Beta 3.0.3｜站內通知＋收回／刪除＋會員 Email</small>
+    <small>Beta 3.0.4｜站內通知＋收回／刪除＋會員 Email</small>
   </div>
   <button class="ghost" onclick="location.href='index.html'">返回平台</button>
 </header>
@@ -217,6 +217,9 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
 const $=id=>document.getElementById(id);
 let session=null;
 let staff=false;
+let mailBusy=false;
+const adminActivities=new Map();
+const mailResults=new Map();
 
 function setStatus(msg,type=""){
   const el=$("status");
@@ -465,18 +468,21 @@ async function loadAdmin(){
     return;
   }
 
-  $("adminList").innerHTML=rows.map(x=>{
+  adminActivities.clear();
+  $("adminList").innerHTML=rows.map((x,index)=>{
+    adminActivities.set(String(index),x);
     const statusBadge=x.status==='published'
       ? '<span class="badge">發布中</span>'
       : x.status==='cancelled'
         ? '<span class="badge">已收回</span>'
         : '<span class="badge">已封存</span>';
     const recallBtn=x.status==='published'
-      ? `<button class="gold" onclick='retractActivity(${JSON.stringify(x.activity_id)},${JSON.stringify(x.title)})'>收回</button>`
-      : '';
-    const deleteBtn=`<button class="danger" onclick='deleteActivity(${JSON.stringify(x.activity_id)},${JSON.stringify(x.title)})'>永久刪除</button>`;
+      ? '<button class="gold" data-action="retract">收回</button>' : '';
+    const mailBtn=x.status==='published'
+      ? '<button class="primary" data-action="email">補寄 Email</button>' : '';
+    const deleteBtn='<button class="danger" data-action="delete">永久刪除</button>';
     return `
-      <article class="item">
+      <article class="item" data-activity-index="${index}">
         <h3>${esc(x.title)} ${statusBadge}</h3>
         <div class="meta">
           對象：${esc(x.audience_label)}　
@@ -485,10 +491,60 @@ async function loadAdmin(){
           發布：${esc(fmt(x.published_at))}
         </div>
         <div class="bodytext">${esc(x.body)}</div>
-        <div class="item-actions">${recallBtn}${deleteBtn}</div>
+        <div class="item-actions">${mailBtn}${recallBtn}${deleteBtn}</div>
+        <div class="meta" data-mail-result role="status">${esc(mailResults.get(x.activity_id)||"")}</div>
       </article>`;
   }).join("");
 }
+
+
+function setMailBusy(busy){
+  mailBusy=busy;
+  $("publishBtn").disabled=busy;
+  $("adminList").querySelectorAll("button[data-action]").forEach(b=>b.disabled=busy);
+}
+async function resendActivityEmail(activity,article){
+  if(!staff || mailBusy || $("publishBtn").disabled || activity.status!=="published")return;
+  if(!confirm(`確定補寄「${activity.title}」的 Email？\n\n將寄給此活動原有通知名單（${activity.recipient_count??0} 位），不會新增站內通知。\n目前無法排除已寄成功者；重複操作可能收到重複信件。`))return;
+  setMailBusy(true);
+  const resultEl=article.querySelector("[data-mail-result]");
+  resultEl.textContent="正在寄送，請勿重複操作…";
+  setStatus("正在補寄 Email，請稍候…");
+  $("status").scrollIntoView({behavior:"smooth",block:"center"});
+  try{
+    const {data,error}=await sb.auth.getSession();
+    if(error || !data.session)throw new Error("登入已失效，請重新登入後再試");
+    const resp=await fetch(SUPABASE_URL+"/functions/v1/joygo-send-activity-email",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+data.session.access_token},
+      body:JSON.stringify({activity_id:activity.activity_id})
+    });
+    const result=await resp.json().catch(()=>null);
+    if(!resp.ok)throw new Error(result?.error||`寄信服務錯誤（${resp.status}）`);
+    if(!result || !Number.isInteger(result.sent_count) || !Number.isInteger(result.failed_count))
+      throw new Error("寄信服務回應不完整，請先查看寄信紀錄再決定是否重試");
+    const sent=result.sent_count, failed=result.failed_count, skipped=result.skipped_count??0;
+    const msg=`補寄結果：已送交寄信服務 ${sent} 封，失敗 ${failed} 封，略過 ${skipped} 位。未新增站內通知。`;
+    mailResults.set(activity.activity_id,msg);
+    resultEl.textContent=msg;
+    setStatus((failed||skipped||!sent?"⚠️ ":"✅ ")+msg,failed||skipped||!sent?"bad":"good");
+  }catch(e){
+    const msg="補寄未完成："+e.message+"。若連線中斷，部分信件可能已寄出，請先查看寄信紀錄再重試。";
+    mailResults.set(activity.activity_id,msg);
+    resultEl.textContent=msg;
+    setStatus(msg,"bad");
+  }finally{setMailBusy(false);}
+}
+$("adminList").addEventListener("click",event=>{
+  const button=event.target.closest("button[data-action]");
+  if(!button || mailBusy || $("publishBtn").disabled)return;
+  const article=button.closest("[data-activity-index]");
+  const activity=adminActivities.get(article?.dataset.activityIndex);
+  if(!activity || !staff)return;
+  if(button.dataset.action==="email")resendActivityEmail(activity,article);
+  else if(button.dataset.action==="retract")retractActivity(activity.activity_id,activity.title);
+  else if(button.dataset.action==="delete")deleteActivity(activity.activity_id,activity.title);
+});
 
 $("publishBtn").addEventListener("click",publish);
 $("clearBtn").addEventListener("click",clearForm);
